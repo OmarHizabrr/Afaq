@@ -10,13 +10,16 @@ import {
   Settings, 
   LogOut,
   Sun,
-  Moon
+  Moon,
+  Menu,
+  X
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
 const AdminLayout = ({ user }) => {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Initialize theme from localStorage or default to dark
   useEffect(() => {
@@ -58,13 +61,30 @@ const AdminLayout = ({ user }) => {
     { name: 'الإعدادات', icon: Settings, path: '/settings' },
   ];
 
+  const closeSidebar = () => {
+    if (window.innerWidth <= 768) setIsSidebarOpen(false);
+  };
+
   return (
-    <div className="admin-layout" dir="rtl">
+    <div className={`admin-layout ${isSidebarOpen ? 'mobile-open' : ''}`} dir="rtl">
+      {/* Background Overlay for mobile */}
+      {isSidebarOpen && (
+        <div 
+          style={{ position: 'fixed', inset: 0, zIndex: 4, background: 'rgba(0,0,0,0.5)' }} 
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <h2 className="logo-text" style={{ fontSize: '2rem', margin: 0, animation: 'none', transform: 'none', opacity: 1 }}>آفاق</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>لوحة تحكم الإدارة</p>
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 className="logo-text" style={{ fontSize: '2rem', margin: 0, animation: 'none', transform: 'none', opacity: 1 }}>آفاق</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>لوحة تحكم الإدارة</p>
+          </div>
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(false)}>
+            <X size={24} />
+          </button>
         </div>
 
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -73,6 +93,7 @@ const AdminLayout = ({ user }) => {
               key={item.path} 
               to={item.path} 
               className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              onClick={closeSidebar}
             >
               <item.icon size={20} />
               <span>{item.name}</span>
@@ -93,7 +114,10 @@ const AdminLayout = ({ user }) => {
         {/* Topbar */}
         <header className="topbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Page title could go here if managed by context, keeping empty for now */}
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={24} />
+            </button>
+            {/* Page title could go here */}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

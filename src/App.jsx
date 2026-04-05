@@ -4,6 +4,8 @@ import './index.css';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './layouts/AdminLayout';
 import DashboardPage from './pages/admin/DashboardPage';
+import GovernoratesPage from './pages/admin/GovernoratesPage';
+import RegionsPage from './pages/admin/RegionsPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -55,8 +57,8 @@ function App() {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route path="governorates" element={<div>إدارة المحافظات هنا</div>} />
-          <Route path="regions" element={<div>إدارة المناطق هنا</div>} />
+          <Route path="governorates" element={<GovernoratesPage />} />
+          <Route path="regions" element={<RegionsPage />} />
           <Route path="villages" element={<div>إدارة القرى هنا</div>} />
           <Route path="schools" element={<div>إدارة المدارس هنا</div>} />
           <Route path="users" element={<div>إدارة الكوادر هنا</div>} />
