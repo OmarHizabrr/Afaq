@@ -7,6 +7,7 @@ import DashboardPage from './pages/admin/DashboardPage';
 import GovernoratesPage from './pages/admin/GovernoratesPage';
 import RegionsPage from './pages/admin/RegionsPage';
 import VillagesPage from './pages/admin/VillagesPage';
+import SchoolsPage from './pages/admin/SchoolsPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -61,7 +62,7 @@ function App() {
           <Route path="governorates" element={<GovernoratesPage />} />
           <Route path="regions" element={<RegionsPage />} />
           <Route path="villages" element={<VillagesPage />} />
-          <Route path="schools" element={<div>إدارة المدارس هنا</div>} />
+          <Route path="schools" element={<SchoolsPage />} />
           <Route path="users" element={<div>إدارة الكوادر هنا</div>} />
           <Route path="settings" element={<div>الإعدادات هنا</div>} />
         </Route>
