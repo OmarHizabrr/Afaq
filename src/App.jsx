@@ -6,6 +6,7 @@ import AdminLayout from './layouts/AdminLayout';
 import DashboardPage from './pages/admin/DashboardPage';
 import GovernoratesPage from './pages/admin/GovernoratesPage';
 import RegionsPage from './pages/admin/RegionsPage';
+import VillagesPage from './pages/admin/VillagesPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -59,7 +60,7 @@ function App() {
           <Route index element={<DashboardPage />} />
           <Route path="governorates" element={<GovernoratesPage />} />
           <Route path="regions" element={<RegionsPage />} />
-          <Route path="villages" element={<div>إدارة القرى هنا</div>} />
+          <Route path="villages" element={<VillagesPage />} />
           <Route path="schools" element={<div>إدارة المدارس هنا</div>} />
           <Route path="users" element={<div>إدارة الكوادر هنا</div>} />
           <Route path="settings" element={<div>الإعدادات هنا</div>} />
