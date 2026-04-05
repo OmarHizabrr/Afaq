@@ -1,76 +1,52 @@
-# هيكل قاعدة بيانات منصة آفاق (Afaq Foundation Database Structure)
+# هيكل قاعدة بيانات منصة آفاق المحدث (Afaq Foundation Database Structure)
 
-هذا المستند يحدد القواعد والهيكلية المتبعة في قاعدة بيانات Firestore للمنصة.
+هذا المستند يعكس الهيكلية الشاملة والمحدثة بناءً على التحليل المفصل للمشروع (فصل المجموعات الفرعية).
 
 ## 🧭 القواعد الأساسية
-1. **فصل المجموعات الفرعية (Flat Structure)**: يتم تحويل المجموعات الفرعية المتداخلة إلى مجموعات مستقلة مرتبطة بـ IDs.
-2. **الارتباط**: يتم الربط بين الوثائق باستخدام الحقول (مثل `govId`, `schoolId`) بدلاً من التداخل (Nesting).
-3. **نمط المسار**: `collection/{docId}/data`.
-4. **البيانات الوصفية التلقائية**: كل عملية كتابة يجب أن تشمل:
-   - `createdBy`, `createdByName`, `createdByImageUrl`
-   - `createTimes` (Server Timestamp)
-   - `updatedTimes` (Server Timestamp)
+1. **النمط**: `collection/{docId}/data`.
+2. **البيانات الوصفية التلقائية**: (منشئ الطلب، الطوابع الزمنية).
+3. **لا للتداخل المفرط (No Deep Nesting)**.
 
 ---
 
-## 🏗 الهيكل الكامل للمجموعات (Collections)
+## 🏗 هيكل الكيانات (Collections)
 
 ### 👤 1. المستخدمين (Users)
 `users/{userId}/`
-- بيانات الحساب، الدور الوظيفي، والمعلومات الشخصية.
+- `role`: (`admin`, `supervisor_arab`, `supervisor_local`, `teacher`)
+- بيانات الحساب والتواصل.
 
-### 🌍 2. الهيكل الجغرافي (Locations)
+### 🌍 2. الموقع والقرى (Locations)
 - **المحافظات**: `governorates/{govId}/`
-- **المناطق**: `regions/{regionId}/` (تحتوي على `govId`)
-- **القرى**: `villages/{villageId}/` (تحتوي على `regionId`)
+- **المناطق**: `regions/{regionId}/` (يحتوي `govId`)
+- **القرى**: `villages/{villageId}/` (يحتوي `regionId`, `govId`)
+  - `villageName`, `groupName`, `ltiName`
+  - `populationCount`, `muslimsCount`, `nonMuslimsCount`
+  - `newMuslimsMen`, `newMuslimsWomen`, `newMuslimsChildren`
+- **المسلمين الجدد**: `new_muslims/{muslimId}/` (مرتبط بـ `villageId`) لحفظ (الاسم، النوع).
 
-### 🏫 3. المدارس (Schools)
-`schools/{schoolId}/`
-- تحتوي على `villageId`.
+### 🏫 3. المدارس والطلاب (Schools & Students)
+- **المدارس**: `schools/{schoolId}/` (تحتوي `villageId`, `donorName` (للمشرف العربي/المدير)).
+- **الطلاب**: `students/{studentId}/` (تحتوي `schoolId`)
+  - `studentName`, `age`
 
-### 👨‍🏫 4. المدرسين (Teachers)
-`teachers/{teacherId}/`
-- تحتوي على `schoolId`.
+### 👨‍🏫 4. المعلم والمنهج (Teachers & Curriculum)
+- **المعلمين**: `teachers/{teacherId}/` (تحتوي `schoolId`).
+- **المنهج الدراسي**: `curriculum/{curriculumId}/` (التوزيع السنوي - 50 أسبوع، أسماء الدروس لكل مادة).
+- **تقارير المعلمين (الأسبوعية)**: `teacher_reports/{reportId}/` (تحتوي `teacherId`).
+  - أنشطة: (خطبة الجمعة، دعوة غير المسلمين، تعليم الكبار، دروس المسجد، عقود الزواج).
+  - التقدم في المنهج، الحضور والانصراف.
 
-### 👨‍🎓 5. الطلاب (Students)
-`students/{studentId}/`
-- تحتوي على `schoolId`.
-
-### 🔗 6. تكليفات المشرفين (Supervisor Assignments)
-`supervisor_assignments/{assignmentId}/`
-- تربط المشرف بالمواقع والمدارس المسوؤل عنها.
-```json
-{
-  "userId": "xxx",
-  "govId": "xxx",
-  "regionId": "xxx",
-  "villageId": "xxx",
-  "schoolIds": [],
-  "teacherIds": []
-}
-```
-
-### 📊 7. التقارير (Reports)
-`reports/{reportId}/`
-- التقرير الرئيسي للزيارة الميدانية.
-- يشمل: `supervisorId`, `schoolId`, `teacherId`, `attendanceCount`, `notes`, `rating`, `gps`, وكاش لأسماء الجهات (`schoolName`, etc).
-
-### 📎 8. المرفقات (Attachments) - *نمط الربط المستقل*
-`attachments/{reportId}/attachments/{attachmentId}/`
-- مرتبطة بـ `reportId`.
-
-### 📅 9. الحضور (Attendance)
-`attendance/{reportId}/attendance/{studentId}/`
-- سجل حضور الطلاب المرتبط بتقرير معين.
-
-### 📚 10. المنهج (Curriculum)
-`curriculum/{curriculumId}/`
-
-### 📆 11. تقارير المدرس (Teacher Reports)
-`teacher_reports/{teacherId}/reports/{reportId}/`
+### 🔗 5. الإشراف والتقارير الميدانية (Supervisors & Reports)
+- **التعيينات (المناطق والصلاحيات)**: `supervisor_assignments/{assignmentId}/`
+  - يحدد القرى/المدارس التي يشرف عليها المشرف المحلي (المشرف العربي مفتوح له الكل).
+- **التقارير اليومية للمشرف (الزيارات)**: `reports/{reportId}/`
+  - التوقيت (الحضور، الانصراف)، التاريخ.
+  - الطلاب (الحضور التلقائي عن طريق استبعاد الغائبين).
+  - الدرس المشروح، تقييم الطلاب المختبرين/المتفوقين.
+  - التقييم (من 1 إلى 10 للمدرس والقرية).
+  - الملاحظات وموقع GPS.
+- **سجل الغياب (غياب الطلاب للزيارة)**: `attendance/{reportId}/attendance/{studentId}/`
+- **المرفقات للزيارة**: `attachments/{reportId}/attachments/{attachmentId}/` (صور/فيديو).
 
 ---
-
-## 🔐 قواعد الأمان (Security Rules)
-- تعتمد على حقل `supervisorId` و `userId` للتحقق من الصلاحيات.
-- يمنع الوصول للمرفقات إلا للمصرح لهم.

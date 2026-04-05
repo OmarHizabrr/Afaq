@@ -1,14 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
 :root {
+  /* Dark Mode (Default) */
   --bg-color: #030712;
   --panel-color: #111827;
-  --accent-color: #fbbf24; /* Amber/Gold */
+  --accent-color: #fbbf24;
   --accent-glow: rgba(251, 191, 36, 0.3);
   --text-primary: #f9fafb;
   --text-secondary: #9ca3af;
   --border-color: #374151;
   --font-main: 'Outfit', sans-serif;
+  --danger-color: #ef4444;
+  --success-color: #10b981;
+}
+
+.light-mode {
+  --bg-color: #f3f4f6;
+  --panel-color: #ffffff;
+  --accent-color: #f59e0b;
+  --accent-glow: rgba(245, 158, 11, 0.2);
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --border-color: #e5e7eb;
 }
 
 * {
@@ -184,4 +197,91 @@ body {
 
 @keyframes rotate {
   to { transform: rotate(360deg); }
+}
+
+/* Admin Dashboard Layout */
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar {
+  width: 250px;
+  background: var(--panel-color);
+  border-left: 1px solid var(--border-color); /* RTL border */
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 0 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 1.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.nav-link:hover, .nav-link.active {
+  background: var(--accent-glow);
+  color: var(--accent-color);
+  border-right: 3px solid var(--accent-color); /* RTL highlight */
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  height: 70px;
+  background: var(--panel-color);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: var(--accent-glow);
+  color: var(--accent-color);
 }
