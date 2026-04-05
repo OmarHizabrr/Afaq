@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Afaq Foundation Firebase Configuration
-// Provided by User
 const firebaseConfig = {
   apiKey: "AIzaSyBG8_7vI_tKujbJ_tpcaPL6NGNwCygC4hU",
   authDomain: "afaq-foundation.firebaseapp.com",
@@ -16,5 +17,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const db = getFirestore(app);
 
-export { app, analytics };
+export { app, analytics, auth, googleProvider, db };
