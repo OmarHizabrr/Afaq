@@ -6,30 +6,33 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
   <div style={{
     background: 'var(--panel-color)',
     padding: '1.5rem',
-    borderRadius: '16px',
+    borderRadius: '20px',
     border: '1px solid var(--border-color)',
     display: 'flex',
     alignItems: 'center',
-    gap: '1rem',
-    boxShadow: 'var(--shadow)'
+    gap: '1.25rem',
+    boxShadow: 'var(--shadow)',
+    transition: 'transform 0.2s',
+    cursor: 'default'
   }}>
     <div style={{
-      width: '60px',
-      height: '60px',
-      borderRadius: '12px',
-      background: `${color}20`, // 20% opacity using hex
+      width: '65px',
+      height: '65px',
+      borderRadius: '16px',
+      background: `linear-gradient(135deg, ${color}20, ${color}40)`,
       color: color,
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      boxShadow: `0 8px 16px -4px ${color}30`
     }}>
-      <Icon size={32} />
+      <Icon size={34} />
     </div>
     <div>
-      <h3 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{title}</h3>
-      <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+      <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>{title}</p>
+      <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>
         {loading ? '...' : value}
-      </p>
+      </h3>
     </div>
   </div>
 );
@@ -43,6 +46,7 @@ const DashboardPage = () => {
     teachers: 0,
     students: 0
   });
+  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,6 +72,22 @@ const DashboardPage = () => {
           schools: schoolsDocs.length,
           students: studentsDocs.length
         });
+
+        // 2. Fetch Recent Activities (Visits & Daily Logs)
+        const [visitDocs, logsDocs] = await Promise.all([
+            api.getCollectionGroupDocuments('reports'),
+            api.getCollectionGroupDocuments('teacher_daily_logs')
+        ]);
+
+        const activities = [
+            ...visitDocs.map(d => ({ id: d.id, type: 'visit', ...d.data() })),
+            ...logsDocs.map(d => ({ id: d.id, type: 'daily', ...d.data() }))
+        ];
+
+        // Sort by timestamp/date descending
+        activities.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
+        setRecentActivity(activities.slice(0, 6)); // Top 6
+
       } catch (err) {
         console.error("Dashboard stats error", err);
       } finally {
@@ -102,19 +122,59 @@ const DashboardPage = () => {
         <StatCard title="إجمالي الطلاب" value={stats.students} icon={UserCheck} color="var(--success-color)" loading={loading} />
       </div>
 
-      {/* Future Sections (e.g., Recent Reports, Activity) could go here */}
+      {/* Recent Activity Section */}
       <div style={{
         background: 'var(--panel-color)',
         padding: '2rem',
-        borderRadius: '16px',
+        borderRadius: '24px',
         border: '1px solid var(--border-color)',
-        minHeight: '300px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'var(--text-secondary)'
+        boxShadow: 'var(--shadow)',
+        marginBottom: '2rem'
       }}>
-        سيتم إدراج الرسوم البيانية وسجل النشاطات الحديثة هنا
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
+            <Activity size={24} color="var(--accent-color)" />
+            <h2 style={{ margin: 0, fontSize: '1.4rem' }}>أحدث النشاطات الميدانية</h2>
+        </div>
+
+        {loading ? (
+            <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        ) : recentActivity.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>لا توجد نشاطات مسجلة مؤخراً.</p>
+        ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                {recentActivity.map((act) => (
+                    <div key={act.id} style={{
+                        padding: '1rem',
+                        borderRadius: '12px',
+                        background: 'var(--bg-color)',
+                        border: '1px solid var(--border-color)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        position: 'relative'
+                    }}>
+                        <div style={{ 
+                            fontSize: '0.7rem', 
+                            padding: '2px 8px', 
+                            borderRadius: '10px', 
+                            background: act.type === 'visit' ? '#3b82f620' : 'var(--success-color)20',
+                            color: act.type === 'visit' ? '#3b82f6' : 'var(--success-color)',
+                            width: 'fit-content',
+                            fontWeight: 700
+                        }}>
+                            {act.type === 'visit' ? 'زيارة ميدانية' : 'تحضير يومي'}
+                        </div>
+                        <h4 style={{ margin: 0, fontSize: '1rem' }}>{act.schoolName || 'مدرسة غير محددة'}</h4>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                           بواسطة: {act.supervisorName || act.teacherName || 'عضو غير معروف'}
+                        </p>
+                        <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '4px' }}>
+                           📅 {act.date || act.timestamp?.split('T')[0]}
+                        </p>
+                    </div>
+                ))}
+            </div>
+        )}
       </div>
     </div>
   );

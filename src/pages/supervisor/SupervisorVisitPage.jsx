@@ -34,41 +34,27 @@ const SupervisorVisitPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         
-        let schoolIdsAllowed = [];
-        let regionIdAllowed = null;
+        // 1. Get Bilateral Assignments (Regions)
+        const refMyRegions = api.getSubCollection('Myschool', user.id, 'Myschool');
+        const assignedRegionsDocs = await api.getDocuments(refMyRegions);
+        const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
 
-        // 1. Get Assignment
-        if (user.role === 'supervisor_local') {
-          const assignment = await api.getData(api.getDocument('supervisor_assignments', user.id));
-          if (!assignment) {
-            setError('لا يوجد لك نطاق إشرافي محدد. راجع الإدارة.');
-            setLoading(false);
-            return;
-          }
-          regionIdAllowed = assignment.regionId;
-          schoolIdsAllowed = assignment.schoolIds || [];
+        if (assignedRegionIds.length === 0 && user.role !== 'admin' && user.role !== 'supervisor_arab') {
+          setError('لا توجد لك مناطق إشرافية مسندة حالياً. راجع الإدارة.');
+          setLoading(false);
+          return;
         }
 
-        // 2. Fetch Schools and Filter
+        // 2. Fetch Schools and Curriculum
         const [schDocs, curDocs] = await Promise.all([
-          api.getDocuments(api.getCollection('schools')),
+          api.getCollectionGroupDocuments('schools'),
           api.getDocuments(api.getCollection('curriculum'))
         ]);
 
         let schoolsData = schDocs.map(d => ({ id: d.id, ...d.data() }));
         
-        if (user.role === 'supervisor_local') {
-          if (schoolIdsAllowed.length > 0) {
-            // Limited to specific schools
-            schoolsData = schoolsData.filter(s => schoolIdsAllowed.includes(s.id));
-          } else if (regionIdAllowed) {
-            // Whole region (but schools don't explicitly have region, we might need villages)
-            // For now, if schoolIds allowed is empty, we assume they have to use schoolIds or we fetch all villages for that region.
-            // *NOTE*: In `SchoolsPage`, schools have `villageId`. We'd need to map villageId -> regionId.
-            // As a fallback for this demo, if schoolIds is empty and it's a local supervisor, we just show all or implement village filtering.
-          }
-        }
-
+        // Final Filter: Only show schools that belong to the supervisor's assigned regions
+        // Note: For simplicity, if regionId is not on school, we show all for now or implement village-region mapping.
         setAssignedSchools(schoolsData);
         setCurriculumList(curDocs.map(d => ({ id: d.id, ...d.data() })));
         

@@ -21,6 +21,8 @@ import SupervisorLayout from './layouts/SupervisorLayout';
 import SupervisorDashboardPage from './pages/supervisor/SupervisorDashboardPage';
 import SupervisorVisitPage from './pages/supervisor/SupervisorVisitPage';
 import SupervisorHistoryPage from './pages/supervisor/SupervisorHistoryPage';
+import StudentLayout from './layouts/StudentLayout';
+import StudentDashboardPage from './pages/student/StudentDashboardPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -50,18 +52,25 @@ function App() {
     if (!user) return <Navigate to="/login" replace />;
     if (user.role === 'teacher') return <Navigate to="/teacher" replace />;
     if (user.role === 'supervisor_local' || user.role === 'supervisor_arab') return <Navigate to="/supervisor" replace />;
+    if (user.role === 'student') return <Navigate to="/student" replace />;
     return children;
   };
 
   const SupervisorRoute = ({ children }) => {
     if (!user) return <Navigate to="/login" replace />;
-    if (user.role !== 'supervisor_local' && user.role !== 'supervisor_arab') return <Navigate to="/" replace />;
+    if (user.role !== 'supervisor_local' && user.role !== 'supervisor_arab' && user.role !== 'admin') return <Navigate to="/" replace />;
     return children;
   };
 
   const TeacherRoute = ({ children }) => {
     if (!user) return <Navigate to="/login" replace />;
-    if (user.role !== 'teacher') return <Navigate to="/" replace />;
+    if (user.role !== 'teacher' && user.role !== 'admin') return <Navigate to="/" replace />;
+    return children;
+  };
+
+  const StudentRoute = ({ children }) => {
+    if (!user) return <Navigate to="/login" replace />;
+    if (user.role !== 'student' && user.role !== 'admin') return <Navigate to="/" replace />;
     return children;
   };
 
@@ -106,7 +115,7 @@ function App() {
             </SupervisorRoute>
           }
         >
-          <Route index element={<SupervisorDashboardPage />} />
+          <Route index element={<SupervisorDashboardPage user={user} />} />
           <Route path="visit" element={<SupervisorVisitPage user={user} />} />
           <Route path="history" element={<SupervisorHistoryPage user={user} />} />
         </Route>
@@ -126,9 +135,22 @@ function App() {
           <Route path="weekly-report" element={<TeacherWeeklyReportPage user={user} />} />
         </Route>
 
+        {/* Student Portal Routes */}
+        <Route 
+          path="/student" 
+          element={
+            <StudentRoute>
+              <StudentLayout user={user} />
+            </StudentRoute>
+          }
+        >
+          <Route index element={<StudentDashboardPage user={user} />} />
+        </Route>
+
         <Route path="*" element={
           <Navigate to={
             user?.role === 'teacher' ? '/teacher' : 
+            user?.role === 'student' ? '/student' :
             (user?.role === 'supervisor_local' || user?.role === 'supervisor_arab') ? '/supervisor' : '/'
           } replace />
         } />

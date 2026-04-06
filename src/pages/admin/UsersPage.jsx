@@ -6,7 +6,8 @@ const ROLE_LABELS = {
   admin: 'مدير النظام',
   supervisor_arab: 'مشرف عام (عربي)',
   supervisor_local: 'مشرف منطقة (محلي)',
-  teacher: 'معلم',
+  teacher: 'معلم مدرسة',
+  student: 'طالب / دارس',
   unassigned: 'صلاحية معلقة'
 };
 
@@ -15,6 +16,7 @@ const ROLE_COLORS = {
   supervisor_arab: 'var(--accent-color)',
   supervisor_local: '#3b82f6',
   teacher: 'var(--success-color)',
+  student: '#f59e0b',
   unassigned: 'var(--text-secondary)'
 };
 
@@ -125,14 +127,17 @@ const UsersPage = () => {
       });
 
       // 3. Handle New Bilateral Assignments
-      if (selectedRole === 'teacher' && selectedSchoolId) {
-        const schoolLink1 = api.getSubDocument('members', selectedSchoolId, 'members', editingUser.id);
-        const schoolLink2 = api.getSubDocument('Myschool', editingUser.id, 'Myschool', selectedSchoolId);
-        
-        await Promise.all([
-          api.setData({ docRef: schoolLink1, data: { userId: editingUser.id, role: 'teacher', joinedAt: new Date().toISOString() } }),
-          api.setData({ docRef: schoolLink2, data: { schoolId: selectedSchoolId, joinedAt: new Date().toISOString() } })
-        ]);
+      if (selectedRole === 'teacher' || selectedRole === 'student') {
+        const groupId = selectedSchoolId;
+        if (groupId) {
+          const link1 = api.getSubDocument('members', groupId, 'members', editingUser.id);
+          const link2 = api.getSubDocument('Myschool', editingUser.id, 'Myschool', groupId);
+          
+          await Promise.all([
+            api.setData({ docRef: link1, data: { userId: editingUser.id, role: selectedRole, joinedAt: new Date().toISOString(), type: selectedRole === 'student' ? 'student' : 'staff' } }),
+            api.setData({ docRef: link2, data: { schoolId: groupId, joinedAt: new Date().toISOString() } })
+          ]);
+        }
       }
 
       if ((selectedRole === 'supervisor_local' || selectedRole === 'supervisor_arab') && selectedRegionId) {
@@ -263,6 +268,7 @@ const UsersPage = () => {
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
               >
                 <option value="unassigned">-- غير معين (معلق) --</option>
+                <option value="student">طالب / دارس</option>
                 <option value="teacher">معلم</option>
                 <option value="supervisor_local">مشرف منطقة (محلي)</option>
                 <option value="supervisor_arab">مشرف عام (عربي)</option>
@@ -270,11 +276,11 @@ const UsersPage = () => {
               </select>
             </div>
 
-            {/* Teacher Settings */}
-            {selectedRole === 'teacher' && (
+            {/* Student/Teacher Configuration */}
+            {(selectedRole === 'student' || selectedRole === 'teacher') && (
               <div style={{ background: 'var(--bg-color)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid var(--accent-glow)' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontWeight: 600, color: 'var(--success-color)' }}>
-                  <School size={18} /> تعيين مدرسة المعلم
+                  <School size={18} /> تعيين مدرسة {selectedRole === 'student' ? 'الطالب' : 'المعلم'}
                 </label>
                 <select 
                   value={selectedSchoolId} 

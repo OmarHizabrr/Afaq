@@ -50,7 +50,7 @@ class AuthService {
 
     // Only set default role if it's a completely new user
     if (!existingDoc || !existingDoc.role) {
-      userData.role = "unassigned";
+      userData.role = "student";
     }
 
     // Merge data - specifically don't overwrite role if it exists
