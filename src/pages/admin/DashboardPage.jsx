@@ -51,7 +51,7 @@ const DashboardPage = () => {
         
         const [usersDocs, regionsDocs, schoolsDocs, studentsDocs] = await Promise.all([
           api.getDocuments(api.getCollection('users')),
-          api.getDocuments(api.getCollection('regions')),
+          api.getCollectionGroupDocuments('regions'),
           api.getDocuments(api.getCollection('schools')),
           api.getDocuments(api.getCollection('students'))
         ]);

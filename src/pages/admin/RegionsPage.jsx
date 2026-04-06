@@ -25,9 +25,8 @@ const RegionsPage = () => {
       const govData = govDocs.map(doc => ({ id: doc.id, ...doc.data() }));
       setGovernorates(govData);
 
-      // Fetch Regions
-      const regRef = api.getCollection('regions');
-      const regDocs = await api.getDocuments(regRef);
+      // Fetch Regions via Collection Group
+      const regDocs = await api.getCollectionGroupDocuments('regions');
       const regData = regDocs.map(doc => ({ id: doc.id, ...doc.data() }));
       setRegions(regData);
 
@@ -52,8 +51,10 @@ const RegionsPage = () => {
 
     try {
       const api = FirestoreApi.Api;
-      const docId = api.getNewId('regions');
-      const docRef = api.getDocument('regions', docId);
+      // The new ID is for the region document
+      const regId = api.getNewId('regions');
+      // The parent document in the 'regions' collection is named after the govId
+      const docRef = api.getSubDocument('regions', selectedGovId, 'regions', regId);
       
       await api.setData({
         docRef,
@@ -83,7 +84,7 @@ const RegionsPage = () => {
 
     try {
       const api = FirestoreApi.Api;
-      const docRef = api.getDocument('regions', isEditing.id);
+      const docRef = api.getSubDocument('regions', isEditing.govId, 'regions', isEditing.id);
       
       await api.updateData({
         docRef,
@@ -111,11 +112,11 @@ const RegionsPage = () => {
       setIsAdding(false);
   };
 
-  const handleDelete = async (id, name) => {
-    if (!window.confirm(`هل أنت متأكد من حذف منطقة "${name}"؟`)) return;
+  const handleDelete = async (region) => {
+    if (!window.confirm(`هل أنت متأكد من حذف منطقة "${region.name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
-      const docRef = api.getDocument('regions', id);
+      const docRef = api.getSubDocument('regions', region.govId, 'regions', region.id);
       await api.deleteData(docRef);
       fetchData();
     } catch (err) {
@@ -236,7 +237,7 @@ const RegionsPage = () => {
                 <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">
                   <Edit2 size={16} />
                 </button>
-                <button className="icon-btn" onClick={() => handleDelete(region.id, region.name)} title="حذف">
+                <button className="icon-btn" onClick={() => handleDelete(region)} title="حذف">
                   <Trash2 size={16} color="var(--danger-color)" />
                 </button>
               </div>

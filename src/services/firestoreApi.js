@@ -138,6 +138,13 @@ class FirestoreApi {
     return onSnapshot(q, (snapshot) => snapshot);
   }
 
+  /** جلب جميع المستندات في مجموعة عبر جميع المسارات (Collection Group) */
+  async getCollectionGroupDocuments(collectionName) {
+    const q = query(collectionGroup(db, collectionName));
+    const snapshot = await getDocs(q);
+    return snapshot.docs;
+  }
+
   // ==============================
   // دوال إحصائية (Count)
   // ==============================

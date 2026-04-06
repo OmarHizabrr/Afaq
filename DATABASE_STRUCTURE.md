@@ -18,7 +18,7 @@
 
 ### 🌍 2. الموقع والقرى (Locations)
 - **المحافظات**: `governorates/{govId}/`
-- **المناطق**: `regions/{regionId}/` (يحتوي `govId`)
+- **المناطق**: `regions/{govId}/regions/{regionId}/` (مسار متشعب)
 - **القرى**: `villages/{villageId}/` (يحتوي `regionId`, `govId`)
   - `villageName`, `groupName`, `ltiName`
   - `populationCount`, `muslimsCount`, `nonMuslimsCount`

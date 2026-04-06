@@ -35,7 +35,7 @@ const VillagesPage = () => {
       // Fetch Governorates & Regions for relations
       const [govDocs, regDocs, vilDocs] = await Promise.all([
         api.getDocuments(api.getCollection('governorates')),
-        api.getDocuments(api.getCollection('regions')),
+        api.getCollectionGroupDocuments('regions'),
         api.getDocuments(api.getCollection('villages'))
       ]);
 
