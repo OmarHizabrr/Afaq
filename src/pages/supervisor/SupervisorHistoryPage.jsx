@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { History, Eye, MapPin, Calendar, Star } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';

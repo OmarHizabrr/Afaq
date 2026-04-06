@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
