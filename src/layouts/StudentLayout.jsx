@@ -8,7 +8,8 @@ import {
   Menu, 
   X, 
   Bell,
-  Award
+  Award,
+  Settings
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
