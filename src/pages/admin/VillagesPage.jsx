@@ -36,7 +36,7 @@ const VillagesPage = () => {
       const [govDocs, regDocs, vilDocs] = await Promise.all([
         api.getDocuments(api.getCollection('governorates')),
         api.getCollectionGroupDocuments('regions'),
-        api.getDocuments(api.getCollection('villages'))
+        api.getCollectionGroupDocuments('villages')
       ]);
 
       setGovernorates(govDocs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -85,7 +85,7 @@ const VillagesPage = () => {
       const govId = selectedRegion ? selectedRegion.govId : null;
 
       const newVilId = api.getNewId('villages');
-      const vilRef = api.getDocument('villages', newVilId);
+      const vilRef = api.getSubDocument('villages', selectedRegId, 'villages', newVilId);
 
       // 1. Save Village Data
       await api.setData({
@@ -138,8 +138,11 @@ const VillagesPage = () => {
     if (!window.confirm(`هل أنت متأكد من حذف قرية "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
-      // In a real system, you'd also delete associated new_muslims here via Cloud Functions
-      await api.deleteData(api.getDocument('villages', id));
+      const villageDoc = villages.find(v => v.id === id);
+      if (!villageDoc) return;
+      
+      const docRef = api.getSubDocument('villages', villageDoc.regionId, 'villages', id);
+      await api.deleteData(docRef);
       fetchData();
     } catch (err) {
       console.error(err);

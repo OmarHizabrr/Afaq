@@ -37,6 +37,7 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
 const DashboardPage = () => {
   const [stats, setStats] = useState({
     supervisors: 0,
+    villages: 0,
     regions: 0,
     schools: 0,
     teachers: 0,
@@ -49,16 +50,18 @@ const DashboardPage = () => {
       try {
         const api = FirestoreApi.Api;
         
-        const [usersDocs, regionsDocs, schoolsDocs, studentsDocs] = await Promise.all([
+        const [usersDocs, regionsDocs, villagesDocs, schoolsDocs, studentsDocs] = await Promise.all([
           api.getDocuments(api.getCollection('users')),
           api.getCollectionGroupDocuments('regions'),
-          api.getDocuments(api.getCollection('schools')),
+          api.getCollectionGroupDocuments('villages'),
+          api.getCollectionGroupDocuments('schools'),
           api.getDocuments(api.getCollection('students'))
         ]);
 
         const users = usersDocs.map(d => d.data());
         
         setStats({
+          villages: villagesDocs.length,
           supervisors: users.filter(u => u.role?.startsWith('supervisor')).length,
           teachers: users.filter(u => u.role === 'teacher').length,
           regions: regionsDocs.length,
@@ -92,6 +95,7 @@ const DashboardPage = () => {
         marginBottom: '2rem' 
       }}>
         <StatCard title="المشرفين" value={stats.supervisors} icon={Users} color="#10b981" loading={loading} />
+        <StatCard title="القرى" value={stats.villages} icon={Home} color="#ec4899" loading={loading} />
         <StatCard title="المناطق" value={stats.regions} icon={Map} color="#3b82f6" loading={loading} />
         <StatCard title="المدارس" value={stats.schools} icon={School} color="#f59e0b" loading={loading} />
         <StatCard title="المدرسين" value={stats.teachers} icon={FileText} color="#8b5cf6" loading={loading} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, MapPin } from 'lucide-react';
+import { Plus, Edit2, Trash2, MapPin, Map } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const RegionsPage = () => {

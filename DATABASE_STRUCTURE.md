@@ -1,52 +1,43 @@
 # هيكل قاعدة بيانات منصة آفاق المحدث (Afaq Foundation Database Structure)
 
-هذا المستند يعكس الهيكلية الشاملة والمحدثة بناءً على التحليل المفصل للمشروع (فصل المجموعات الفرعية).
+هذا المستند يعكس الهيكلية الشاملة والمحدثة بناءً على نظام المجموعات الفرعية المتشعبة (Hierarchical Sub-collections) لضمان عزل البيانات وتنظيمها جغرافياً.
 
 ## 🧭 القواعد الأساسية
-1. **النمط**: `collection/{docId}/data`.
-2. **البيانات الوصفية التلقائية**: (منشئ الطلب، الطوابع الزمنية).
-3. **لا للتداخل المفرط (No Deep Nesting)**.
+1. **النمط**: `Collection/ParentID/Collection/ChildID`.
+2. **الوصول**: يتم جلب القوائم الشاملة عبر `collectionGroup`.
+3. **الارتباط**: كل عنصر مرتبط تقنياً بوالده المباشر عبر المسار، ومعنوياً عبر حقل ID الوالد داخل المستند.
 
 ---
 
 ## 🏗 هيكل الكيانات (Collections)
 
-### 👤 1. المستخدمين (Users)
-`users/{userId}/`
-- `role`: (`admin`, `supervisor_arab`, `supervisor_local`, `teacher`)
-- بيانات الحساب والتواصل.
+### 🌍 1. البنية الجغرافية (Geographical Structure)
 
-### 🌍 2. الموقع والقرى (Locations)
 - **المحافظات**: `governorates/{govId}/`
-- **المناطق**: `regions/{govId}/regions/{regionId}/` (مسار متشعب)
-- **القرى**: `villages/{villageId}/` (يحتوي `regionId`, `govId`)
-  - `villageName`, `groupName`, `ltiName`
-  - `populationCount`, `muslimsCount`, `nonMuslimsCount`
-  - `newMuslimsMen`, `newMuslimsWomen`, `newMuslimsChildren`
-- **المسلمين الجدد**: `new_muslims/{muslimId}/` (مرتبط بـ `villageId`) لحفظ (الاسم، النوع).
+- **المناطق**: `regions/{govId}/regions/{regionId}/`
+- **القرى**: `villages/{regionId}/villages/{villageId}/`
+  - تحتوي على بيانات السكان (`populationCount`, `muslimsCount`, إلخ).
+- **المدارس**: `schools/{villageId}/schools/{schoolId}/`
+  - تحتوي على `donorName`.
 
-### 🏫 3. المدارس والطلاب (Schools & Students)
-- **المدارس**: `schools/{schoolId}/` (تحتوي `villageId`, `donorName` (للمشرف العربي/المدير)).
-- **الطلاب**: `students/{studentId}/` (تحتوي `schoolId`)
-  - `studentName`, `age`
+### 👤 2. المستخدمين والصلاحيات (Users & Permissions)
 
-### 👨‍🏫 4. المعلم والمنهج (Teachers & Curriculum)
-- **المعلمين**: `teachers/{teacherId}/` (تحتوي `schoolId`).
-- **المنهج الدراسي**: `curriculum/{curriculumId}/` (التوزيع السنوي - 50 أسبوع، أسماء الدروس لكل مادة).
-- **تقارير المعلمين (الأسبوعية)**: `teacher_reports/{reportId}/` (تحتوي `teacherId`).
-  - أنشطة: (خطبة الجمعة، دعوة غير المسلمين، تعليم الكبار، دروس المسجد، عقود الزواج).
-  - التقدم في المنهج، الحضور والانصراف.
+- **المستخدمين**: `users/{userId}/` (مجموعة مسطحة لسهولة المصادقة).
+  - `role`: (`admin`, `supervisor_arab`, `supervisor_local`, `teacher`, `unassigned`).
+- **تعيينات المشرفين**: `supervisor_assignments/{userId}/`
+  - تحدد المنطقة (`regionId`) والمدارس المسموح بها.
 
-### 🔗 5. الإشراف والتقارير الميدانية (Supervisors & Reports)
-- **التعيينات (المناطق والصلاحيات)**: `supervisor_assignments/{assignmentId}/`
-  - يحدد القرى/المدارس التي يشرف عليها المشرف المحلي (المشرف العربي مفتوح له الكل).
-- **التقارير اليومية للمشرف (الزيارات)**: `reports/{reportId}/`
-  - التوقيت (الحضور، الانصراف)، التاريخ.
-  - الطلاب (الحضور التلقائي عن طريق استبعاد الغائبين).
-  - الدرس المشروح، تقييم الطلاب المختبرين/المتفوقين.
-  - التقييم (من 1 إلى 10 للمدرس والقرية).
-  - الملاحظات وموقع GPS.
-- **سجل الغياب (غياب الطلاب للزيارة)**: `attendance/{reportId}/attendance/{studentId}/`
-- **المرفقات للزيارة**: `attachments/{reportId}/attachments/{attachmentId}/` (صور/فيديو).
+### 👨‍🏫 3. العمل التربوي والميداني (Field Work)
+
+- **الطلاب**: `students/{studentId}/` (مرتبط بـ `schoolId`).
+- **المناهج**: `curriculum/{curriculumId}/` (توزيع 50 أسبوع).
+- **تحضير المعلمين (يومي)**: `teacher_daily_logs/{logId}/`
+- **تقارير المعلمين (أسبوعي)**: `teacher_reports/{reportId}/`
+- **زيارات المشرفين**: `reports/{visitId}/`
+  - تشمل تقييم المدرس والقرية وموقع GPS والمرفقات.
 
 ---
+
+## 🛠 ملاحظات برمجية
+- جلب جميع المناطق/القرى/المدارس في لوحة التحكم يتم عبر دالة `api.getCollectionGroupDocuments`.
+- حذف أي عنصر يتطلب معرفة ID الوالد لإعادة تركيب المسار كاملاً.

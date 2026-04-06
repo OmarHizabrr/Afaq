@@ -23,9 +23,9 @@ const SchoolsPage = () => {
       const api = FirestoreApi.Api;
       
       const [regDocs, vilDocs, schDocs] = await Promise.all([
-        api.getDocuments(api.getCollection('regions')),
-        api.getDocuments(api.getCollection('villages')),
-        api.getDocuments(api.getCollection('schools'))
+        api.getCollectionGroupDocuments('regions'),
+        api.getCollectionGroupDocuments('villages'),
+        api.getCollectionGroupDocuments('schools')
       ]);
 
       setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -60,7 +60,7 @@ const SchoolsPage = () => {
       const api = FirestoreApi.Api;
       
       const newSchId = api.getNewId('schools');
-      const schRef = api.getDocument('schools', newSchId);
+      const schRef = api.getSubDocument('schools', selectedVilId, 'schools', newSchId);
 
       await api.setData({
         docRef: schRef,
@@ -90,7 +90,11 @@ const SchoolsPage = () => {
     if (!window.confirm(`هل أنت متأكد من حذف مدرسة "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
-      await api.deleteData(api.getDocument('schools', id));
+      const schoolDoc = schools.find(s => s.id === id);
+      if (!schoolDoc) return;
+      
+      const docRef = api.getSubDocument('schools', schoolDoc.villageId, 'schools', id);
+      await api.deleteData(docRef);
       fetchData();
     } catch (err) {
       console.error(err);

@@ -44,8 +44,8 @@ const UsersPage = () => {
       
       const [userDocs, regDocs, schDocs] = await Promise.all([
         api.getDocuments(api.getCollection('users')),
-        api.getDocuments(api.getCollection('regions')),
-        api.getDocuments(api.getCollection('schools'))
+        api.getCollectionGroupDocuments('regions'),
+        api.getCollectionGroupDocuments('schools')
       ]);
 
       setUsers(userDocs.map(doc => ({ id: doc.id, ...doc.data() })));
