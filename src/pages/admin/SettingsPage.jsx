@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Settings, Save, User, Moon, Sun, Monitor, Phone } from 'lucide-react';
 import AuthService from '../../services/authService';
 import FirestoreApi from '../../services/firestoreApi';
