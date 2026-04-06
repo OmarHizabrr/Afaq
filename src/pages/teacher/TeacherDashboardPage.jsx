@@ -1,7 +1,8 @@
-import React from 'react';
-import { Users, Calendar, FileText, Activity } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, Calendar, FileText, Activity, MapPin, School } from 'lucide-react';
+import FirestoreApi from '../../services/firestoreApi';
 
-const StatCard = ({ title, value, icon: Icon, color }) => (
+const StatCard = ({ title, value, icon: Icon, color, loading }) => (
   <div style={{
     background: 'var(--panel-color)',
     padding: '1.5rem',
@@ -26,18 +27,74 @@ const StatCard = ({ title, value, icon: Icon, color }) => (
     </div>
     <div>
       <h3 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{title}</h3>
-      <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>{value}</p>
+      <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>{loading ? '...' : value}</p>
     </div>
   </div>
 );
 
-const TeacherDashboardPage = () => {
+const TeacherDashboardPage = ({ user }) => {
+  const [stats, setStats] = useState({
+    studentsCount: 0,
+    dailyLogsCount: 0,
+    weeklyReportsCount: 0,
+    schoolName: 'جاري التحميل...'
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeacherStats = async () => {
+      if (!user?.schoolId) {
+        setStats(prev => ({ ...prev, schoolName: 'غير معين لمدرسة حالياً' }));
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const api = FirestoreApi.Api;
+        
+        // 1. Fetch Students count for this school
+        const refStu = api.getSubCollection('students', user.schoolId, 'students');
+        const docsStu = await api.getDocuments(refStu);
+        
+        // 2. Fetch Daily Logs for this teacher
+        const refLogs = api.getSubCollection('teacher_daily_logs', user.id, 'teacher_daily_logs');
+        const docsLogs = await api.getDocuments(refLogs);
+        
+        // 3. Fetch Weekly Reports for this teacher
+        const refReports = api.getSubCollection('teacher_reports', user.id, 'teacher_reports');
+        const docsReports = await api.getDocuments(refReports);
+
+        // 4. Find School Name (using collection group to find it since we only have schoolId)
+        const allSchools = await api.getCollectionGroupDocuments('schools');
+        const mySchool = allSchools.find(s => s.id === user.schoolId);
+
+        setStats({
+          studentsCount: docsStu.length,
+          dailyLogsCount: docsLogs.length,
+          weeklyReportsCount: docsReports.length,
+          schoolName: mySchool ? mySchool.data().name : 'مدرسة غير معروفة'
+        });
+
+      } catch (err) {
+        console.error('Error fetching teacher stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeacherStats();
+  }, [user]);
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.8rem', color: 'var(--success-color)' }}>لوحة شرف المعلم</h1>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>نظرة عامة على نشاطاتك الأسبوعية واليومية</p>
+          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>نظرة عامة على نشاطاتك في مدرستك الحالية</p>
+        </div>
+        <div style={{ background: 'var(--panel-color)', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <School size={18} color="var(--success-color)" />
+            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{stats.schoolName}</span>
         </div>
       </div>
 
@@ -48,24 +105,32 @@ const TeacherDashboardPage = () => {
         gap: '1.5rem', 
         marginBottom: '2rem' 
       }}>
-        <StatCard title="إجمالي الطلاب" value="-" icon={Users} color="var(--success-color)" />
-        <StatCard title="نسبة الحضور (اليوم)" value="-%" icon={Activity} color="#3b82f6" />
-        <StatCard title="التقارير اليومية المرفوعة" value="-" icon={Calendar} color="#f59e0b" />
-        <StatCard title="التقارير الأسبوعية" value="-" icon={FileText} color="#8b5cf6" />
+        <StatCard title="إجمالي الدارسين (الأعضاء)" value={stats.studentsCount} icon={Users} color="var(--success-color)" loading={loading} />
+        <StatCard title="التحضير اليومي المرفوع" value={stats.dailyLogsCount} icon={Calendar} color="#3b82f6" loading={loading} />
+        <StatCard title="التقارير الأسبوعية" value={stats.weeklyReportsCount} icon={FileText} color="#f59e0b" loading={loading} />
+        <StatCard title="نسبة الإنجاز" value={stats.dailyLogsCount > 0 ? "نشط" : "بانتظار التحضير"} icon={Activity} color="#8b5cf6" loading={loading} />
       </div>
 
       <div style={{
         background: 'var(--panel-color)',
-        padding: '2rem',
+        padding: '2.5rem',
         borderRadius: '16px',
         border: '1px solid var(--border-color)',
-        minHeight: '300px',
+        minHeight: '200px',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'var(--text-secondary)'
+        color: 'var(--text-secondary)',
+        textAlign: 'center',
+        boxShadow: 'var(--shadow)'
       }}>
-        سيتم إدراج مؤشرات الإنجاز لطلابك هنا قريباً
+        <Activity size={48} style={{ marginBottom: '1rem', opacity: 0.3 }} />
+        <h3 style={{ margin: '0 0 10px 0', color: 'var(--text-primary)' }}>مرحباً بك مجدداً في حلقتك</h3>
+        <p style={{ maxWidth: '500px', margin: 0 }}>
+            أنت الآن تدير <strong>{stats.studentsCount}</strong> دارسين في <strong>{stats.schoolName}</strong>. 
+            استخدم القائمة الجانبية لتسجيل الحضور اليومي أو رفع تقارير الإنجاز الأسبوعية.
+        </p>
       </div>
     </div>
   );

@@ -120,7 +120,7 @@ function App() {
             </TeacherRoute>
           }
         >
-          <Route index element={<TeacherDashboardPage />} />
+          <Route index element={<TeacherDashboardPage user={user} />} />
           <Route path="students" element={<TeacherStudentsPage user={user} />} />
           <Route path="daily-log" element={<TeacherDailyLogPage user={user} />} />
           <Route path="weekly-report" element={<TeacherWeeklyReportPage user={user} />} />
