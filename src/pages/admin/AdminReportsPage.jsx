@@ -20,7 +20,8 @@ const AdminReportsPage = () => {
       else if (tab === 'weekly') collectionName = 'teacher_reports';
       else if (tab === 'visits') collectionName = 'reports';
 
-      const docs = await api.getDocuments(api.getCollection(collectionName));
+      // Aggregate all reports across all teacher/supervisor subcollections
+      const docs = await api.getCollectionGroupDocuments(collectionName);
       const data = docs.map(d => ({ id: d.id, ...d.data() }));
       
       // Sort by date descending

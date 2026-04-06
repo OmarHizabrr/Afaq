@@ -55,7 +55,7 @@ const DashboardPage = () => {
           api.getCollectionGroupDocuments('regions'),
           api.getCollectionGroupDocuments('villages'),
           api.getCollectionGroupDocuments('schools'),
-          api.getDocuments(api.getCollection('students'))
+          api.getCollectionGroupDocuments('students')
         ]);
 
         const users = usersDocs.map(d => d.data());

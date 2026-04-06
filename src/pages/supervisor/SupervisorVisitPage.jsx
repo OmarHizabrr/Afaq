@@ -103,10 +103,10 @@ const SupervisorVisitPage = ({ user }) => {
       setLoading(true);
       try {
         const api = FirestoreApi.Api;
-        const ref = api.getCollection('students');
-        // Simple client side filter for now
+        // Fetch from hierarchical subcollection: students/{schoolId}/students
+        const ref = api.getSubCollection('students', selectedSchoolId, 'students');
         const docs = await api.getDocuments(ref);
-        const data = docs.map(d => ({ id: d.id, ...d.data() })).filter(s => s.schoolId === selectedSchoolId);
+        const data = docs.map(d => ({ id: d.id, ...d.data() }));
         
         setStudents(data);
         setTrackingData(data.map(s => ({
@@ -203,8 +203,10 @@ const SupervisorVisitPage = ({ user }) => {
         }
       };
 
+      const visitRef = api.getSubDocument('reports', user.id, 'reports', reportId);
+      
       await api.setData({
-        docRef: api.getDocument('reports', reportId),
+        docRef: visitRef,
         data: payload
       });
 

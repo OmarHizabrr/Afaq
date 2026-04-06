@@ -22,15 +22,11 @@ const TeacherStudentsPage = ({ user }) => {
     try {
       const api = FirestoreApi.Api;
       
-      // In a real app we'd query by schoolId: where("schoolId", "==", user.schoolId)
-      // Since FirestoreApi is currently simple getDocuments(), we'll fetch all and filter for now
-      // (or modify the api later)
-      const ref = api.getCollection('students');
+      // Fetch students from the specific school subcollection
+      const ref = api.getSubCollection('students', user.schoolId, 'students');
       const docs = await api.getDocuments(ref);
       const data = docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
-      const teacherStudents = data.filter(s => s.schoolId === user.schoolId);
-      setStudents(teacherStudents);
+      setStudents(data);
 
     } catch (err) {
       console.error(err);
@@ -52,14 +48,15 @@ const TeacherStudentsPage = ({ user }) => {
       setLoading(true);
       const api = FirestoreApi.Api;
       const docId = api.getNewId('students');
+      const docRef = api.getSubDocument('students', user.schoolId, 'students', docId);
       
       await api.setData({
-        docRef: api.getDocument('students', docId),
+        docRef,
         data: {
           studentName: studentName.trim(),
           age: parseInt(studentAge) || 0,
           schoolId: user.schoolId,
-          teacherId: user.id // Tie student to the specific teacher too if needed
+          teacherId: user.id
         }
       });
 
@@ -78,7 +75,8 @@ const TeacherStudentsPage = ({ user }) => {
     if (!window.confirm(`هل أنت متأكد من حذف الدارس "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
-      await api.deleteData(api.getDocument('students', id));
+      const docRef = api.getSubDocument('students', user.schoolId, 'students', id);
+      await api.deleteData(docRef);
       fetchStudents();
     } catch (err) {
       console.error(err);

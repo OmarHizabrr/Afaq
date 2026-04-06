@@ -87,10 +87,11 @@ const TeacherWeeklyReportPage = ({ user }) => {
       
       const api = FirestoreApi.Api;
       const reportId = api.getNewId('teacher_reports');
+      const docRef = api.getSubDocument('teacher_reports', user.id, 'teacher_reports', reportId);
       const today = new Date().toISOString();
 
       await api.setData({
-        docRef: api.getDocument('teacher_reports', reportId),
+        docRef,
         data: {
           teacherId: user.id,
           schoolId: user.schoolId,

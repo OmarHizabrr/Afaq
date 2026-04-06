@@ -13,12 +13,10 @@ const SupervisorHistoryPage = ({ user }) => {
       setLoading(true);
       try {
         const api = FirestoreApi.Api;
-        // Fetch all supervisor visit reports
-        const docs = await api.getDocuments(api.getCollection('reports'));
-        // Filter by current supervisor ID
-        const data = docs
-          .map(d => ({ id: d.id, ...d.data() }))
-          .filter(r => r.supervisorId === user.id);
+        // Fetch specifically from this supervisor's subcollection
+        const ref = api.getSubCollection('reports', user.id, 'reports');
+        const docs = await api.getDocuments(ref);
+        const data = docs.map(d => ({ id: d.id, ...d.data() }));
         
         // Sort descending by timestamp
         data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
