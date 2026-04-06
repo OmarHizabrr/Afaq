@@ -10,6 +10,11 @@ import VillagesPage from './pages/admin/VillagesPage';
 import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
 import CurriculumPage from './pages/admin/CurriculumPage';
+import TeacherLayout from './layouts/TeacherLayout';
+import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
+import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage';
+import TeacherDailyLogPage from './pages/teacher/TeacherDailyLogPage';
+import TeacherWeeklyReportPage from './pages/teacher/TeacherWeeklyReportPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -34,12 +39,17 @@ function App() {
     );
   }
 
-  // Placeholder to handle basic Protected Routes
-  const ProtectedRoute = ({ children }) => {
-    if (!user) {
-      return <Navigate to="/login" replace />;
-    }
-    // Future: Role Check (e.g. if user.role !== 'admin' return <Unauthorized />)
+  // Role-based Route Wrappers
+  const AdminRoute = ({ children }) => {
+    if (!user) return <Navigate to="/login" replace />;
+    if (user.role === 'teacher') return <Navigate to="/teacher" replace />;
+    // Default to admin layout for admin, supervisor_arab, supervisor_local, and unassigned
+    return children;
+  };
+
+  const TeacherRoute = ({ children }) => {
+    if (!user) return <Navigate to="/login" replace />;
+    if (user.role !== 'teacher') return <Navigate to="/" replace />;
     return children;
   };
 
@@ -48,16 +58,16 @@ function App() {
       <Routes>
         <Route 
           path="/login" 
-          element={user ? <Navigate to="/" replace /> : <LoginPage />} 
+          element={user ? <Navigate to={user.role === 'teacher' ? '/teacher' : '/'} replace /> : <LoginPage />} 
         />
         
-        {/* Admin Dashboard Routes */}
+        {/* Admin / Supervisor Dashboard Routes */}
         <Route 
           path="/" 
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminLayout user={user} />
-            </ProtectedRoute>
+            </AdminRoute>
           }
         >
           <Route index element={<DashboardPage />} />
@@ -70,7 +80,22 @@ function App() {
           <Route path="settings" element={<div>الإعدادات هنا</div>} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Teacher Portal Routes */}
+        <Route 
+          path="/teacher" 
+          element={
+            <TeacherRoute>
+              <TeacherLayout user={user} />
+            </TeacherRoute>
+          }
+        >
+          <Route index element={<TeacherDashboardPage />} />
+          <Route path="students" element={<TeacherStudentsPage user={user} />} />
+          <Route path="daily-log" element={<TeacherDailyLogPage user={user} />} />
+          <Route path="weekly-report" element={<TeacherWeeklyReportPage user={user} />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to={user?.role === 'teacher' ? '/teacher' : '/'} replace />} />
       </Routes>
     </BrowserRouter>
   );
