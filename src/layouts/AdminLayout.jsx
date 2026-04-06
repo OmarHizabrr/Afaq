@@ -8,6 +8,7 @@ import {
   School, 
   Users, 
   Settings, 
+  BookOpen,
   LogOut,
   Sun,
   Moon,
@@ -57,6 +58,7 @@ const AdminLayout = ({ user }) => {
     { name: 'المناطق', icon: MapPin, path: '/regions' },
     { name: 'القرى', icon: Home, path: '/villages' },
     { name: 'المدارس', icon: School, path: '/schools' },
+    { name: 'المناهج', icon: BookOpen, path: '/curriculum' },
     { name: 'الكوادر', icon: Users, path: '/users' },
     { name: 'الإعدادات', icon: Settings, path: '/settings' },
   ];

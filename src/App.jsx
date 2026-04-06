@@ -9,6 +9,7 @@ import RegionsPage from './pages/admin/RegionsPage';
 import VillagesPage from './pages/admin/VillagesPage';
 import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
+import CurriculumPage from './pages/admin/CurriculumPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -65,6 +66,7 @@ function App() {
           <Route path="villages" element={<VillagesPage />} />
           <Route path="schools" element={<SchoolsPage />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="curriculum" element={<CurriculumPage />} />
           <Route path="settings" element={<div>الإعدادات هنا</div>} />
         </Route>
 
