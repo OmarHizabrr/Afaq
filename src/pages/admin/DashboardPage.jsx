@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Map, School, FileText, UserCheck } from 'lucide-react';
+import { Users, Map, School, FileText, UserCheck, Home } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const StatCard = ({ title, value, icon: Icon, color, loading }) => (

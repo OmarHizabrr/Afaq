@@ -9,6 +9,7 @@ const SchoolsPage = () => {
   
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(null);
   const [error, setError] = useState('');
 
   // Form State
@@ -59,17 +60,20 @@ const SchoolsPage = () => {
       setLoading(true);
       const api = FirestoreApi.Api;
       
-      const newSchId = api.getNewId('schools');
-      const schRef = api.getSubDocument('schools', selectedVilId, 'schools', newSchId);
+      const schoolData = {
+        name: schoolName.trim(),
+        villageId: selectedVilId,
+        donorName: donorName.trim() || '',
+      };
 
-      await api.setData({
-        docRef: schRef,
-        data: {
-          name: schoolName.trim(),
-          villageId: selectedVilId,
-          donorName: donorName.trim() || '',
-        }
-      });
+      if (isEditing) {
+        const docRef = api.getSubDocument('schools', isEditing.villageId, 'schools', isEditing.id);
+        await api.updateData({ docRef, data: schoolData });
+      } else {
+        const newSchId = api.getNewId('schools');
+        const schRef = api.getSubDocument('schools', selectedVilId, 'schools', newSchId);
+        await api.setData({ docRef: schRef, data: schoolData });
+      }
 
       // Reset
       setSchoolName('');
@@ -77,13 +81,24 @@ const SchoolsPage = () => {
       setSelectedVilId('');
       setSelectedRegId('');
       setIsAdding(false);
+      setIsEditing(null);
       setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الإضافة');
+      setError('حدث خطأ أثناء الحفظ');
       setLoading(false);
     }
+  };
+  const handleEditClick = (sch) => {
+    setIsEditing(sch);
+    setIsAdding(true);
+    setSelectedVilId(sch.villageId);
+    // Find region of this village
+    const vil = villages.find(v => v.id === sch.villageId);
+    if (vil) setSelectedRegId(vil.regionId);
+    setSchoolName(sch.name);
+    setDonorName(sch.donorName || '');
   };
 
   const handleDelete = async (id, name) => {
@@ -217,6 +232,9 @@ const SchoolsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="icon-btn" onClick={() => handleEditClick(sch)} title="تعديل">
+                  <Edit2 size={16} color="var(--accent-color)" />
+                </button>
                 <button className="icon-btn" onClick={() => handleDelete(sch.id, sch.name)} title="حذف">
                   <Trash2 size={16} color="var(--danger-color)" />
                 </button>

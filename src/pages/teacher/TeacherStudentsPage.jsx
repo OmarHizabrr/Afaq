@@ -8,6 +8,7 @@ const TeacherStudentsPage = ({ user }) => {
   const [error, setError] = useState('');
   
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(null);
   const [studentName, setStudentName] = useState('');
   const [studentAge, setStudentAge] = useState('');
 
@@ -47,28 +48,39 @@ const TeacherStudentsPage = ({ user }) => {
     try {
       setLoading(true);
       const api = FirestoreApi.Api;
-      const docId = api.getNewId('students');
-      const docRef = api.getSubDocument('students', user.schoolId, 'students', docId);
       
-      await api.setData({
-        docRef,
-        data: {
-          studentName: studentName.trim(),
-          age: parseInt(studentAge) || 0,
-          schoolId: user.schoolId,
-          teacherId: user.id
-        }
-      });
+      const studentData = {
+        studentName: studentName.trim(),
+        age: parseInt(studentAge) || 0,
+        schoolId: user.schoolId,
+        teacherId: user.id
+      };
+
+      if (isEditing) {
+        const docRef = api.getSubDocument('students', user.schoolId, 'students', isEditing.id);
+        await api.updateData({ docRef, data: studentData });
+      } else {
+        const docId = api.getNewId('students');
+        const docRef = api.getSubDocument('students', user.schoolId, 'students', docId);
+        await api.setData({ docRef, data: studentData });
+      }
 
       setStudentName('');
       setStudentAge('');
       setIsAdding(false);
+      setIsEditing(null);
       fetchStudents();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء إضافة الدارس');
+      setError('حدث خطأ أثناء الحفظ');
       setLoading(false);
     }
+  };
+  const handleEditClick = (student) => {
+    setIsEditing(student);
+    setIsAdding(true);
+    setStudentName(student.studentName);
+    setStudentAge(student.age || '');
   };
 
   const handleDelete = async (id, name) => {
@@ -200,7 +212,10 @@ const TeacherStudentsPage = ({ user }) => {
                     {student.studentName}
                   </td>
                   <td style={{ padding: '16px' }}>{student.age || '-'}</td>
-                  <td style={{ padding: '16px', textAlign: 'center' }}>
+                  <td style={{ padding: '16px', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                    <button className="icon-btn" onClick={() => handleEditClick(student)} title="تعديل" style={{ display: 'inline-flex' }}>
+                      <Edit2 size={18} color="var(--accent-color)" />
+                    </button>
                     <button className="icon-btn" onClick={() => handleDelete(student.id, student.studentName)} title="حذف" style={{ display: 'inline-flex' }}>
                       <Trash2 size={18} color="var(--danger-color)" />
                     </button>

@@ -9,6 +9,7 @@ const VillagesPage = () => {
   
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(null);
   const [error, setError] = useState('');
 
   // Form State
@@ -80,58 +81,73 @@ const VillagesPage = () => {
       setLoading(true);
       const api = FirestoreApi.Api;
       
-      // Auto-fetch govId from the selected region
       const selectedRegion = regions.find(r => r.id === selectedRegId);
       const govId = selectedRegion ? selectedRegion.govId : null;
 
-      const newVilId = api.getNewId('villages');
-      const vilRef = api.getSubDocument('villages', selectedRegId, 'villages', newVilId);
+      const villageData = {
+        ...formData,
+        regionId: selectedRegId,
+        govId: govId,
+        populationCount: parseInt(formData.populationCount) || 0,
+        muslimsCount: parseInt(formData.muslimsCount) || 0,
+        nonMuslimsCount: parseInt(formData.nonMuslimsCount) || 0,
+      };
 
-      // 1. Save Village Data
-      await api.setData({
-        docRef: vilRef,
-        data: {
-          ...formData, // Spread all input fields
-          regionId: selectedRegId,
-          govId: govId,
-          populationCount: parseInt(formData.populationCount) || 0,
-          muslimsCount: parseInt(formData.muslimsCount) || 0,
-          nonMuslimsCount: parseInt(formData.nonMuslimsCount) || 0,
-          // Calculate stats for new muslims automatically
-          newMuslimsMen: newMuslims.filter(m => m.type === 'رجل').length,
-          newMuslimsWomen: newMuslims.filter(m => m.type === 'امرأة').length,
-          newMuslimsChildren: newMuslims.filter(m => m.type === 'طفل').length,
-        }
-      });
-
-      // 2. Save New Muslims individually linked to this Village
-      if (newMuslims.length > 0) {
-        const promises = newMuslims.map(muslim => {
-          const muslimId = api.getNewId('new_muslims');
-          return api.setData({
-            docRef: api.getDocument('new_muslims', muslimId),
-            data: {
-              villageId: newVilId,
-              name: muslim.name,
-              type: muslim.type
-            }
-          });
+      if (isEditing) {
+        const docRef = api.getSubDocument('villages', isEditing.regionId, 'villages', isEditing.id);
+        await api.updateData({ docRef, data: villageData });
+      } else {
+        const newVilId = api.getNewId('villages');
+        const vilRef = api.getSubDocument('villages', selectedRegId, 'villages', newVilId);
+        
+        await api.setData({
+          docRef: vilRef,
+          data: {
+            ...villageData,
+            newMuslimsMen: newMuslims.filter(m => m.type === 'رجل').length,
+            newMuslimsWomen: newMuslims.filter(m => m.type === 'امرأة').length,
+            newMuslimsChildren: newMuslims.filter(m => m.type === 'طفل').length,
+          }
         });
-        await Promise.all(promises);
+
+        if (newMuslims.length > 0) {
+          const promises = newMuslims.map(muslim => {
+            const muslimId = api.getNewId('new_muslims');
+            return api.setData({
+              docRef: api.getDocument('new_muslims', muslimId),
+              data: { villageId: newVilId, name: muslim.name, type: muslim.type }
+            });
+          });
+          await Promise.all(promises);
+        }
       }
 
-      // Reset
       setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
       setSelectedRegId('');
       setNewMuslims([]);
       setIsAdding(false);
+      setIsEditing(null);
       setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الإضافة');
+      setError('حدث خطأ أثناء الحفظ');
       setLoading(false);
     }
+  };
+
+  const handleEditClick = (vil) => {
+    setIsEditing(vil);
+    setIsAdding(true);
+    setSelectedRegId(vil.regionId);
+    setFormData({
+      villageName: vil.villageName,
+      groupName: vil.groupName || '',
+      ltiName: vil.ltiName || '',
+      populationCount: vil.populationCount || '',
+      muslimsCount: vil.muslimsCount || '',
+      nonMuslimsCount: vil.nonMuslimsCount || ''
+    });
   };
 
   const handleDelete = async (id, name) => {
@@ -306,7 +322,10 @@ const VillagesPage = () => {
               boxShadow: 'var(--shadow)',
               position: 'relative'
             }}>
-              <div style={{ position: 'absolute', top: '1.25rem', left: '1.25rem', display: 'flex', gap: '4px' }}>
+              <div style={{ position: 'absolute', top: '1.25rem', left: '1.25rem', display: 'flex', gap: '8px' }}>
+                <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">
+                  <Edit2 size={16} color="var(--accent-color)" />
+                </button>
                 <button className="icon-btn" onClick={() => handleDelete(vil.id, vil.villageName)} title="حذف القرية">
                   <Trash2 size={16} color="var(--danger-color)" />
                 </button>
