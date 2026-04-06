@@ -231,7 +231,7 @@ const UsersPage = () => {
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button 
                   className="icon-btn" 
-                  onClick={() => navigate(`/admin/users/${user.id}`)}
+                  onClick={() => navigate(`/users/${user.id}`)}
                   title="عرض الملف الشخصي"
                   style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
                 >

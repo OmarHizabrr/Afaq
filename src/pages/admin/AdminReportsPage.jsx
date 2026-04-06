@@ -194,7 +194,7 @@ const AdminReportsPage = () => {
                     </p>
                 </div>
               </div>
-              <button className="icon-btn" onClick={() => navigate(`/admin/reports/${rpt.id}`)} title="عرض التفاصيل الكاملة" style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}>
+              <button className="icon-btn" onClick={() => navigate(`/reports/${rpt.id}`)} title="عرض التفاصيل الكاملة" style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}>
                 <Eye size={22} />
               </button>
             </div>

@@ -234,7 +234,7 @@ const SchoolsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" onClick={() => navigate(`/admin/schools/${sch.id}`)} title="عرض التفاصيل">
+                <button className="icon-btn" onClick={() => navigate(`/schools/${sch.id}`)} title="عرض التفاصيل">
                   <Eye size={16} color="var(--accent-color)" />
                 </button>
                 <button className="icon-btn" onClick={() => handleEditClick(sch)} title="تعديل">

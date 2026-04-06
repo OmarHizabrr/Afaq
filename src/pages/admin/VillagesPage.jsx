@@ -325,7 +325,7 @@ const VillagesPage = () => {
               position: 'relative'
             }}>
               <div style={{ position: 'absolute', top: '1.25rem', left: '1.25rem', display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" onClick={() => navigate(`/admin/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
+                <button className="icon-btn" onClick={() => navigate(`/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
                   <Eye size={16} color="var(--accent-color)" />
                 </button>
                 <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">

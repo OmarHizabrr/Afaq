@@ -174,7 +174,7 @@ const DashboardPage = () => {
                            <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                               📅 {act.date || act.timestamp?.split('T')[0]}
                            </p>
-                           <button onClick={() => navigate(`/admin/reports/${act.id}`)} className="icon-btn" title="عرض التفاصيل">
+                           <button onClick={() => navigate(`/reports/${act.id}`)} className="icon-btn" title="عرض التفاصيل">
                               <Eye size={16} color="var(--accent-color)" />
                            </button>
                         </div>

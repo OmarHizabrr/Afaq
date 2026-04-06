@@ -236,7 +236,7 @@ const RegionsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" onClick={() => navigate(`/admin/regions/${region.id}`)} title="عرض التفاصيل">
+                <button className="icon-btn" onClick={() => navigate(`/regions/${region.id}`)} title="عرض التفاصيل">
                   <Eye size={16} color="var(--accent-color)" />
                 </button>
                 <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">

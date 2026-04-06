@@ -161,7 +161,7 @@ const UserDetailsPage = () => {
                                     <h4 style={{ margin: 0 }}>زيارة: {item.schoolName}</h4>
                                     <p style={{ margin: '4px 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.timestamp?.split('T')[0]} • {item.subjectName}</p>
                                  </div>
-                                 <button onClick={() => navigate(`/admin/reports/${item.id}`)} className="icon-btn"><Info size={18}/></button>
+                                 <button onClick={() => navigate(`/reports/${item.id}`)} className="icon-btn"><Info size={18}/></button>
                               </div>
                            ))}
                         </div>

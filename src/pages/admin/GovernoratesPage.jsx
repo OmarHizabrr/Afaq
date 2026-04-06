@@ -177,7 +177,7 @@ const GovernoratesPage = () => {
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ID: {gov.id.substring(0,8)}...</span>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" onClick={() => navigate(`/admin/governorates/${gov.id}`)} title="عرض التفاصيل">
+                <button className="icon-btn" onClick={() => navigate(`/governorates/${gov.id}`)} title="عرض التفاصيل">
                   <Eye size={16} color="var(--accent-color)" />
                 </button>
                 <button className="icon-btn" onClick={() => startEdit(gov)} title="تعديل">

@@ -97,7 +97,7 @@ const VillageDetailsPage = () => {
                                             <h4 style={{ margin: 0 }}>{sch.name}</h4>
                                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>🆔 {sch.id}</p>
                                         </div>
-                                        <button onClick={() => navigate(`/admin/schools/${sch.id}`)} className="icon-btn"><Info size={18}/></button>
+                                        <button onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={18}/></button>
                                     </div>
                                 ))}
                             </div>

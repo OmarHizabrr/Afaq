@@ -72,7 +72,7 @@ const GovernorateDetailsPage = () => {
                            {regions.map(reg => (
                               <div key={reg.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                  <h4 style={{ margin: 0 }}>{reg.name}</h4>
-                                 <button onClick={() => navigate(`/admin/regions/${reg.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 <button onClick={() => navigate(`/regions/${reg.id}`)} className="icon-btn"><Info size={16}/></button>
                               </div>
                            ))}
                         </div>
@@ -91,7 +91,7 @@ const GovernorateDetailsPage = () => {
                            {villages.map(vil => (
                               <div key={vil.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                  <h4 style={{ margin: 0 }}>{vil.villageName}</h4>
-                                 <button onClick={() => navigate(`/admin/villages/${vil.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 <button onClick={() => navigate(`/villages/${vil.id}`)} className="icon-btn"><Info size={16}/></button>
                               </div>
                            ))}
                         </div>

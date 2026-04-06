@@ -110,7 +110,7 @@ const RegionDetailsPage = () => {
                            {schools.map(sch => (
                               <div key={sch.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                  <h4 style={{ margin: 0 }}>{sch.name}</h4>
-                                 <button onClick={() => navigate(`/admin/schools/${sch.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 <button onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={16}/></button>
                               </div>
                            ))}
                         </div>
@@ -133,7 +133,7 @@ const RegionDetailsPage = () => {
                                     <img src={sup.photoURL || `https://ui-avatars.com/api/?name=${sup.displayName}`} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
                                     <h4 style={{ margin: 0 }}>{sup.displayName}</h4>
                                  </div>
-                                 <button onClick={() => navigate(`/admin/users/${sup.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 <button onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn"><Info size={16}/></button>
                               </div>
                            ))}
                         </div>

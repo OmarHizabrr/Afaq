@@ -195,7 +195,7 @@ const SchoolDetailsPage = () => {
                                     <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{t.displayName}</h4>
                                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{t.email}</p>
                                  </div>
-                                 <button onClick={() => navigate(`/admin/users/${t.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                 <button onClick={() => navigate(`/users/${t.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
                               </div>
                            ))}
                         </div>
@@ -231,7 +231,7 @@ const SchoolDetailsPage = () => {
                                     <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{s.displayName}</h4>
                                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{s.phoneNumber || 'لا يوجد هاتف'}</p>
                                  </div>
-                                 <button onClick={() => navigate(`/admin/users/${s.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                 <button onClick={() => navigate(`/users/${s.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
                               </div>
                            ))}
                         </div>
