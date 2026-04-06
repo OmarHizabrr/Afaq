@@ -15,6 +15,9 @@ import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
 import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage';
 import TeacherDailyLogPage from './pages/teacher/TeacherDailyLogPage';
 import TeacherWeeklyReportPage from './pages/teacher/TeacherWeeklyReportPage';
+import SupervisorLayout from './layouts/SupervisorLayout';
+import SupervisorDashboardPage from './pages/supervisor/SupervisorDashboardPage';
+import SupervisorVisitPage from './pages/supervisor/SupervisorVisitPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -43,7 +46,13 @@ function App() {
   const AdminRoute = ({ children }) => {
     if (!user) return <Navigate to="/login" replace />;
     if (user.role === 'teacher') return <Navigate to="/teacher" replace />;
-    // Default to admin layout for admin, supervisor_arab, supervisor_local, and unassigned
+    if (user.role === 'supervisor_local' || user.role === 'supervisor_arab') return <Navigate to="/supervisor" replace />;
+    return children;
+  };
+
+  const SupervisorRoute = ({ children }) => {
+    if (!user) return <Navigate to="/login" replace />;
+    if (user.role !== 'supervisor_local' && user.role !== 'supervisor_arab') return <Navigate to="/" replace />;
     return children;
   };
 
@@ -58,7 +67,11 @@ function App() {
       <Routes>
         <Route 
           path="/login" 
-          element={user ? <Navigate to={user.role === 'teacher' ? '/teacher' : '/'} replace /> : <LoginPage />} 
+          element={
+            user 
+              ? <Navigate to={user.role === 'teacher' ? '/teacher' : (user.role === 'supervisor_local' || user.role === 'supervisor_arab') ? '/supervisor' : '/'} replace /> 
+              : <LoginPage />
+          } 
         />
         
         {/* Admin / Supervisor Dashboard Routes */}
@@ -80,6 +93,20 @@ function App() {
           <Route path="settings" element={<div>الإعدادات هنا</div>} />
         </Route>
 
+        {/* Supervisor Portal Routes */}
+        <Route 
+          path="/supervisor" 
+          element={
+            <SupervisorRoute>
+              <SupervisorLayout user={user} />
+            </SupervisorRoute>
+          }
+        >
+          <Route index element={<SupervisorDashboardPage />} />
+          <Route path="visit" element={<SupervisorVisitPage user={user} />} />
+          <Route path="history" element={<div>سجل الزيارات هنا</div>} />
+        </Route>
+
         {/* Teacher Portal Routes */}
         <Route 
           path="/teacher" 
@@ -95,7 +122,12 @@ function App() {
           <Route path="weekly-report" element={<TeacherWeeklyReportPage user={user} />} />
         </Route>
 
-        <Route path="*" element={<Navigate to={user?.role === 'teacher' ? '/teacher' : '/'} replace />} />
+        <Route path="*" element={
+          <Navigate to={
+            user?.role === 'teacher' ? '/teacher' : 
+            (user?.role === 'supervisor_local' || user?.role === 'supervisor_arab') ? '/supervisor' : '/'
+          } replace />
+        } />
       </Routes>
     </BrowserRouter>
   );
