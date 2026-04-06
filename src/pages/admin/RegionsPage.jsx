@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, MapPin, Map } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2, MapPin, Map, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const RegionsPage = () => {
+  const navigate = useNavigate();
   const [regions, setRegions] = useState([]);
   const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -234,6 +235,9 @@ const RegionsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="icon-btn" onClick={() => navigate(`/admin/regions/${region.id}`)} title="عرض التفاصيل">
+                  <Eye size={16} color="var(--accent-color)" />
+                </button>
                 <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">
                   <Edit2 size={16} />
                 </button>

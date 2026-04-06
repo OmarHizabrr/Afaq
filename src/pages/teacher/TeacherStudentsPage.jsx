@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Plus, Edit2, Trash2, UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Plus, Edit2, Trash2, UserPlus, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const TeacherStudentsPage = ({ user }) => {
+  const navigate = useNavigate();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -240,8 +241,11 @@ const TeacherStudentsPage = ({ user }) => {
                   </td>
                   <td style={{ padding: '16px' }}>{student.age || '-'}</td>
                   <td style={{ padding: '16px', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                    <button className="icon-btn" onClick={() => navigate(`/teacher/students/${student.id}`)} title="عرض الملف الشخصي" style={{ display: 'inline-flex' }}>
+                      <Eye size={18} color="var(--accent-color)" />
+                    </button>
                     <button className="icon-btn" onClick={() => handleEditClick(student)} title="تعديل" style={{ display: 'inline-flex' }}>
-                      <Edit2 size={18} color="var(--accent-color)" />
+                      <Edit2 size={18} />
                     </button>
                     <button className="icon-btn" onClick={() => handleDelete(student.id, student.studentName)} title="حذف" style={{ display: 'inline-flex' }}>
                       <Trash2 size={18} color="var(--danger-color)" />

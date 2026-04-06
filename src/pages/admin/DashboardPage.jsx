@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Map, School, FileText, UserCheck, Home, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const StatCard = ({ title, value, icon: Icon, color, loading }) => (
@@ -38,6 +38,7 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
 );
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     supervisors: 0,
     villages: 0,
@@ -168,9 +169,14 @@ const DashboardPage = () => {
                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                            بواسطة: {act.supervisorName || act.teacherName || 'عضو غير معروف'}
                         </p>
-                        <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '4px' }}>
-                           📅 {act.date || act.timestamp?.split('T')[0]}
-                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
+                           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                              📅 {act.date || act.timestamp?.split('T')[0]}
+                           </p>
+                           <button onClick={() => navigate(`/admin/reports/${act.id}`)} className="icon-btn" title="عرض التفاصيل">
+                              <Eye size={16} color="var(--accent-color)" />
+                           </button>
+                        </div>
                     </div>
                 ))}
             </div>

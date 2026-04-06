@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Map } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2, Map, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const GovernoratesPage = () => {
-  const [governorates, setGovernorates] = null || useState([]);
+  const navigate = useNavigate();
+  const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(null); // stores gubernorate object being edited
@@ -175,6 +176,9 @@ const GovernoratesPage = () => {
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ID: {gov.id.substring(0,8)}...</span>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="icon-btn" onClick={() => navigate(`/admin/governorates/${gov.id}`)} title="عرض التفاصيل">
+                  <Eye size={16} color="var(--accent-color)" />
+                </button>
                 <button className="icon-btn" onClick={() => startEdit(gov)} title="تعديل">
                   <Edit2 size={16} />
                 </button>

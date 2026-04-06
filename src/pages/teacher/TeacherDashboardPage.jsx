@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Calendar, FileText, Activity, MapPin, School } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Calendar, FileText, Activity, MapPin, School, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const StatCard = ({ title, value, icon: Icon, color, loading }) => (
@@ -33,12 +33,14 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
 );
 
 const TeacherDashboardPage = ({ user }) => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     studentsCount: 0,
     dailyLogsCount: 0,
     weeklyReportsCount: 0,
     schoolName: 'جاري التحميل...'
   });
+  const [recentLogs, setRecentLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -90,6 +92,12 @@ const TeacherDashboardPage = ({ user }) => {
           weeklyReportsCount: docsReports.length
         }));
 
+        // 6. Sort and take recent 5 logs
+        const sortedLogs = docsLogs.map(d => ({id: d.id, ...d.data()}))
+          .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
+          .slice(0, 5);
+        setRecentLogs(sortedLogs);
+
       } catch (err) {
         console.error('Error fetching teacher stats:', err);
       } finally {
@@ -126,26 +134,32 @@ const TeacherDashboardPage = ({ user }) => {
         <StatCard title="نسبة الإنجاز" value={stats.dailyLogsCount > 0 ? "نشط" : "بانتظار التحضير"} icon={Activity} color="#8b5cf6" loading={loading} />
       </div>
 
-      <div style={{
-        background: 'var(--panel-color)',
-        padding: '2.5rem',
-        borderRadius: '16px',
-        border: '1px solid var(--border-color)',
-        minHeight: '200px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'var(--text-secondary)',
-        textAlign: 'center',
-        boxShadow: 'var(--shadow)'
-      }}>
-        <Activity size={48} style={{ marginBottom: '1rem', opacity: 0.3 }} />
-        <h3 style={{ margin: '0 0 10px 0', color: 'var(--text-primary)' }}>مرحباً بك مجدداً في حلقتك</h3>
-        <p style={{ maxWidth: '500px', margin: 0 }}>
-            أنت الآن تدير <strong>{stats.studentsCount}</strong> دارسين في <strong>{stats.schoolName}</strong>. 
-            استخدم القائمة الجانبية لتسجيل الحضور اليومي أو رفع تقارير الإنجاز الأسبوعية.
-        </p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+        <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '20px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Activity size={18} color="var(--success-color)" /> آخر النشاطات (التحضير اليومي)
+                </h3>
+                <button onClick={() => navigate('/teacher/daily-log')} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', fontSize: '0.85rem', cursor: 'pointer' }}>عرض الكل</button>
+            </div>
+            {recentLogs.length === 0 ? (
+                <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>لا توجد سجلات حديثة.</p>
+            ) : (
+                <div style={{ display: 'grid', gap: '10px' }}>
+                    {recentLogs.map(log => (
+                        <div key={log.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-color)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                            <div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>تحضير يوم: {log.date}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{log.records?.length || 0} طالباً مسجلاً</div>
+                            </div>
+                            <button onClick={() => navigate(`/teacher/reports/${log.id}`)} className="icon-btn">
+                                <Eye size={18} color="var(--accent-color)" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
       </div>
     </div>
   );

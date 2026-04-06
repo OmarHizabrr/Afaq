@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolIcon, Search, Filter } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const AdminReportsPage = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('daily'); // 'daily', 'weekly', 'visits'
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -192,7 +193,7 @@ const AdminReportsPage = () => {
                     </p>
                 </div>
               </div>
-              <button className="icon-btn" onClick={() => setSelectedReport(rpt)} style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}>
+              <button className="icon-btn" onClick={() => navigate(`/admin/reports/${rpt.id}`)} title="عرض التفاصيل الكاملة" style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}>
                 <Eye size={22} />
               </button>
             </div>

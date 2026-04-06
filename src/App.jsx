@@ -24,6 +24,12 @@ import SupervisorVisitPage from './pages/supervisor/SupervisorVisitPage';
 import SupervisorHistoryPage from './pages/supervisor/SupervisorHistoryPage';
 import StudentLayout from './layouts/StudentLayout';
 import StudentDashboardPage from './pages/student/StudentDashboardPage';
+import SchoolDetailsPage from './pages/admin/SchoolDetailsPage';
+import RegionDetailsPage from './pages/admin/RegionDetailsPage';
+import UserDetailsPage from './pages/admin/UserDetailsPage';
+import ReportDetailsPage from './pages/admin/ReportDetailsPage';
+import GovernorateDetailsPage from './pages/admin/GovernorateDetailsPage';
+import VillageDetailsPage from './pages/admin/VillageDetailsPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -104,6 +110,12 @@ function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="curriculum" element={<CurriculumPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
+          <Route path="reports/:id" element={<ReportDetailsPage />} />
+          <Route path="schools/:id" element={<SchoolDetailsPage />} />
+          <Route path="regions/:id" element={<RegionDetailsPage />} />
+          <Route path="users/:id" element={<UserDetailsPage />} />
+          <Route path="governorates/:id" element={<GovernorateDetailsPage />} />
+          <Route path="villages/:id" element={<VillageDetailsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="notifications" element={<NotificationsPage user={user} />} />
         </Route>
@@ -120,6 +132,9 @@ function App() {
           <Route index element={<SupervisorDashboardPage user={user} />} />
           <Route path="visit" element={<SupervisorVisitPage user={user} />} />
           <Route path="history" element={<SupervisorHistoryPage user={user} />} />
+          <Route path="reports/:id" element={<ReportDetailsPage />} />
+          <Route path="schools/:id" element={<SchoolDetailsPage />} />
+          <Route path="users/:id" element={<UserDetailsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="notifications" element={<NotificationsPage user={user} />} />
         </Route>
@@ -135,8 +150,10 @@ function App() {
         >
           <Route index element={<TeacherDashboardPage user={user} />} />
           <Route path="students" element={<TeacherStudentsPage user={user} />} />
+          <Route path="students/:id" element={<UserDetailsPage />} />
           <Route path="daily-log" element={<TeacherDailyLogPage user={user} />} />
           <Route path="weekly-report" element={<TeacherWeeklyReportPage user={user} />} />
+          <Route path="reports/:id" element={<ReportDetailsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="notifications" element={<NotificationsPage user={user} />} />
         </Route>

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { History, Eye, MapPin, Calendar, Star } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const SupervisorHistoryPage = ({ user }) => {
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedReport, setSelectedReport] = useState(null);
 
   useEffect(() => {
     const fetchMyReports = async () => {
@@ -78,7 +78,7 @@ const SupervisorHistoryPage = ({ user }) => {
                  </div>
                  <button 
                   className="icon-btn" 
-                  onClick={() => setSelectedReport(rpt)}
+                  onClick={() => navigate(`/supervisor/reports/${rpt.id}`)}
                   style={{ background: '#3b82f6', color: '#fff', borderRadius: '8px', padding: '6px 12px', fontSize: '0.85rem', width: 'auto' }}
                 >
                   <Eye size={16} style={{ marginLeft: '4px' }} /> عرض التفاصيل
@@ -89,42 +89,6 @@ const SupervisorHistoryPage = ({ user }) => {
         </div>
       )}
 
-      {/* Basic View Modal */}
-      {selectedReport && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setSelectedReport(null)}>
-          <div style={{ background: 'var(--panel-color)', width: '100%', maxWidth: '700px', borderRadius: '16px', padding: '2rem', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-             <h2 style={{ marginBottom: '1rem' }}>زيارة مدرسة: {selectedReport.schoolName}</h2>
-             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>بتاريخ: {selectedReport.timestamp}</p>
-             
-             <div style={{ background: 'var(--bg-color)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
-                <strong>ملاحظاتك:</strong>
-                <p style={{ margin: '8px 0 0 0' }}>{selectedReport.generalNotes}</p>
-             </div>
-
-             {selectedReport.gpsLocation && (
-               <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <MapPin size={18} color="var(--success-color)" />
-                  <span>الموقع الموثق: {selectedReport.gpsLocation.lat}, {selectedReport.gpsLocation.lng}</span>
-               </div>
-             )}
-
-             {selectedReport.mediaUrls && selectedReport.mediaUrls.length > 0 && (
-                <div>
-                   <strong>الصور المرفوعة:</strong>
-                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '10px' }}>
-                      {selectedReport.mediaUrls.map((m, index) => (
-                        <a key={index} href={m.url} target="_blank" rel="noreferrer" style={{ width: '100px', height: '100px', background: '#333', borderRadius: '8px', backgroundImage: `url(${m.url})`, backgroundSize: 'cover' }}>
-                           {!m.type?.includes('image') && <div style={{ color: '#fff', textAlign: 'center', paddingTop: '40px' }}>فيديو</div>}
-                        </a>
-                      ))}
-                   </div>
-                </div>
-             )}
-
-             <button className="google-btn" onClick={() => setSelectedReport(null)} style={{ background: '#3b82f6', color: '#fff', marginTop: '2rem' }}>إغلاق</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

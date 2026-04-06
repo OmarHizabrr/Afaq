@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Home, UserPlus, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const VillagesPage = () => {
+  const navigate = useNavigate();
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
   const [governorates, setGovernorates] = useState([]);
@@ -323,8 +324,11 @@ const VillagesPage = () => {
               position: 'relative'
             }}>
               <div style={{ position: 'absolute', top: '1.25rem', left: '1.25rem', display: 'flex', gap: '8px' }}>
+                <button className="icon-btn" onClick={() => navigate(`/admin/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
+                  <Eye size={16} color="var(--accent-color)" />
+                </button>
                 <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">
-                  <Edit2 size={16} color="var(--accent-color)" />
+                  <Edit2 size={16} />
                 </button>
                 <button className="icon-btn" onClick={() => handleDelete(vil.id, vil.villageName)} title="حذف القرية">
                   <Trash2 size={16} color="var(--danger-color)" />

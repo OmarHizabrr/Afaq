@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, School } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2, School, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const SchoolsPage = () => {
+  const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
   const [regions, setRegions] = useState([]);
   const [villages, setVillages] = useState([]);
@@ -232,8 +233,11 @@ const SchoolsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="icon-btn" onClick={() => navigate(`/admin/schools/${sch.id}`)} title="عرض التفاصيل">
+                  <Eye size={16} color="var(--accent-color)" />
+                </button>
                 <button className="icon-btn" onClick={() => handleEditClick(sch)} title="تعديل">
-                  <Edit2 size={16} color="var(--accent-color)" />
+                  <Edit2 size={16} />
                 </button>
                 <button className="icon-btn" onClick={() => handleDelete(sch.id, sch.name)} title="حذف">
                   <Trash2 size={16} color="var(--danger-color)" />

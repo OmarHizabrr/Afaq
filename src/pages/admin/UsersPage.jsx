@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Shield, MapPin, School, Edit2, X, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Shield, MapPin, School, Edit2, X, CheckCircle, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const ROLE_LABELS = {
@@ -21,6 +21,7 @@ const ROLE_COLORS = {
 };
 
 const UsersPage = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [regions, setRegions] = useState([]);
   const [schools, setSchools] = useState([]);
@@ -226,14 +227,24 @@ const UsersPage = () => {
                   {ROLE_LABELS[user.role || 'unassigned']}
                 </div>
               </div>
-              <button 
-                className="icon-btn" 
-                onClick={() => openEditModal(user)}
-                title="تعديل الصلاحيات"
-                style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
-              >
-                <Edit2 size={18} />
-              </button>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button 
+                  className="icon-btn" 
+                  onClick={() => navigate(`/admin/users/${user.id}`)}
+                  title="عرض الملف الشخصي"
+                  style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
+                >
+                  <Eye size={18} color="var(--accent-color)" />
+                </button>
+                <button 
+                  className="icon-btn" 
+                  onClick={() => openEditModal(user)}
+                  title="تعديل الصلاحيات"
+                  style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
+                >
+                  <Edit2 size={18} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
