@@ -59,10 +59,27 @@ const TeacherStudentsPage = ({ user }) => {
       if (isEditing) {
         const docRef = api.getSubDocument('students', user.schoolId, 'students', isEditing.id);
         await api.updateData({ docRef, data: studentData });
+        
+        // Also update bilateral links if needed (though IDs don't change)
+        const link1 = api.getSubDocument('members', user.schoolId, 'members', isEditing.id);
+        const link2 = api.getSubDocument('Myschool', isEditing.id, 'Myschool', user.schoolId);
+        await Promise.all([
+          api.setData({ docRef: link1, data: { ...studentData, type: 'student' }, Overwrite: false }),
+          api.setData({ docRef: link2, data: { schoolId: user.schoolId, studentName: studentData.studentName }, Overwrite: false })
+        ]);
       } else {
         const docId = api.getNewId('students');
         const docRef = api.getSubDocument('students', user.schoolId, 'students', docId);
-        await api.setData({ docRef, data: studentData });
+        
+        // Parallel Saves for Bilateral Sync
+        const link1 = api.getSubDocument('members', user.schoolId, 'members', docId);
+        const link2 = api.getSubDocument('Myschool', docId, 'Myschool', user.schoolId);
+        
+        await Promise.all([
+          api.setData({ docRef, data: studentData }),
+          api.setData({ docRef: link1, data: { ...studentData, id: docId, type: 'student' } }),
+          api.setData({ docRef: link2, data: { schoolId: user.schoolId, studentName: studentData.studentName } })
+        ]);
       }
 
       setStudentName('');
@@ -87,8 +104,18 @@ const TeacherStudentsPage = ({ user }) => {
     if (!window.confirm(`هل أنت متأكد من حذف الدارس "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
+      
+      // Bilateral Deletion
       const docRef = api.getSubDocument('students', user.schoolId, 'students', id);
-      await api.deleteData(docRef);
+      const link1 = api.getSubDocument('members', user.schoolId, 'members', id);
+      const link2 = api.getSubDocument('Myschool', id, 'Myschool', user.schoolId);
+      
+      await Promise.all([
+        api.deleteData(docRef),
+        api.deleteData(link1),
+        api.deleteData(link2)
+      ]);
+      
       fetchStudents();
     } catch (err) {
       console.error(err);

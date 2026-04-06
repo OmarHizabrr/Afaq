@@ -98,26 +98,58 @@ const UsersPage = () => {
       setLoading(true);
       const api = FirestoreApi.Api;
       
-      // 1. Update Core User Role
-      const userDataPatch = { role: selectedRole };
-      if (selectedRole === 'teacher') {
-        userDataPatch.schoolId = selectedSchoolId;
+      // 1. Cleanup Old Assignments (Ensure Bilateral Removal)
+      const oldSchools = await api.getDocuments(api.getSubCollection('Myschool', editingUser.id, 'Myschool'));
+      for (const doc of oldSchools) {
+        const data = doc.data();
+        const schoolId = data.schoolId;
+        const regionId = data.regionId;
+        const groupId = schoolId || regionId;
+        
+        if (groupId) {
+          // Delete from both sides
+          await api.deleteData(api.getSubDocument('members', groupId, 'members', editingUser.id));
+          await api.deleteData(api.getSubDocument('Myschool', editingUser.id, 'Myschool', doc.id));
+        }
       }
+
+      // 2. Update Core User Role
+      const userDataPatch = { 
+        role: selectedRole,
+        schoolId: selectedRole === 'teacher' ? selectedSchoolId : '',
+      };
       
       await api.updateData({
         docRef: api.getDocument('users', editingUser.id),
         data: userDataPatch
       });
 
-      // 2. Handle Assignments
-      if (selectedRole === 'supervisor_local' || selectedRole === 'supervisor_arab') {
-        // Save to supervisor_assignments (using user.id as the doc ID for 1:1 relation)
+      // 3. Handle New Bilateral Assignments
+      if (selectedRole === 'teacher' && selectedSchoolId) {
+        const schoolLink1 = api.getSubDocument('members', selectedSchoolId, 'members', editingUser.id);
+        const schoolLink2 = api.getSubDocument('Myschool', editingUser.id, 'Myschool', selectedSchoolId);
+        
+        await Promise.all([
+          api.setData({ docRef: schoolLink1, data: { userId: editingUser.id, role: 'teacher', joinedAt: new Date().toISOString() } }),
+          api.setData({ docRef: schoolLink2, data: { schoolId: selectedSchoolId, joinedAt: new Date().toISOString() } })
+        ]);
+      }
+
+      if ((selectedRole === 'supervisor_local' || selectedRole === 'supervisor_arab') && selectedRegionId) {
+        const regionLink1 = api.getSubDocument('members', selectedRegionId, 'members', editingUser.id);
+        const regionLink2 = api.getSubDocument('Myschool', editingUser.id, 'Myschool', selectedRegionId);
+        
+        await Promise.all([
+          api.setData({ docRef: regionLink1, data: { userId: editingUser.id, role: selectedRole, assignedAt: new Date().toISOString() } }),
+          api.setData({ docRef: regionLink2, data: { regionId: selectedRegionId, role: selectedRole, assignedAt: new Date().toISOString() } })
+        ]);
+
         await api.setData({
           docRef: api.getDocument('supervisor_assignments', editingUser.id),
           data: {
             userId: editingUser.id,
             role: selectedRole,
-            regionId: selectedRegionId, // Might be empty for Arab supervisor
+            regionId: selectedRegionId,
             schoolIds: restrictedSchoolIds
           }
         });
@@ -125,10 +157,10 @@ const UsersPage = () => {
 
       setEditingUser(null);
       setError('');
-      fetchData(); // Refresh
+      fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء حفظ الصلاحيات');
+      setError('حدث خطأ أثناء المزامنة الثنائية');
       setLoading(false);
     }
   };

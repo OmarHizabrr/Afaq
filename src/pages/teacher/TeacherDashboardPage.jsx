@@ -52,28 +52,43 @@ const TeacherDashboardPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         
-        // 1. Fetch Students count for this school
-        const refStu = api.getSubCollection('students', user.schoolId, 'students');
-        const docsStu = await api.getDocuments(refStu);
+        // 1. Fetch Assigned Schools from the new bilateral path
+        const refMySchools = api.getSubCollection('Myschool', user.id, 'Myschool');
+        const assignedSchoolsDocs = await api.getDocuments(refMySchools);
+        const assignedSchoolIds = assignedSchoolsDocs.map(d => d.data().schoolId).filter(id => !!id);
         
-        // 2. Fetch Daily Logs for this teacher
+        // If teacher has schools, pick the first one as active or use the one from user.schoolId if still set
+        const activeSchoolId = assignedSchoolIds.length > 0 ? assignedSchoolIds[0] : (user.schoolId || '');
+
+        // 2. Fetch Students count for the active school
+        if (activeSchoolId) {
+          const refStu = api.getSubCollection('students', activeSchoolId, 'students');
+          const docsStu = await api.getDocuments(refStu);
+          
+          // 3. Find School Name
+          const allSchools = await api.getCollectionGroupDocuments('schools');
+          const mySchool = allSchools.find(s => s.id === activeSchoolId);
+
+          setStats(prev => ({
+            ...prev,
+            studentsCount: docsStu.length,
+            schoolName: mySchool ? mySchool.data().name : 'مدرسة غير معروفة'
+          }));
+        }
+
+        // 4. Fetch Daily Logs for this teacher
         const refLogs = api.getSubCollection('teacher_daily_logs', user.id, 'teacher_daily_logs');
         const docsLogs = await api.getDocuments(refLogs);
         
-        // 3. Fetch Weekly Reports for this teacher
+        // 5. Fetch Weekly Reports for this teacher
         const refReports = api.getSubCollection('teacher_reports', user.id, 'teacher_reports');
         const docsReports = await api.getDocuments(refReports);
 
-        // 4. Find School Name (using collection group to find it since we only have schoolId)
-        const allSchools = await api.getCollectionGroupDocuments('schools');
-        const mySchool = allSchools.find(s => s.id === user.schoolId);
-
-        setStats({
-          studentsCount: docsStu.length,
+        setStats(prev => ({
+          ...prev,
           dailyLogsCount: docsLogs.length,
-          weeklyReportsCount: docsReports.length,
-          schoolName: mySchool ? mySchool.data().name : 'مدرسة غير معروفة'
-        });
+          weeklyReportsCount: docsReports.length
+        }));
 
       } catch (err) {
         console.error('Error fetching teacher stats:', err);

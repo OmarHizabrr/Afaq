@@ -36,21 +36,28 @@ class AuthService {
   async syncUserToFirestore(user) {
     const api = FirestoreApi.Api;
     const docRef = api.getDocument("users", user.uid);
-
+    
+    // Check if user already exists to preserve their role
+    const existingDoc = await api.getData(docRef);
+    
     const userData = {
       uid: user.uid,
       displayName: user.displayName,
       email: user.email,
       photoURL: user.photoURL,
       lastLogin: new Date().toISOString(),
-      role: "unassigned", // يتم تحديد الصلاحيات لاحقاً كما طلب المستخدم
     };
 
-    // نستخدم setData مع merge لحفظ البيانات
+    // Only set default role if it's a completely new user
+    if (!existingDoc || !existingDoc.role) {
+      userData.role = "unassigned";
+    }
+
+    // Merge data - specifically don't overwrite role if it exists
     await api.setData({ 
       docRef, 
       data: userData, 
-      userData: { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL } 
+      Overwrite: false // Ensure merge
     });
   }
 
@@ -94,8 +101,20 @@ class AuthService {
 
     return onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // حالة: مسجل دخول بحساب جوجل الرسمي
-        callback(firebaseUser);
+        // Fetch full Firestore profile for Google users too
+        try {
+          const api = FirestoreApi.Api;
+          const docRef = api.getDocument("users", firebaseUser.uid);
+          const userData = await api.getData(docRef);
+          
+          if (userData) {
+            callback({ ...firebaseUser, ...userData });
+          } else {
+            callback(firebaseUser);
+          }
+        } catch (e) {
+          callback(firebaseUser);
+        }
       } else {
         // حالة: غير مسجل بجوجل... لنفحص الجلسة المخصصة
         if (customAuthUid) {
