@@ -11,6 +11,7 @@ import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
 import CurriculumPage from './pages/admin/CurriculumPage';
 import SettingsPage from './pages/admin/SettingsPage';
+import AdminReportsPage from './pages/admin/AdminReportsPage';
 import TeacherLayout from './layouts/TeacherLayout';
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
 import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage';
@@ -19,6 +20,7 @@ import TeacherWeeklyReportPage from './pages/teacher/TeacherWeeklyReportPage';
 import SupervisorLayout from './layouts/SupervisorLayout';
 import SupervisorDashboardPage from './pages/supervisor/SupervisorDashboardPage';
 import SupervisorVisitPage from './pages/supervisor/SupervisorVisitPage';
+import SupervisorHistoryPage from './pages/supervisor/SupervisorHistoryPage';
 import AuthService from './services/authService';
 
 function App() {
@@ -91,6 +93,7 @@ function App() {
           <Route path="schools" element={<SchoolsPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="curriculum" element={<CurriculumPage />} />
+          <Route path="reports" element={<AdminReportsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 
@@ -105,7 +108,7 @@ function App() {
         >
           <Route index element={<SupervisorDashboardPage />} />
           <Route path="visit" element={<SupervisorVisitPage user={user} />} />
-          <Route path="history" element={<div>سجل الزيارات هنا</div>} />
+          <Route path="history" element={<SupervisorHistoryPage user={user} />} />
         </Route>
 
         {/* Teacher Portal Routes */}

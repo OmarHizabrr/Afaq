@@ -6,6 +6,7 @@ const GovernoratesPage = () => {
   const [governorates, setGovernorates] = null || useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(null); // stores gubernorate object being edited
   const [govName, setGovName] = useState('');
   const [error, setError] = useState('');
 
@@ -52,6 +53,34 @@ const GovernoratesPage = () => {
     }
   };
 
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    if (!govName.trim() || !isEditing) return;
+
+    try {
+      const api = FirestoreApi.Api;
+      const docRef = api.getDocument('governorates', isEditing.id);
+      
+      await api.updateData({
+        docRef,
+        data: { name: govName.trim() }
+      });
+
+      setGovName('');
+      setIsEditing(null);
+      fetchGovernorates();
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء التحديث');
+    }
+  };
+
+  const startEdit = (gov) => {
+      setIsEditing(gov);
+      setGovName(gov.name);
+      setIsAdding(false);
+  };
+
   const handleDelete = async (id, name) => {
     if (!window.confirm(`هل أنت متأكد من حذف محافظة "${name}"؟`)) return;
     try {
@@ -84,9 +113,9 @@ const GovernoratesPage = () => {
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem' }}>{error}</div>}
 
-      {/* Add Form */}
-      {isAdding && (
-        <form onSubmit={handleAdd} style={{
+      {/* Add/Edit Form */}
+      {(isAdding || isEditing) && (
+        <form onSubmit={isEditing ? handleEdit : handleAdd} style={{
           background: 'var(--panel-color)',
           padding: '1.5rem',
           borderRadius: '12px',
@@ -113,9 +142,9 @@ const GovernoratesPage = () => {
             }}
           />
           <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff' }}>
-            حفظ
+            {isEditing ? 'تحديث' : 'حفظ'}
           </button>
-          <button type="button" onClick={() => setIsAdding(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
+          <button type="button" onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
             إلغاء
           </button>
         </form>
@@ -146,7 +175,7 @@ const GovernoratesPage = () => {
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ID: {gov.id.substring(0,8)}...</span>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" title="تعديل">
+                <button className="icon-btn" onClick={() => startEdit(gov)} title="تعديل">
                   <Edit2 size={16} />
                 </button>
                 <button className="icon-btn" onClick={() => handleDelete(gov.id, gov.name)} title="حذف">

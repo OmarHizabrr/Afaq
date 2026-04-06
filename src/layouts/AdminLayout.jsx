@@ -15,7 +15,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  ClipboardList
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
@@ -61,9 +62,10 @@ const AdminLayout = ({ user }) => {
     { name: 'المناطق', icon: MapPin, path: '/regions' },
     { name: 'القرى', icon: Home, path: '/villages' },
     { name: 'المدارس', icon: School, path: '/schools' },
-    { name: 'المناهج', icon: BookOpen, path: '/curriculum' },
-    { name: 'الكوادر', icon: Users, path: '/users' },
-    { name: 'الإعدادات', icon: Settings, path: '/settings' },
+    {name: 'المنَاهِج', icon: BookOpen, path: '/curriculum' },
+    {name: 'التقارير', icon: ClipboardList, path: '/reports' },
+    {name: 'الكوادر', icon: Users, path: '/users' },
+    {name: 'الإعدادات', icon: Settings, path: '/settings' },
   ];
 
   const closeSidebar = () => {

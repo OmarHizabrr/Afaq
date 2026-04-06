@@ -1,7 +1,8 @@
-import React from 'react';
-import { Users, Map, School, FileText } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, Map, School, FileText, UserCheck } from 'lucide-react';
+import FirestoreApi from '../../services/firestoreApi';
 
-const StatCard = ({ title, value, icon: Icon, color }) => (
+const StatCard = ({ title, value, icon: Icon, color, loading }) => (
   <div style={{
     background: 'var(--panel-color)',
     padding: '1.5rem',
@@ -26,12 +27,54 @@ const StatCard = ({ title, value, icon: Icon, color }) => (
     </div>
     <div>
       <h3 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{title}</h3>
-      <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>{value}</p>
+      <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+        {loading ? '...' : value}
+      </p>
     </div>
   </div>
 );
 
 const DashboardPage = () => {
+  const [stats, setStats] = useState({
+    supervisors: 0,
+    regions: 0,
+    schools: 0,
+    teachers: 0,
+    students: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const api = FirestoreApi.Api;
+        
+        const [usersDocs, regionsDocs, schoolsDocs, studentsDocs] = await Promise.all([
+          api.getDocuments(api.getCollection('users')),
+          api.getDocuments(api.getCollection('regions')),
+          api.getDocuments(api.getCollection('schools')),
+          api.getDocuments(api.getCollection('students'))
+        ]);
+
+        const users = usersDocs.map(d => d.data());
+        
+        setStats({
+          supervisors: users.filter(u => u.role?.startsWith('supervisor')).length,
+          teachers: users.filter(u => u.role === 'teacher').length,
+          regions: regionsDocs.length,
+          schools: schoolsDocs.length,
+          students: studentsDocs.length
+        });
+      } catch (err) {
+        console.error("Dashboard stats error", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -44,14 +87,15 @@ const DashboardPage = () => {
       {/* Stats Grid */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
         gap: '1.5rem', 
         marginBottom: '2rem' 
       }}>
-        <StatCard title="المشرفين" value="12" icon={Users} color="#10b981" />
-        <StatCard title="المناطق" value="8" icon={Map} color="#3b82f6" />
-        <StatCard title="المدارس" value="45" icon={School} color="#f59e0b" />
-        <StatCard title="المدرسين" value="120" icon={FileText} color="#8b5cf6" />
+        <StatCard title="المشرفين" value={stats.supervisors} icon={Users} color="#10b981" loading={loading} />
+        <StatCard title="المناطق" value={stats.regions} icon={Map} color="#3b82f6" loading={loading} />
+        <StatCard title="المدارس" value={stats.schools} icon={School} color="#f59e0b" loading={loading} />
+        <StatCard title="المدرسين" value={stats.teachers} icon={FileText} color="#8b5cf6" loading={loading} />
+        <StatCard title="إجمالي الطلاب" value={stats.students} icon={UserCheck} color="var(--success-color)" loading={loading} />
       </div>
 
       {/* Future Sections (e.g., Recent Reports, Activity) could go here */}

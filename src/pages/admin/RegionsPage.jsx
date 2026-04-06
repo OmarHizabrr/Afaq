@@ -7,6 +7,7 @@ const RegionsPage = () => {
   const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(null);
   
   // Form State
   const [regionName, setRegionName] = useState('');
@@ -73,6 +74,43 @@ const RegionsPage = () => {
     }
   };
 
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    if (!regionName.trim() || !selectedGovId || !isEditing) {
+      setError('يرجى إدخال اسم المنطقة واختيار المحافظة');
+      return;
+    }
+
+    try {
+      const api = FirestoreApi.Api;
+      const docRef = api.getDocument('regions', isEditing.id);
+      
+      await api.updateData({
+        docRef,
+        data: { 
+          name: regionName.trim(),
+          govId: selectedGovId 
+        }
+      });
+
+      setRegionName('');
+      setSelectedGovId('');
+      setIsEditing(null);
+      setError('');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء التحديث');
+    }
+  };
+
+  const startEdit = (region) => {
+      setIsEditing(region);
+      setRegionName(region.name);
+      setSelectedGovId(region.govId);
+      setIsAdding(false);
+  };
+
   const handleDelete = async (id, name) => {
     if (!window.confirm(`هل أنت متأكد من حذف منطقة "${name}"؟`)) return;
     try {
@@ -110,9 +148,9 @@ const RegionsPage = () => {
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
 
-      {/* Add Form */}
-      {isAdding && (
-        <form onSubmit={handleAdd} style={{
+      {/* Add/Edit Form */}
+      {(isAdding || isEditing) && (
+        <form onSubmit={isEditing ? handleEdit : handleAdd} style={{
           background: 'var(--panel-color)',
           padding: '1.5rem',
           borderRadius: '12px',
@@ -159,9 +197,9 @@ const RegionsPage = () => {
             }}
           />
           <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff' }}>
-            حفظ
+            {isEditing ? 'تحديث' : 'حفظ'}
           </button>
-          <button type="button" onClick={() => setIsAdding(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
+          <button type="button" onClick={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
             إلغاء
           </button>
         </form>
@@ -195,7 +233,7 @@ const RegionsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" title="تعديل">
+                <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">
                   <Edit2 size={16} />
                 </button>
                 <button className="icon-btn" onClick={() => handleDelete(region.id, region.name)} title="حذف">
