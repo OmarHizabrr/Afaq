@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Home, 
@@ -9,14 +9,29 @@ import {
   X, 
   Bell,
   Award,
-  Settings
+  Settings,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
 const StudentLayout = ({ user }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Initialize sidebar state
+  useEffect(() => {
+    const savedSidebar = localStorage.getItem('afaq-sidebar-collapsed') === 'true';
+    setIsCollapsed(savedSidebar);
+  }, []);
+
+  const toggleSidebarCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('afaq-sidebar-collapsed', newState);
+  };
 
   const handleLogout = async () => {
     try {
@@ -51,22 +66,33 @@ const StudentLayout = ({ user }) => {
       )}
 
       {/* Sidebar */}
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid var(--border-color)' }}>
-          <div style={{ 
-            width: '80px', height: '80px', borderRadius: '50%', background: 'var(--accent-glow)', 
-            margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '2px solid var(--accent-color)',
-            overflow: 'hidden'
-          }}>
-            <img 
-              src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName}&background=random`} 
-              alt="Avatar" 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          </div>
-          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{user?.displayName}</h3>
-          <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>بوابة الطالب الذكية</p>
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header" style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {!isCollapsed && (
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <div style={{ 
+                width: '60px', height: '60px', borderRadius: '50%', background: 'var(--accent-glow)', 
+                margin: '0 auto 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: '2px solid var(--accent-color)',
+                overflow: 'hidden'
+              }}>
+                <img 
+                  src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName}&background=random`} 
+                  alt="Avatar" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1rem' }}>{user?.displayName.split(' ')[0]}</h3>
+            </div>
+          )}
+
+          <button 
+             className="desktop-collapse-btn" 
+             onClick={toggleSidebarCollapse}
+             title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+           >
+             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+           </button>
         </div>
 
         <nav style={{ flex: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>

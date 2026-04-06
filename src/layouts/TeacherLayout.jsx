@@ -23,6 +23,7 @@ const TeacherLayout = ({ user }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  // Initialize theme and sidebar state
   useEffect(() => {
     const savedTheme = localStorage.getItem('afaq-theme') || 'dark';
     const isDark = savedTheme === 'dark';
@@ -30,7 +31,17 @@ const TeacherLayout = ({ user }) => {
     
     if (isDark) document.documentElement.classList.remove('light-mode');
     else document.documentElement.classList.add('light-mode');
+
+    // Sidebar state
+    const savedSidebar = localStorage.getItem('afaq-sidebar-collapsed') === 'true';
+    setIsCollapsed(savedSidebar);
   }, []);
+
+  const toggleSidebarCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('afaq-sidebar-collapsed', newState);
+  };
 
   const toggleTheme = () => {
     const newIsDark = !isDarkMode;
@@ -77,11 +88,12 @@ const TeacherLayout = ({ user }) => {
           </div>
           
           <button 
-            className="icon-btn desktop-collapse-btn" 
-            onClick={() => setIsCollapsed(!isCollapsed)}
-          >
-            {isCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-          </button>
+             className="desktop-collapse-btn" 
+             onClick={toggleSidebarCollapse}
+             title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+           >
+             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+           </button>
 
           <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(false)}>
             <X size={24} />
