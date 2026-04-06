@@ -63,7 +63,7 @@ const StudentDashboardPage = ({ user }) => {
         
         // 1. Fetch assigned school
         const refMySchools = api.getSubCollection('Myschool', user.uid, 'Myschool');
-        const assignedSchoolsDocs = await api.getDocuments(refMyRegions); // Reusing logic for schools
+        const assignedSchoolsDocs = await api.getDocuments(refMySchools); 
         const schoolId = assignedSchoolsDocs.length > 0 ? assignedSchoolsDocs[0].data().schoolId : (user.schoolId || '');
 
         if (schoolId) {
