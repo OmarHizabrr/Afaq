@@ -10,6 +10,7 @@ import VillagesPage from './pages/admin/VillagesPage';
 import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
 import CurriculumPage from './pages/admin/CurriculumPage';
+import SettingsPage from './pages/admin/SettingsPage';
 import TeacherLayout from './layouts/TeacherLayout';
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
 import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage';
@@ -90,7 +91,7 @@ function App() {
           <Route path="schools" element={<SchoolsPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="curriculum" element={<CurriculumPage />} />
-          <Route path="settings" element={<div>الإعدادات هنا</div>} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         {/* Supervisor Portal Routes */}

@@ -13,7 +13,9 @@ import {
   Sun,
   Moon,
   Menu,
-  X
+  X,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
@@ -21,6 +23,7 @@ const AdminLayout = ({ user }) => {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Initialize theme from localStorage or default to dark
   useEffect(() => {
@@ -78,12 +81,20 @@ const AdminLayout = ({ user }) => {
       )}
 
       {/* Sidebar */}
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h2 className="logo-text" style={{ fontSize: '2rem', margin: 0, animation: 'none', transform: 'none', opacity: 1 }}>آفاق</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>لوحة تحكم الإدارة</p>
           </div>
+          
+          <button 
+            className="icon-btn desktop-collapse-btn" 
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          </button>
+
           <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(false)}>
             <X size={24} />
           </button>
@@ -104,7 +115,7 @@ const AdminLayout = ({ user }) => {
         </nav>
 
         <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-          <div className="nav-link" onClick={handleLogout}>
+          <div className="nav-link" onClick={handleLogout} title="تسجيل الخروج">
             <LogOut size={20} />
             <span>تسجيل الخروج</span>
           </div>

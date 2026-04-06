@@ -8,7 +8,9 @@ import {
   Sun,
   Moon,
   Menu,
-  X
+  X,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
@@ -16,6 +18,7 @@ const SupervisorLayout = ({ user }) => {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('afaq-theme') || 'dark';
@@ -60,12 +63,20 @@ const SupervisorLayout = ({ user }) => {
       )}
 
       {/* Sidebar - Colored explicitly for Supervisor distinction (Blue) */}
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ borderRight: '4px solid #3b82f6' }}>
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`} style={{ borderRight: '4px solid #3b82f6' }}>
         <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 className="logo-text" style={{ fontSize: '1.4rem', margin: 0, color: '#3b82f6' }}>بوابة المشرف الميداني</h2>
+            <h2 className="logo-text" style={{ fontSize: '1.4rem', margin: 0, color: '#3b82f6', animation: 'none', transform: 'none', opacity: 1 }}>بوابة المشرف الميداني</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>آفاق القرآنية</p>
           </div>
+          
+          <button 
+            className="icon-btn desktop-collapse-btn" 
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          </button>
+
           <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(false)}>
             <X size={24} />
           </button>
@@ -87,7 +98,7 @@ const SupervisorLayout = ({ user }) => {
         </nav>
 
         <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-          <div className="nav-link" onClick={handleLogout}>
+          <div className="nav-link" onClick={handleLogout} title="تسجيل الخروج">
             <LogOut size={20} />
             <span>تسجيل الخروج</span>
           </div>
