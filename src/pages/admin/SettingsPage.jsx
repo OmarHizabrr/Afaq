@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Settings, Save, User, Moon, Sun, Monitor } from 'lucide-react';
+import { Settings, Save, User, Moon, Sun, Monitor, Phone } from 'lucide-react';
 import AuthService from '../../services/authService';
+import FirestoreApi from '../../services/firestoreApi';
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
+  const [displayName, setDisplayName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  
   const [theme, setTheme] = useState('dark');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -13,9 +16,18 @@ const SettingsPage = () => {
     const currentTheme = localStorage.getItem('afaq-theme') || 'dark';
     setTheme(currentTheme);
     
-    // Load current User
-    const currentUser = AuthService.Api.getCurrentUser();
-    setUser(currentUser);
+    // Listen to Firebase Auth state
+    AuthService.Api.onAuthChange(async (firebaseUser) => {
+      if (firebaseUser) {
+        // Fetch full profile from Firestore
+        const api = FirestoreApi.Api;
+        const userData = await api.getData(api.getDocument('users', firebaseUser.uid));
+        
+        setUser(userData || firebaseUser);
+        setDisplayName(userData?.displayName || firebaseUser.displayName || '');
+        setPhoneNumber(userData?.phoneNumber || '');
+      }
+    });
   }, []);
 
   const handleThemeChange = (newTheme) => {
@@ -30,14 +42,28 @@ const SettingsPage = () => {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setSuccess('');
-    
-    // Fake profile save for now (we could update DisplayName in Firebase auth)
-    setTimeout(() => {
+    if (!user || (!displayName.trim() && !phoneNumber.trim())) return;
+
+    try {
+      setLoading(true);
+      setSuccess('');
+      
+      const api = FirestoreApi.Api;
+      await api.updateData({
+        docRef: api.getDocument('users', user.uid || user.id),
+        data: {
+          displayName: displayName.trim(),
+          phoneNumber: phoneNumber.trim()
+        }
+      });
+
       setSuccess('تم تحديث إعدادات الملف الشخصي بنجاح!');
+    } catch (err) {
+      console.error(err);
+      alert('حدث خطأ أثناء حفظ الملف الشخصي');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -86,20 +112,43 @@ const SettingsPage = () => {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>الاسم الكامل</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>الاسم الكامل (للعرض داخل المنصة)</label>
             <input 
               type="text" 
-              defaultValue={user?.displayName || ''}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="اكتب اسمك الكامل"
               style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>البريد الإلكتروني (للقراءة فقط)</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+               <Phone size={16} /> رقم هاتف التواصل (اختياري)
+            </label>
+            <input 
+              type="tel" 
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="مثال: 77XXXXXXX"
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>البريد الإلكتروني (الخاص بتسجيل الدخول)</label>
             <input 
               type="text" 
               readOnly
               value={user?.email || ''}
-              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-secondary)', opacity: 0.7 }}
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-secondary)', opacity: 0.7, cursor: 'not-allowed' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>مستوى الصلاحية الممنوح (للقراءة فقط)</label>
+            <input 
+              type="text" 
+              readOnly
+              value={user?.role || 'unassigned'}
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', fontWeight: 'bold', cursor: 'not-allowed' }}
             />
           </div>
         </div>
