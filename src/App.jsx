@@ -10,7 +10,8 @@ import VillagesPage from './pages/admin/VillagesPage';
 import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
 import CurriculumPage from './pages/admin/CurriculumPage';
-import SettingsPage from './pages/admin/SettingsPage';
+import SettingsPage from './pages/common/SettingsPage';
+import NotificationsPage from './pages/common/NotificationsPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
 import TeacherLayout from './layouts/TeacherLayout';
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
@@ -81,7 +82,7 @@ function App() {
           path="/login" 
           element={
             user 
-              ? <Navigate to={user.role === 'teacher' ? '/teacher' : (user.role === 'supervisor_local' || user.role === 'supervisor_arab') ? '/supervisor' : '/'} replace /> 
+              ? <Navigate to={user.role === 'teacher' ? '/teacher' : user.role === 'student' ? '/student' : (user.role === 'supervisor_local' || user.role === 'supervisor_arab') ? '/supervisor' : '/'} replace /> 
               : <LoginPage />
           } 
         />

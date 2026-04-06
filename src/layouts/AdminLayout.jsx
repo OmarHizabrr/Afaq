@@ -10,6 +10,7 @@ import {
   Settings, 
   BookOpen,
   LogOut,
+  Bell,
   Sun,
   Moon,
   Menu,
@@ -65,6 +66,7 @@ const AdminLayout = ({ user }) => {
     {name: 'المنَاهِج', icon: BookOpen, path: '/curriculum' },
     {name: 'التقارير', icon: ClipboardList, path: '/reports' },
     {name: 'الكوادر', icon: Users, path: '/users' },
+    {name: 'الإشعارات', icon: Bell, path: '/notifications' },
     {name: 'الإعدادات', icon: Settings, path: '/settings' },
   ];
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Info, AlertTriangle, CheckCircle, Calendar, Trash2 } from 'lucide-react';
+import { Bell, Info, AlertTriangle, CheckCircle, Calendar } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 
 const NotificationsPage = ({ user }) => {
@@ -127,12 +127,6 @@ const NotificationsPage = ({ user }) => {
             </div>
           ))
         )}
-      </div>
-
-      <div style={{ marginTop: '3rem', textAlign: 'center', padding: '2rem', background: 'var(--panel-color)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
-         <h4 style={{ margin: 0, marginBottom: '1rem' }}>هل لديك استفسار؟</h4>
-         <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>يمكنك دائماً التواصل مع الإدارة المركزية عبر قنوات الدعم الفني.</p>
-         <button className="google-btn" style={{ margin: 0, width: 'auto', padding: '10px 24px', background: 'var(--accent-color)', color: '#fff' }}>تحدث مع الدعم</button>
       </div>
     </div>
   );

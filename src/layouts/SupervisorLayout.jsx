@@ -5,6 +5,8 @@ import {
   MapPin, 
   FileText, 
   LogOut,
+  Bell,
+  Settings,
   Sun,
   Moon,
   Menu,
@@ -47,6 +49,8 @@ const SupervisorLayout = ({ user }) => {
     { name: 'الرئيسية (الإحصائيات)', icon: Home, path: '/supervisor' },
     { name: 'تسجيل زيارة ميدانية', icon: MapPin, path: '/supervisor/visit' },
     { name: 'سجل الزيارات', icon: FileText, path: '/supervisor/history' },
+    { name: 'الإشعارات', icon: Bell, path: '/supervisor/notifications' },
+    { name: 'الإعدادات', icon: Settings, path: '/supervisor/settings' },
   ];
 
   const closeSidebar = () => {

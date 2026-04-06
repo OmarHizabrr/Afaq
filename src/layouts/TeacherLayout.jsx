@@ -6,6 +6,8 @@ import {
   Calendar, 
   FileText, 
   LogOut,
+  Bell,
+  Settings,
   Sun,
   Moon,
   Menu,
@@ -49,6 +51,8 @@ const TeacherLayout = ({ user }) => {
     { name: 'طلابي', icon: Users, path: '/teacher/students' },
     { name: 'التحضير اليومي', icon: Calendar, path: '/teacher/daily-log' },
     { name: 'التقرير الأسبوعي', icon: FileText, path: '/teacher/weekly-report' },
+    { name: 'الإشعارات', icon: Bell, path: '/teacher/notifications' },
+    { name: 'الإعدادات', icon: Settings, path: '/teacher/settings' },
   ];
 
   const closeSidebar = () => {
