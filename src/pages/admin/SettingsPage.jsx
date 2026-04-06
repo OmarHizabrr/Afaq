@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, User, Moon, Sun, Monitor, Phone } from 'lucide-react';
+import { Settings, Save, User, Moon, Sun, Monitor, Phone, KeyRound } from 'lucide-react';
 import AuthService from '../../services/authService';
 import FirestoreApi from '../../services/firestoreApi';
 
@@ -7,6 +7,7 @@ const SettingsPage = () => {
   const [user, setUser] = useState(null);
   const [displayName, setDisplayName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
   
   const [theme, setTheme] = useState('dark');
   const [loading, setLoading] = useState(false);
@@ -27,6 +28,7 @@ const SettingsPage = () => {
         setUser(userData || firebaseUser);
         setDisplayName(userData?.displayName || firebaseUser.displayName || '');
         setPhoneNumber(userData?.phoneNumber || '');
+        setPassword(userData?.password || '');
       }
     });
   }, []);
@@ -54,7 +56,8 @@ const SettingsPage = () => {
         docRef: api.getDocument('users', user.uid || user.id),
         data: {
           displayName: displayName.trim(),
-          phoneNumber: phoneNumber.trim()
+          phoneNumber: phoneNumber.trim(),
+          password: password.trim()
         }
       });
 
@@ -124,7 +127,7 @@ const SettingsPage = () => {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-               <Phone size={16} /> رقم هاتف التواصل (اختياري)
+               <Phone size={16} /> رقم هاتف التواصل (والدخول المخصص)
             </label>
             <input 
               type="tel" 
@@ -135,7 +138,19 @@ const SettingsPage = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>البريد الإلكتروني (الخاص بتسجيل الدخول)</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+               <KeyRound size={16} /> كلمة المرور (للدخول المخصص)
+            </label>
+            <input 
+              type="text" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="اختر كلمة مرور للدخول بها مع رقم الهاتف لاحقاً"
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>البريد الإلكتروني الأساسي</label>
             <input 
               type="text" 
               readOnly

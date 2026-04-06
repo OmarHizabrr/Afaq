@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AuthService from '../services/authService';
+import { Phone, Lock, LogIn } from 'lucide-react';
 
 const GoogleIcon = () => (
   <svg className="google-icon" viewBox="0 0 48 48">
@@ -11,11 +12,15 @@ const GoogleIcon = () => (
 );
 
 const LoginPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [loadingCustom, setLoadingCustom] = useState(false);
   const [error, setError] = useState(null);
+  
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    setLoading(true);
+  const handleGoogleLogin = async () => {
+    setLoadingGoogle(true);
     setError(null);
     try {
       await AuthService.Api.signInWithGoogle();
@@ -23,7 +28,25 @@ const LoginPage = () => {
       setError("فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.");
       console.error(err);
     } finally {
-      setLoading(false);
+      setLoadingGoogle(false);
+    }
+  };
+
+  const handleCustomLogin = async (e) => {
+    e.preventDefault();
+    if (!phone || !password) {
+      setError('يرجى إدخال رقم الهاتف وكلمة المرور');
+      return;
+    }
+    
+    try {
+      setLoadingCustom(true);
+      setError(null);
+      await AuthService.Api.signInWithPhone(phone, password);
+    } catch (err) {
+      setError('رقم الهاتف أو كلمة المرور غير صحيحة');
+    } finally {
+      setLoadingCustom(false);
     }
   };
 
@@ -38,26 +61,70 @@ const LoginPage = () => {
         </header>
 
         <section style={{ width: '100%' }}>
+          {error && (
+            <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger-color)', padding: '12px', borderRadius: '8px', marginBottom: '1.5rem', width: '100%', border: '1px solid var(--danger-color)', textAlign: 'center' }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleCustomLogin} style={{ width: '100%', marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-color)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '0 12px' }}>
+                <Phone size={20} color="var(--text-secondary)" />
+                <input 
+                  type="tel" 
+                  placeholder="رقم الهاتف للإدارة والميدان"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  style={{ width: '100%', padding: '14px 12px', border: 'none', background: 'transparent', color: 'var(--text-primary)', outline: 'none' }}
+                />
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-color)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '0 12px' }}>
+                <Lock size={20} color="var(--text-secondary)" />
+                <input 
+                  type="password" 
+                  placeholder="كلمة المرور المخصصة"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  style={{ width: '100%', padding: '14px 12px', border: 'none', background: 'transparent', color: 'var(--text-primary)', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            <button 
+              type="submit"
+              className="google-btn" 
+              disabled={loadingCustom}
+              style={{ marginTop: 0, background: 'var(--text-primary)', color: 'var(--bg-color)', border: 'none' }}
+            >
+              {loadingCustom ? <div className="loading-spinner"></div> : <><LogIn size={20} /> تسجيل الدخول</>}
+            </button>
+          </form>
+
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%', margin: '1.5rem 0', color: 'var(--text-secondary)' }}>
+            <hr style={{ flex: 1, borderColor: 'var(--border-color)' }} />
+            <span style={{ padding: '0 10px', fontSize: '0.85rem' }}>أو تسجيل الدخول عبر جوجل</span>
+            <hr style={{ flex: 1, borderColor: 'var(--border-color)' }} />
+          </div>
+
           <button 
             className="google-btn" 
-            onClick={handleLogin}
-            disabled={loading}
+            onClick={handleGoogleLogin}
+            disabled={loadingGoogle}
+            style={{ marginTop: '0' }}
           >
-            {loading ? (
+            {loadingGoogle ? (
               <div className="loading-spinner"></div>
             ) : (
               <>
                 <GoogleIcon />
-                <span>تسجيل الدخول عبر جوجل</span>
+                <span>المتابعة باستخدام Google</span>
               </>
             )}
           </button>
-          
-          {error && (
-            <p style={{ color: '#ef4444', marginTop: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>
-              {error}
-            </p>
-          )}
         </section>
 
         <p style={{ marginTop: '2rem', color: '#6b7280', fontSize: '0.8rem', textAlign: 'center' }}>
