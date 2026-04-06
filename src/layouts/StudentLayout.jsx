@@ -29,72 +29,54 @@ const StudentLayout = ({ user }) => {
   const menuItems = [
     { icon: Home, label: 'الرئيسية', path: '/student' },
     { icon: Award, label: 'نتائجي واختباراتي', path: '/student/results' },
+    { icon: Bell, label: 'الإشعارات والتنبيهات', path: '/student/notifications' },
     { icon: User, label: 'ملفي الشخصي', path: '/student/profile' },
+    { icon: Settings, label: 'الإعدادات', path: '/student/settings' },
   ];
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => {
+    if (window.innerWidth <= 1024) setSidebarOpen(false);
+  };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-color)' }}>
+    <div className={`admin-layout ${isSidebarOpen ? 'mobile-open' : ''}`} dir="rtl">
       {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && (
         <div 
-          onClick={toggleSidebar}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'block' }}
+          onClick={closeSidebar}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }}
         />
       )}
 
       {/* Sidebar */}
-      <aside style={{
-        width: '280px',
-        background: 'var(--panel-color)',
-        borderLeft: '1px solid var(--border-color)',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        top: 0,
-        bottom: 0,
-        right: isSidebarOpen ? 0 : '-280px',
-        transition: 'right 0.3s ease',
-        zIndex: 1001,
-        boxShadow: 'var(--shadow)'
-      }} className="desktop-sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid var(--border-color)' }}>
           <div style={{ 
             width: '80px', height: '80px', borderRadius: '50%', background: 'var(--accent-glow)', 
             margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '2px solid var(--accent-color)'
+            border: '2px solid var(--accent-color)',
+            overflow: 'hidden'
           }}>
             <img 
               src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName}&background=random`} 
               alt="Avatar" 
-              style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
           <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{user?.displayName}</h3>
           <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>بوابة الطالب الذكية</p>
         </div>
 
-        <nav style={{ flex: 1, padding: '1.5rem 1rem' }}>
+        <nav style={{ flex: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link 
                 key={item.path} 
                 to={item.path} 
-                onClick={() => setSidebarOpen(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
-                  borderRadius: '12px',
-                  color: isActive ? 'var(--accent-color)' : 'var(--text-secondary)',
-                  background: isActive ? 'var(--accent-glow)' : 'transparent',
-                  marginBottom: '8px',
-                  fontWeight: isActive ? 600 : 400,
-                  transition: 'all 0.2s'
-                }}
+                className={`nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
               >
                 <item.icon size={20} />
                 <span>{item.label}</span>
@@ -104,82 +86,49 @@ const StudentLayout = ({ user }) => {
         </nav>
 
         <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-          <button 
-            onClick={handleLogout}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              color: 'var(--danger-color)',
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 600,
-              transition: 'all 0.2s'
-            }}
-          >
+          <div className="nav-link" onClick={handleLogout} style={{ color: 'var(--danger-color)', cursor: 'pointer' }}>
             <LogOut size={20} />
             <span>تسجيل الخروج</span>
-          </button>
+          </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, marginRight: '280px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }} className="main-content">
+      <div className="main-content">
         {/* Top Header */}
-        <header style={{
-          height: '70px',
-          background: 'var(--panel-color)',
-          borderBottom: '1px solid var(--border-color)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 2rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 99
-        }}>
+        <header className="topbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="mobile-menu-toggle" onClick={toggleSidebar} style={{ display: 'none', background: 'none', border: 'none', color: 'var(--text-primary)' }}>
+            <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
               <Menu size={24} />
             </button>
-            <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 700 }}>آفاق <span style={{ color: 'var(--accent-color)' }}>التعليمية</span></h2>
+            <h2 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800 }}>آفاق <span style={{ color: 'var(--accent-color)' }}>التعليمية</span></h2>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <button style={{ position: 'relative', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-              <Bell size={20} />
-              <span style={{ position: 'absolute', top: -2, right: -2, width: '8px', height: '8px', background: 'var(--danger-color)', borderRadius: '50%' }}></span>
-            </button>
-            <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600 }}>{user?.displayName}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
-                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success-color)' }}></span>
-                   <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>طالب نشط</span>
-                </div>
+            <Link to="/student/notifications" style={{ position: 'relative', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>
+              <Bell size={22} />
+              <span style={{ position: 'absolute', top: -4, right: -4, minWidth: '16px', height: '16px', background: 'var(--danger-color)', borderRadius: '50%', fontSize: '0.6rem', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--panel-color)' }}>3</span>
+            </Link>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderRight: '1px solid var(--border-color)', paddingRight: '16px' }}>
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>{user?.displayName}</p>
+                <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-secondary)' }}>طالب نشط</p>
               </div>
+              <img 
+                src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName}&background=random`} 
+                alt="Profile" 
+                style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid var(--accent-color)' }}
+              />
             </div>
           </div>
         </header>
 
         {/* Dynamic Page Content */}
-        <div style={{ padding: '2rem', flex: 1 }}>
+        <main className="page-content">
           <Outlet />
-        </div>
-      </main>
-
-      {/* Global CSS for Mobile Responsiveness */}
-      <style>{`
-        @media (max-width: 1024px) {
-          .desktop-sidebar { right: -280px !important; }
-          .main-content { margin-right: 0 !important; }
-          .mobile-menu-toggle { display: block !important; }
-        }
-      `}</style>
+        </main>
+      </div>
     </div>
   );
 };
