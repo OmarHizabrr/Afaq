@@ -28,7 +28,6 @@ const db = getFirestore(app);
  *
  * مسارات العضوية الثنائية (مدرسة أو منطقة = groupId):
  *   members/{groupId}/members/{userId}  ↔  Mygroup/{userId}/Mygroup/{groupId}
- * يُنظَّف الاسم القديم Myschool تلقائياً عند المزامنة/الحذف.
  * استخدم getGroupMembersCollection / getGroupMemberDoc و getUserMembershipMirror* فقط.
  */
 class FirestoreApi {
@@ -70,12 +69,9 @@ class FirestoreApi {
    * - members/{groupId}/members/{userId}
    * - Mygroup/{userId}/Mygroup/{groupId}
    * حذف المستخدم من members يجب أن يرافقه حذف مرآة Mygroup (أو عبر clearUserMembershipMirrors).
-   * Myschool اسم قديم يُنظَّف تلقائياً للتوافق مع بيانات سابقة.
    */
   static USER_MEMBERSHIP_MIRROR_COLL = 'Mygroup';
   static USER_MEMBERSHIP_MIRROR_SUB = 'Mygroup';
-  static LEGACY_MEMBERSHIP_MIRROR_COLL = 'Myschool';
-  static LEGACY_MEMBERSHIP_MIRROR_SUB = 'Myschool';
 
   /** Mygroup/{userId}/Mygroup — مجموعة مرايا عضوية المستخدم */
   getUserMembershipMirrorCollection(userId) {
@@ -96,30 +92,6 @@ class FirestoreApi {
     );
   }
 
-  /**
-   * قراءة مرايا العضوية من Mygroup ومن Myschool القديمة (دمج بمفتاح مستند groupId) لعدم فقدان البيانات قبل الترحيل.
-   */
-  async getUserMembershipMirrorDocsMerged(userId) {
-    const [fromNew, fromLegacy] = await Promise.all([
-      this.getDocuments(this.getUserMembershipMirrorCollection(userId)),
-      this.getDocuments(
-        this.getSubCollection(
-          FirestoreApi.LEGACY_MEMBERSHIP_MIRROR_COLL,
-          userId,
-          FirestoreApi.LEGACY_MEMBERSHIP_MIRROR_SUB
-        )
-      ),
-    ]);
-    const byId = new Map();
-    for (const d of fromLegacy) {
-      byId.set(d.id, d);
-    }
-    for (const d of fromNew) {
-      byId.set(d.id, d);
-    }
-    return [...byId.values()];
-  }
-
   /** members/{groupId}/members — أعضاء المجموعة (مدرسة أو منطقة) */
   getGroupMembersCollection(groupId) {
     return this.getSubCollection('members', groupId, 'members');
@@ -131,13 +103,13 @@ class FirestoreApi {
   }
 
   /**
-   * معرّف المدرسة النشطة: من users.schoolId أو أول schoolId في مرايا Mygroup/Myschool.
+   * معرّف المدرسة النشطة: من users.schoolId أو أول schoolId في مرايا Mygroup.
    */
   async resolveUserSchoolId(user) {
     const uid = user?.uid ?? user?.id;
     if (!uid) return '';
     if (user?.schoolId) return user.schoolId;
-    const docs = await this.getUserMembershipMirrorDocsMerged(uid);
+    const docs = await this.getDocuments(this.getUserMembershipMirrorCollection(uid));
     for (const d of docs) {
       const sid = d.data()?.schoolId;
       if (sid) return sid;
@@ -146,23 +118,17 @@ class FirestoreApi {
   }
 
   /**
-   * يحذف مرايا Mygroup وMyschool القديمة، ولكل مرآة يحذف members/{groupId}/members/{userId}
+   * يحذف مرايا Mygroup فقط، ومعها members/{groupId}/members/{userId}
    */
   async clearUserMembershipMirrors(userId) {
-    const pairs = [
-      [FirestoreApi.USER_MEMBERSHIP_MIRROR_COLL, FirestoreApi.USER_MEMBERSHIP_MIRROR_SUB],
-      [FirestoreApi.LEGACY_MEMBERSHIP_MIRROR_COLL, FirestoreApi.LEGACY_MEMBERSHIP_MIRROR_SUB],
-    ];
-    for (const [coll, sub] of pairs) {
-      const snapDocs = await this.getDocuments(this.getSubCollection(coll, userId, sub));
-      for (const docSnap of snapDocs) {
-        const data = docSnap.data();
-        const groupId = data.schoolId || data.regionId || docSnap.id;
-        if (groupId) {
-          await this.deleteData(this.getGroupMemberDoc(groupId, userId));
-        }
-        await this.deleteData(docSnap.ref);
+    const snapDocs = await this.getDocuments(this.getUserMembershipMirrorCollection(userId));
+    for (const docSnap of snapDocs) {
+      const data = docSnap.data();
+      const groupId = data.schoolId || data.regionId || docSnap.id;
+      if (groupId) {
+        await this.deleteData(this.getGroupMemberDoc(groupId, userId));
       }
+      await this.deleteData(docSnap.ref);
     }
   }
 

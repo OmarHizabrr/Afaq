@@ -60,7 +60,7 @@ const StudentDashboardPage = ({ user }) => {
         const api = FirestoreApi.Api;
         
         // 1. Fetch assigned school
-        const assignedSchoolsDocs = await api.getUserMembershipMirrorDocsMerged(user.uid); 
+        const assignedSchoolsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(user.uid)); 
         const schoolId = assignedSchoolsDocs.length > 0 ? assignedSchoolsDocs[0].data().schoolId : (user.schoolId || '');
 
         if (schoolId) {

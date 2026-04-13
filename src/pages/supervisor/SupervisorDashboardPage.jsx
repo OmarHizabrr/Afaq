@@ -49,7 +49,7 @@ const SupervisorDashboardPage = ({ user }) => {
         const api = FirestoreApi.Api;
         
         // 1. تعيينات المناطق من المرآة: Mygroup/{uid}/Mygroup/{regionId}
-        const assignedRegionsDocs = await api.getUserMembershipMirrorDocsMerged(user.uid);
+        const assignedRegionsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(user.uid));
         const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
         
         // 2. Fetch total visits by this supervisor
