@@ -10,6 +10,7 @@ const TeacherDailyLogPage = ({ user }) => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [activeSchoolId, setActiveSchoolId] = useState('');
 
   // Form selections
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
@@ -21,17 +22,18 @@ const TeacherDailyLogPage = ({ user }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user?.schoolId) {
-        setError('تعذر جلب البيانات. الحساب غير مرتبط بمدرسة.');
-        setLoading(false);
-        return;
-      }
-
       try {
         const api = FirestoreApi.Api;
-        
+        const schoolId = await api.resolveUserSchoolId(user);
+        setActiveSchoolId(schoolId);
+        if (!schoolId) {
+          setError('تعذر جلب البيانات. الحساب غير مرتبط بمدرسة (تحقق من الملف أو مرآة Mygroup).');
+          setLoading(false);
+          return;
+        }
+
         // Fetch Students for this school subcollection
-        const refStu = api.getSubCollection('students', user.schoolId, 'students');
+        const refStu = api.getSubCollection('students', schoolId, 'students');
         const docsStu = await api.getDocuments(refStu);
         const stData = docsStu.map(d => ({ id: d.id, ...d.data() }));
         
@@ -97,9 +99,16 @@ const TeacherDailyLogPage = ({ user }) => {
       const totalPresent = trackingData.filter(s => s.isPresent).length;
       const totalAbsent = trackingData.length - totalPresent;
 
+      const schoolId = activeSchoolId || (await api.resolveUserSchoolId(user));
+      if (!schoolId) {
+        setError('لا توجد مدرسة نشطة مرتبطة بحسابك.');
+        setSaving(false);
+        return;
+      }
+
       const logPayload = {
         teacherId: user.id,
-        schoolId: user.schoolId,
+        schoolId,
         date: today,
         subjectId: selectedSubjectId,
         subjectName: selectedSubjectData.name,

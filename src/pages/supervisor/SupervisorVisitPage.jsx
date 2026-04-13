@@ -36,8 +36,7 @@ const SupervisorVisitPage = ({ user }) => {
         const api = FirestoreApi.Api;
         
         // 1. Get Bilateral Assignments (Regions)
-        const refMyRegions = api.getSubCollection('Myschool', user.id, 'Myschool');
-        const assignedRegionsDocs = await api.getDocuments(refMyRegions);
+        const assignedRegionsDocs = await api.getUserMembershipMirrorDocsMerged(user.id);
         const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
 
         if (assignedRegionIds.length === 0 && user.role !== 'admin' && user.role !== 'supervisor_arab') {

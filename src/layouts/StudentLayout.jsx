@@ -114,7 +114,7 @@ const StudentLayout = ({ user }) => {
            </button>
         </div>
 
-        <nav style={{ flex: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <nav className="sidebar-nav" style={{ padding: '1.5rem 1rem', gap: '8px' }}>
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
@@ -131,7 +131,7 @@ const StudentLayout = ({ user }) => {
           })}
         </nav>
 
-        <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+        <div className="sidebar-footer" style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
           <div className="nav-link" onClick={handleLogout} style={{ color: 'var(--danger-color)', cursor: 'pointer' }}>
             <LogOut size={20} />
             <span>تسجيل الخروج</span>

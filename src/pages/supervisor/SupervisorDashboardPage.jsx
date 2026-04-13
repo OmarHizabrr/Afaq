@@ -48,9 +48,8 @@ const SupervisorDashboardPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         
-        // 1. Fetch assigned regions from bilateral path Myschool (userId/Myschool/regionId)
-        const refMyRegions = api.getSubCollection('Myschool', user.uid, 'Myschool');
-        const assignedRegionsDocs = await api.getDocuments(refMyRegions);
+        // 1. تعيينات المناطق من المرآة: Mygroup/{uid}/Mygroup/{regionId}
+        const assignedRegionsDocs = await api.getUserMembershipMirrorDocsMerged(user.uid);
         const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
         
         // 2. Fetch total visits by this supervisor

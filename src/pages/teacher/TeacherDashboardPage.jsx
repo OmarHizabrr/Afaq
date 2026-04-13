@@ -54,8 +54,7 @@ const TeacherDashboardPage = ({ user }) => {
         const api = FirestoreApi.Api;
         
         // 1. Fetch Assigned Schools from the new bilateral path
-        const refMySchools = api.getSubCollection('Myschool', user.id, 'Myschool');
-        const assignedSchoolsDocs = await api.getDocuments(refMySchools);
+        const assignedSchoolsDocs = await api.getUserMembershipMirrorDocsMerged(user.id);
         const assignedSchoolIds = assignedSchoolsDocs.map(d => d.data().schoolId).filter(id => !!id);
         
         // If teacher has schools, pick the first one as active or use the one from user.schoolId if still set

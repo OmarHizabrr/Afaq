@@ -77,7 +77,7 @@ const AdminLayout = ({ user }) => {
     { name: 'المدارس', icon: School, path: '/schools' },
     {name: 'المنَاهِج', icon: BookOpen, path: '/curriculum' },
     {name: 'التقارير', icon: ClipboardList, path: '/reports' },
-    {name: 'الكوادر', icon: Users, path: '/users' },
+    {name: 'المستخدمين', icon: Users, path: '/users' },
     {name: 'الإشعارات', icon: Bell, path: '/notifications' },
     {name: 'الإعدادات', icon: Settings, path: '/settings' },
   ];
@@ -117,7 +117,7 @@ const AdminLayout = ({ user }) => {
           </button>
         </div>
 
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <nav className="sidebar-nav">
           {navItems.map((item) => (
             <NavLink 
               key={item.path} 
@@ -131,7 +131,7 @@ const AdminLayout = ({ user }) => {
           ))}
         </nav>
 
-        <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+        <div className="sidebar-footer" style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
           <div className="nav-link" onClick={handleLogout} title="تسجيل الخروج">
             <LogOut size={20} />
             <span>تسجيل الخروج</span>

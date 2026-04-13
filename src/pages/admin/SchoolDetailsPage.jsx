@@ -35,7 +35,7 @@ const SchoolDetailsPage = () => {
             setSchool({ id: schDoc.id, ...schDoc.data() });
 
             // 2. Fetch Members (Teachers / Students)
-            const membersRef = api.getSubCollection('members', id, 'members');
+            const membersRef = api.getGroupMembersCollection(id);
             const membersDocs = await api.getDocuments(membersRef);
             const memberData = membersDocs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -89,7 +89,7 @@ const SchoolDetailsPage = () => {
             });
 
             // 2. Add to school members subcollection
-            const memberRef = api.getSubDocument('members', id, 'members', userToAssign.id);
+            const memberRef = api.getGroupMemberDoc(id, userToAssign.id);
             await api.setData({
                 docRef: memberRef,
                 data: {
@@ -98,6 +98,12 @@ const SchoolDetailsPage = () => {
                     timestamp: new Date().toISOString()
                 },
                 Overwrite: true
+            });
+
+            const mirrorRef = api.getUserMembershipMirrorDoc(userToAssign.id, id);
+            await api.setData({
+                docRef: mirrorRef,
+                data: { schoolId: id, joinedAt: new Date().toISOString() }
             });
 
             // 3. If it's a student, we also mirror in schools/{id}/students for legacy compatibility

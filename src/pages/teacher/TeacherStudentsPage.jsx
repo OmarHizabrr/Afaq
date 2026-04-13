@@ -14,39 +14,42 @@ const TeacherStudentsPage = ({ user }) => {
   const [isEditing, setIsEditing] = useState(null);
   const [studentName, setStudentName] = useState('');
   const [studentAge, setStudentAge] = useState('');
+  const [activeSchoolId, setActiveSchoolId] = useState('');
+  const [schoolReady, setSchoolReady] = useState(false);
 
-  const fetchStudents = async () => {
-    if (!user?.schoolId) {
-      setError('حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.');
-      setLoading(false);
-      return;
-    }
-
+  const loadSchoolAndStudents = async () => {
     setLoading(true);
+    setSchoolReady(false);
     try {
       const api = FirestoreApi.Api;
-      
-      // Fetch students from the specific school subcollection
-      const ref = api.getSubCollection('students', user.schoolId, 'students');
+      const sid = await api.resolveUserSchoolId(user);
+      setActiveSchoolId(sid);
+      setSchoolReady(true);
+      if (!sid) {
+        setError('حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.');
+        setStudents([]);
+        return;
+      }
+      setError('');
+      const ref = api.getSubCollection('students', sid, 'students');
       const docs = await api.getDocuments(ref);
-      const data = docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setStudents(data);
-
+      setStudents(docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب الدارسين');
+      setStudents([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStudents();
+    loadSchoolAndStudents();
   }, [user]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!studentName.trim() || !user?.schoolId) return;
+    if (!studentName.trim() || !activeSchoolId) return;
 
     try {
       setLoading(true);
@@ -55,33 +58,31 @@ const TeacherStudentsPage = ({ user }) => {
       const studentData = {
         studentName: studentName.trim(),
         age: parseInt(studentAge) || 0,
-        schoolId: user.schoolId,
+        schoolId: activeSchoolId,
         teacherId: user.id
       };
 
       if (isEditing) {
-        const docRef = api.getSubDocument('students', user.schoolId, 'students', isEditing.id);
+        const docRef = api.getSubDocument('students', activeSchoolId, 'students', isEditing.id);
         await api.updateData({ docRef, data: studentData });
         
-        // Also update bilateral links if needed (though IDs don't change)
-        const link1 = api.getSubDocument('members', user.schoolId, 'members', isEditing.id);
-        const link2 = api.getSubDocument('Myschool', isEditing.id, 'Myschool', user.schoolId);
+        const link1 = api.getGroupMemberDoc(activeSchoolId, isEditing.id);
+        const link2 = api.getUserMembershipMirrorDoc(isEditing.id, activeSchoolId);
         await Promise.all([
           api.setData({ docRef: link1, data: { ...studentData, type: 'student' }, Overwrite: false }),
-          api.setData({ docRef: link2, data: { schoolId: user.schoolId, studentName: studentData.studentName }, Overwrite: false })
+          api.setData({ docRef: link2, data: { schoolId: activeSchoolId, studentName: studentData.studentName }, Overwrite: false })
         ]);
       } else {
         const docId = api.getNewId('students');
-        const docRef = api.getSubDocument('students', user.schoolId, 'students', docId);
+        const docRef = api.getSubDocument('students', activeSchoolId, 'students', docId);
         
-        // Parallel Saves for Bilateral Sync
-        const link1 = api.getSubDocument('members', user.schoolId, 'members', docId);
-        const link2 = api.getSubDocument('Myschool', docId, 'Myschool', user.schoolId);
+        const link1 = api.getGroupMemberDoc(activeSchoolId, docId);
+        const link2 = api.getUserMembershipMirrorDoc(docId, activeSchoolId);
         
         await Promise.all([
           api.setData({ docRef, data: studentData }),
           api.setData({ docRef: link1, data: { ...studentData, id: docId, type: 'student' } }),
-          api.setData({ docRef: link2, data: { schoolId: user.schoolId, studentName: studentData.studentName } })
+          api.setData({ docRef: link2, data: { schoolId: activeSchoolId, studentName: studentData.studentName } })
         ]);
       }
 
@@ -89,7 +90,7 @@ const TeacherStudentsPage = ({ user }) => {
       setStudentAge('');
       setIsAdding(false);
       setIsEditing(null);
-      fetchStudents();
+      loadSchoolAndStudents();
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء الحفظ');
@@ -104,14 +105,15 @@ const TeacherStudentsPage = ({ user }) => {
   };
 
   const handleDelete = async (id, name) => {
+    if (!activeSchoolId) return;
     if (!window.confirm(`هل أنت متأكد من حذف الدارس "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
       
       // Bilateral Deletion
-      const docRef = api.getSubDocument('students', user.schoolId, 'students', id);
-      const link1 = api.getSubDocument('members', user.schoolId, 'members', id);
-      const link2 = api.getSubDocument('Myschool', id, 'Myschool', user.schoolId);
+      const docRef = api.getSubDocument('students', activeSchoolId, 'students', id);
+      const link1 = api.getGroupMemberDoc(activeSchoolId, id);
+      const link2 = api.getUserMembershipMirrorDoc(id, activeSchoolId);
       
       await Promise.all([
         api.deleteData(docRef),
@@ -119,18 +121,22 @@ const TeacherStudentsPage = ({ user }) => {
         api.deleteData(link2)
       ]);
       
-      fetchStudents();
+      loadSchoolAndStudents();
     } catch (err) {
       console.error(err);
       alert('لا يمكن الحذف في الوقت الحالي');
     }
   };
 
-  if (!user?.schoolId) {
+  if (!schoolReady) {
+    return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+  }
+
+  if (!activeSchoolId) {
     return (
       <div className="surface-card" style={{ padding: '2rem', textAlign: 'center', borderRadius: '12px' }}>
         <h2 style={{ color: 'var(--danger-color)' }}>تنبيه إداري</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>حساب المعلم الخاص بك غير مرتبط بأي مدرسة في النظام.</p>
+        <p style={{ color: 'var(--text-secondary)' }}>حساب المعلم الخاص بك غير مرتبط بأي مدرسة في النظام (لا في الملف ولا في مرآة Mygroup).</p>
         <p style={{ color: 'var(--text-secondary)' }}>يرجى التواصل مع مدير النظام أو مشرف المنطقة لتعيين مدرسة لك.</p>
       </div>
     );

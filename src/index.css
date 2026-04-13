@@ -390,6 +390,26 @@ body {
   z-index: 10;
   overflow: hidden;
   box-shadow: var(--shadow-md);
+  min-height: 0;
+  align-self: stretch;
+  max-height: 100vh;
+}
+
+/* وسط الشريط الجانبي: يتقلص ويتمرر عند طول القائمة */
+.sidebar-nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
 }
 
 .sidebar.collapsed {
@@ -397,6 +417,7 @@ body {
 }
 
 .sidebar-header {
+  flex-shrink: 0;
   padding: 8px 16px 20px;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 8px;

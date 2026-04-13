@@ -72,17 +72,19 @@ const TeacherWeeklyReportPage = ({ user }) => {
   };
 
   const handleSaveReport = async () => {
-    if (!user?.schoolId) {
-      setError('حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.');
-      return;
-    }
-
     try {
       setLoading(true);
       setError('');
       setSuccess('');
       
       const api = FirestoreApi.Api;
+      const schoolId = await api.resolveUserSchoolId(user);
+      if (!schoolId) {
+        setError('حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.');
+        setLoading(false);
+        return;
+      }
+
       const reportId = api.getNewId('teacher_reports');
       const docRef = api.getSubDocument('teacher_reports', user.id, 'teacher_reports', reportId);
       const today = new Date().toISOString();
@@ -91,7 +93,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
         docRef,
         data: {
           teacherId: user.id,
-          schoolId: user.schoolId,
+          schoolId,
           submissionDate: today,
           reportData: reportState
         }
