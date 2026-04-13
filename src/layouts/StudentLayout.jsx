@@ -14,10 +14,14 @@ import {
   Moon
 } from 'lucide-react';
 import AuthService from '../services/authService';
+import UserMenuDropdown from '../components/UserMenuDropdown';
+import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const StudentLayout = ({ user }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('afaq-sidebar-collapsed') === 'true'
+  );
   const [isDarkMode, setIsDarkMode] = useState(() =>
     typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
   );
@@ -25,18 +29,9 @@ const StudentLayout = ({ user }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
-    const isDark = savedTheme === 'dark';
-    setIsDarkMode(isDark);
-    if (isDark) document.documentElement.classList.remove('light-mode');
+    if (isDarkMode) document.documentElement.classList.remove('light-mode');
     else document.documentElement.classList.add('light-mode');
-  }, []);
-
-  // Initialize sidebar state
-  useEffect(() => {
-    const savedSidebar = localStorage.getItem('afaq-sidebar-collapsed') === 'true';
-    setIsCollapsed(savedSidebar);
-  }, []);
+  }, [isDarkMode]);
 
   const toggleTheme = () => {
     const nextDark = !isDarkMode;
@@ -69,7 +64,6 @@ const StudentLayout = ({ user }) => {
     { icon: Settings, label: 'الإعدادات', path: '/student/settings' },
   ];
 
-  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => {
     if (window.innerWidth <= 1024) setSidebarOpen(false);
   };
@@ -154,25 +148,11 @@ const StudentLayout = ({ user }) => {
             <button type="button" className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <Link to="/student/notifications" className="icon-btn" style={{ position: 'relative', textDecoration: 'none', color: 'inherit' }} aria-label="الإشعارات">
-              <Bell size={22} />
-              <span style={{ position: 'absolute', top: 4, left: 4, minWidth: '16px', height: '16px', background: 'var(--danger-color)', borderRadius: '50%', fontSize: '0.6rem', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--panel-color)' }}>3</span>
-            </Link>
-            
-            <div className="user-chip">
-              <div className="user-chip__meta">
-                <p className="user-chip__name">{user?.displayName || 'طالب'}</p>
-                <p className="user-chip__role">طالب نشط</p>
-              </div>
-              <img 
-                className="user-chip__avatar"
-                src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'S')}&background=1a73e8&color=fff`} 
-                alt="" 
-                style={{ borderColor: 'var(--md-primary)' }}
-              />
-            </div>
+            <UserMenuDropdown user={user} tagline="طالب نشط" />
           </div>
         </header>
+
+        <PwaInstallBanner />
 
         {/* Dynamic Page Content */}
         <main className="page-content">

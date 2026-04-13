@@ -15,6 +15,8 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import AuthService from '../services/authService';
+import UserMenuDropdown from '../components/UserMenuDropdown';
+import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const SupervisorLayout = ({ user }) => {
   const navigate = useNavigate();
@@ -22,21 +24,14 @@ const SupervisorLayout = ({ user }) => {
     typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('afaq-sidebar-collapsed') === 'true'
+  );
 
-  // Initialize theme and sidebar state
   useEffect(() => {
-    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
-    const isDark = savedTheme === 'dark';
-    setIsDarkMode(isDark);
-    
-    if (isDark) document.documentElement.classList.remove('light-mode');
+    if (isDarkMode) document.documentElement.classList.remove('light-mode');
     else document.documentElement.classList.add('light-mode');
-
-    // Sidebar state
-    const savedSidebar = localStorage.getItem('afaq-sidebar-collapsed') === 'true';
-    setIsCollapsed(savedSidebar);
-  }, []);
+  }, [isDarkMode]);
 
   const toggleSidebarCollapse = () => {
     const newState = !isCollapsed;
@@ -136,20 +131,15 @@ const SupervisorLayout = ({ user }) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             
-            <div className="user-chip">
-              <div className="user-chip__meta">
-                <p className="user-chip__name">{user?.displayName || 'المشرف'}</p>
-                <p className="user-chip__role" style={{ color: 'var(--md-primary)' }}>{user?.role === 'supervisor_arab' ? 'مشرف عام' : 'مشرف منطقة'}</p>
-              </div>
-              <img 
-                className="user-chip__avatar"
-                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Sup&background=1a73e8&color=fff'} 
-                alt="" 
-                style={{ borderColor: 'var(--md-primary)' }}
-              />
-            </div>
+            <UserMenuDropdown
+              user={user}
+              accentColor="var(--md-primary)"
+              tagline={user?.role === 'supervisor_arab' ? 'مشرف عام' : 'مشرف منطقة'}
+            />
           </div>
         </header>
+
+        <PwaInstallBanner />
 
         <main className="page-content">
           <Outlet />

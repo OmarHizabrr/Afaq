@@ -16,6 +16,8 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import AuthService from '../services/authService';
+import UserMenuDropdown from '../components/UserMenuDropdown';
+import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const TeacherLayout = ({ user }) => {
   const navigate = useNavigate();
@@ -23,21 +25,14 @@ const TeacherLayout = ({ user }) => {
     typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('afaq-sidebar-collapsed') === 'true'
+  );
 
-  // Initialize theme and sidebar state
   useEffect(() => {
-    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
-    const isDark = savedTheme === 'dark';
-    setIsDarkMode(isDark);
-    
-    if (isDark) document.documentElement.classList.remove('light-mode');
+    if (isDarkMode) document.documentElement.classList.remove('light-mode');
     else document.documentElement.classList.add('light-mode');
-
-    // Sidebar state
-    const savedSidebar = localStorage.getItem('afaq-sidebar-collapsed') === 'true';
-    setIsCollapsed(savedSidebar);
-  }, []);
+  }, [isDarkMode]);
 
   const toggleSidebarCollapse = () => {
     const newState = !isCollapsed;
@@ -138,20 +133,15 @@ const TeacherLayout = ({ user }) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             
-            <div className="user-chip">
-              <div className="user-chip__meta">
-                <p className="user-chip__name">{user?.displayName || 'المعلم'}</p>
-                <p className="user-chip__role" style={{ color: 'var(--success-color)' }}>بوابة المعلم</p>
-              </div>
-              <img 
-                className="user-chip__avatar"
-                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Teacher&background=1e8e3e&color=fff'} 
-                alt="" 
-                style={{ borderColor: 'var(--success-color)' }}
-              />
-            </div>
+            <UserMenuDropdown
+              user={user}
+              accentColor="var(--success-color)"
+              tagline="بوابة المعلم"
+            />
           </div>
         </header>
+
+        <PwaInstallBanner />
 
         <main className="page-content">
           <Outlet />

@@ -21,6 +21,8 @@ import {
   GraduationCap
 } from 'lucide-react';
 import AuthService from '../services/authService';
+import UserMenuDropdown from '../components/UserMenuDropdown';
+import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const AdminLayout = ({ user }) => {
   const navigate = useNavigate();
@@ -28,24 +30,14 @@ const AdminLayout = ({ user }) => {
     typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('afaq-sidebar-collapsed') === 'true'
+  );
 
-  // Initialize theme and sidebar state from localStorage
   useEffect(() => {
-    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
-    const isDark = savedTheme === 'dark';
-    setIsDarkMode(isDark);
-    
-    if (isDark) {
-      document.documentElement.classList.remove('light-mode');
-    } else {
-      document.documentElement.classList.add('light-mode');
-    }
-
-    // Sidebar state
-    const savedSidebar = localStorage.getItem('afaq-sidebar-collapsed') === 'true';
-    setIsCollapsed(savedSidebar);
-  }, []);
+    if (isDarkMode) document.documentElement.classList.remove('light-mode');
+    else document.documentElement.classList.add('light-mode');
+  }, [isDarkMode]);
 
   const toggleSidebarCollapse = () => {
     const newState = !isCollapsed;
@@ -157,19 +149,11 @@ const AdminLayout = ({ user }) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             
-            <div className="user-chip">
-              <div className="user-chip__meta">
-                <p className="user-chip__name">{user?.displayName || 'مدير النظام'}</p>
-                <p className="user-chip__role">{user?.email || ''}</p>
-              </div>
-              <img 
-                className="user-chip__avatar"
-                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Admin&background=1a73e8&color=fff'} 
-                alt="" 
-              />
-            </div>
+            <UserMenuDropdown user={user} tagline={user?.email || ''} />
           </div>
         </header>
+
+        <PwaInstallBanner />
 
         {/* Dynamic Page Content */}
         <main className="page-content">
