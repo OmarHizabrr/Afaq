@@ -108,9 +108,9 @@ class AuthService {
           const userData = await api.getData(docRef);
           
           if (userData) {
-            callback({ ...firebaseUser, ...userData });
+            callback({ ...firebaseUser, ...userData, uid: firebaseUser.uid, id: firebaseUser.uid });
           } else {
-            callback(firebaseUser);
+            callback({ ...firebaseUser, uid: firebaseUser.uid, id: firebaseUser.uid });
           }
         } catch (e) {
           callback(firebaseUser);

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolIcon, Search, Filter } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import MapLocationOpen from '../../components/MapLocationOpen';
 
 const AdminReportsPage = () => {
   const navigate = useNavigate();
@@ -240,8 +241,11 @@ const AdminReportsPage = () => {
                         </div>
                      </div>
                      <div style={{ marginBottom: '1.5rem' }}>
-                        <strong>الموقع الجغرافي (GPS):</strong>
-                        {selectedReport.gpsLocation ? <p>{selectedReport.gpsLocation.lat}, {selectedReport.gpsLocation.lng}</p> : <p>غير متوفر</p>}
+                        <MapLocationOpen
+                          gpsLocation={selectedReport.gpsLocation}
+                          label="الموقع الجغرافي (GPS)"
+                          subtitle="غير متوفر"
+                        />
                      </div>
                      <strong>ملاحظات المشرف:</strong>
                      <p style={{ background: 'var(--bg-color)', padding: '1rem', borderRadius: '8px', minHeight: '60px' }}>{selectedReport.generalNotes}</p>

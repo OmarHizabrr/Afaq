@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Navigation, Save, CheckCircle, XCircle, Star, Image as ImageIcon, Video, Camera } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import { openGoogleMaps } from '../../utils/maps';
 import { uploadMedia } from '../../services/storageApi';
 import PageHeader from '../../components/PageHeader';
 
@@ -354,9 +355,19 @@ const SupervisorVisitPage = ({ user }) => {
                   نطاق الزيارة (GPS)
                 </h3>
                 {gpsLocation ? (
-                  <p style={{ color: 'var(--success-color)', fontSize: '0.95rem', fontWeight: 'bold' }}>
-                    ✔ تم تحديد الموقع ({gpsLocation.lat.toFixed(4)}, {gpsLocation.lng.toFixed(4)})
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => openGoogleMaps(gpsLocation.lat, gpsLocation.lng)}
+                    className="map-location-open map-location-open--clickable map-location-open--compact"
+                    title="فتح في خرائط Google"
+                  >
+                    <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>
+                      ✔ تم تحديد الموقع ({gpsLocation.lat.toFixed(4)}, {gpsLocation.lng.toFixed(4)})
+                    </span>
+                    <span className="map-location-open__hint" style={{ marginTop: 6, display: 'block' }}>
+                      اضغط للعرض على الخريطة
+                    </span>
+                  </button>
                 ) : (
                   <div>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لم يتم جلب موقع الجوال بعد.</p>

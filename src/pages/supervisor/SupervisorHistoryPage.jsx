@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { History, Eye, MapPin, Calendar, Star } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import { hasValidGps, openGoogleMaps } from '../../utils/maps';
 
 const SupervisorHistoryPage = ({ user }) => {
   const navigate = useNavigate();
@@ -10,30 +11,36 @@ const SupervisorHistoryPage = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const supervisorId = useMemo(() => user?.uid || user?.id, [user?.uid, user?.id]);
+
   useEffect(() => {
     const fetchMyReports = async () => {
       setLoading(true);
+      setError('');
+      if (!supervisorId) {
+        setReports([]);
+        setLoading(false);
+        setError('تعذر تحديد هوية المشرف. أعد تسجيل الدخول.');
+        return;
+      }
       try {
         const api = FirestoreApi.Api;
-        // Fetch specifically from this supervisor's subcollection
-        const ref = api.getSupervisorReportsCollection(user.id);
+        const ref = api.getSupervisorReportsCollection(supervisorId);
         const docs = await api.getDocuments(ref);
-        const data = docs.map(d => ({ id: d.id, ...d.data() }));
-        
-        // Sort descending by timestamp
-        data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
+        const data = docs.map((d) => ({ id: d.id, ...d.data() }));
+        data.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
         setReports(data);
       } catch (err) {
         console.error(err);
         setError('حدث خطأ أثناء جلب سجل زياراتك');
+        setReports([]);
       } finally {
         setLoading(false);
       }
     };
 
-    if (user?.id) fetchMyReports();
-  }, [user]);
+    fetchMyReports();
+  }, [supervisorId]);
 
   if (loading) return <div className="loading-spinner" style={{ margin: '3rem auto' }}></div>;
 
@@ -72,6 +79,20 @@ const SupervisorHistoryPage = ({ user }) => {
               <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                 {rpt.subjectName} - أسبوع {rpt.week}
               </p>
+
+              {hasValidGps(rpt.gpsLocation) && (
+                <button
+                  type="button"
+                  className="map-location-open map-location-open--inline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openGoogleMaps(rpt.gpsLocation.lat, rpt.gpsLocation.lng);
+                  }}
+                >
+                  <MapPin size={16} />
+                  <span>موقع الزيارة على الخريطة</span>
+                </button>
+              )}
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>

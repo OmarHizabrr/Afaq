@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FileText, User, School, MapPin, Calendar, Star, Info, ChevronRight, CheckCircle, XCircle } from 'lucide-react';
+import { FileText, User, School, Calendar, Star, Info, ChevronRight, CheckCircle, XCircle } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import MapLocationOpen from '../../components/MapLocationOpen';
 
 const ReportDetailsPage = () => {
     const { id } = useParams();
@@ -171,12 +172,11 @@ const ReportDetailsPage = () => {
                 )}
             </div>
             
-            <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <MapPin size={20} color="var(--text-secondary)" />
-                <div style={{ fontSize: '0.9rem' }}>
-                   <strong>الموقع الجغرافي:</strong> {report.gpsLocation ? `${report.gpsLocation.lat}, ${report.gpsLocation.lng}` : 'لم يتم تسجيل إحداثيات GPS'}
-                </div>
-            </div>
+            <MapLocationOpen
+              gpsLocation={report.gpsLocation}
+              label="الموقع الجغرافي للزيارة"
+              subtitle="لم يتم تسجيل إحداثيات GPS لهذا التقرير"
+            />
         </div>
     );
 };

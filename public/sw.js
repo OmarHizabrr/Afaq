@@ -1,61 +1,54 @@
-const CACHE_NAME = 'afaq-v4';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/icon-512.png',
-  '/favicon.svg'
-];
+const CACHE_NAME = 'afaq-v5';
 
-// Install Event
+const ASSETS_TO_CACHE = ['/', '/index.html', '/manifest.webmanifest', '/icon-512.png', '/favicon.svg'];
+
 self.addEventListener('install', (event) => {
-  self.skipWaiting(); // Force the waiting service worker to become the active service worker.
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache v4');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
 });
 
-// Activate Event
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     Promise.all([
-      self.clients.claim(), // Become the active service worker for all clients.
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
+      self.clients.claim(),
+      caches.keys().then((cacheNames) =>
+        Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              console.log('Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
-            }
+            if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
+            return undefined;
           })
-        );
-      })
+        )
+      ),
     ])
   );
 });
 
-// Fetch Event (Network First Strategy to avoid MIME type errors with hashed scripts)
+/**
+ * لا نخزّن إلا طلبات GET لنفس أصل التطبيق.
+ * طلبات POST (Firebase Auth وغيرها) تُترك للمتصفح دون cache.put — يمنع:
+ * Failed to execute 'put' on 'Cache': Request method 'POST' is unsupported
+ */
 self.addEventListener('fetch', (event) => {
-  if (!(event.request.url.startsWith('http'))) return;
+  const { request } = event;
+  if (!request.url.startsWith('http')) return;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    fetch(event.request)
+    fetch(request)
       .then((response) => {
-        // If it's a valid response, clone it and update the cache
-        if (response.status === 200) {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+        if (response.ok && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone)).catch(() => {});
         }
         return response;
       })
-      .catch(() => {
-        // If network fails, try the cache
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(request))
   );
 });
