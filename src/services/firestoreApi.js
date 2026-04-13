@@ -264,6 +264,40 @@ class FirestoreApi {
   }
 
   /**
+   * صندوق إشعارات المستخدم (بدون orderBy لتفادي فهرس مركّب؛ رتّب في الواجهة).
+   */
+  getNotificationsInboxQuery(userId) {
+    return query(this.getNotificationsCollection(), where('toUserId', '==', userId));
+  }
+
+  /**
+   * محادثات يظهر فيها المستخدم كمشارك (array-contains).
+   */
+  getConversationsInboxQuery(userId) {
+    return query(
+      this.getConversationsCollection(),
+      where('participants', 'array-contains', userId)
+    );
+  }
+
+  /**
+   * رسائل محادثة واحدة مرتبة حسب createdAt تصاعدياً.
+   */
+  getConversationMessagesQuery(conversationId) {
+    return query(
+      this.getConversationMessagesCollection(conversationId),
+      orderBy('createdAt', 'asc')
+    );
+  }
+
+  /**
+   * اشتراك لحظي: يعيد دالة إلغاء الاشتراك.
+   */
+  subscribeSnapshot(refOrQuery, onNext, onError) {
+    return onSnapshot(refOrQuery, onNext, onError);
+  }
+
+  /**
    * معرّف المدرسة النشطة: من users.schoolId أو أول schoolId في مرايا Mygroup.
    */
   async resolveUserSchoolId(user) {

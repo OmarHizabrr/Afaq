@@ -33,6 +33,7 @@ import ReportDetailsPage from './pages/admin/ReportDetailsPage';
 import GovernorateDetailsPage from './pages/admin/GovernorateDetailsPage';
 import VillageDetailsPage from './pages/admin/VillageDetailsPage';
 import AuthService from './services/authService';
+import { NotificationsBadgeProvider } from './context/NotificationsBadgeContext';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -85,6 +86,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <NotificationsBadgeProvider user={user}>
       <Routes>
         <Route 
           path="/login" 
@@ -185,6 +187,7 @@ function App() {
           } replace />
         } />
       </Routes>
+      </NotificationsBadgeProvider>
     </BrowserRouter>
   );
 }

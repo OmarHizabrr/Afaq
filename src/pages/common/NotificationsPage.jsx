@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Bell, Info, AlertTriangle, CheckCircle, Calendar, Send, MessageCircle, Users } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import FormModal from '../../components/FormModal';
+import MessengerPanel from '../../components/MessengerPanel';
 
 const ROLE_LABELS = {
   admin: 'مدير النظام',
@@ -22,6 +23,7 @@ const NotificationsPage = ({ user }) => {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
+  const [replyTo, setReplyTo] = useState(null);
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [selectedRecipientIds, setSelectedRecipientIds] = useState([]);
   const [title, setTitle] = useState('');
@@ -32,28 +34,26 @@ const NotificationsPage = ({ user }) => {
   const [newChatTitle, setNewChatTitle] = useState('');
   const [newChatUsers, setNewChatUsers] = useState([]);
   const [sendingMessage, setSendingMessage] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [sharedSupervisorIds, setSharedSupervisorIds] = useState([]);
+  const [isNarrow, setIsNarrow] = useState(false);
+  const [chatMobileMode, setChatMobileMode] = useState('list');
 
   useEffect(() => {
-    const load = async () => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const fn = () => setIsNarrow(mq.matches);
+    fn();
+    mq.addEventListener('change', fn);
+    return () => mq.removeEventListener('change', fn);
+  }, []);
+
+  useEffect(() => {
+    const loadUsersAndRules = async () => {
       if (!actorId) return;
-      setLoading(true);
+      setLoadingUsers(true);
       const api = FirestoreApi.Api;
       try {
-        const [notiDocs, userDocs] = await Promise.all([
-          api.getDocuments(api.getNotificationsCollection(), { whereField: 'toUserId', isEqualTo: actorId }),
-          api.getDocuments(api.getUsersCollection()),
-        ]);
-        const convDocs = await api.getDocuments(api.getConversationsCollection());
-        const rows = notiDocs.map((d) => ({ id: d.id, ...d.data() }));
-        rows.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        setNotifications(rows);
-        const convRows = convDocs
-          .map((d) => ({ id: d.id, ...d.data() }))
-          .filter((c) => Array.isArray(c.participants) && c.participants.includes(actorId))
-          .sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
-        setConversations(convRows);
+        const userDocs = await api.getDocuments(api.getUsersCollection());
         const users = userDocs.map((d) => ({ id: d.id, ...d.data() }));
         setAllUsers(users);
 
@@ -82,11 +82,62 @@ const NotificationsPage = ({ user }) => {
           setSharedSupervisorIds(allowed);
         }
       } finally {
-        setLoading(false);
+        setLoadingUsers(false);
       }
     };
-    load();
+    loadUsersAndRules();
   }, [actorId, user?.role]);
+
+  useEffect(() => {
+    if (!actorId) return undefined;
+    const api = FirestoreApi.Api;
+    const q = api.getNotificationsInboxQuery(actorId);
+    return api.subscribeSnapshot(
+      q,
+      (snapshot) => {
+        const rows = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+        rows.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        setNotifications(rows);
+      },
+      (e) => console.error('notifications inbox', e)
+    );
+  }, [actorId]);
+
+  useEffect(() => {
+    if (!actorId) return undefined;
+    const api = FirestoreApi.Api;
+    const q = api.getConversationsInboxQuery(actorId);
+    return api.subscribeSnapshot(
+      q,
+      (snapshot) => {
+        const rows = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+        rows.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+        setConversations(rows);
+      },
+      (e) => console.error('conversations inbox', e)
+    );
+  }, [actorId]);
+
+  useEffect(() => {
+    if (!selectedConversation?.id) {
+      setMessages([]);
+      return undefined;
+    }
+    const api = FirestoreApi.Api;
+    const q = api.getConversationMessagesQuery(selectedConversation.id);
+    return api.subscribeSnapshot(
+      q,
+      (snapshot) => {
+        const rows = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+        rows.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+        setMessages(rows);
+      },
+      (err) => {
+        console.error('messages snapshot', err);
+        setMessages([]);
+      }
+    );
+  }, [selectedConversation?.id]);
 
   const recipients = useMemo(() => {
     if (!user?.role) return [];
@@ -104,23 +155,31 @@ const NotificationsPage = ({ user }) => {
 
   const recipientsMap = useMemo(() => Object.fromEntries(recipients.map((r) => [r.id, r])), [recipients]);
 
-  const getIcon = (type) => {
-    switch (type) {
-      case 'warning': return <AlertTriangle size={20} color="#f59e0b" />;
-      case 'success': return <CheckCircle size={20} color="var(--success-color)" />;
-      default: return <Info size={20} color="var(--md-primary)" />;
+  const getIcon = (t) => {
+    switch (t) {
+      case 'warning':
+        return <AlertTriangle size={20} color="#f59e0b" />;
+      case 'success':
+        return <CheckCircle size={20} color="var(--success-color)" />;
+      default:
+        return <Info size={20} color="var(--md-primary)" />;
     }
   };
 
-  const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  const markAllRead = useCallback(() => {
     const api = FirestoreApi.Api;
     notifications.forEach((n) => {
       if (!n.isRead) {
         api.updateData({ docRef: api.getNotificationDoc(n.id), data: { isRead: true } });
       }
     });
-  };
+  }, [notifications]);
+
+  const markOneRead = useCallback((n) => {
+    if (n.isRead) return;
+    const api = FirestoreApi.Api;
+    api.updateData({ docRef: api.getNotificationDoc(n.id), data: { isRead: true } });
+  }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -170,18 +229,11 @@ const NotificationsPage = ({ user }) => {
     setIsComposeOpen(true);
   };
 
-  const loadMessages = async (conversationId) => {
-    const api = FirestoreApi.Api;
-    const msgDocs = await api.getDocuments(api.getConversationMessagesCollection(conversationId));
-    const rows = msgDocs.map((d) => ({ id: d.id, ...d.data() }));
-    rows.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-    setMessages(rows);
-  };
-
-  const openConversation = async (conversation) => {
+  const openConversation = useCallback((conversation) => {
     setSelectedConversation(conversation);
-    await loadMessages(conversation.id);
-  };
+    setChatMobileMode('thread');
+    setReplyTo(null);
+  }, []);
 
   const createConversation = async (e) => {
     e.preventDefault();
@@ -192,13 +244,17 @@ const NotificationsPage = ({ user }) => {
     let conversationId = '';
 
     if (uniqueParticipants.length === 2) {
-      const allConvDocs = await api.getDocuments(api.getConversationsCollection());
-      const existing = allConvDocs
+      const q = api.getConversationsInboxQuery(actorId);
+      const snap = await api.getDocuments(q);
+      const existing = snap
         .map((d) => ({ id: d.id, ...d.data() }))
-        .find((c) => Array.isArray(c.participants) && c.participants.length === 2 && uniqueParticipants.every((id) => c.participants.includes(id)));
-      if (existing) {
-        conversationId = existing.id;
-      }
+        .find(
+          (c) =>
+            Array.isArray(c.participants) &&
+            c.participants.length === 2 &&
+            uniqueParticipants.every((id) => c.participants.includes(id))
+        );
+      if (existing) conversationId = existing.id;
     }
 
     if (!conversationId) {
@@ -219,15 +275,10 @@ const NotificationsPage = ({ user }) => {
     setIsNewChatOpen(false);
     setNewChatUsers([]);
     setNewChatTitle('');
+    setActiveTab('chats');
     const convDoc = await api.getData(api.getConversationDoc(conversationId));
     if (convDoc) {
-      const conversation = { id: conversationId, ...convDoc };
-      setConversations((prev) => {
-        const rest = prev.filter((c) => c.id !== conversationId);
-        return [conversation, ...rest];
-      });
-      await openConversation(conversation);
-      setActiveTab('chats');
+      openConversation({ id: conversationId, ...convDoc });
     }
   };
 
@@ -238,16 +289,22 @@ const NotificationsPage = ({ user }) => {
     try {
       const api = FirestoreApi.Api;
       const msgId = api.getNewId('messages');
+      const payload = {
+        senderId: actorId,
+        senderName: user?.displayName || '',
+        senderPhotoURL: user?.photoURL || '',
+        senderRole: user?.role || '',
+        text: messageText.trim(),
+        createdAt: new Date().toISOString(),
+      };
+      if (replyTo) {
+        payload.replyToId = replyTo.id;
+        payload.replyToText = replyTo.text;
+        payload.replyToSenderName = replyTo.senderName || '';
+      }
       await api.setData({
         docRef: api.getConversationMessageDoc(selectedConversation.id, msgId),
-        data: {
-          senderId: actorId,
-          senderName: user?.displayName || '',
-          senderPhotoURL: user?.photoURL || '',
-          senderRole: user?.role || '',
-          text: messageText.trim(),
-          createdAt: new Date().toISOString(),
-        },
+        data: payload,
       });
       await api.updateData({
         docRef: api.getConversationDoc(selectedConversation.id),
@@ -258,26 +315,44 @@ const NotificationsPage = ({ user }) => {
         },
       });
       setMessageText('');
-      await loadMessages(selectedConversation.id);
+      setReplyTo(null);
     } finally {
       setSendingMessage(false);
     }
   };
 
-  if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+  const handleEditMessage = async (messageId, text) => {
+    if (!selectedConversation?.id) return;
+    const api = FirestoreApi.Api;
+    await api.updateData({
+      docRef: api.getConversationMessageDoc(selectedConversation.id, messageId),
+      data: { text, editedAt: new Date().toISOString() },
+    });
+  };
+
+  if (!actorId) return null;
+  if (loadingUsers) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div className="notifications-page">
       <PageHeader
         icon={Bell}
         iconBox
         title="مركز الإشعارات والتنبيهات"
-        subtitle="استقبال وإرسال الإشعارات حسب الصلاحيات"
+        subtitle="تحديث فوري للإشعارات والمحادثات"
       >
-        <button type="button" className={`btn-md ${activeTab === 'notifications' ? 'btn-md--primary' : 'btn-md--outline'}`} onClick={() => setActiveTab('notifications')}>
+        <button
+          type="button"
+          className={`btn-md ${activeTab === 'notifications' ? 'btn-md--primary' : 'btn-md--outline'}`}
+          onClick={() => setActiveTab('notifications')}
+        >
           <Bell size={16} /> الإشعارات
         </button>
-        <button type="button" className={`btn-md ${activeTab === 'chats' ? 'btn-md--primary' : 'btn-md--outline'}`} onClick={() => setActiveTab('chats')}>
+        <button
+          type="button"
+          className={`btn-md ${activeTab === 'chats' ? 'btn-md--primary' : 'btn-md--outline'}`}
+          onClick={() => setActiveTab('chats')}
+        >
           <MessageCircle size={16} /> المحادثات
         </button>
         {recipients.length > 0 && (
@@ -290,7 +365,7 @@ const NotificationsPage = ({ user }) => {
             <Send size={16} /> إرسال إشعار
           </button>
         )}
-        {notifications.some(n => !n.isRead) && (
+        {notifications.some((n) => !n.isRead) && (
           <button type="button" onClick={markAllRead} className="btn-md btn-md--outline">
             تعليم الكل كمقروء
           </button>
@@ -298,151 +373,143 @@ const NotificationsPage = ({ user }) => {
       </PageHeader>
 
       {activeTab === 'notifications' ? (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {notifications.length === 0 ? (
-          <div className="surface-card surface-card--lg" style={{ textAlign: 'center', padding: '5rem' }}>
-             <Bell size={48} style={{ opacity: 0.1, marginBottom: '1rem' }} />
-             <p style={{ color: 'var(--text-secondary)' }}>لا توجد إشعارات جديدة بانتظارك.</p>
-          </div>
-        ) : (
-          notifications.map((n) => (
-            <div
-              key={n.id}
-              className={`notif-card ${n.isRead ? 'notif-card--read' : 'notif-card--unread'}`}
-            >
-              <div className="notif-card__icon" aria-hidden>
-                {getIcon(n.type)}
-              </div>
-
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', gap: '12px', flexWrap: 'wrap' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: n.isRead ? 'var(--text-primary)' : 'var(--md-primary)' }}>
-                    {n.title}
-                  </h3>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                    <Calendar size={14} /> {n.createdAt ? new Date(n.createdAt).toLocaleString('ar-EG') : '-'}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                  <img
-                    src={n.fromUserPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(n.fromUserName || 'User')}`}
-                    alt=""
-                    style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border-color)' }}
-                  />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>
-                    {n.fromUserName || 'مرسل غير معروف'}
-                  </span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', background: 'var(--bg-color)', padding: '2px 8px', borderRadius: '999px', border: '1px solid var(--border-color)' }}>
-                    {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || 'بدون دور'}
-                  </span>
-                </div>
-                <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.95rem' }}>
-                    {n.body}
-                </p>
-                <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button
-                    type="button"
-                    className="btn-md btn-md--outline"
-                    style={{ minHeight: 32, fontSize: '0.8rem' }}
-                    onClick={() => openReply(n)}
-                    disabled={!n.fromUserId || n.fromUserId === actorId || !recipientsMap[n.fromUserId]}
-                  >
-                    رد
-                  </button>
-                </div>
-              </div>
-
-              {!n.isRead && <div className="notif-card__unread-dot" aria-hidden />}
+        <div className="notif-list-stack">
+          {notifications.length === 0 ? (
+            <div className="surface-card surface-card--lg" style={{ textAlign: 'center', padding: '5rem' }}>
+              <Bell size={48} style={{ opacity: 0.1, marginBottom: '1rem' }} />
+              <p style={{ color: 'var(--text-secondary)' }}>لا توجد إشعارات جديدة بانتظارك.</p>
             </div>
-          ))
-        )}
-      </div>) : (
-      <div className="surface-card" style={{ padding: '1rem', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '1rem', minHeight: '500px' }}>
-        <div style={{ border: '1px solid var(--border-color)', borderRadius: '10px', overflow: 'auto' }}>
-          {conversations.length === 0 ? (
-            <div style={{ padding: '1rem', color: 'var(--text-secondary)' }}>لا توجد محادثات بعد.</div>
           ) : (
-            conversations.map((c) => {
-              const active = selectedConversation?.id === c.id;
-              const partnerNames = (c.participants || [])
-                .filter((id) => id !== actorId)
-                .map((id) => allUsers.find((u) => u.id === id)?.displayName || id)
-                .join('، ');
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => openConversation(c)}
-                  style={{
-                    width: '100%',
-                    textAlign: 'right',
-                    border: 'none',
-                    borderBottom: '1px solid var(--border-color)',
-                    padding: '0.8rem',
-                    background: active ? 'var(--accent-muted)' : 'transparent',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{c.isGroup ? c.title || 'مجموعة' : partnerNames || 'محادثة'}</div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>{c.lastMessage || 'لا توجد رسائل بعد'}</div>
-                </button>
-              );
-            })
-          )}
-        </div>
-        <div style={{ border: '1px solid var(--border-color)', borderRadius: '10px', display: 'flex', flexDirection: 'column' }}>
-          {!selectedConversation ? (
-            <div style={{ padding: '1rem', color: 'var(--text-secondary)' }}>اختر محادثة من القائمة.</div>
-          ) : (
-            <>
-              <div style={{ padding: '0.8rem', borderBottom: '1px solid var(--border-color)', fontWeight: 700 }}>
-                {selectedConversation.isGroup ? selectedConversation.title || 'مجموعة' : 'محادثة ثنائية'}
-              </div>
-              <div style={{ flex: 1, overflow: 'auto', padding: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                {messages.map((m) => (
+            notifications.map((n) => (
+              <div
+                key={n.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => markOneRead(n)}
+                onKeyDown={(e) => e.key === 'Enter' && markOneRead(n)}
+                className={`notif-card ${n.isRead ? 'notif-card--read' : 'notif-card--unread'}`}
+              >
+                <div className="notif-card__icon" aria-hidden>
+                  {getIcon(n.type)}
+                </div>
+
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div
-                    key={m.id}
                     style={{
-                      alignSelf: m.senderId === actorId ? 'flex-end' : 'flex-start',
-                      background: m.senderId === actorId ? 'var(--accent-muted)' : 'var(--bg-color)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '12px',
-                      padding: '0.5rem 0.7rem',
-                      maxWidth: '75%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '8px',
+                      gap: '12px',
+                      flexWrap: 'wrap',
                     }}
                   >
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '3px' }}>
-                      {m.senderName} - {ROLE_LABELS[m.senderRole] || m.senderRole || ''}
-                    </div>
-                    <div style={{ fontSize: '0.9rem' }}>{m.text}</div>
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: '1.1rem',
+                        fontWeight: 700,
+                        color: n.isRead ? 'var(--text-primary)' : 'var(--md-primary)',
+                      }}
+                    >
+                      {n.title}
+                    </h3>
+                    <span
+                      style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--text-secondary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Calendar size={14} /> {n.createdAt ? new Date(n.createdAt).toLocaleString('ar-EG') : '-'}
+                    </span>
                   </div>
-                ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                    <img
+                      src={n.fromUserPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(n.fromUserName || 'User')}`}
+                      alt=""
+                      style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border-color)' }}
+                    />
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{n.fromUserName || 'مرسل غير معروف'}</span>
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--text-secondary)',
+                        background: 'var(--bg-color)',
+                        padding: '2px 8px',
+                        borderRadius: '999px',
+                        border: '1px solid var(--border-color)',
+                      }}
+                    >
+                      {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || 'بدون دور'}
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.95rem' }}>{n.body}</p>
+                  <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      className="btn-md btn-md--outline"
+                      style={{ minHeight: 32, fontSize: '0.8rem' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openReply(n);
+                      }}
+                      disabled={!n.fromUserId || n.fromUserId === actorId || !recipientsMap[n.fromUserId]}
+                    >
+                      رد
+                    </button>
+                  </div>
+                </div>
+
+                {!n.isRead && <div className="notif-card__unread-dot" aria-hidden />}
               </div>
-              <form onSubmit={sendMessage} style={{ display: 'flex', gap: '0.5rem', padding: '0.8rem', borderTop: '1px solid var(--border-color)' }}>
-                <input
-                  className="app-input"
-                  placeholder="اكتب رسالة..."
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                />
-                <button type="submit" className="btn-md btn-md--primary" disabled={sendingMessage}>
-                  {sendingMessage ? '...' : 'إرسال'}
-                </button>
-              </form>
-            </>
+            ))
           )}
         </div>
-      </div>
+      ) : (
+        <div className="surface-card messenger-page-card">
+          <MessengerPanel
+            actorId={actorId}
+            allUsers={allUsers}
+            conversations={conversations}
+            selectedConversation={selectedConversation}
+            onSelectConversation={openConversation}
+            onBackList={() => setChatMobileMode('list')}
+            hideListColumnSm={isNarrow && chatMobileMode === 'thread'}
+            hideThreadColumnSm={isNarrow && chatMobileMode === 'list'}
+            messages={messages}
+            messageText={messageText}
+            setMessageText={setMessageText}
+            onSendMessage={sendMessage}
+            sendingMessage={sendingMessage}
+            replyTo={replyTo}
+            setReplyTo={setReplyTo}
+            onEditMessage={handleEditMessage}
+          />
+        </div>
       )}
 
       <FormModal open={isComposeOpen} title="إرسال إشعار جديد" onClose={() => setIsComposeOpen(false)}>
         <form onSubmit={handleSend}>
           <label className="app-label">المستلمون</label>
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <button type="button" className="btn-md btn-md--outline" style={{ minHeight: 32, fontSize: '0.8rem' }} onClick={() => setSelectedRecipientIds(recipients.map((u) => u.id))}>
+            <button
+              type="button"
+              className="btn-md btn-md--outline"
+              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              onClick={() => setSelectedRecipientIds(recipients.map((u) => u.id))}
+            >
               تحديد الكل
             </button>
-            <button type="button" className="btn-md btn-md--outline" style={{ minHeight: 32, fontSize: '0.8rem' }} onClick={() => setSelectedRecipientIds([])}>
+            <button
+              type="button"
+              className="btn-md btn-md--outline"
+              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              onClick={() => setSelectedRecipientIds([])}
+            >
               إلغاء التحديد
             </button>
           </div>
@@ -473,7 +540,9 @@ const NotificationsPage = ({ user }) => {
           <label className="app-label">المحتوى</label>
           <textarea className="app-textarea" value={body} onChange={(e) => setBody(e.target.value)} style={{ marginBottom: '1rem' }} />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsComposeOpen(false)}>إلغاء</button>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsComposeOpen(false)}>
+              إلغاء
+            </button>
             <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }} disabled={sending}>
               {sending ? 'جاري الإرسال...' : 'إرسال'}
             </button>
@@ -487,10 +556,20 @@ const NotificationsPage = ({ user }) => {
           <input className="app-input" value={newChatTitle} onChange={(e) => setNewChatTitle(e.target.value)} style={{ marginBottom: '0.75rem' }} />
           <label className="app-label">الأعضاء</label>
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <button type="button" className="btn-md btn-md--outline" style={{ minHeight: 32, fontSize: '0.8rem' }} onClick={() => setNewChatUsers(recipients.map((u) => u.id))}>
+            <button
+              type="button"
+              className="btn-md btn-md--outline"
+              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              onClick={() => setNewChatUsers(recipients.map((u) => u.id))}
+            >
               تحديد الكل
             </button>
-            <button type="button" className="btn-md btn-md--outline" style={{ minHeight: 32, fontSize: '0.8rem' }} onClick={() => setNewChatUsers([])}>
+            <button
+              type="button"
+              className="btn-md btn-md--outline"
+              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              onClick={() => setNewChatUsers([])}
+            >
               إلغاء التحديد
             </button>
           </div>
@@ -509,7 +588,9 @@ const NotificationsPage = ({ user }) => {
             ))}
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsNewChatOpen(false)}>إلغاء</button>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsNewChatOpen(false)}>
+              إلغاء
+            </button>
             <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
               بدء المحادثة
             </button>

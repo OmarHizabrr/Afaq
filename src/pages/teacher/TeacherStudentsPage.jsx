@@ -395,7 +395,7 @@ const TeacherStudentsPage = ({ user }) => {
         onConfirm={async () => {
           const item = pendingDelete;
           setPendingDelete(null);
-          if (item) await handleDelete(item.id, item.name);
+          if (item) await handleDelete(item.id);
         }}
       />
     </div>

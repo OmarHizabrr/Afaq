@@ -1,4 +1,4 @@
-const CACHE_NAME = 'afaq-v3';
+const CACHE_NAME = 'afaq-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -12,7 +12,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting(); // Force the waiting service worker to become the active service worker.
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache v3');
+      console.log('Opened cache v4');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
