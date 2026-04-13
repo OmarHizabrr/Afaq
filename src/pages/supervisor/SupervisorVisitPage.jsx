@@ -13,7 +13,6 @@ const SupervisorVisitPage = ({ user }) => {
 
   // Scoped Data
   const [assignedSchools, setAssignedSchools] = useState([]);
-  const [students, setStudents] = useState([]);
   const [curriculumList, setCurriculumList] = useState([]);
 
   // Form State
@@ -86,7 +85,6 @@ const SupervisorVisitPage = ({ user }) => {
   // When school changes, fetch its students
   useEffect(() => {
     if (!selectedSchoolId) {
-      setStudents([]);
       setTrackingData([]);
       return;
     }
@@ -100,7 +98,6 @@ const SupervisorVisitPage = ({ user }) => {
         const docs = await api.getDocuments(ref);
         const data = docs.map(d => ({ id: d.id, ...d.data() }));
         
-        setStudents(data);
         setTrackingData(data.map(s => ({
           studentId: s.id,
           name: s.studentName,
@@ -142,7 +139,7 @@ const SupervisorVisitPage = ({ user }) => {
           setGpsLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
           alert('تم التقاط الموقع بنجاح!');
         },
-        err => alert('يرجى تفعيل الـ GPS وإعطاء الصلاحية للمتصفح.')
+        () => alert('يرجى تفعيل الـ GPS وإعطاء الصلاحية للمتصفح.')
       );
     }
   };
