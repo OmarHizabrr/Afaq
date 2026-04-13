@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, MapPin, Map, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FormModal from '../../components/FormModal';
 
 const RegionsPage = () => {
   const navigate = useNavigate();
@@ -142,7 +143,7 @@ const RegionsPage = () => {
   return (
     <div>
       <PageHeader icon={MapPin} title="إدارة المناطق">
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(!isAdding)}>
+        <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
           <Plus size={18} />
           <span>إضافة منطقة</span>
         </button>
@@ -151,21 +152,18 @@ const RegionsPage = () => {
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
       {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
-      {/* Add/Edit Form */}
-      {(isAdding || isEditing) && (
-        <form onSubmit={isEditing ? handleEdit : handleAdd} className="surface-card" style={{
-          padding: '1.5rem',
-          marginBottom: '2rem',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          alignItems: 'center'
-        }}>
+      {/* Add/Edit Modal */}
+      <FormModal
+        open={isAdding || !!isEditing}
+        title={isEditing ? 'تعديل المنطقة' : 'إضافة منطقة'}
+        onClose={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}
+      >
+        <form onSubmit={isEditing ? handleEdit : handleAdd}>
           <select 
             value={selectedGovId}
             onChange={(e) => setSelectedGovId(e.target.value)}
             className="app-select"
-            style={{ minWidth: '200px' }}
+            style={{ marginBottom: '0.75rem' }}
           >
             <option value="">-- اختر المحافظة --</option>
             {governorates.map(gov => (
@@ -179,16 +177,18 @@ const RegionsPage = () => {
             value={regionName}
             onChange={(e) => setRegionName(e.target.value)}
             className="app-input"
-            style={{ flex: 1, minWidth: '200px' }}
+            style={{ marginBottom: '1rem' }}
           />
-          <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff' }}>
-            {isEditing ? 'تحديث' : 'حفظ'}
-          </button>
-          <button type="button" onClick={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
-            إلغاء
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
+              إلغاء
+            </button>
+            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+              {isEditing ? 'تحديث' : 'حفظ'}
+            </button>
+          </div>
         </form>
-      )}
+      </FormModal>
 
       {/* Regions List */}
       {loading ? (

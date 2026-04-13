@@ -9,6 +9,7 @@ import RegionsPage from './pages/admin/RegionsPage';
 import VillagesPage from './pages/admin/VillagesPage';
 import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
+import StudentManagementPage from './pages/admin/StudentManagementPage';
 import CurriculumPage from './pages/admin/CurriculumPage';
 import SettingsPage from './pages/common/SettingsPage';
 import NotificationsPage from './pages/common/NotificationsPage';
@@ -108,6 +109,7 @@ function App() {
           <Route path="villages" element={<VillagesPage />} />
           <Route path="schools" element={<SchoolsPage />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="students-management" element={<StudentManagementPage />} />
           <Route path="curriculum" element={<CurriculumPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
           <Route path="reports/:id" element={<ReportDetailsPage />} />

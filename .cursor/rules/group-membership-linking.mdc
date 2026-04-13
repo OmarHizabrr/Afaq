@@ -1,0 +1,14 @@
+---
+description: Enforce group-based membership linking model
+alwaysApply: true
+---
+
+# Group Membership Linking Standard
+
+- All user-to-school and user-to-region linking must happen through group membership flows only.
+- Do not create or update membership links from generic user management pages.
+- Use bilateral membership paths as the single source of truth:
+  - `members/{groupId}/members/{userId}`
+  - `Mygroup/{userId}/Mygroup/{groupId}`
+- Role updates are allowed in user admin pages, but assignment/unassignment must be done from the group context page (school/region details).
+- Any new linking feature must support group-style member operations (single or bulk add) from inside the group page.

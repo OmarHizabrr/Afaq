@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FormModal from '../../components/FormModal';
 
 const VillagesPage = () => {
   const navigate = useNavigate();
@@ -228,21 +229,22 @@ const VillagesPage = () => {
     return reg ? reg.name : 'غير معروف';
   };
 
-  const inputStyle = {
-    padding: '10px 14px',
-    borderRadius: '8px',
-    border: '1px solid var(--border-color)',
-    background: 'var(--bg-color)',
-    color: 'var(--text-primary)',
-    fontSize: '0.9rem',
-    width: '100%',
-    boxSizing: 'border-box'
-  };
-
   return (
     <div>
       <PageHeader icon={Home} title="إدارة القرى" subtitle="البيانات الديموغرافية والمجموعات">
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(!isAdding)}>
+        <button
+          type="button"
+          className="google-btn google-btn--toolbar"
+          onClick={() => {
+            setIsAdding(true);
+            setIsEditing(null);
+            setSelectedRegId('');
+            setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
+            setNewMuslims([]);
+            setMuslimName('');
+            setMuslimType('رجل');
+          }}
+        >
           <Plus size={18} />
           <span>إضافة قرية جديدة</span>
         </button>
@@ -251,18 +253,20 @@ const VillagesPage = () => {
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
       {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
-      {/* Complex Add Form */}
-      {isAdding && (
-        <form onSubmit={handleAdd} className="surface-card surface-card--lg" style={{
-          padding: '2rem',
-          marginBottom: '2rem'
-        }}>
+      {/* Complex Add/Edit Modal */}
+      <FormModal
+        open={isAdding}
+        title={null}
+        size="lg"
+        onClose={() => setIsAdding(false)}
+      >
+          <form onSubmit={handleAdd} style={{ maxWidth: '960px' }}>
           <h3 style={{ marginTop: 0, marginBottom: '1.5rem', color: 'var(--accent-color)' }}>البيانات الأساسية</h3>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المنطقة التابعة لها</label>
-              <select value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} style={inputStyle} required>
+              <select value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} className="app-select" required>
                 <option value="">-- اختر المنطقة --</option>
                 {regions.map(reg => (
                   <option key={reg.id} value={reg.id}>{reg.name} ({getRegionName(reg.id)})</option> // Simplified
@@ -271,15 +275,15 @@ const VillagesPage = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم القرية</label>
-              <input name="villageName" type="text" value={formData.villageName} onChange={handleInputChange} style={inputStyle} required />
+              <input name="villageName" type="text" value={formData.villageName} onChange={handleInputChange} className="app-input" required />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم الجروب</label>
-              <input name="groupName" type="text" value={formData.groupName} onChange={handleInputChange} style={inputStyle} />
+              <input name="groupName" type="text" value={formData.groupName} onChange={handleInputChange} className="app-input" />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم الـ LTI</label>
-              <input name="ltiName" type="text" value={formData.ltiName} onChange={handleInputChange} style={inputStyle} />
+              <input name="ltiName" type="text" value={formData.ltiName} onChange={handleInputChange} className="app-input" />
             </div>
           </div>
 
@@ -289,15 +293,15 @@ const VillagesPage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>إجمالي السكان</label>
-              <input name="populationCount" type="number" min="0" value={formData.populationCount} onChange={handleInputChange} style={inputStyle} />
+              <input name="populationCount" type="number" min="0" value={formData.populationCount} onChange={handleInputChange} className="app-input" />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>عدد المسلمين</label>
-              <input name="muslimsCount" type="number" min="0" value={formData.muslimsCount} onChange={handleInputChange} style={inputStyle} />
+              <input name="muslimsCount" type="number" min="0" value={formData.muslimsCount} onChange={handleInputChange} className="app-input" />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>عدد غير المسلمين</label>
-              <input name="nonMuslimsCount" type="number" min="0" value={formData.nonMuslimsCount} onChange={handleInputChange} style={inputStyle} />
+              <input name="nonMuslimsCount" type="number" min="0" value={formData.nonMuslimsCount} onChange={handleInputChange} className="app-input" />
             </div>
           </div>
 
@@ -313,11 +317,11 @@ const VillagesPage = () => {
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: '150px' }}>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المهتدي</label>
-              <input type="text" value={muslimName} onChange={(e) => setMuslimName(e.target.value)} style={inputStyle} onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewMuslimToList())} />
+              <input type="text" value={muslimName} onChange={(e) => setMuslimName(e.target.value)} className="app-input" onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewMuslimToList())} />
             </div>
             <div style={{ width: '120px' }}>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>الفئة</label>
-              <select value={muslimType} onChange={(e) => setMuslimType(e.target.value)} style={inputStyle}>
+              <select value={muslimType} onChange={(e) => setMuslimType(e.target.value)} className="app-select">
                 <option value="رجل">رجل</option>
                 <option value="امرأة">امرأة</option>
                 <option value="طفل">طفل</option>
@@ -340,15 +344,15 @@ const VillagesPage = () => {
           )}
 
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem' }}>
-            <button type="button" onClick={() => setIsAdding(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px 24px' }}>
-              إلغاء التغييرات
+            <button type="button" onClick={() => setIsAdding(false)} className="google-btn" style={{ width: 'auto', marginTop: 0 }}>
+              إلغاء
             </button>
-            <button type="submit" disabled={loading} className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff', padding: '12px 32px' }}>
-              {loading ? 'جاري الحفظ...' : 'حفظ القرية نهائياً'}
+            <button type="submit" disabled={loading} className="google-btn google-btn--filled" style={{ marginTop: 0, width: 'auto', padding: '12px 32px' }}>
+              {loading ? 'جاري الحفظ...' : isEditing ? 'تحديث القرية' : 'حفظ القرية'}
             </button>
           </div>
-        </form>
-      )}
+          </form>
+      </FormModal>
 
       {/* Villages List */}
       {loading && !isAdding ? (

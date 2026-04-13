@@ -4,6 +4,7 @@ import { Users, Plus, Edit2, Trash2, UserPlus, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FormModal from '../../components/FormModal';
 
 const TeacherStudentsPage = ({ user }) => {
   const navigate = useNavigate();
@@ -157,7 +158,12 @@ const TeacherStudentsPage = ({ user }) => {
         title="إدارة الحلقات والدارسين"
         subtitle="قائمة الدارسين المسجلين لديك"
       >
-        <button type="button" className="google-btn google-btn--filled google-btn--toolbar" style={{ background: 'var(--success-color)', color: '#fff' }} onClick={() => setIsAdding(!isAdding)}>
+        <button
+          type="button"
+          className="google-btn google-btn--filled google-btn--toolbar"
+          style={{ background: 'var(--success-color)', color: '#fff' }}
+          onClick={() => { setIsAdding(true); setIsEditing(null); setStudentName(''); setStudentAge(''); }}
+        >
           <UserPlus size={18} />
           <span>إضافة دارس جديد</span>
         </button>
@@ -166,16 +172,14 @@ const TeacherStudentsPage = ({ user }) => {
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
       {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
-      {/* Add Form */}
-      {isAdding && (
-        <form onSubmit={handleAdd} className="surface-card" style={{
-          padding: '1.5rem',
-          marginBottom: '2rem',
-          display: 'flex',
-          gap: '1rem',
-          flexWrap: 'wrap',
-          alignItems: 'center'
-        }}>
+      {/* Add/Edit Modal */}
+      <FormModal
+        open={isAdding}
+        title={isEditing ? 'تعديل بيانات الدارس' : 'إضافة دارس جديد'}
+        onClose={() => setIsAdding(false)}
+      >
+        <form onSubmit={handleAdd}>
+          <label className="app-label">اسم الدارس</label>
           <input 
             type="text" 
             placeholder="اسم الدارس الرباعي"
@@ -184,24 +188,27 @@ const TeacherStudentsPage = ({ user }) => {
             required
             autoFocus
             className="app-input"
-            style={{ flex: 2, minWidth: '200px' }}
+            style={{ marginBottom: '0.75rem' }}
           />
+          <label className="app-label">السن</label>
           <input 
             type="number" 
             placeholder="السن"
             value={studentAge}
             onChange={(e) => setStudentAge(e.target.value)}
             className="app-input"
-            style={{ flex: 1, minWidth: '100px' }}
+            style={{ marginBottom: '1rem' }}
           />
-          <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff' }}>
-            حفظ
-          </button>
-          <button type="button" onClick={() => setIsAdding(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
-            إلغاء
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsAdding(false)}>
+              إلغاء
+            </button>
+            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0, background: 'var(--success-color)', color: '#fff' }}>
+              {isEditing ? 'تحديث' : 'حفظ'}
+            </button>
+          </div>
         </form>
-      )}
+      </FormModal>
 
       {/* List */}
       {loading && !isAdding ? (

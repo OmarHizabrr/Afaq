@@ -20,6 +20,7 @@ const SchoolDetailsPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [assigning, setAssigning] = useState(false);
     const [assignError, setAssignError] = useState('');
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const fetchSchoolDetails = async () => {
         if (!id) return;
@@ -72,64 +73,85 @@ const SchoolDetailsPage = () => {
         fetchSchoolDetails();
     }, [id]);
 
-    const handleAssignUser = async (userToAssign) => {
-        if (!userToAssign || assigning) return;
-        setAssigning(true);
-        setAssignError('');
-        try {
-            const api = FirestoreApi.Api;
-            
-            // Bilateral Update:
-            // 1. Update user document
-            const userRef = api.getDocument('users', userToAssign.id);
-            await api.updateData({
-                docRef: userRef,
-                data: {
-                    schoolId: id,
-                    regionId: school.regionId || null
-                }
-            });
-
-            // 2. Add to school members subcollection
-            const memberRef = api.getGroupMemberDoc(id, userToAssign.id);
-            await api.setData({
-                docRef: memberRef,
-                data: {
-                    userId: userToAssign.id,
-                    type: userToAssign.role,
-                    timestamp: new Date().toISOString()
-                },
-                Overwrite: true
-            });
-
-            const mirrorRef = api.getUserMembershipMirrorDoc(userToAssign.id, id);
-            await api.setData({
-                docRef: mirrorRef,
-                data: { schoolId: id, joinedAt: new Date().toISOString() }
-            });
-
-            // 3. If it's a student, we also mirror in schools/{id}/students for legacy compatibility
-            if (userToAssign.role === 'student') {
-                const legacyRef = api.getSubDocument('students', id, 'students', userToAssign.id);
-                await api.setData({
-                    docRef: legacyRef,
-                    data: {
-                        studentName: userToAssign.displayName,
-                        age: userToAssign.age || 0,
-                        schoolId: id
-                    },
-                    Overwrite: true
-                });
-            }
-
-            setIsModalOpen(false);
-            fetchSchoolDetails();
-        } catch (err) {
-            console.error(err);
-            setAssignError('حدث خطأ أثناء التعيين.');
-        } finally {
-            setAssigning(false);
+    const assignUserToSchool = async (api, userToAssign) => {
+      if (!userToAssign) return;
+      const userRef = api.getDocument('users', userToAssign.id);
+      await api.updateData({
+        docRef: userRef,
+        data: {
+          schoolId: id,
+          regionId: school.regionId || null
         }
+      });
+
+      const memberRef = api.getGroupMemberDoc(id, userToAssign.id);
+      await api.setData({
+        docRef: memberRef,
+        data: {
+          userId: userToAssign.id,
+          type: userToAssign.role,
+          timestamp: new Date().toISOString()
+        },
+        Overwrite: true
+      });
+
+      const mirrorRef = api.getUserMembershipMirrorDoc(userToAssign.id, id);
+      await api.setData({
+        docRef: mirrorRef,
+        data: { schoolId: id, joinedAt: new Date().toISOString() }
+      });
+
+      if (userToAssign.role === 'student') {
+        const legacyRef = api.getSubDocument('students', id, 'students', userToAssign.id);
+        await api.setData({
+          docRef: legacyRef,
+          data: {
+            studentName: userToAssign.displayName,
+            age: userToAssign.age || 0,
+            schoolId: id
+          },
+          Overwrite: true
+        });
+      }
+    };
+
+    const handleAssignUser = async (userToAssign) => {
+      if (!userToAssign || assigning) return;
+      setAssigning(true);
+      setAssignError('');
+      try {
+        const api = FirestoreApi.Api;
+        await assignUserToSchool(api, userToAssign);
+        setSelectedIds([]);
+        setIsModalOpen(false);
+        fetchSchoolDetails();
+      } catch (err) {
+        console.error(err);
+        setAssignError('حدث خطأ أثناء التعيين.');
+      } finally {
+        setAssigning(false);
+      }
+    };
+
+    const handleAssignSelected = async () => {
+      if (selectedIds.length === 0 || assigning) return;
+      setAssigning(true);
+      setAssignError('');
+      try {
+        const api = FirestoreApi.Api;
+        const selectedUsers = filteredUsers.filter((u) => selectedIds.includes(u.id));
+        for (const u of selectedUsers) {
+          await assignUserToSchool(api, u);
+        }
+        setSelectedIds([]);
+        setIsModalOpen(false);
+        fetchSchoolDetails();
+      } catch (err) {
+        console.error(err);
+        setAssignError('حدث خطأ أثناء التعيين الجماعي.');
+      } finally {
+        setAssigning(false);
+      }
     };
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
@@ -193,7 +215,7 @@ const SchoolDetailsPage = () => {
                                     style={{ padding: '6px 30px 6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', fontSize: '0.8rem' }}
                                 />
                             </div>
-                            <button className="icon-btn" title="إضافة معلم" onClick={() => setIsModalOpen(true)}><UserPlus size={18} /></button>
+                            <button className="icon-btn" title="إضافة معلم" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
                         </div>
                     </div>
                     {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد نتائج للبحث.</p> : (
@@ -229,7 +251,7 @@ const SchoolDetailsPage = () => {
                                     style={{ padding: '6px 30px 6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', fontSize: '0.8rem' }}
                                 />
                             </div>
-                            <button className="icon-btn" title="إضافة طالب" onClick={() => setIsModalOpen(true)}><UserPlus size={18} /></button>
+                            <button className="icon-btn" title="إضافة طالب" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
                         </div>
                     </div>
                     {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد نتائج للبحث.</p> : (
@@ -269,11 +291,45 @@ const SchoolDetailsPage = () => {
                             />
                         </div>
                         {assignError && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{assignError}</div>}
+                        {selectedIds.length > 0 && (
+                          <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+                            تم تحديد {selectedIds.length} عضو. يمكنك التعيين الجماعي الآن.
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                          <button
+                            type="button"
+                            className="google-btn google-btn--filled"
+                            style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }}
+                            disabled={assigning || selectedIds.length === 0}
+                            onClick={handleAssignSelected}
+                          >
+                            تعيين المحددين
+                          </button>
+                          <button
+                            type="button"
+                            className="google-btn"
+                            style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }}
+                            onClick={() => setSelectedIds([])}
+                            disabled={selectedIds.length === 0}
+                          >
+                            إلغاء التحديد
+                          </button>
+                        </div>
 
                         <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px' }}>
                             {filteredUsers.length === 0 ? <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>لا يوجد مستخدمين متاحين للتعيين.</p> : filteredUsers.map(u => (
                                 <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedIds.includes(u.id)}
+                                          onChange={(e) => {
+                                            setSelectedIds((prev) =>
+                                              e.target.checked ? [...prev, u.id] : prev.filter((idVal) => idVal !== u.id)
+                                            );
+                                          }}
+                                        />
                                         <img src={u.photoURL || `https://ui-avatars.com/api/?name=${u.displayName}`} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
                                         <div>
                                             <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{u.displayName}</div>

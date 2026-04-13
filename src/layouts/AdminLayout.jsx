@@ -17,7 +17,8 @@ import {
   X,
   ChevronRight,
   ChevronLeft,
-  ClipboardList
+  ClipboardList,
+  GraduationCap
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
@@ -78,6 +79,7 @@ const AdminLayout = ({ user }) => {
     {name: 'المنَاهِج', icon: BookOpen, path: '/curriculum' },
     {name: 'التقارير', icon: ClipboardList, path: '/reports' },
     {name: 'المستخدمين', icon: Users, path: '/users' },
+    {name: 'إدارة الطلاب', icon: GraduationCap, path: '/students-management' },
     {name: 'الإشعارات', icon: Bell, path: '/notifications' },
     {name: 'الإعدادات', icon: Settings, path: '/settings' },
   ];

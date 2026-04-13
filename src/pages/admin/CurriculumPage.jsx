@@ -3,6 +3,7 @@ import { BookOpen, Plus, Edit2, Trash2, Save, ChevronDown, ChevronUp } from 'luc
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FormModal from '../../components/FormModal';
 
 const CurriculumPage = () => {
   const [subjects, setSubjects] = useState([]);
@@ -174,7 +175,7 @@ const CurriculumPage = () => {
         title="إدارة المناهج الأساسية"
         subtitle="توزيع خطة الأسابيع (٥٠ أسبوعاً)"
       >
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(!isAdding)}>
+        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
           <Plus size={18} />
           <span>إضافة مادة جديدة</span>
         </button>
@@ -183,39 +184,32 @@ const CurriculumPage = () => {
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
       {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
-      {/* Add New Subject Form */}
-      {isAdding && (
-        <form onSubmit={handleAddSubject} className="surface-card" style={{
-          padding: '1.5rem',
-          marginBottom: '2rem',
-          display: 'flex',
-          gap: '1rem',
-          alignItems: 'center'
-        }}>
+      {/* Add New Subject Modal */}
+      <FormModal
+        open={isAdding}
+        title="إضافة مادة جديدة"
+        onClose={() => setIsAdding(false)}
+      >
+        <form onSubmit={handleAddSubject}>
           <input 
             type="text" 
             placeholder="اسم المادة (مثال: العقيدة)"
             value={newSubjectName}
             onChange={(e) => setNewSubjectName(e.target.value)}
             autoFocus
-            style={{
-              flex: 1,
-              padding: '12px 16px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-color)',
-              color: 'var(--text-primary)',
-              fontSize: '1rem'
-            }}
+            className="app-input"
+            style={{ marginBottom: '1rem' }}
           />
-          <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff' }}>
-            إنشاء الخطة
-          </button>
-          <button type="button" onClick={() => setIsAdding(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
-            إلغاء
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsAdding(false)}>
+              إلغاء
+            </button>
+            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+              إنشاء الخطة
+            </button>
+          </div>
         </form>
-      )}
+      </FormModal>
 
       {/* List of Subjects */}
       {loading && !isAdding && !editingSubject ? (
@@ -337,7 +331,7 @@ const CurriculumPage = () => {
                         disabled={loading}
                         style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff', padding: '12px 32px' }}
                       >
-                         حفظ התوزيع النهائي للمادة
+                         حفظ التوزيع النهائي للمادة
                       </button>
                     </div>
                   </div>

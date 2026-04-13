@@ -9,6 +9,7 @@ const UserDetailsPage = () => {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [activity, setActivity] = useState([]);
+    const [memberships, setMemberships] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -19,6 +20,19 @@ const UserDetailsPage = () => {
                 const userDoc = await api.getData(api.getDocument('users', id));
                 if (!userDoc) return;
                 setProfile({ id, ...userDoc });
+                const mirrorDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(id));
+                setMemberships(
+                  mirrorDocs.map((doc) => {
+                    const data = doc.data() || {};
+                    return {
+                      id: doc.id,
+                      schoolId: data.schoolId || '',
+                      regionId: data.regionId || '',
+                      role: data.role || '',
+                      joinedAt: data.joinedAt || data.assignedAt || '',
+                    };
+                  })
+                );
 
                 // Fetch dynamic activity based on role
                 if (userDoc.role === 'student') {
@@ -113,6 +127,25 @@ const UserDetailsPage = () => {
                                 <Shield size={16} /> المعرف: {profile.id.substring(0, 8)}...
                             </div>
                         </div>
+                    </div>
+                    <div className="surface-card" style={{ padding: '1rem 1.1rem', borderRadius: '16px' }}>
+                        <h3 style={{ margin: '0 0 10px', fontSize: '1rem', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <BookOpen size={16} /> الارتباطات (Memberships)
+                        </h3>
+                        {memberships.length === 0 ? (
+                          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لا توجد ارتباطات مجموعات حالياً.</p>
+                        ) : (
+                          <div style={{ display: 'grid', gap: '8px' }}>
+                            {memberships.map((m) => (
+                              <div key={m.id} style={{ border: '1px solid var(--border-color)', borderRadius: '10px', padding: '8px', background: 'var(--bg-color)', textAlign: 'right' }}>
+                                <div style={{ fontSize: '0.8rem' }}>
+                                  {m.schoolId ? `مدرسة: ${m.schoolId}` : m.regionId ? `منطقة: ${m.regionId}` : `مجموعة: ${m.id}`}
+                                </div>
+                                {m.role && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>الدور: {m.role}</div>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                     </div>
                 </div>
 

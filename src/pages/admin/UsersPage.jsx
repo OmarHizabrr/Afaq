@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, School, Edit2, X, Eye, Info } from 'lucide-react';
+import { Shield, Edit2, X, Eye, Info } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 
@@ -28,7 +28,6 @@ const UsersPage = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [regions, setRegions] = useState([]);
-  const [schools, setSchools] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
@@ -36,22 +35,19 @@ const UsersPage = () => {
 
   const [selectedRole, setSelectedRole] = useState('unassigned');
   const [selectedRegionId, setSelectedRegionId] = useState('');
-  const [selectedSchoolId, setSelectedSchoolId] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
 
-      const [userDocs, regDocs, schDocs] = await Promise.all([
+      const [userDocs, regDocs] = await Promise.all([
         api.getDocuments(api.getCollection('users')),
-        api.getCollectionGroupDocuments('regions'),
-        api.getCollectionGroupDocuments('schools')
+        api.getCollectionGroupDocuments('regions')
       ]);
 
       setUsers(userDocs.map(doc => ({ id: doc.id, ...doc.data() })));
       setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setSchools(schDocs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
@@ -67,7 +63,6 @@ const UsersPage = () => {
   const openEditModal = async (user) => {
     setEditingUser(user);
     setError('');
-    setSelectedSchoolId(user.schoolId || '');
     setSelectedRegionId('');
 
     if (user.role?.includes('supervisor')) {
@@ -91,20 +86,9 @@ const UsersPage = () => {
       return;
     }
 
-    if (selectedRole === 'teacher' && !selectedSchoolId) {
-      setError('يجب اختيار مدرسة للمعلم');
-      return;
-    }
-    if (selectedRole === 'student' && !selectedSchoolId) {
-      setError('يجب اختيار مدرسة للطالب');
-      return;
-    }
-
     try {
       setLoading(true);
       const api = FirestoreApi.Api;
-
-      await api.clearUserMembershipMirrors(editingUser.id);
 
       const becomesSupervisor =
         selectedRole === 'supervisor_local' || selectedRole === 'supervisor_arab';
@@ -117,8 +101,7 @@ const UsersPage = () => {
       }
 
       const userDataPatch = {
-        role: selectedRole,
-        schoolId: selectedRole === 'teacher' || selectedRole === 'student' ? selectedSchoolId : ''
+        role: selectedRole
       };
 
       await api.updateData({
@@ -126,36 +109,12 @@ const UsersPage = () => {
         data: userDataPatch
       });
 
-      if (selectedRole === 'teacher' || selectedRole === 'student') {
-        const groupId = selectedSchoolId;
-        if (groupId) {
-          const link1 = api.getGroupMemberDoc(groupId, editingUser.id);
-          const link2 = api.getUserMembershipMirrorDoc(editingUser.id, groupId);
-
-          await Promise.all([
-            api.setData({
-              docRef: link1,
-              data: {
-                userId: editingUser.id,
-                role: selectedRole,
-                joinedAt: new Date().toISOString(),
-                type: selectedRole === 'student' ? 'student' : 'staff'
-              }
-            }),
-            api.setData({
-              docRef: link2,
-              data: { schoolId: groupId, joinedAt: new Date().toISOString() }
-            })
-          ]);
-        }
-      }
-
       setEditingUser(null);
       setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء المزامنة الثنائية');
+      setError('حدث خطأ أثناء تحديث الصلاحية');
     } finally {
       setLoading(false);
     }
@@ -166,7 +125,7 @@ const UsersPage = () => {
 
   return (
     <div>
-      <PageHeader icon={Shield} title="إدارة المستخدمين والصلاحيات" />
+      <PageHeader icon={Shield} title="إدارة المستخدمين والصلاحيات" subtitle="تعديل الرتبة فقط. الربط بالمجموعات يتم من داخل صفحة المجموعة." />
 
       {error && (
         <div
@@ -316,46 +275,8 @@ const UsersPage = () => {
             </div>
 
             {(selectedRole === 'student' || selectedRole === 'teacher') && (
-              <div
-                style={{
-                  background: 'var(--bg-color)',
-                  padding: '1rem',
-                  borderRadius: '8px',
-                  marginBottom: '1.5rem',
-                  border: '1px solid var(--accent-glow)'
-                }}
-              >
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginBottom: '12px',
-                    fontWeight: 600,
-                    color: 'var(--success-color)'
-                  }}
-                >
-                  <School size={18} /> تعيين مدرسة {selectedRole === 'student' ? 'الطالب' : 'المعلم'}
-                </label>
-                <select
-                  value={selectedSchoolId}
-                  onChange={e => setSelectedSchoolId(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    background: 'var(--bg-color)',
-                    color: 'var(--text-primary)'
-                  }}
-                >
-                  <option value="">-- اختر المدرسة --</option>
-                  {schools.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="app-alert app-alert--info" style={{ marginBottom: '1.5rem' }}>
+                ربط {selectedRole === 'student' ? 'الطالب' : 'المعلم'} بالمدرسة يتم من داخل صفحة المدرسة نفسها (نمط أعضاء المجموعة).
               </div>
             )}
 

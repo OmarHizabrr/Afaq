@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Map, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FormModal from '../../components/FormModal';
 
 const GovernoratesPage = () => {
   const navigate = useNavigate();
@@ -108,7 +109,7 @@ const GovernoratesPage = () => {
   return (
     <div>
       <PageHeader icon={Map} title="إدارة المحافظات">
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(!isAdding)}>
+        <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); }}>
           <Plus size={18} />
           <span>إضافة محافظة</span>
         </button>
@@ -117,15 +118,13 @@ const GovernoratesPage = () => {
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
       {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
-      {/* Add/Edit Form */}
-      {(isAdding || isEditing) && (
-        <form onSubmit={isEditing ? handleEdit : handleAdd} className="surface-card" style={{
-          padding: '1.5rem',
-          marginBottom: '2rem',
-          display: 'flex',
-          gap: '1rem',
-          alignItems: 'center'
-        }}>
+      {/* Add/Edit Modal */}
+      <FormModal
+        open={isAdding || !!isEditing}
+        title={isEditing ? 'تعديل المحافظة' : 'إضافة محافظة'}
+        onClose={() => { setIsAdding(false); setIsEditing(null); setGovName(''); }}
+      >
+        <form onSubmit={isEditing ? handleEdit : handleAdd}>
           <input 
             type="text" 
             placeholder="اسم المحافظة (مثال: صنعاء)"
@@ -133,16 +132,18 @@ const GovernoratesPage = () => {
             onChange={(e) => setGovName(e.target.value)}
             autoFocus
             className="app-input"
-            style={{ flex: 1 }}
+            style={{ marginBottom: '1rem' }}
           />
-          <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff' }}>
-            {isEditing ? 'تحديث' : 'حفظ'}
-          </button>
-          <button type="button" onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px' }}>
-            إلغاء
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); }}>
+              إلغاء
+            </button>
+            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+              {isEditing ? 'تحديث' : 'حفظ'}
+            </button>
+          </div>
         </form>
-      )}
+      </FormModal>
 
       {/* Governorates List */}
       {loading ? (

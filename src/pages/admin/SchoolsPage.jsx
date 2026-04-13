@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, School, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import FormModal from '../../components/FormModal';
 
 const SchoolsPage = () => {
   const navigate = useNavigate();
@@ -133,7 +134,7 @@ const SchoolsPage = () => {
   return (
     <div>
       <PageHeader icon={School} title="إدارة المدارس">
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(!isAdding)}>
+        <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); }}>
           <Plus size={18} />
           <span>إضافة مدرسة</span>
         </button>
@@ -142,53 +143,41 @@ const SchoolsPage = () => {
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
       {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
-      {/* Add Form */}
-      {isAdding && (
-        <form onSubmit={handleAdd} className="surface-card surface-card--lg" style={{
-          padding: '2rem',
-          marginBottom: '2rem'
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-            
-            {/* Cascading Dropdowns */}
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>تصفية حسب المنطقة</label>
-              <select value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="app-select">
-                <option value="">-- كل المناطق --</option>
-                {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-              </select>
-            </div>
+      {/* Add/Edit Modal */}
+      <FormModal
+        open={isAdding}
+        title={isEditing ? 'تعديل المدرسة' : 'إضافة مدرسة'}
+        onClose={() => setIsAdding(false)}
+      >
+        <form onSubmit={handleAdd}>
+          <label className="app-label">تصفية حسب المنطقة</label>
+          <select value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="app-select" style={{ marginBottom: '0.75rem' }}>
+            <option value="">-- كل المناطق --</option>
+            {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+          </select>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>القرية (مطلوب)</label>
-              <select value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="app-select" required>
-                <option value="">-- اختر القرية --</option>
-                {filteredVillages.map(v => <option key={v.id} value={v.id}>{v.villageName}</option>)}
-              </select>
-            </div>
+          <label className="app-label">القرية (مطلوب)</label>
+          <select value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="app-select" required style={{ marginBottom: '0.75rem' }}>
+            <option value="">-- اختر القرية --</option>
+            {filteredVillages.map(v => <option key={v.id} value={v.id}>{v.villageName}</option>)}
+          </select>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المدرسة (مطلوب)</label>
-              <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input" required placeholder="مثال: مدرسة النور" />
-            </div>
+          <label className="app-label">اسم المدرسة (مطلوب)</label>
+          <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input" required placeholder="مثال: مدرسة النور" style={{ marginBottom: '0.75rem' }} />
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المتبرع (اختياري)</label>
-              <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input" placeholder="فاعل خير" />
-            </div>
+          <label className="app-label">اسم المتبرع (اختياري)</label>
+          <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input" placeholder="فاعل خير" style={{ marginBottom: '1rem' }} />
 
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-            <button type="button" onClick={() => setIsAdding(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '12px 24px' }}>
-              إلغاء التغييرات
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <button type="button" onClick={() => setIsAdding(false)} className="google-btn" style={{ width: 'auto', marginTop: 0 }}>
+              إلغاء
             </button>
-            <button type="submit" disabled={loading} className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff', padding: '12px 32px' }}>
+            <button type="submit" disabled={loading} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
               حفظ المدرسة
             </button>
           </div>
         </form>
-      )}
+      </FormModal>
 
       {/* List */}
       {loading && !isAdding ? (
