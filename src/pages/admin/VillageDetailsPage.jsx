@@ -9,6 +9,7 @@ const VillageDetailsPage = () => {
     const navigate = useNavigate();
     const [village, setVillage] = useState(null);
     const [schools, setSchools] = useState([]);
+    const [newMuslims, setNewMuslims] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -26,6 +27,12 @@ const VillageDetailsPage = () => {
                 const allSchools = await api.getCollectionGroupDocuments('schools');
                 const vilSchools = allSchools.filter(s => s.data().villageId === id).map(s => ({ id: s.id, ...s.data() }));
                 setSchools(vilSchools);
+
+                const newMuslimsDocs = await api.getDocuments(api.getCollection('new_muslims'));
+                const villageNewMuslims = newMuslimsDocs
+                  .map((doc) => ({ id: doc.id, ...doc.data() }))
+                  .filter((doc) => doc.villageId === id);
+                setNewMuslims(villageNewMuslims);
 
             } catch (err) {
                 console.error(err);
@@ -46,6 +53,10 @@ const VillageDetailsPage = () => {
             <h3 style={{ margin: 0, fontSize: '1.5rem', color: color }}>{value}</h3>
         </div>
     );
+
+    const menCount = newMuslims.filter((m) => m.type === 'رجل').length;
+    const womenCount = newMuslims.filter((m) => m.type === 'امرأة').length;
+    const childrenCount = newMuslims.filter((m) => m.type === 'طفل').length;
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -78,9 +89,23 @@ const VillageDetailsPage = () => {
                         <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                             <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--success-color)' }}>المهتدون الجدد (New Muslims)</h3>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                                <div><strong>👨 رجال:</strong> {village.newMuslimsMen || 0}</div>
-                                <div><strong>👩 نساء:</strong> {village.newMuslimsWomen || 0}</div>
-                                <div><strong>👧 أطفال:</strong> {village.newMuslimsChildren || 0}</div>
+                                <div><strong>👨 رجال:</strong> {menCount}</div>
+                                <div><strong>👩 نساء:</strong> {womenCount}</div>
+                                <div><strong>👧 أطفال:</strong> {childrenCount}</div>
+                            </div>
+                            <div style={{ marginTop: '1rem' }}>
+                              {newMuslims.length === 0 ? (
+                                <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لا توجد سجلات مهتدين مضافة بعد.</p>
+                              ) : (
+                                <div style={{ display: 'grid', gap: '8px' }}>
+                                  {newMuslims.map((m) => (
+                                    <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--panel-color)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '8px 10px' }}>
+                                      <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
+                                      <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.type}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                         </div>
                     </div>

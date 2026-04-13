@@ -9,6 +9,7 @@ const VillagesPage = () => {
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
   const [governorates, setGovernorates] = useState([]);
+  const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
   
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -31,21 +32,69 @@ const VillagesPage = () => {
   const [muslimName, setMuslimName] = useState('');
   const [muslimType, setMuslimType] = useState('رجل');
 
+  const normalizeNewMuslims = (items) =>
+    items
+      .map((m) => ({ id: m.id, name: (m.name || '').trim(), type: m.type || 'رجل' }))
+      .filter((m) => m.name.length > 0);
+
+  const calculateNewMuslimsCounts = (items) => ({
+    newMuslimsMen: items.filter((m) => m.type === 'رجل').length,
+    newMuslimsWomen: items.filter((m) => m.type === 'امرأة').length,
+    newMuslimsChildren: items.filter((m) => m.type === 'طفل').length,
+  });
+
+  const syncVillageNewMuslims = async (api, villageId, nextItems, currentItems) => {
+    const currentById = new Map(currentItems.filter((m) => m.id).map((m) => [m.id, m]));
+    const nextWithIds = nextItems.filter((m) => m.id);
+    const nextIds = new Set(nextWithIds.map((m) => m.id));
+
+    const toDelete = currentItems.filter((m) => m.id && !nextIds.has(m.id));
+    const deletions = toDelete.map((m) => api.deleteData(api.getDocument('new_muslims', m.id)));
+
+    const upserts = nextItems.map((m) => {
+      const docId = m.id || api.getNewId('new_muslims');
+      const old = currentById.get(docId);
+      if (old && old.name === m.name && old.type === m.type) return null;
+      return api.setData({
+        docRef: api.getDocument('new_muslims', docId),
+        data: { villageId, name: m.name, type: m.type },
+      });
+    }).filter(Boolean);
+
+    await Promise.all([...deletions, ...upserts]);
+  };
+
   const fetchData = async () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
       
       // Fetch Governorates & Regions for relations
-      const [govDocs, regDocs, vilDocs] = await Promise.all([
+      const [govDocs, regDocs, vilDocs, newMuslimsDocs] = await Promise.all([
         api.getDocuments(api.getCollection('governorates')),
         api.getCollectionGroupDocuments('regions'),
-        api.getCollectionGroupDocuments('villages')
+        api.getCollectionGroupDocuments('villages'),
+        api.getDocuments(api.getCollection('new_muslims')),
       ]);
 
       setGovernorates(govDocs.map(doc => ({ id: doc.id, ...doc.data() })));
       setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
       setVillages(vilDocs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      const grouped = {};
+      newMuslimsDocs.forEach((doc) => {
+        const data = doc.data();
+        const villageId = data.villageId;
+        if (!villageId) return;
+        if (!grouped[villageId]) grouped[villageId] = [];
+        grouped[villageId].push({
+          id: doc.id,
+          villageId,
+          name: data.name || '',
+          type: data.type || 'رجل',
+        });
+      });
+      setNewMuslimsDocsByVillage(grouped);
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
@@ -95,10 +144,14 @@ const VillagesPage = () => {
         muslimsCount: parseInt(formData.muslimsCount) || 0,
         nonMuslimsCount: parseInt(formData.nonMuslimsCount) || 0,
       };
+      const normalizedNewMuslims = normalizeNewMuslims(newMuslims);
+      const counters = calculateNewMuslimsCounts(normalizedNewMuslims);
 
       if (isEditing) {
         const docRef = api.getSubDocument('villages', isEditing.regionId, 'villages', isEditing.id);
-        await api.updateData({ docRef, data: villageData });
+        await api.updateData({ docRef, data: { ...villageData, ...counters } });
+        const currentItems = newMuslimsDocsByVillage[isEditing.id] || [];
+        await syncVillageNewMuslims(api, isEditing.id, normalizedNewMuslims, currentItems);
       } else {
         const newVilId = api.getNewId('villages');
         const vilRef = api.getSubDocument('villages', selectedRegId, 'villages', newVilId);
@@ -107,22 +160,10 @@ const VillagesPage = () => {
           docRef: vilRef,
           data: {
             ...villageData,
-            newMuslimsMen: newMuslims.filter(m => m.type === 'رجل').length,
-            newMuslimsWomen: newMuslims.filter(m => m.type === 'امرأة').length,
-            newMuslimsChildren: newMuslims.filter(m => m.type === 'طفل').length,
+            ...counters,
           }
         });
-
-        if (newMuslims.length > 0) {
-          const promises = newMuslims.map(muslim => {
-            const muslimId = api.getNewId('new_muslims');
-            return api.setData({
-              docRef: api.getDocument('new_muslims', muslimId),
-              data: { villageId: newVilId, name: muslim.name, type: muslim.type }
-            });
-          });
-          await Promise.all(promises);
-        }
+        await syncVillageNewMuslims(api, newVilId, normalizedNewMuslims, []);
       }
 
       setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
@@ -151,6 +192,7 @@ const VillagesPage = () => {
       muslimsCount: vil.muslimsCount || '',
       nonMuslimsCount: vil.nonMuslimsCount || ''
     });
+    setNewMuslims((newMuslimsDocsByVillage[vil.id] || []).map((m) => ({ ...m })));
   };
 
   const handleDelete = async (id, name) => {
@@ -159,6 +201,13 @@ const VillagesPage = () => {
       const api = FirestoreApi.Api;
       const villageDoc = villages.find(v => v.id === id);
       if (!villageDoc) return;
+
+      const linkedNewMuslims = newMuslimsDocsByVillage[id] || [];
+      if (linkedNewMuslims.length > 0) {
+        await Promise.all(
+          linkedNewMuslims.map((m) => api.deleteData(api.getDocument('new_muslims', m.id)))
+        );
+      }
       
       const docRef = api.getSubDocument('villages', villageDoc.regionId, 'villages', id);
       await api.deleteData(docRef);
@@ -327,9 +376,9 @@ const VillagesPage = () => {
                 <div>👥 السكان: {vil.populationCount}</div>
                 <div>مسلمين: {vil.muslimsCount}</div>
                 <div style={{ color: 'var(--danger-color)' }}>غير المسلمين: {vil.nonMuslimsCount}</div>
-                <div style={{ color: 'var(--success-color)' }}>مهتدين (رجال): {vil.newMuslimsMen || 0}</div>
-                <div style={{ color: 'var(--success-color)' }}>مهتدين (نساء): {vil.newMuslimsWomen || 0}</div>
-                <div style={{ color: 'var(--success-color)' }}>مهتدين (أطفال): {vil.newMuslimsChildren || 0}</div>
+                <div style={{ color: 'var(--success-color)' }}>مهتدين (رجال): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'رجل').length}</div>
+                <div style={{ color: 'var(--success-color)' }}>مهتدين (نساء): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'امرأة').length}</div>
+                <div style={{ color: 'var(--success-color)' }}>مهتدين (أطفال): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'طفل').length}</div>
               </div>
 
               <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
