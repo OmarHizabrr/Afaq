@@ -245,20 +245,8 @@ const UsersPage = () => {
 
       {/* Edit Role Modal */}
       {editingUser && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 100, 
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(0,0,0,0.6)'
-        }}>
-          <div style={{
-            background: 'var(--panel-color)',
-            width: '90%', maxWidth: '500px',
-            borderRadius: '16px',
-            padding: '2rem',
-            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}>
+        <div className="modal-overlay" onClick={() => setEditingUser(null)}>
+          <div className="modal-card modal-card--sm" onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h2 style={{ margin: 0, fontSize: '1.4rem' }}>تعديل صلاحيات ({editingUser.displayName})</h2>
               <button className="icon-btn" onClick={() => setEditingUser(null)}><X size={20} /></button>
@@ -289,7 +277,7 @@ const UsersPage = () => {
                 <select 
                   value={selectedSchoolId} 
                   onChange={(e) => setSelectedSchoolId(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--panel-color)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
                 >
                   <option value="">-- اختر المدرسة --</option>
                   {schools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -300,7 +288,7 @@ const UsersPage = () => {
             {/* Supervisor Local Settings */}
             {selectedRole === 'supervisor_local' && (
               <div style={{ background: 'var(--bg-color)', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid var(--accent-glow)' }}>
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 0, marginBottom: '1rem', color: '#3b82f6', fontSize: '1.1rem' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 0, marginBottom: '1rem', color: 'var(--md-primary)', fontSize: '1.1rem' }}>
                   <MapPin size={18} /> النطاق الجغرافي للمشرف
                 </h3>
                 
@@ -308,14 +296,14 @@ const UsersPage = () => {
                 <select 
                   value={selectedRegionId} 
                   onChange={(e) => setSelectedRegionId(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--panel-color)', color: 'var(--text-primary)', marginBottom: '1.5rem' }}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)', marginBottom: '1.5rem' }}
                 >
                   <option value="">-- اختر المنطقة --</option>
                   {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                 </select>
 
                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem' }}>تقييد بمدارس معينة (اختياري، اتركها فارغة لجميع المدارس)</label>
-                <div style={{ maxHeight: '150px', overflowY: 'auto', background: 'var(--panel-color)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px' }}>
+                <div className="modal-scroll-box">
                   {schools.map(school => (
                     <div 
                       key={school.id} 
@@ -331,8 +319,8 @@ const UsersPage = () => {
                         borderBottom: '1px solid var(--border-color)'
                       }}
                     >
-                      <div style={{ width: '20px', height: '20px', borderRadius: '4px', border: '1px solid #3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', background: restrictedSchoolIds.includes(school.id) ? '#3b82f6' : 'transparent' }}>
-                        {restrictedSchoolIds.includes(school.id) && <CheckCircle size={14} color="#fff" />}
+                      <div style={{ width: '20px', height: '20px', borderRadius: '4px', border: '1px solid var(--md-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: restrictedSchoolIds.includes(school.id) ? 'var(--md-primary)' : 'transparent' }}>
+                        {restrictedSchoolIds.includes(school.id) && <CheckCircle size={14} color="var(--md-on-primary)" />}
                       </div>
                       <span style={{ fontSize: '0.9rem' }}>{school.name}</span>
                     </div>

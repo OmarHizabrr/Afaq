@@ -193,7 +193,7 @@ const CurriculumPage = () => {
       {loading && !isAdding && !editingSubject ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : subjects.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+        <div className="empty-state">
           لا توجد مناهج مضافة. ابدأ بإضافة مواد الخطة السنوية.
         </div>
       ) : (
@@ -202,26 +202,24 @@ const CurriculumPage = () => {
             const isExpanded = expandedId === subject.id;
             
             return (
-              <div key={subject.id} style={{
-                background: 'var(--panel-color)',
-                borderRadius: '12px',
-                border: isExpanded ? '1px solid var(--accent-color)' : '1px solid var(--border-color)',
-                overflow: 'hidden',
-                transition: 'all 0.3s'
-              }}>
+              <div
+                key={subject.id}
+                className={`surface-card accordion-item ${isExpanded ? 'accordion-item--open' : ''}`}
+                style={{
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: isExpanded ? 'var(--md-primary)' : 'var(--border-color)',
+                }}
+              >
                 {/* Header (Accordion Clickable) */}
-                <div 
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleExpand(subject); } }}
                   onClick={() => toggleExpand(subject)}
-                  style={{ 
-                    padding: '1.5rem', 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    background: isExpanded ? 'var(--accent-glow)' : 'transparent'
-                  }}
+                  className={`accordion-item__header ${isExpanded ? 'accordion-item__header--active' : ''}`}
                 >
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', color: isExpanded ? 'var(--accent-color)' : 'var(--text-primary)' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', color: isExpanded ? 'var(--md-primary)' : 'var(--text-primary)' }}>
                     {subject.name}
                   </h3>
                   
@@ -259,11 +257,9 @@ const CurriculumPage = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
                       {editingWeeks.map((wConfig, index) => (
-                        <div key={index} style={{ 
+                        <div key={index} className="surface-card" style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
-                          background: 'var(--panel-color)', 
-                          border: '1px solid var(--border-color)',
                           borderRadius: '8px',
                           overflow: 'hidden'
                         }}>

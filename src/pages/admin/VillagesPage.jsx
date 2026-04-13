@@ -299,20 +299,13 @@ const VillagesPage = () => {
       {loading && !isAdding ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : villages.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+        <div className="empty-state">
           لا توجد قرى مضافة حتى الآن.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+        <div className="entity-grid entity-grid--lg">
           {villages.map(vil => (
-            <div key={vil.id} style={{
-              background: 'var(--panel-color)',
-              padding: '1.25rem',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              boxShadow: 'var(--shadow)',
-              position: 'relative'
-            }}>
+            <div key={vil.id} className="surface-card surface-card--village">
               <div style={{ position: 'absolute', top: '1.25rem', left: '1.25rem', display: 'flex', gap: '8px' }}>
                 <button className="icon-btn" onClick={() => navigate(`/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
                   <Eye size={16} color="var(--accent-color)" />

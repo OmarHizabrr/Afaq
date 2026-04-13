@@ -144,25 +144,14 @@ const AdminReportsPage = () => {
       ) : error ? (
         <div style={{ color: 'var(--danger-color)', textAlign: 'center' }}>{error}</div>
       ) : reports.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>لا توجد تقارير في هذا القسم بعد.</div>
+        <div className="empty-state empty-state--lg">لا توجد تقارير في هذا القسم بعد.</div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.25rem' }}>
           {reports
             .filter(r => (r.teacherName || r.supervisorName || '').includes(searchTerm) && (r.schoolName || '').includes(filterSchool))
             .map((rpt) => (
-            <div key={rpt.id} style={{ 
-              background: 'var(--panel-color)', 
-              padding: '1.5rem', 
-              borderRadius: '16px', 
-              border: '1px solid var(--border-color)',
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              boxShadow: 'var(--shadow)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '6px', background: activeTab === 'visits' ? '#3b82f6' : activeTab === 'weekly' ? 'var(--accent-color)' : 'var(--success-color)' }}></div>
+            <div key={rpt.id} className="surface-card report-row-card">
+              <div className="report-row-card__accent" style={{ background: activeTab === 'visits' ? 'var(--md-primary)' : activeTab === 'weekly' ? 'var(--md-primary)' : 'var(--success-color)' }} />
               
               <div style={{ display: 'flex', gap: '2rem', flex: 1, flexWrap: 'wrap', marginRight: '1rem' }}>
                 <div style={{ minWidth: '130px' }}>
@@ -198,8 +187,8 @@ const AdminReportsPage = () => {
 
       {/* Report View Modal (Overlay) */}
       {selectedReport && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setSelectedReport(null)}>
-          <div style={{ background: 'var(--panel-color)', width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px', padding: '2rem', position: 'relative' }} onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" style={{ background: 'rgba(0,0,0,0.75)' }} onClick={() => setSelectedReport(null)}>
+          <div className="modal-card" onClick={e => e.stopPropagation()}>
             <button onClick={() => setSelectedReport(null)} style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>إغلاق (X)</button>
             <h2 style={{ marginBottom: '1.5rem' }}>تفاصيل التقرير</h2>
             
@@ -211,18 +200,20 @@ const AdminReportsPage = () => {
             </div>
 
             {activeTab === 'daily' && (
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead><tr style={{ background: 'var(--bg-color)' }}><th style={{ padding: '8px' }}>الطالب</th><th>حفظ</th><th>مراجعة</th></tr></thead>
+                <div className="md-table-scroll">
+                <table className="md-table" style={{ minWidth: 'unset' }}>
+                    <thead><tr><th>الطالب</th><th>حفظ</th><th>مراجعة</th></tr></thead>
                     <tbody>
                         {selectedReport.records?.map(r => (
-                            <tr key={r.studentId} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                <td style={{ padding: '8px' }}>{r.name} {!r.isPresent && '(غائب)'}</td>
+                            <tr key={r.studentId} className={!r.isPresent ? 'md-table__row--absent' : ''}>
+                                <td>{r.name} {!r.isPresent && '(غائب)'}</td>
                                 <td>{r.memorization}</td>
                                 <td>{r.review}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
+                </div>
             )}
 
             {activeTab === 'weekly' && (

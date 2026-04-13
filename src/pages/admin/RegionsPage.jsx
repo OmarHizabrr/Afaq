@@ -202,22 +202,13 @@ const RegionsPage = () => {
       {loading ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : regions.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+        <div className="empty-state">
           لا توجد مناطق مضافة حتى الآن.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+        <div className="entity-grid entity-grid--md">
           {regions.map(region => (
-            <div key={region.id} style={{
-              background: 'var(--panel-color)',
-              padding: '1.25rem',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              boxShadow: 'var(--shadow)'
-            }}>
+            <div key={region.id} className="surface-card surface-card--entity">
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', marginBottom: '4px' }}>{region.name}</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>

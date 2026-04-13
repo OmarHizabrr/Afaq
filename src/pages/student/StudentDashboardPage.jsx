@@ -158,7 +158,7 @@ const StudentDashboardPage = ({ user }) => {
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                     }}>
                         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                            <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: 'var(--panel-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-color)' }}>
+                            <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: 'var(--accent-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--md-primary)' }}>
                                 <BookOpen size={20} />
                             </div>
                             <div>

@@ -109,7 +109,7 @@ const VillageDetailsPage = () => {
 
                 {/* Sidebar Info */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+                    <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                         <h3 style={{ marginTop: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}><MapPin size={18} color="var(--accent-color)"/> التصنيف الميداني</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '1.25rem' }}>
                             <div style={{ fontSize: '0.9rem' }}>

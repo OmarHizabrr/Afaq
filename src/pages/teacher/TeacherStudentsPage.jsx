@@ -128,7 +128,7 @@ const TeacherStudentsPage = ({ user }) => {
 
   if (!user?.schoolId) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--panel-color)', borderRadius: '12px' }}>
+      <div className="surface-card" style={{ padding: '2rem', textAlign: 'center', borderRadius: '12px' }}>
         <h2 style={{ color: 'var(--danger-color)' }}>تنبيه إداري</h2>
         <p style={{ color: 'var(--text-secondary)' }}>حساب المعلم الخاص بك غير مرتبط بأي مدرسة في النظام.</p>
         <p style={{ color: 'var(--text-secondary)' }}>يرجى التواصل مع مدير النظام أو مشرف المنطقة لتعيين مدرسة لك.</p>
@@ -209,22 +209,23 @@ const TeacherStudentsPage = ({ user }) => {
       {loading && !isAdding ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : students.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+        <div className="empty-state">
           لم تقم بإضافة أي دارس حتى الآن. ابدأ بإضافة طلاب حلقتك.
         </div>
       ) : (
-        <div style={{ background: 'var(--panel-color)', borderRadius: '12px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
+        <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
+          <div className="md-table-scroll">
+          <table className="md-table" style={{ minWidth: 'unset' }}>
             <thead>
-              <tr style={{ background: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
-                <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>الاسم</th>
-                <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)', width: '100px' }}>السن</th>
-                <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)', width: '100px', textAlign: 'center' }}>إجراءات</th>
+              <tr>
+                <th>الاسم</th>
+                <th style={{ width: '100px' }}>السن</th>
+                <th style={{ width: '120px', textAlign: 'center' }}>إجراءات</th>
               </tr>
             </thead>
             <tbody>
-              {students.map((student, idx) => (
-                <tr key={student.id} style={{ borderBottom: idx !== students.length - 1 ? '1px solid var(--border-color)' : 'none', transition: 'all 0.2s' }}>
+              {students.map((student) => (
+                <tr key={student.id}>
                   <td style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--success-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                       {student.studentName.charAt(0)}
@@ -247,6 +248,7 @@ const TeacherStudentsPage = ({ user }) => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

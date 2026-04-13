@@ -167,7 +167,7 @@ const ReportDetailsPage = () => {
                 )}
             </div>
             
-            <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <MapPin size={20} color="var(--text-secondary)" />
                 <div style={{ fontSize: '0.9rem' }}>
                    <strong>الموقع الجغرافي:</strong> {report.gpsLocation ? `${report.gpsLocation.lat}, ${report.gpsLocation.lng}` : 'لم يتم تسجيل إحداثيات GPS'}

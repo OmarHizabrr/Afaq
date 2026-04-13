@@ -259,25 +259,27 @@ const SupervisorVisitPage = ({ user }) => {
         <>
           {/* Students Cross-Check */}
           <div className="surface-card" style={{ borderRadius: '12px', marginBottom: '1.5rem', overflow: 'hidden' }}>
-            <div style={{ padding: '1rem 1.5rem', background: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
+            <div className="md-table-panel__head">
               <h3 style={{ margin: 0, fontSize: '1.1rem' }}>سجل الطلاب والتقييم الفردي</h3>
             </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', minWidth: '650px' }}>
+            <div className="md-table-scroll">
+              <table className="md-table">
                 <thead>
-                  <tr style={{ background: 'var(--panel-color)', borderBottom: '2px solid var(--border-color)' }}>
-                    <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>تعديل الحالة</th>
-                    <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>اسم الطالب</th>
-                    <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'center' }}>اختبار الطالب</th>
-                    <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>ملاحظة التقييم (اختياري)</th>
+                  <tr>
+                    <th>تعديل الحالة</th>
+                    <th>اسم الطالب</th>
+                    <th style={{ textAlign: 'center' }}>اختبار الطالب</th>
+                    <th>ملاحظة التقييم (اختياري)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {trackingData.map((record, idx) => (
-                    <tr key={record.studentId} style={{ 
-                      borderBottom: idx !== trackingData.length - 1 ? '1px solid var(--border-color)' : 'none', 
-                      background: record.isPresent ? (record.isTested ? 'var(--accent-glow)' : 'transparent') : 'rgba(239, 68, 68, 0.05)',
-                    }}>
+                  {trackingData.map((record) => (
+                    <tr
+                      key={record.studentId}
+                      className={
+                        !record.isPresent ? 'md-table__row--absent' : record.isTested ? 'md-table__row--tested' : ''
+                      }
+                    >
                       <td style={{ padding: '12px 16px', width: '80px', textAlign: 'center' }}>
                         <button 
                           onClick={() => handleTrackingChange(record.studentId, 'isPresent', !record.isPresent)}
@@ -295,9 +297,9 @@ const SupervisorVisitPage = ({ user }) => {
                           onClick={() => handleTrackingChange(record.studentId, 'isTested', !record.isTested)}
                           disabled={!record.isPresent}
                           style={{ 
-                            background: record.isTested ? '#3b82f6' : 'var(--bg-color)', 
-                            border: `1px solid ${record.isTested ? '#3b82f6' : 'var(--border-color)'}`, 
-                            color: record.isTested ? '#fff' : 'var(--text-secondary)',
+                            background: record.isTested ? 'var(--md-primary)' : 'var(--bg-color)', 
+                            border: `1px solid ${record.isTested ? 'var(--md-primary)' : 'var(--border-color)'}`, 
+                            color: record.isTested ? 'var(--md-on-primary)' : 'var(--text-secondary)',
                             padding: '4px 12px', borderRadius: '20px', cursor: record.isPresent ? 'pointer' : 'not-allowed',
                             fontSize: '0.8rem', fontWeight: 600, opacity: record.isPresent ? 1 : 0.4
                           }}
@@ -352,7 +354,7 @@ const SupervisorVisitPage = ({ user }) => {
                 ) : (
                   <div>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لم يتم جلب موقع الجوال بعد.</p>
-                    <button onClick={handleGetLocation} className="icon-btn" style={{ background: '#3b82f6', color: '#fff', width: 'auto', padding: '8px 16px', borderRadius: '8px' }}>
+                    <button type="button" onClick={handleGetLocation} className="icon-btn" style={{ background: 'var(--md-primary)', color: 'var(--md-on-primary)', width: 'auto', padding: '8px 16px', borderRadius: '8px' }}>
                       التقاط الـ GPS الآن
                     </button>
                   </div>
@@ -381,7 +383,7 @@ const SupervisorVisitPage = ({ user }) => {
             className="google-btn" 
             onClick={handleSubmitReport} 
             disabled={saving || !gpsLocation}
-            style={{ width: '100%', justifyContent: 'center', background: gpsLocation ? '#3b82f6' : 'var(--border-color)', color: '#fff', padding: '16px', fontSize: '1.1rem' }}
+            style={{ width: '100%', justifyContent: 'center', background: gpsLocation ? 'var(--md-primary)' : 'var(--border-color)', color: gpsLocation ? 'var(--md-on-primary)' : 'var(--text-secondary)', padding: '16px', fontSize: '1.1rem' }}
           >
             {saving ? 'جاري رفع التقرير وتوثيق الـ GPS...' : !gpsLocation ? 'يرجى التقاط الموقع أولاً لرفع التقرير' : 'حفظ التقرير الميداني بشكل نهائي'}
           </button>

@@ -199,22 +199,13 @@ const SchoolsPage = () => {
       {loading && !isAdding ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : schools.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+        <div className="empty-state">
           لا توجد مدارس مضافة حتى الآن.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+        <div className="entity-grid entity-grid--md">
           {schools.map(sch => (
-            <div key={sch.id} style={{
-              background: 'var(--panel-color)',
-              padding: '1.25rem',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              boxShadow: 'var(--shadow)'
-            }}>
+            <div key={sch.id} className="surface-card surface-card--entity">
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary)', marginBottom: '4px' }}>{sch.name}</h3>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>

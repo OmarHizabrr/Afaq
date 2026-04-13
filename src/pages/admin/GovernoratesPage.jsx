@@ -146,22 +146,13 @@ const GovernoratesPage = () => {
       {loading ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : governorates.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+        <div className="empty-state">
           لا توجد محافظات مضافة حتى الآن.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+        <div className="entity-grid">
           {governorates.map(gov => (
-            <div key={gov.id} style={{
-              background: 'var(--panel-color)',
-              padding: '1.25rem',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              boxShadow: 'var(--shadow)'
-            }}>
+            <div key={gov.id} className="surface-card surface-card--entity">
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{gov.name}</h3>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ID: {gov.id.substring(0,8)}...</span>

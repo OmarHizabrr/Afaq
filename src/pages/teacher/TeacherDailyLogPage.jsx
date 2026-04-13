@@ -182,35 +182,31 @@ const TeacherDailyLogPage = ({ user }) => {
 
       {/* Students List */}
       {students.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)', background: 'var(--panel-color)', borderRadius: '12px' }}>
-          لا يوجد طلاب في مدرستك حالياً. يرجى إضافتهم من شاشة "طلابي".
+        <div className="empty-state">
+          لا يوجد طلاب في مدرستك حالياً. يرجى إضافتهم من شاشة &quot;طلابي&quot;.
         </div>
       ) : (
         <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ padding: '1rem 1.5rem', background: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="md-table-panel__head">
             <h3 style={{ margin: 0, fontSize: '1.1rem' }}>سجل الطلاب ({trackingData.length})</h3>
             <span style={{ fontSize: '0.85rem', color: 'var(--success-color)', fontWeight: 'bold' }}>
-              الحاضرين: {trackingData.filter(s => s.isPresent).length}
+              الحاضرون: {trackingData.filter(s => s.isPresent).length}
             </span>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', minWidth: '600px' }}>
+          <div className="md-table-scroll">
+            <table className="md-table">
               <thead>
-                <tr style={{ background: 'var(--panel-color)', borderBottom: '2px solid var(--border-color)' }}>
-                  <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>تعديل الحالة</th>
-                  <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>اسم الطالب</th>
-                  <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>مقدار الحفظ الجديد</th>
-                  <th style={{ padding: '16px', fontWeight: 600, color: 'var(--text-secondary)' }}>مقدار المراجعة</th>
+                <tr>
+                  <th>تعديل الحالة</th>
+                  <th>اسم الطالب</th>
+                  <th>مقدار الحفظ الجديد</th>
+                  <th>مقدار المراجعة</th>
                 </tr>
               </thead>
               <tbody>
-                {trackingData.map((record, idx) => (
-                  <tr key={record.studentId} style={{ 
-                    borderBottom: idx !== trackingData.length - 1 ? '1px solid var(--border-color)' : 'none', 
-                    background: record.isPresent ? 'transparent' : 'rgba(239, 68, 68, 0.05)',
-                    transition: 'all 0.2s' 
-                  }}>
+                {trackingData.map((record) => (
+                  <tr key={record.studentId} className={record.isPresent ? '' : 'md-table__row--absent'}>
                     <td style={{ padding: '12px 16px', width: '80px', textAlign: 'center' }}>
                       <button 
                         onClick={() => handleTrackingChange(record.studentId, 'isPresent', !record.isPresent)}
@@ -243,7 +239,7 @@ const TeacherDailyLogPage = ({ user }) => {
                         value={record.review}
                         onChange={(e) => handleTrackingChange(record.studentId, 'review', e.target.value)}
                         disabled={!record.isPresent}
-                        style={{ ...inputStyle, opacity: record.isPresent ? 1 : 0.5, borderColor: '#3b82f6' }}
+                        style={{ ...inputStyle, opacity: record.isPresent ? 1 : 0.5, borderColor: 'var(--md-primary)' }}
                       />
                     </td>
                   </tr>
@@ -252,7 +248,7 @@ const TeacherDailyLogPage = ({ user }) => {
             </table>
           </div>
           
-          <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end', background: 'var(--panel-color)' }}>
+          <div className="md-table-panel__footer">
              <button 
                 className="google-btn" 
                 onClick={handleSaveLog} 
