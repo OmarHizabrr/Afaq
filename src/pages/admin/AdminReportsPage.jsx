@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolIcon, Search, Filter } from 'lucide-react';
+import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolIcon, Search, Filter, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import MapLocationOpen from '../../components/MapLocationOpen';
@@ -26,7 +26,11 @@ const AdminReportsPage = () => {
       else if (tab === 'visits') collectionName = 'reports';
 
       const docs = await api.getCollectionGroupDocuments(collectionName);
-      const data = docs.map(d => ({ id: d.id, ...d.data() }));
+      const data = docs.map((d) => ({
+        id: d.id,
+        _ownerId: d.ref.parent.parent?.id || '',
+        ...d.data()
+      }));
       
       data.sort((a, b) => new Date(b.date || b.submissionDate || b.timestamp) - new Date(a.date || a.submissionDate || a.timestamp));
       
@@ -42,6 +46,32 @@ const AdminReportsPage = () => {
   useEffect(() => {
     fetchReports(activeTab);
   }, [activeTab]);
+
+  const deleteReportDocRef = (rpt) => {
+    const api = FirestoreApi.Api;
+    const oid = rpt._ownerId;
+    if (!oid || !rpt.id) return null;
+    if (activeTab === 'visits') return api.getSupervisorReportDoc(oid, rpt.id);
+    if (activeTab === 'daily') return api.getTeacherDailyLogDoc(oid, rpt.id);
+    if (activeTab === 'weekly') return api.getTeacherReportDoc(oid, rpt.id);
+    return null;
+  };
+
+  const handleDeleteReportRow = async (rpt) => {
+    if (!window.confirm('حذف هذا التقرير نهائياً؟ لا يمكن التراجع.')) return;
+    const docRef = deleteReportDocRef(rpt);
+    if (!docRef) {
+      setError('تعذر تحديد مسار المستند للحذف.');
+      return;
+    }
+    try {
+      await FirestoreApi.Api.deleteData(docRef);
+      await fetchReports(activeTab);
+    } catch (err) {
+      console.error(err);
+      setError('فشل حذف التقرير.');
+    }
+  };
 
   const renderStatus = (val) => {
       if (val === true || val === 'isActive') return <span style={{ color: 'var(--success-color)' }}>✅ منجز</span>;
@@ -178,9 +208,32 @@ const AdminReportsPage = () => {
                     </p>
                 </div>
               </div>
-              <button className="icon-btn" onClick={() => navigate(`/reports/${rpt.id}`)} title="عرض التفاصيل الكاملة" style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}>
-                <Eye size={22} />
-              </button>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={() => navigate(`/reports/${rpt.id}`)}
+                  title="عرض التفاصيل الكاملة"
+                  style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}
+                >
+                  <Eye size={22} />
+                </button>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={() => handleDeleteReportRow(rpt)}
+                  title="حذف التقرير"
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    color: 'var(--danger-color)',
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px'
+                  }}
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
             </div>
           ))}
         </div>

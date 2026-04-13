@@ -8,6 +8,19 @@ import FirestoreApi from "./firestoreApi";
 import { getDocs, query, where, collection } from "firebase/firestore";
 import { db } from "../firebase";
 
+/** رسالة تُعرض في صفحة الدخول بعد إخراج حساب معطّل */
+export const ACCOUNT_BLOCKED_SESSION_KEY = "afaq_account_blocked";
+export const ACCOUNT_BLOCKED_MESSAGE =
+  "تم تعطيل هذا الحساب ولا يمكنه استخدام المنصة. تواصل مع الإدارة.";
+
+function setBlockedSessionMessage() {
+  try {
+    sessionStorage.setItem(ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE);
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
  * AuthService - Handles Google Authentication and Profile Persistence
  */
@@ -39,6 +52,12 @@ class AuthService {
     
     // Check if user already exists to preserve their role
     const existingDoc = await api.getData(docRef);
+
+    if (existingDoc?.accountDisabled === true) {
+      setBlockedSessionMessage();
+      await firebaseSignOut(auth);
+      throw new Error("ACCOUNT_DISABLED");
+    }
     
     const userData = {
       uid: user.uid,
@@ -80,7 +99,13 @@ class AuthService {
       }
 
       const userDoc = querySnapshot.docs[0];
-      const customUser = { uid: userDoc.id, ...userDoc.data() };
+      const data = userDoc.data();
+      if (data?.accountDisabled === true) {
+        setBlockedSessionMessage();
+        const e = new Error("ACCOUNT_DISABLED");
+        throw e;
+      }
+      const customUser = { uid: userDoc.id, ...data };
       
       // حفظ الجلسة محلياً 
       localStorage.setItem('afaq_custom_auth_uid', customUser.uid);
@@ -108,6 +133,12 @@ class AuthService {
           const userData = await api.getData(docRef);
           
           if (userData) {
+            if (userData.accountDisabled === true) {
+              setBlockedSessionMessage();
+              await firebaseSignOut(auth);
+              callback(null);
+              return;
+            }
             callback({ ...firebaseUser, ...userData, uid: firebaseUser.uid, id: firebaseUser.uid });
           } else {
             callback({ ...firebaseUser, uid: firebaseUser.uid, id: firebaseUser.uid });
@@ -124,6 +155,12 @@ class AuthService {
             const docRef = api.getUserDoc(customAuthUid);
             const userData = await api.getData(docRef);
             if (userData) {
+              if (userData.accountDisabled === true) {
+                setBlockedSessionMessage();
+                localStorage.removeItem('afaq_custom_auth_uid');
+                callback(null);
+                return;
+              }
               // إرسال كائن مستخدم وهمي يحمل الـ uid واسمه ليتعامل معه التطبيق كأنه حقيقي
               callback({ uid: customAuthUid, id: customAuthUid, ...userData });
             } else {

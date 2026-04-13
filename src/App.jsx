@@ -115,10 +115,10 @@ function App() {
           <Route path="students-management" element={<StudentManagementPage />} />
           <Route path="curriculum" element={<CurriculumPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
-          <Route path="reports/:id" element={<ReportDetailsPage />} />
+          <Route path="reports/:id" element={<ReportDetailsPage viewerUser={user} />} />
           <Route path="schools/:id" element={<SchoolDetailsPage />} />
           <Route path="regions/:id" element={<RegionDetailsPage />} />
-          <Route path="users/:id" element={<UserDetailsPage />} />
+          <Route path="users/:id" element={<UserDetailsPage viewerUser={user} />} />
           <Route path="governorates/:id" element={<GovernorateDetailsPage />} />
           <Route path="villages/:id" element={<VillageDetailsPage />} />
           <Route path="settings" element={<SettingsPage />} />
@@ -137,9 +137,9 @@ function App() {
           <Route index element={<SupervisorDashboardPage user={user} />} />
           <Route path="visit" element={<SupervisorVisitPage user={user} />} />
           <Route path="history" element={<SupervisorHistoryPage user={user} />} />
-          <Route path="reports/:id" element={<ReportDetailsPage />} />
+          <Route path="reports/:id" element={<ReportDetailsPage viewerUser={user} />} />
           <Route path="schools/:id" element={<SchoolDetailsPage />} />
-          <Route path="users/:id" element={<UserDetailsPage />} />
+          <Route path="users/:id" element={<UserDetailsPage viewerUser={user} />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="notifications" element={<NotificationsPage user={user} />} />
         </Route>
@@ -155,10 +155,10 @@ function App() {
         >
           <Route index element={<TeacherDashboardPage user={user} />} />
           <Route path="students" element={<TeacherStudentsPage user={user} />} />
-          <Route path="students/:id" element={<UserDetailsPage />} />
+          <Route path="students/:id" element={<UserDetailsPage viewerUser={user} />} />
           <Route path="daily-log" element={<TeacherDailyLogPage user={user} />} />
           <Route path="weekly-report" element={<TeacherWeeklyReportPage user={user} />} />
-          <Route path="reports/:id" element={<ReportDetailsPage />} />
+          <Route path="reports/:id" element={<ReportDetailsPage viewerUser={user} />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="notifications" element={<NotificationsPage user={user} />} />
         </Route>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, Mail, Phone, Shield, Calendar, BookOpen, Clock, ChevronRight, Activity, TrendingUp, Info } from 'lucide-react';
+import { User, Mail, Phone, Shield, Calendar, BookOpen, ChevronRight, Activity, TrendingUp, Info, Ban, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 
-const UserDetailsPage = ({ selfUser = null }) => {
+const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const targetId = id || selfUser?.uid || selfUser?.id || '';
@@ -12,6 +12,12 @@ const UserDetailsPage = ({ selfUser = null }) => {
     const [activity, setActivity] = useState([]);
     const [memberships, setMemberships] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [adminWorking, setAdminWorking] = useState(false);
+    const [adminError, setAdminError] = useState('');
+
+    const viewerId = viewerUser?.uid || viewerUser?.id || '';
+    const canAdminManage =
+      viewerUser?.role === 'admin' && !selfUser && Boolean(targetId) && Boolean(viewerId) && viewerId !== targetId;
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -55,8 +61,7 @@ const UserDetailsPage = ({ selfUser = null }) => {
                     });
                     setActivity(studentData.sort((a,b) => new Date(b.date) - new Date(a.date)));
                 } else if (userDoc.role === 'teacher') {
-                    // Fetch daily logs / weekly reports
-                    const logs = await api.getDocuments(api.getUserDailyLogsCollection(id));
+                    const logs = await api.getDocuments(api.getUserDailyLogsCollection(targetId));
                     setActivity(logs.map(l => ({ id: l.id, ...l.data() })).sort((a,b) => new Date(b.date) - new Date(a.date)));
                 } else if (userDoc.role?.includes('supervisor')) {
                     // Fetch visit history (reports created by him)
@@ -76,6 +81,53 @@ const UserDetailsPage = ({ selfUser = null }) => {
 
         fetchUserProfile();
     }, [targetId, id]);
+
+    const handleToggleAccountDisabled = async () => {
+        if (!canAdminManage || !targetId) return;
+        setAdminError('');
+        try {
+            setAdminWorking(true);
+            const api = FirestoreApi.Api;
+            const next = !profile.accountDisabled;
+            await api.updateData({
+                docRef: api.getUserDoc(targetId),
+                data: { accountDisabled: next },
+                userData: viewerUser
+            });
+            setProfile((p) => ({ ...p, accountDisabled: next }));
+        } catch (err) {
+            console.error(err);
+            setAdminError('تعذر تحديث حالة التعطيل. تحقق من صلاحيات Firestore.');
+        } finally {
+            setAdminWorking(false);
+        }
+    };
+
+    const handleAdminDeleteUser = async () => {
+        if (!canAdminManage || !targetId) return;
+        const ok = window.confirm(
+            `حذف المستخدم «${profile.displayName || targetId}» نهائياً من قاعدة البيانات؟ سيتم إزالة عضويات المجموعات وإسناد المشرف إن وُجد.`
+        );
+        if (!ok) return;
+        if (!window.confirm('تأكيد نهائي: لا يمكن التراجع عن هذا الإجراء.')) return;
+        setAdminError('');
+        try {
+            setAdminWorking(true);
+            const api = FirestoreApi.Api;
+            await api.clearUserMembershipMirrors(targetId);
+            try {
+                await api.deleteData(api.getSupervisorAssignmentDoc(targetId));
+            } catch {
+                /* غير موجود */
+            }
+            await api.deleteData(api.getUserDoc(targetId));
+            navigate('/users');
+        } catch (err) {
+            console.error(err);
+            setAdminError('تعذر حذف المستخدم.');
+            setAdminWorking(false);
+        }
+    };
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!profile) return <div className="empty-state" style={{ margin: '2rem auto', maxWidth: '480px' }}>المستخدم غير موجود</div>;
@@ -116,6 +168,58 @@ const UserDetailsPage = ({ selfUser = null }) => {
                         <span style={{ fontSize: '0.85rem', color: 'var(--accent-color)', fontWeight: 700, background: 'var(--accent-glow)', padding: '4px 12px', borderRadius: '20px', marginTop: '10px', display: 'inline-block' }}>
                             {ROLE_LABELS[profile.role] || profile.role}
                         </span>
+                        {profile.accountDisabled && (
+                            <div style={{ marginTop: '10px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--danger-color)', background: 'rgba(239, 68, 68, 0.12)', padding: '6px 12px', borderRadius: '12px', display: 'inline-block' }}>
+                                الحساب معطّل — لا يمكنه تسجيل الدخول
+                            </div>
+                        )}
+
+                        {canAdminManage && (
+                            <div className="surface-card" style={{ marginTop: '1.25rem', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border-color)', textAlign: 'right' }}>
+                                <h3 style={{ margin: '0 0 10px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--md-primary)' }}>
+                                    <Shield size={18} /> تحكم المدير
+                                </h3>
+                                {adminError && (
+                                    <div className="app-alert app-alert--error" style={{ marginBottom: '10px', fontSize: '0.85rem' }} role="alert">
+                                        {adminError}
+                                    </div>
+                                )}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    <button
+                                        type="button"
+                                        className="google-btn"
+                                        disabled={adminWorking}
+                                        onClick={handleToggleAccountDisabled}
+                                        style={{
+                                            width: '100%',
+                                            justifyContent: 'center',
+                                            background: profile.accountDisabled ? 'var(--success-color)' : 'rgba(245, 158, 11, 0.15)',
+                                            color: profile.accountDisabled ? '#fff' : 'var(--text-primary)',
+                                            border: '1px solid var(--border-color)'
+                                        }}
+                                    >
+                                        <Ban size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                        {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="google-btn"
+                                        disabled={adminWorking}
+                                        onClick={handleAdminDeleteUser}
+                                        style={{
+                                            width: '100%',
+                                            justifyContent: 'center',
+                                            background: 'rgba(239, 68, 68, 0.12)',
+                                            color: 'var(--danger-color)',
+                                            border: '1px solid var(--danger-color)'
+                                        }}
+                                    >
+                                        <Trash2 size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                        حذف المستخدم نهائياً من النظام
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         
                         <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'right' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>

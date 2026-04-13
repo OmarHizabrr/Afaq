@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import AuthService from '../services/authService';
+import React, { useState, useEffect } from 'react';
+import AuthService, { ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE } from '../services/authService';
 import { Phone, Lock, LogIn } from 'lucide-react';
 
 const GoogleIcon = () => (
@@ -19,13 +19,29 @@ const LoginPage = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(() => {
+    try {
+      const msg = sessionStorage.getItem(ACCOUNT_BLOCKED_SESSION_KEY);
+      if (msg) {
+        setError(msg);
+        sessionStorage.removeItem(ACCOUNT_BLOCKED_SESSION_KEY);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const handleGoogleLogin = async () => {
     setLoadingGoogle(true);
     setError(null);
     try {
       await AuthService.Api.signInWithGoogle();
     } catch (err) {
-      setError("فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.");
+      if (err?.message === 'ACCOUNT_DISABLED') {
+        setError(ACCOUNT_BLOCKED_MESSAGE);
+      } else {
+        setError('فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.');
+      }
       console.error(err);
     } finally {
       setLoadingGoogle(false);
@@ -43,8 +59,12 @@ const LoginPage = () => {
       setLoadingCustom(true);
       setError(null);
       await AuthService.Api.signInWithPhone(phone, password);
-    } catch {
-      setError('رقم الهاتف أو كلمة المرور غير صحيحة');
+    } catch (err) {
+      if (err?.message === 'ACCOUNT_DISABLED') {
+        setError(ACCOUNT_BLOCKED_MESSAGE);
+      } else {
+        setError('رقم الهاتف أو كلمة المرور غير صحيحة');
+      }
     } finally {
       setLoadingCustom(false);
     }

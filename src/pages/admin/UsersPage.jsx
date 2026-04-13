@@ -166,18 +166,35 @@ const UsersPage = () => {
                 <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
                   {user.email}
                 </p>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: '4px 8px',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    background: `${ROLE_COLORS[user.role || 'unassigned']}20`,
-                    color: ROLE_COLORS[user.role || 'unassigned']
-                  }}
-                >
-                  {ROLE_LABELS[user.role || 'unassigned']}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '4px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      background: `${ROLE_COLORS[user.role || 'unassigned']}20`,
+                      color: ROLE_COLORS[user.role || 'unassigned']
+                    }}
+                  >
+                    {ROLE_LABELS[user.role || 'unassigned']}
+                  </div>
+                  {user.accountDisabled && (
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '4px 8px',
+                        borderRadius: '12px',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        color: 'var(--danger-color)'
+                      }}
+                    >
+                      معطّل
+                    </span>
+                  )}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '6px' }}>
