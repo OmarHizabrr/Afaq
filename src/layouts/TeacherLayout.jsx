@@ -19,13 +19,15 @@ import AuthService from '../services/authService';
 
 const TeacherLayout = ({ user }) => {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() =>
+    typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Initialize theme and sidebar state
   useEffect(() => {
-    const savedTheme = localStorage.getItem('afaq-theme') || 'dark';
+    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
     const isDark = savedTheme === 'dark';
     setIsDarkMode(isDark);
     
@@ -136,15 +138,16 @@ const TeacherLayout = ({ user }) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderRight: '1px solid var(--border-color)', paddingRight: '16px' }}>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.displayName || 'المعلم'}</p>
-                <p style={{ fontSize: '0.75rem', color: 'var(--success-color)' }}>بوابة المعلم</p>
+            <div className="user-chip">
+              <div className="user-chip__meta">
+                <p className="user-chip__name">{user?.displayName || 'المعلم'}</p>
+                <p className="user-chip__role" style={{ color: 'var(--success-color)' }}>بوابة المعلم</p>
               </div>
               <img 
-                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Teacher&background=10b981&color=fff'} 
-                alt="Profile" 
-                style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid var(--success-color)' }}
+                className="user-chip__avatar"
+                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Teacher&background=1e8e3e&color=fff'} 
+                alt="" 
+                style={{ borderColor: 'var(--success-color)' }}
               />
             </div>
           </div>

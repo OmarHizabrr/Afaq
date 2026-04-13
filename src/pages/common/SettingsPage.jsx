@@ -9,13 +9,13 @@ const SettingsPage = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
     // Load current UI state
-    const currentTheme = localStorage.getItem('afaq-theme') || 'dark';
+    const currentTheme = localStorage.getItem('afaq-theme') || 'light';
     setTheme(currentTheme);
     
     // Listen to Firebase Auth state

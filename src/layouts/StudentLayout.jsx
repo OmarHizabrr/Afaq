@@ -2,30 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  BookOpen, 
   User, 
   LogOut, 
   Menu, 
-  X, 
   Bell,
   Award,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 import AuthService from '../services/authService';
 
 const StudentLayout = ({ user }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() =>
+    typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
+  );
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
+    const isDark = savedTheme === 'dark';
+    setIsDarkMode(isDark);
+    if (isDark) document.documentElement.classList.remove('light-mode');
+    else document.documentElement.classList.add('light-mode');
+  }, []);
 
   // Initialize sidebar state
   useEffect(() => {
     const savedSidebar = localStorage.getItem('afaq-sidebar-collapsed') === 'true';
     setIsCollapsed(savedSidebar);
   }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDarkMode;
+    setIsDarkMode(nextDark);
+    localStorage.setItem('afaq-theme', nextDark ? 'dark' : 'light');
+    if (nextDark) document.documentElement.classList.remove('light-mode');
+    else document.documentElement.classList.add('light-mode');
+  };
 
   const toggleSidebarCollapse = () => {
     const newState = !isCollapsed;
@@ -35,7 +54,7 @@ const StudentLayout = ({ user }) => {
 
   const handleLogout = async () => {
     try {
-      await AuthService.signOut();
+      await AuthService.Api.signOut();
       navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -67,22 +86,22 @@ const StudentLayout = ({ user }) => {
 
       {/* Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
-        <div className="sidebar-header" style={{ padding: '2rem', textAlign: 'center', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="sidebar-header" style={{ padding: '1rem 12px 1.25rem', textAlign: 'center', flexWrap: 'wrap' }}>
           {!isCollapsed && (
-            <div style={{ textAlign: 'center', flex: 1 }}>
+            <div style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
               <div style={{ 
-                width: '60px', height: '60px', borderRadius: '50%', background: 'var(--accent-glow)', 
+                width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-muted)', 
                 margin: '0 auto 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                border: '2px solid var(--accent-color)',
+                border: '2px solid var(--md-primary)',
                 overflow: 'hidden'
               }}>
                 <img 
-                  src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName}&background=random`} 
-                  alt="Avatar" 
+                  src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'Student')}&background=1a73e8&color=fff`} 
+                  alt="" 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1rem' }}>{user?.displayName.split(' ')[0]}</h3>
+              <h3 className="sidebar-brand-title" style={{ fontSize: '1rem' }}>{user?.displayName?.split(/\s+/)[0] || 'طالب'}</h3>
             </div>
           )}
 
@@ -131,21 +150,25 @@ const StudentLayout = ({ user }) => {
             <h2 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800 }}>آفاق <span style={{ color: 'var(--accent-color)' }}>التعليمية</span></h2>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <Link to="/student/notifications" style={{ position: 'relative', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button type="button" className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <Link to="/student/notifications" className="icon-btn" style={{ position: 'relative', textDecoration: 'none', color: 'inherit' }} aria-label="الإشعارات">
               <Bell size={22} />
-              <span style={{ position: 'absolute', top: -4, right: -4, minWidth: '16px', height: '16px', background: 'var(--danger-color)', borderRadius: '50%', fontSize: '0.6rem', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--panel-color)' }}>3</span>
+              <span style={{ position: 'absolute', top: 4, left: 4, minWidth: '16px', height: '16px', background: 'var(--danger-color)', borderRadius: '50%', fontSize: '0.6rem', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--panel-color)' }}>3</span>
             </Link>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderRight: '1px solid var(--border-color)', paddingRight: '16px' }}>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>{user?.displayName}</p>
-                <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-secondary)' }}>طالب نشط</p>
+            <div className="user-chip">
+              <div className="user-chip__meta">
+                <p className="user-chip__name">{user?.displayName || 'طالب'}</p>
+                <p className="user-chip__role">طالب نشط</p>
               </div>
               <img 
-                src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName}&background=random`} 
-                alt="Profile" 
-                style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid var(--accent-color)' }}
+                className="user-chip__avatar"
+                src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'S')}&background=1a73e8&color=fff`} 
+                alt="" 
+                style={{ borderColor: 'var(--md-primary)' }}
               />
             </div>
           </div>

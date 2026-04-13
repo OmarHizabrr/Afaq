@@ -23,13 +23,15 @@ import AuthService from '../services/authService';
 
 const AdminLayout = ({ user }) => {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() =>
+    typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Initialize theme and sidebar state from localStorage
   useEffect(() => {
-    const savedTheme = localStorage.getItem('afaq-theme') || 'dark';
+    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
     const isDark = savedTheme === 'dark';
     setIsDarkMode(isDark);
     
@@ -153,15 +155,15 @@ const AdminLayout = ({ user }) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderRight: '1px solid var(--border-color)', paddingRight: '16px' }}>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.displayName || 'مدير النظام'}</p>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{user?.email}</p>
+            <div className="user-chip">
+              <div className="user-chip__meta">
+                <p className="user-chip__name">{user?.displayName || 'مدير النظام'}</p>
+                <p className="user-chip__role">{user?.email || ''}</p>
               </div>
               <img 
-                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Admin&background=random'} 
-                alt="Profile" 
-                style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid var(--accent-color)' }}
+                className="user-chip__avatar"
+                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Admin&background=1a73e8&color=fff'} 
+                alt="" 
               />
             </div>
           </div>

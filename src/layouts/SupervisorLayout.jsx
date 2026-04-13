@@ -18,13 +18,15 @@ import AuthService from '../services/authService';
 
 const SupervisorLayout = ({ user }) => {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() =>
+    typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Initialize theme and sidebar state
   useEffect(() => {
-    const savedTheme = localStorage.getItem('afaq-theme') || 'dark';
+    const savedTheme = localStorage.getItem('afaq-theme') || 'light';
     const isDark = savedTheme === 'dark';
     setIsDarkMode(isDark);
     
@@ -78,11 +80,11 @@ const SupervisorLayout = ({ user }) => {
       )}
 
       {/* Sidebar - Colored explicitly for Supervisor distinction (Blue) */}
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`} style={{ borderRight: '4px solid #3b82f6' }}>
-        <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h2 className="logo-text" style={{ fontSize: '1.4rem', margin: 0, color: '#3b82f6', animation: 'none', transform: 'none', opacity: 1 }}>بوابة المشرف الميداني</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>آفاق القرآنية</p>
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`} style={{ borderInlineStart: '3px solid var(--md-primary)' }}>
+        <div className="sidebar-header">
+          <div style={{ minWidth: 0 }}>
+            <h2 className="sidebar-brand-title" style={{ fontSize: '1.15rem', lineHeight: 1.35 }}>بوابة المشرف الميداني</h2>
+            <p className="sidebar-brand-sub">آفاق القرآنية</p>
           </div>
           
           <button 
@@ -134,15 +136,16 @@ const SupervisorLayout = ({ user }) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderRight: '1px solid var(--border-color)', paddingRight: '16px' }}>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.displayName || 'المشرف'}</p>
-                <p style={{ fontSize: '0.75rem', color: '#3b82f6' }}>{user?.role === 'supervisor_arab' ? 'مشرف عام' : 'مشرف منطقة'}</p>
+            <div className="user-chip">
+              <div className="user-chip__meta">
+                <p className="user-chip__name">{user?.displayName || 'المشرف'}</p>
+                <p className="user-chip__role" style={{ color: 'var(--md-primary)' }}>{user?.role === 'supervisor_arab' ? 'مشرف عام' : 'مشرف منطقة'}</p>
               </div>
               <img 
-                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Sup&background=3b82f6&color=fff'} 
-                alt="Profile" 
-                style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid #3b82f6' }}
+                className="user-chip__avatar"
+                src={user?.photoURL || 'https://ui-avatars.com/api/?name=Sup&background=1a73e8&color=fff'} 
+                alt="" 
+                style={{ borderColor: 'var(--md-primary)' }}
               />
             </div>
           </div>

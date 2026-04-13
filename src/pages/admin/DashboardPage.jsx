@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const StatCard = ({ title, value, icon: Icon, color, loading }) => (
-  <div style={{
-    background: 'var(--panel-color)',
+  <div className="surface-card surface-card--lg" style={{
     padding: '1.5rem',
-    borderRadius: '20px',
-    border: '1px solid var(--border-color)',
     display: 'flex',
     alignItems: 'center',
     gap: '1.25rem',
-    boxShadow: 'var(--shadow)',
-    transition: 'transform 0.2s',
+    transition: 'box-shadow var(--motion-standard), transform var(--motion-fast)',
     cursor: 'default'
-  }}>
+  }}
+  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; }}
+  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = ''; }}
+  >
     <div style={{
       width: '65px',
       height: '65px',
@@ -102,12 +102,7 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.8rem' }}>لوحة التحكم الرئيسية</h1>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>نظرة عامة على الإحصائيات الحيوية للمنصة</p>
-        </div>
-      </div>
+      <PageHeader title="لوحة التحكم الرئيسية" subtitle="نظرة عامة على الإحصائيات الحيوية للمنصة" />
 
       {/* Stats Grid */}
       <div style={{ 
@@ -125,12 +120,8 @@ const DashboardPage = () => {
       </div>
 
       {/* Recent Activity Section */}
-      <div style={{
-        background: 'var(--panel-color)',
+      <div className="surface-card surface-card--lg" style={{
         padding: '2rem',
-        borderRadius: '24px',
-        border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow)',
         marginBottom: '2rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
