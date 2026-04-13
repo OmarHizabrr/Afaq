@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolIcon, Search, Filter } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const AdminReportsPage = () => {
   const navigate = useNavigate();
@@ -48,15 +49,11 @@ const AdminReportsPage = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <FileText size={28} color="var(--accent-color)" />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.8rem' }}>مراجعة التقارير الميدانية</h1>
-            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>متابعة أداء المعلمين والمشرفين من لوحة واحدة</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        icon={FileText}
+        title="مراجعة التقارير الميدانية"
+        subtitle="متابعة أداء المعلمين والمشرفين من لوحة واحدة"
+      />
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
@@ -96,16 +93,13 @@ const AdminReportsPage = () => {
       </div>
 
       {/* Search & Filter Bar */}
-      <div style={{ 
+      <div className="surface-card" style={{ 
         display: 'flex', 
         gap: '1rem', 
         marginBottom: '2rem', 
-        background: 'var(--panel-color)', 
         padding: '1rem', 
-        borderRadius: '12px', 
-        border: '1px solid var(--border-color)',
         alignItems: 'center',
-        boxShadow: 'var(--shadow)'
+        flexWrap: 'wrap'
       }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <input 

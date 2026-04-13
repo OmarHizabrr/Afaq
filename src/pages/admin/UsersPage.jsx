@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Shield, MapPin, School, Edit2, X, CheckCircle, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const ROLE_LABELS = {
   admin: 'مدير النظام',
@@ -191,12 +192,7 @@ const UsersPage = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Shield size={28} color="var(--accent-color)" />
-          <h1 style={{ margin: 0, fontSize: '1.8rem' }}>إدارة الكوادر والصلاحيات</h1>
-        </div>
-      </div>
+      <PageHeader icon={Shield} title="إدارة الكوادر والصلاحيات" />
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
 
@@ -206,12 +202,8 @@ const UsersPage = () => {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
           {users.map(user => (
-            <div key={user.id} style={{
-              background: 'var(--panel-color)',
+            <div key={user.id} className="surface-card" style={{
               padding: '1.25rem',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              boxShadow: 'var(--shadow)',
               display: 'flex',
               gap: '1rem',
               alignItems: 'center'

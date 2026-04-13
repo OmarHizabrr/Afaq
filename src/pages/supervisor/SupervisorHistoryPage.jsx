@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { History, Eye, MapPin, Calendar, Star } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const SupervisorHistoryPage = ({ user }) => {
   const navigate = useNavigate();
@@ -38,32 +39,31 @@ const SupervisorHistoryPage = ({ user }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
-        <History size={28} color="#3b82f6" />
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.8rem' }}>سجل زياراتي الميدانية</h1>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>مراجعة التقارير والتقييمات التي قمت برفعها سابقاً</p>
-        </div>
-      </div>
+      <PageHeader
+        icon={History}
+        iconColor="var(--md-primary)"
+        title="سجل زياراتي الميدانية"
+        subtitle="مراجعة التقارير والتقييمات التي قمت برفعها سابقاً"
+      />
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem' }}>{error}</div>}
 
       {reports.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)', background: 'var(--panel-color)', borderRadius: '16px' }}>
+        <div className="surface-card" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)', borderRadius: '16px' }}>
           لا توجد زيارات مسجلة باسمك حتى الآن. ابدأ بأول زيارة من شاشة "تسجيل زيارة ميدانية".
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
           {reports.map((rpt) => (
-            <div key={rpt.id} style={{ 
-              background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '16px', border: '1px solid var(--border-color)',
-              position: 'relative', boxShadow: 'var(--shadow)'
+            <div key={rpt.id} className="surface-card" style={{ 
+              padding: '1.5rem', borderRadius: '16px',
+              position: 'relative'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Calendar size={14} /> {rpt.timestamp?.split('T')[0]}
                 </span>
-                <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#3b82f6' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--md-primary)' }}>
                   <Star size={14} inline style={{ marginBottom: '-2px' }} /> {rpt.teacherRating}/10
                 </span>
               </div>
@@ -80,7 +80,7 @@ const SupervisorHistoryPage = ({ user }) => {
                  <button 
                   className="icon-btn" 
                   onClick={() => navigate(`/supervisor/reports/${rpt.id}`)}
-                  style={{ background: '#3b82f6', color: '#fff', borderRadius: '8px', padding: '6px 12px', fontSize: '0.85rem', width: 'auto' }}
+                  style={{ background: 'var(--md-primary)', color: 'var(--md-on-primary)', borderRadius: '8px', padding: '6px 12px', fontSize: '0.85rem', width: 'auto' }}
                 >
                   <Eye size={16} style={{ marginLeft: '4px' }} /> عرض التفاصيل
                 </button>

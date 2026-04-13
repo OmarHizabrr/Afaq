@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Info, AlertTriangle, CheckCircle, Calendar } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const NotificationsPage = ({ user }) => {
   const [notifications, setNotifications] = useState([]);
@@ -57,32 +58,22 @@ const NotificationsPage = ({ user }) => {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '12px', background: 'var(--accent-glow)', borderRadius: '12px', color: 'var(--accent-color)' }}>
-             <Bell size={28} />
-          </div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800 }}>مركز الإشعارات والتنبيهات</h1>
-            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>ابقَ على اطلاع بأحدث الأنشطة والمواعيد الهامة</p>
-          </div>
-        </div>
-        
+      <PageHeader
+        icon={Bell}
+        iconBox
+        title="مركز الإشعارات والتنبيهات"
+        subtitle="ابقَ على اطلاع بأحدث الأنشطة والمواعيد المهمة"
+      >
         {notifications.some(n => !n.isRead) && (
-            <button 
-                onClick={markAllRead}
-                style={{ background: 'none', border: '1px solid var(--border-color)', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'all 0.2s' }}
-                onMouseOver={(e) => e.target.style.background = 'var(--panel-color)'}
-                onMouseOut={(e) => e.target.style.background = 'none'}
-            >
-                تحديد كروي الكل كقروء
-            </button>
+          <button type="button" onClick={markAllRead} className="btn-md btn-md--outline">
+            تعليم الكل كمقروء
+          </button>
         )}
-      </div>
+      </PageHeader>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {notifications.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '5rem', background: 'var(--panel-color)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+          <div className="surface-card surface-card--lg" style={{ textAlign: 'center', padding: '5rem' }}>
              <Bell size={48} style={{ opacity: 0.1, marginBottom: '1rem' }} />
              <p style={{ color: 'var(--text-secondary)' }}>لا توجد إشعارات جديدة بانتظارك.</p>
           </div>

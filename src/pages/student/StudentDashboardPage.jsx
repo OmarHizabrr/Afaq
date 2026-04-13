@@ -10,17 +10,15 @@ import {
   Activity
 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const StatCard = ({ title, value, icon: Icon, color, subtext }) => (
-  <div style={{
-    background: 'var(--panel-color)',
+  <div className="surface-card surface-card--lg" style={{
     padding: '1.5rem',
     borderRadius: '20px',
-    border: '1px solid var(--border-color)',
     display: 'flex',
     alignItems: 'center',
     gap: '1.25rem',
-    boxShadow: 'var(--shadow)',
     position: 'relative',
     overflow: 'hidden'
   }}>
@@ -117,12 +115,20 @@ const StudentDashboardPage = ({ user }) => {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 800 }}>مرحباً يا <span style={{ color: 'var(--accent-color)' }}>{user?.displayName.split(' ')[0]}</span> 👋</h1>
-          <p style={{ margin: '8px 0 0', color: 'var(--text-secondary)', fontSize: '1.1rem' }}>إليك ملخص أدائك التعليمي في مدرسة <strong style={{color: 'var(--text-primary)'}}>{stats.schoolName}</strong></p>
-        </div>
-      </div>
+      <PageHeader
+        variant="hero"
+        title={
+          <>
+            مرحباً يا{' '}
+            <span style={{ color: 'var(--md-primary)' }}>{user?.displayName?.split(/\s+/)[0] || 'طالب'}</span> 👋
+          </>
+        }
+        subtitle={
+          <>
+            ملخص أدائك في مدرسة <strong style={{ color: 'var(--text-primary)' }}>{stats.schoolName}</strong>
+          </>
+        }
+      />
 
       {/* Hero Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
@@ -134,7 +140,7 @@ const StudentDashboardPage = ({ user }) => {
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
         {/* Recent Results List */}
-        <div style={{ background: 'var(--panel-color)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+        <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
              <Activity size={24} color="var(--accent-color)" />
              <h2 style={{ margin: 0, fontSize: '1.4rem' }}>أحدث تقييمات المشرفين</h2>
@@ -181,7 +187,7 @@ const StudentDashboardPage = ({ user }) => {
                 </div>
             </div>
 
-            <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+            <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>الخطة الحالية</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>

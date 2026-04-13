@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Edit2, Trash2, UserPlus, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const TeacherStudentsPage = ({ user }) => {
   const navigate = useNavigate();
@@ -137,39 +138,29 @@ const TeacherStudentsPage = ({ user }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Users size={28} color="var(--success-color)" />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.8rem' }}>إدارة الحلقات والدارسين</h1>
-            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>قائمة الدارسين المسجلين لديك</p>
-          </div>
-        </div>
-        <button 
-          className="google-btn" 
-          onClick={() => setIsAdding(!isAdding)}
-          style={{ width: 'auto', marginTop: 0, padding: '10px 16px', background: 'var(--success-color)', color: '#fff' }}
-        >
+      <PageHeader
+        icon={Users}
+        iconColor="var(--success-color)"
+        title="إدارة الحلقات والدارسين"
+        subtitle="قائمة الدارسين المسجلين لديك"
+      >
+        <button type="button" className="google-btn google-btn--filled google-btn--toolbar" style={{ background: 'var(--success-color)', color: '#fff' }} onClick={() => setIsAdding(!isAdding)}>
           <UserPlus size={18} />
           <span>إضافة دارس جديد</span>
         </button>
-      </div>
+      </PageHeader>
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
 
       {/* Add Form */}
       {isAdding && (
-        <form onSubmit={handleAdd} style={{
-          background: 'var(--panel-color)',
+        <form onSubmit={handleAdd} className="surface-card" style={{
           padding: '1.5rem',
-          borderRadius: '12px',
-          border: `1px solid var(--border-color)`,
           marginBottom: '2rem',
           display: 'flex',
           gap: '1rem',
           flexWrap: 'wrap',
-          alignItems: 'center',
-          boxShadow: 'var(--shadow)'
+          alignItems: 'center'
         }}>
           <input 
             type="text" 

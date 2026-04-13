@@ -2,17 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, CheckCircle, FileText, Activity, Layers, School, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const StatCard = ({ title, value, icon: Icon, color, loading }) => (
-  <div style={{
-    background: 'var(--panel-color)',
+  <div className="surface-card" style={{
     padding: '1.5rem',
     borderRadius: '16px',
-    border: '1px solid var(--border-color)',
     display: 'flex',
     alignItems: 'center',
-    gap: '1rem',
-    boxShadow: 'var(--shadow)'
+    gap: '1rem'
   }}>
     <div style={{
       width: '60px',
@@ -96,12 +94,10 @@ const SupervisorDashboardPage = ({ user }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.8rem', color: '#3b82f6' }}>لوحة المشرف الميداني</h1>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>إحصائيات زياراتك ونشاطاتك في المناطق التابعة لك</p>
-        </div>
-      </div>
+      <PageHeader
+        title={<span style={{ color: 'var(--md-primary)' }}>لوحة المشرف الميداني</span>}
+        subtitle="إحصائيات زياراتك ونشاطاتك في المناطق التابعة لك"
+      />
 
       {/* Stats Grid */}
       <div style={{ 
@@ -117,7 +113,7 @@ const SupervisorDashboardPage = ({ user }) => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-        <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '20px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+        <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Activity size={18} color="#3b82f6" /> آخر الزيارات الميدانية المرفوعة

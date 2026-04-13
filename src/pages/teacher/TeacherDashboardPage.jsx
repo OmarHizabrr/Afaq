@@ -2,17 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Calendar, FileText, Activity, MapPin, School, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const StatCard = ({ title, value, icon: Icon, color, loading }) => (
-  <div style={{
-    background: 'var(--panel-color)',
+  <div className="surface-card" style={{
     padding: '1.5rem',
     borderRadius: '16px',
-    border: '1px solid var(--border-color)',
     display: 'flex',
     alignItems: 'center',
-    gap: '1rem',
-    boxShadow: 'var(--shadow)'
+    gap: '1rem'
   }}>
     <div style={{
       width: '60px',
@@ -111,16 +109,15 @@ const TeacherDashboardPage = ({ user }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.8rem', color: 'var(--success-color)' }}>لوحة شرف المعلم</h1>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>نظرة عامة على نشاطاتك في مدرستك الحالية</p>
+      <PageHeader
+        title={<span style={{ color: 'var(--success-color)' }}>لوحة شرف المعلم</span>}
+        subtitle="نظرة عامة على نشاطاتك في مدرستك الحالية"
+      >
+        <div className="surface-card" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <School size={18} color="var(--success-color)" />
+          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{stats.schoolName}</span>
         </div>
-        <div style={{ background: 'var(--panel-color)', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <School size={18} color="var(--success-color)" />
-            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{stats.schoolName}</span>
-        </div>
-      </div>
+      </PageHeader>
 
       {/* Stats Grid */}
       <div style={{ 
@@ -136,7 +133,7 @@ const TeacherDashboardPage = ({ user }) => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-        <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '20px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+        <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Activity size={18} color="var(--success-color)" /> آخر النشاطات (التحضير اليومي)

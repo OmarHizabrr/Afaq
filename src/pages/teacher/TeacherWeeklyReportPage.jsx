@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { FileText, Save } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const ReportItem = ({ title, fieldPath, state, onChange }) => {
   return (
-    <div style={{
-      background: 'var(--panel-color)',
+    <div className="surface-card" style={{
       padding: '1.5rem',
-      borderRadius: '12px',
-      border: '1px solid var(--border-color)',
-      marginBottom: '1rem',
-      boxShadow: 'var(--shadow)'
+      marginBottom: '1rem'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: state[fieldPath]?.isActive ? '1rem' : '0' }}>
         <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{title}</h3>
@@ -113,15 +110,12 @@ const TeacherWeeklyReportPage = ({ user }) => {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '3rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <FileText size={28} color="var(--success-color)" />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.8rem' }}>التقرير الأسبوعي للأعمال</h1>
-            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>توثيق النشاطات الدعوية والمجتمعية</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        icon={FileText}
+        iconColor="var(--success-color)"
+        title="التقرير الأسبوعي للأعمال"
+        subtitle="توثيق النشاطات الدعوية والمجتمعية"
+      />
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
       {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}

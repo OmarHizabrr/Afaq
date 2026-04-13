@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Settings, Save, User, Moon, Sun, Monitor, Phone, KeyRound } from 'lucide-react';
 import AuthService from '../../services/authService';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
@@ -72,10 +73,7 @@ const SettingsPage = () => {
 
   return (
     <div style={{ maxWidth: '800px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
-        <Settings size={28} color="var(--accent-color)" />
-        <h1 style={{ margin: 0, fontSize: '1.8rem' }}>إعدادات النظام والملف الشخصي</h1>
-      </div>
+      <PageHeader icon={Settings} title="إعدادات النظام والملف الشخصي" />
 
       {success && (
         <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success-color)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -84,7 +82,7 @@ const SettingsPage = () => {
       )}
 
       {/* Theme Settings */}
-      <div style={{ background: 'var(--panel-color)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '2rem', boxShadow: 'var(--shadow)' }}>
+      <div className="surface-card surface-card--lg" style={{ padding: '2rem', marginBottom: '2rem' }}>
         <h2 style={{ margin: 0, marginBottom: '1.5rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Monitor size={20} color="var(--text-secondary)" /> المظهر المفضل
         </h2>
@@ -95,21 +93,21 @@ const SettingsPage = () => {
             style={{ flex: 1, padding: '1.5rem', background: theme === 'dark' ? 'var(--accent-glow)' : 'var(--bg-color)', border: `1px solid ${theme === 'dark' ? 'var(--accent-color)' : 'var(--border-color)'}`, borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-primary)', transition: 'all 0.2s' }}
           >
             <Moon size={32} color={theme === 'dark' ? 'var(--accent-color)' : 'var(--text-secondary)'} />
-            <span style={{ fontWeight: 600 }}>الوضع الليلي (الأساسي)</span>
+            <span style={{ fontWeight: 600 }}>الوضع الليلي</span>
           </button>
           
           <button 
             onClick={() => handleThemeChange('light')}
-            style={{ flex: 1, padding: '1.5rem', background: theme === 'light' ? 'rgba(245, 158, 11, 0.1)' : 'var(--bg-color)', border: `1px solid ${theme === 'light' ? '#f59e0b' : 'var(--border-color)'}`, borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-primary)', transition: 'all 0.2s' }}
+            style={{ flex: 1, padding: '1.5rem', background: theme === 'light' ? 'var(--accent-glow)' : 'var(--bg-color)', border: `1px solid ${theme === 'light' ? 'var(--md-primary)' : 'var(--border-color)'}`, borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-primary)', transition: 'all 0.2s' }}
           >
-            <Sun size={32} color={theme === 'light' ? '#f59e0b' : 'var(--text-secondary)'} />
-            <span style={{ fontWeight: 600 }}>الوضع النهاري</span>
+            <Sun size={32} color={theme === 'light' ? 'var(--md-primary)' : 'var(--text-secondary)'} />
+            <span style={{ fontWeight: 600 }}>الوضع النهاري (افتراضي)</span>
           </button>
         </div>
       </div>
 
       {/* Profile Settings */}
-      <form onSubmit={handleSaveProfile} style={{ background: 'var(--panel-color)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+      <form onSubmit={handleSaveProfile} className="surface-card surface-card--lg" style={{ padding: '2rem' }}>
         <h2 style={{ margin: 0, marginBottom: '1.5rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <User size={20} color="var(--text-secondary)" /> الحساب الشخصي
         </h2>
@@ -170,7 +168,7 @@ const SettingsPage = () => {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button type="submit" disabled={loading} className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff', padding: '12px 32px' }}>
+          <button type="submit" disabled={loading} className="google-btn google-btn--filled google-btn--toolbar" style={{ padding: '12px 32px' }}>
             {loading ? 'جاري الحفظ...' : 'حفظ التعديلات'}
           </button>
         </div>

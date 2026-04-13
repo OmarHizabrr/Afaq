@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, School, Users, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const RegionDetailsPage = () => {
     const { id } = useParams();
@@ -86,20 +87,21 @@ const RegionDetailsPage = () => {
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button 
-                  onClick={() => navigate('/regions')}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                >
-                  <ChevronRight size={20} /> إدارة المناطق
-                </button>
-                <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.3 }} />
-                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>منطقة: <span style={{ color: 'var(--accent-color)' }}>{region.name}</span></h1>
-            </div>
+            <PageHeader
+              topRow={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <button type="button" className="page-nav-back" onClick={() => navigate('/regions')}>
+                    <ChevronRight size={20} aria-hidden /> إدارة المناطق
+                  </button>
+                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                </div>
+              }
+              title={<>منطقة: <span style={{ color: 'var(--md-primary)' }}>{region.name}</span></>}
+            />
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
                 {/* Schools Section */}
-                <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                            <School size={18} color="var(--accent-color)" /> المدارس في هذه المنطقة
@@ -118,7 +120,7 @@ const RegionDetailsPage = () => {
                 </div>
 
                 {/* Supervisors Section */}
-                <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                            <Users size={18} color="var(--success-color)" /> المشرفون الميدانيون
@@ -144,7 +146,7 @@ const RegionDetailsPage = () => {
             {/* Quick Assign Modal */}
             {isModalOpen && (
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setIsModalOpen(false)}>
-                    <div style={{ background: 'var(--panel-color)', width: '100%', maxWidth: '500px', borderRadius: '24px', padding: '2rem', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }} onClick={e => e.stopPropagation()}>
+                    <div className="surface-card surface-card--lg" style={{ width: '100%', maxWidth: '500px', borderRadius: '24px', padding: '2rem' }} onClick={e => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                             <h3 style={{ margin: 0 }}>تعيين مشرف للمنطقة</h3>
                             <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><X size={20}/></button>

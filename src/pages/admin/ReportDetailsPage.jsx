@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FileText, User, School, MapPin, Calendar, Star, Info, ChevronRight, CheckCircle, XCircle } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const ReportDetailsPage = () => {
     const { id } = useParams();
@@ -47,18 +48,19 @@ const ReportDetailsPage = () => {
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button 
-                  onClick={() => navigate('/reports')}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                >
-                  <ChevronRight size={20} /> التقارير
-                </button>
-                <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.3 }} />
-                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>تفاصيل التقرير: <span style={{ color: 'var(--accent-color)' }}>{id.substring(0, 8)}</span></h1>
-            </div>
+            <PageHeader
+              topRow={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <button type="button" className="page-nav-back" onClick={() => navigate(-1)}>
+                    <ChevronRight size={20} aria-hidden /> رجوع
+                  </button>
+                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                </div>
+              }
+              title={<>تفاصيل التقرير: <span style={{ color: 'var(--md-primary)' }}>{id.substring(0, 8)}</span></>}
+            />
 
-            <div style={{ background: 'var(--panel-color)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)', marginBottom: '2rem' }}>
+            <div className="surface-card surface-card--lg" style={{ padding: '2rem', marginBottom: '2rem', borderRadius: '24px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '2rem' }}>
                     <div>
                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المشرف / المعلم</p>

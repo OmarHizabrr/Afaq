@@ -531,23 +531,110 @@ html:not(.light-mode) .nav-link.active {
   scroll-behavior: smooth;
 }
 
-/* Page title block (optional class for pages) */
+/* Page title block (shared page headers) */
 .page-header-block {
   margin-bottom: 24px;
 }
 
-.page-header-block h1 {
+.page-header-block__top {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.page-header-block__layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page-header-block__lead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 220px;
+}
+
+.page-header-block__text {
+  min-width: 0;
+}
+
+.page-header__icon-plain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.page-header__icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--accent-muted);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.page-header-block__title {
   margin: 0;
   font-size: 1.375rem;
   font-weight: 500;
   color: var(--text-primary);
   letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
-.page-header-block p {
-  margin: 4px 0 0;
+.page-header-block__title--hero {
+  font-size: clamp(1.5rem, 5vw, 2.125rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-header-block__text p {
+  margin: 6px 0 0;
   font-size: 0.875rem;
   color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.page-header-block__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.google-btn--toolbar {
+  width: auto;
+  margin-top: 0;
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+
+.page-nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  margin: 0 0 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background var(--motion-fast), color var(--motion-fast);
+}
+
+.page-nav-back:hover {
+  background: var(--accent-muted);
+  color: var(--md-primary);
 }
 
 .icon-btn {

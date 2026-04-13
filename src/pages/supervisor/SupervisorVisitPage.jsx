@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, Navigation, Save, CheckCircle, XCircle, Star, Image as ImageIcon, Video, Camera } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import { uploadMedia } from '../../services/storageApi';
+import PageHeader from '../../components/PageHeader';
 
 const SupervisorVisitPage = ({ user }) => {
   const [loading, setLoading] = useState(true);
@@ -217,21 +218,18 @@ const SupervisorVisitPage = ({ user }) => {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', paddingBottom: '3rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <MapPin size={28} color="#3b82f6" />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.8rem' }}>تسجيل زيارة ميدانية</h1>
-            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>توثيق تفصيلي لأداء المدارس بإرفاق الـ GPS</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        icon={MapPin}
+        iconColor="var(--md-primary)"
+        title="تسجيل زيارة ميدانية"
+        subtitle="توثيق تفصيلي لأداء المدارس مع الموقع الجغرافي"
+      />
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
       {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}
 
       {/* Basic Info */}
-      <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '1.5rem', boxShadow: 'var(--shadow)' }}>
+      <div className="surface-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>المدرسة المُزارة</label>
@@ -260,7 +258,7 @@ const SupervisorVisitPage = ({ user }) => {
       {selectedSchoolId && (
         <>
           {/* Students Cross-Check */}
-          <div style={{ background: 'var(--panel-color)', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '1.5rem', overflow: 'hidden', boxShadow: 'var(--shadow)' }}>
+          <div className="surface-card" style={{ borderRadius: '12px', marginBottom: '1.5rem', overflow: 'hidden' }}>
             <div style={{ padding: '1rem 1.5rem', background: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
               <h3 style={{ margin: 0, fontSize: '1.1rem' }}>سجل الطلاب والتقييم الفردي</h3>
             </div>
@@ -326,7 +324,7 @@ const SupervisorVisitPage = ({ user }) => {
 
           {/* Evaluations & Media */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem', alignItems: 'start' }}>
-            <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+            <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '12px' }}>
               <h3 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Star size={20} color="#f59e0b" /> التقييم العام
               </h3>
@@ -342,7 +340,7 @@ const SupervisorVisitPage = ({ user }) => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+              <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '12px' }}>
                 <h3 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Navigation size={20} color={gpsLocation ? 'var(--success-color)' : 'var(--danger-color)'} /> 
                   نطاق الزيارة (GPS)
@@ -361,7 +359,7 @@ const SupervisorVisitPage = ({ user }) => {
                 )}
               </div>
 
-              <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+              <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '12px' }}>
                 <h3 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <ImageIcon size={20} color="#8b5cf6" /> التوثيق البصري
                 </h3>

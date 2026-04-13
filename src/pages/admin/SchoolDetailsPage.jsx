@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const SchoolDetailsPage = () => {
     const { id } = useParams();
@@ -135,7 +136,7 @@ const SchoolDetailsPage = () => {
     });
 
     const StatCard = ({ label, value, icon: Icon, color }) => (
-        <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+        <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
             <div style={{ padding: '12px', background: `${color}15`, color: color, borderRadius: '12px' }}>
                 <Icon size={24} />
             </div>
@@ -148,16 +149,17 @@ const SchoolDetailsPage = () => {
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button 
-                  onClick={() => navigate('/schools')}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                >
-                  <ChevronRight size={20} /> إدارة المدارس
-                </button>
-                <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.3 }} />
-                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>مدرسة: <span style={{ color: 'var(--accent-color)' }}>{school.name}</span></h1>
-            </div>
+            <PageHeader
+              topRow={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <button type="button" className="page-nav-back" onClick={() => navigate('/schools')}>
+                    <ChevronRight size={20} aria-hidden /> إدارة المدارس
+                  </button>
+                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                </div>
+              }
+              title={<>مدرسة: <span style={{ color: 'var(--md-primary)' }}>{school.name}</span></>}
+            />
 
             <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
                 <StatCard label="إجمالي الطلاب" value={students.length} icon={Users} color="#f59e0b" />
@@ -167,7 +169,7 @@ const SchoolDetailsPage = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
                 {/* Teachers Section */}
-                <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                            <School size={18} color="var(--success-color)" /> طاقم التدريس
@@ -203,7 +205,7 @@ const SchoolDetailsPage = () => {
                 </div>
 
                 {/* Students Section */}
-                <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                            <Users size={18} color="#f59e0b" /> قائمة الطلاب المسجلين
@@ -242,7 +244,7 @@ const SchoolDetailsPage = () => {
             {/* Quick Assign Modal */}
             {isModalOpen && (
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setIsModalOpen(false)}>
-                    <div style={{ background: 'var(--panel-color)', width: '100%', maxWidth: '500px', borderRadius: '24px', padding: '2rem', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }} onClick={e => e.stopPropagation()}>
+                    <div className="surface-card surface-card--lg" style={{ width: '100%', maxWidth: '500px', borderRadius: '24px', padding: '2rem' }} onClick={e => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                             <h3 style={{ margin: 0 }}>تعيين عضو جديد للمدرسة</h3>
                             <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><X size={20}/></button>

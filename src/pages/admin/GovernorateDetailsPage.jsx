@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Map, MapPin, Home, ChevronRight, Info } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const GovernorateDetailsPage = () => {
     const { id } = useParams();
@@ -48,20 +49,21 @@ const GovernorateDetailsPage = () => {
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button 
-                  onClick={() => navigate('/governorates')}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                >
-                  <ChevronRight size={20} /> إدارة المحافظات
-                </button>
-                <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.3 }} />
-                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>محافظة: <span style={{ color: 'var(--accent-color)' }}>{gov.name}</span></h1>
-            </div>
+            <PageHeader
+              topRow={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <button type="button" className="page-nav-back" onClick={() => navigate('/governorates')}>
+                    <ChevronRight size={20} aria-hidden /> إدارة المحافظات
+                  </button>
+                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                </div>
+              }
+              title={<>محافظة: <span style={{ color: 'var(--md-primary)' }}>{gov.name}</span></>}
+            />
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
                 {/* Regions List */}
-                <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                            <MapPin size={18} color="var(--accent-color)" /> المناطق التابعة
@@ -80,7 +82,7 @@ const GovernorateDetailsPage = () => {
                 </div>
 
                 {/* Villages List */}
-                <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                            <Home size={18} color="var(--success-color)" /> القرى التابعة

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, Shield, Calendar, BookOpen, Clock, ChevronRight, Activity, TrendingUp } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const UserDetailsPage = () => {
     const { id } = useParams();
@@ -75,21 +76,22 @@ const UserDetailsPage = () => {
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button 
-                  onClick={() => navigate('/users')}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                >
-                  <ChevronRight size={20} /> إدارة المستخدمين
-                </button>
-                <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.3 }} />
-                <h1 style={{ margin: 0, fontSize: '1.6rem' }}>عرض ملف: <span style={{ color: 'var(--accent-color)' }}>{profile.displayName}</span></h1>
-            </div>
+            <PageHeader
+              topRow={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <button type="button" className="page-nav-back" onClick={() => navigate(-1)}>
+                    <ChevronRight size={20} aria-hidden /> رجوع
+                  </button>
+                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                </div>
+              }
+              title={<>عرض ملف: <span style={{ color: 'var(--md-primary)' }}>{profile.displayName}</span></>}
+            />
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
                 {/* Profile Card */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div style={{ background: 'var(--panel-color)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                    <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px', textAlign: 'center' }}>
                         <img 
                           src={profile.photoURL || `https://ui-avatars.com/api/?name=${profile.displayName}&size=128`} 
                           alt="Profile" 
@@ -115,7 +117,7 @@ const UserDetailsPage = () => {
                 </div>
 
                 {/* Role-Specific Activity */}
-                <div style={{ background: 'var(--panel-color)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+                <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
                         <Activity size={24} color="var(--accent-color)" />
                         <h2 style={{ margin: 0, fontSize: '1.3rem' }}>السجل والنشاطات</h2>

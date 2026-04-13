@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Save, CheckCircle, XCircle } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const TeacherDailyLogPage = ({ user }) => {
   const [students, setStudents] = useState([]);
@@ -145,21 +146,18 @@ const TeacherDailyLogPage = ({ user }) => {
 
   return (
     <div style={{ paddingBottom: '3rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Calendar size={28} color="var(--success-color)" />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.8rem' }}>التحضير اليومي</h1>
-            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>تسجيل الحضور والغياب والإنجاز اليومي</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        icon={Calendar}
+        iconColor="var(--success-color)"
+        title="التحضير اليومي"
+        subtitle="تسجيل الحضور والغياب والإنجاز اليومي"
+      />
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
       {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}
 
       {/* Curriculum Selection Card */}
-      <div style={{ background: 'var(--panel-color)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '2rem', boxShadow: 'var(--shadow)' }}>
+      <div className="surface-card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
         <h3 style={{ marginTop: 0, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>خط سير الحلقة لليوم</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           <div>
@@ -188,7 +186,7 @@ const TeacherDailyLogPage = ({ user }) => {
           لا يوجد طلاب في مدرستك حالياً. يرجى إضافتهم من شاشة "طلابي".
         </div>
       ) : (
-        <div style={{ background: 'var(--panel-color)', borderRadius: '12px', border: '1px solid var(--border-color)', overflow: 'hidden', boxShadow: 'var(--shadow)' }}>
+        <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ padding: '1rem 1.5rem', background: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem' }}>سجل الطلاب ({trackingData.length})</h3>
             <span style={{ fontSize: '0.85rem', color: 'var(--success-color)', fontWeight: 'bold' }}>

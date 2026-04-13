@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, School, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const SchoolsPage = () => {
   const navigate = useNavigate();
@@ -137,32 +138,20 @@ const SchoolsPage = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <School size={28} color="var(--accent-color)" />
-          <h1 style={{ margin: 0, fontSize: '1.8rem' }}>إدارة المدارس</h1>
-        </div>
-        <button 
-          className="google-btn" 
-          onClick={() => setIsAdding(!isAdding)}
-          style={{ width: 'auto', marginTop: 0, padding: '10px 16px' }}
-        >
+      <PageHeader icon={School} title="إدارة المدارس">
+        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(!isAdding)}>
           <Plus size={18} />
           <span>إضافة مدرسة</span>
         </button>
-      </div>
+      </PageHeader>
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
 
       {/* Add Form */}
       {isAdding && (
-        <form onSubmit={handleAdd} style={{
-          background: 'var(--panel-color)',
+        <form onSubmit={handleAdd} className="surface-card surface-card--lg" style={{
           padding: '2rem',
-          borderRadius: '12px',
-          border: `1px solid var(--border-color)`,
-          marginBottom: '2rem',
-          boxShadow: 'var(--shadow)'
+          marginBottom: '2rem'
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             

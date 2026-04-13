@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Map, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
+import PageHeader from '../../components/PageHeader';
 
 const GovernoratesPage = () => {
   const navigate = useNavigate();
@@ -98,30 +99,19 @@ const GovernoratesPage = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Map size={28} color="var(--accent-color)" />
-          <h1 style={{ margin: 0, fontSize: '1.8rem' }}>إدارة المحافظات</h1>
-        </div>
-        <button 
-          className="google-btn" 
-          onClick={() => setIsAdding(!isAdding)}
-          style={{ width: 'auto', marginTop: 0, padding: '10px 16px' }}
-        >
+      <PageHeader icon={Map} title="إدارة المحافظات">
+        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(!isAdding)}>
           <Plus size={18} />
           <span>إضافة محافظة</span>
         </button>
-      </div>
+      </PageHeader>
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem' }}>{error}</div>}
 
       {/* Add/Edit Form */}
       {(isAdding || isEditing) && (
-        <form onSubmit={isEditing ? handleEdit : handleAdd} style={{
-          background: 'var(--panel-color)',
+        <form onSubmit={isEditing ? handleEdit : handleAdd} className="surface-card" style={{
           padding: '1.5rem',
-          borderRadius: '12px',
-          border: `1px solid var(--border-color)`,
           marginBottom: '2rem',
           display: 'flex',
           gap: '1rem',
