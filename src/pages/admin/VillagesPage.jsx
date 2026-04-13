@@ -268,7 +268,7 @@ const VillagesPage = () => {
                 <option value="طفل">طفل</option>
               </select>
             </div>
-            <button type="button" onClick={addNewMuslimToList} className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--panel-color)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>
+            <button type="button" onClick={addNewMuslimToList} className="google-btn google-btn--toolbar" style={{ marginTop: 0, width: 'auto' }}>
               <UserPlus size={16} /> إضافة
             </button>
           </div>

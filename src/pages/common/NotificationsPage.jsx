@@ -46,7 +46,7 @@ const NotificationsPage = ({ user }) => {
     switch (type) {
       case 'warning': return <AlertTriangle size={20} color="#f59e0b" />;
       case 'success': return <CheckCircle size={20} color="var(--success-color)" />;
-      default: return <Info size={20} color="#3b82f6" />;
+      default: return <Info size={20} color="var(--md-primary)" />;
     }
   };
 
@@ -79,31 +79,20 @@ const NotificationsPage = ({ user }) => {
           </div>
         ) : (
           notifications.map((n) => (
-            <div key={n.id} style={{ 
-              background: n.isRead ? 'var(--panel-color)' : 'var(--bg-color)', 
-              padding: '1.5rem', 
-              borderRadius: '20px', 
-              border: `1px solid ${n.isRead ? 'var(--border-color)' : 'var(--accent-color)'}`,
-              boxShadow: n.isRead ? 'none' : '0 10px 25px -5px rgba(59, 130, 246, 0.1)',
-              display: 'flex',
-              gap: '1.5rem',
-              position: 'relative',
-              transition: 'transform 0.2s'
-            }}>
-              <div style={{ 
-                width: '48px', height: '48px', borderRadius: '14px', 
-                background: n.isRead ? 'var(--bg-color)' : 'var(--panel-color)', 
-                display: 'flex', alignItems: 'center', justifyContent: 'center' 
-              }}>
+            <div
+              key={n.id}
+              className={`notif-card ${n.isRead ? 'notif-card--read' : 'notif-card--unread'}`}
+            >
+              <div className="notif-card__icon" aria-hidden>
                 {getIcon(n.type)}
               </div>
-              
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: n.isRead ? 'var(--text-primary)' : 'var(--accent-color)' }}>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', gap: '12px', flexWrap: 'wrap' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: n.isRead ? 'var(--text-primary)' : 'var(--md-primary)' }}>
                     {n.title}
                   </h3>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                     <Calendar size={14} /> {n.date}
                   </span>
                 </div>
@@ -112,9 +101,7 @@ const NotificationsPage = ({ user }) => {
                 </p>
               </div>
 
-              {!n.isRead && (
-                 <div style={{ position: 'absolute', top: '1rem', left: '-5px', width: '10px', height: '10px', background: 'var(--accent-color)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent-color)' }}></div>
-              )}
+              {!n.isRead && <div className="notif-card__unread-dot" aria-hidden />}
             </div>
           ))
         )}

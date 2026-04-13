@@ -986,6 +986,90 @@ html:not(.light-mode) .nav-link.active {
   background: var(--accent-muted);
 }
 
+/* —— Stat tiles & activity rows (details pages) —— */
+.stat-tile {
+  background: var(--bg-color);
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.activity-list-item {
+  padding: 15px;
+  background: var(--bg-color);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.activity-list-item--split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* —— Notification cards —— */
+.notif-card {
+  padding: 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+  transition: box-shadow var(--motion-fast);
+}
+
+.notif-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.notif-card--unread {
+  background: var(--bg-color);
+  border: 1px solid var(--md-primary);
+  box-shadow: var(--shadow);
+}
+
+.notif-card--read {
+  background: var(--panel-color);
+  border: 1px solid var(--border-color);
+}
+
+.notif-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notif-card--unread .notif-card__icon {
+  background: var(--panel-color);
+}
+
+.notif-card--read .notif-card__icon {
+  background: var(--bg-color);
+}
+
+.notif-card__unread-dot {
+  position: absolute;
+  top: 1rem;
+  inset-inline-start: -5px;
+  width: 10px;
+  height: 10px;
+  background: var(--md-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--md-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notif-card {
+    transition: none;
+  }
+}
+
 @media (max-width: 768px) {
   .mobile-menu-btn {
     display: flex;

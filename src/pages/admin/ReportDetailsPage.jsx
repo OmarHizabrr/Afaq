@@ -39,7 +39,7 @@ const ReportDetailsPage = () => {
     }, [id]);
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
-    if (!report) return <div style={{ padding: '2rem', textAlign: 'center' }}>التقرير غير موجود</div>;
+    if (!report) return <div className="empty-state" style={{ margin: '2rem auto', maxWidth: '480px' }}>التقرير غير موجود</div>;
 
     const renderStatus = (val) => {
         if (val === true || val === 'isActive') return <CheckCircle size={16} color="var(--success-color)" />;
@@ -94,13 +94,13 @@ const ReportDetailsPage = () => {
 
                 {report.type === 'visit' && (
                     <>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
-                            <div style={{ background: 'var(--bg-color)', padding: '1.5rem', borderRadius: '20px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                            <div className="stat-tile">
                                 <Star size={24} color="#f59e0b" style={{ marginBottom: '8px' }} />
                                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>تقييم المعلم</p>
                                 <h2 style={{ margin: '8px 0 0', fontSize: '2rem', color: '#f59e0b' }}>{report.teacherRating}/10</h2>
                             </div>
-                            <div style={{ background: 'var(--bg-color)', padding: '1.5rem', borderRadius: '20px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                            <div className="stat-tile">
                                 <Star size={24} color="var(--success-color)" style={{ marginBottom: '8px' }} />
                                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>تقييم القرية / الموقع</p>
                                 <h2 style={{ margin: '8px 0 0', fontSize: '2rem', color: 'var(--success-color)' }}>{report.villageRating}/10</h2>
@@ -121,7 +121,7 @@ const ReportDetailsPage = () => {
                                 <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>تتبع أداء الطلاب أثناء الزيارة</h3>
                                 <div style={{ display: 'grid', gap: '1rem' }}>
                                     {report.studentsTracking.map((st, i) => (
-                                        <div key={i} style={{ padding: '1.25rem', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div key={i} className="activity-list-item activity-list-item--split" style={{ padding: '1.25rem' }}>
                                             <div>
                                                 <h4 style={{ margin: 0 }}>{st.name || 'طالب مجهول'}</h4>
                                                 <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{st.note || 'لا توجد ملاحظات'}</p>
@@ -142,27 +142,31 @@ const ReportDetailsPage = () => {
 
                 {report.type === 'daily' && (
                     <div>
-                        <h3 style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }}>سجل الحضور والغياب اليومي</h3>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>سجل الحضور والغياب اليومي</h3>
+                        <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
+                          <div className="md-table-scroll">
+                            <table className="md-table" style={{ minWidth: 'unset' }}>
                             <thead>
-                                <tr style={{ background: 'var(--bg-color)' }}>
-                                    <th style={{ textAlign: 'right', padding: '12px', borderRadius: '12px 0 0 12px' }}>اسم الطالب</th>
-                                    <th style={{ textAlign: 'right' }}>الحالة</th>
-                                    <th style={{ textAlign: 'right' }}>الحفظ</th>
-                                    <th style={{ textAlign: 'right', borderRadius: '0 12px 12px 0' }}>المراجعة</th>
+                                <tr>
+                                    <th>اسم الطالب</th>
+                                    <th>الحالة</th>
+                                    <th>الحفظ</th>
+                                    <th>المراجعة</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {report.records?.map(r => (
-                                    <tr key={r.studentId} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                        <td style={{ padding: '15px 12px', fontWeight: 600 }}>{r.name}</td>
+                                    <tr key={r.studentId} className={!r.isPresent ? 'md-table__row--absent' : ''}>
+                                        <td style={{ fontWeight: 600 }}>{r.name}</td>
                                         <td>{r.isPresent ? '✅ حاضر' : '❌ غائب'}</td>
-                                        <td>{r.memorization || '-'}</td>
-                                        <td>{r.review || '-'}</td>
+                                        <td>{r.memorization || '—'}</td>
+                                        <td>{r.review || '—'}</td>
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                            </table>
+                          </div>
+                        </div>
                     </div>
                 )}
             </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, Mail, Phone, Shield, Calendar, BookOpen, Clock, ChevronRight, Activity, TrendingUp } from 'lucide-react';
+import { User, Mail, Phone, Shield, Calendar, BookOpen, Clock, ChevronRight, Activity, TrendingUp, Info } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 
@@ -63,7 +63,7 @@ const UserDetailsPage = () => {
     }, [id]);
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
-    if (!profile) return <div style={{ padding: '2rem', textAlign: 'center' }}>المستخدم غير موجود</div>;
+    if (!profile) return <div className="empty-state" style={{ margin: '2rem auto', maxWidth: '480px' }}>المستخدم غير موجود</div>;
 
     const ROLE_LABELS = {
         admin: 'مدير النظام',
@@ -124,13 +124,13 @@ const UserDetailsPage = () => {
                     </div>
 
                     {activity.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
+                        <div className="empty-state" style={{ padding: '3rem 1.5rem' }}>
                            لا يوجد سجلات نشطة لهذا الحساب حالياً.
                         </div>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                            {profile.role === 'student' && activity.map(item => (
-                              <div key={item.id} style={{ padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between' }}>
+                              <div key={item.id} className="activity-list-item activity-list-item--split">
                                  <div>
                                     <h4 style={{ margin: 0 }}>{item.subject}</h4>
                                     <p style={{ margin: '4px 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.date} • {item.school}</p>
@@ -145,7 +145,7 @@ const UserDetailsPage = () => {
                            ))}
 
                            {profile.role === 'teacher' && activity.map(item => (
-                              <div key={item.id} style={{ padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                              <div key={item.id} className="activity-list-item">
                                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                        <Calendar size={14} color="var(--accent-color)" />
@@ -158,7 +158,7 @@ const UserDetailsPage = () => {
                            ))}
 
                            {profile.role?.includes('supervisor') && activity.map(item => (
-                              <div key={item.id} style={{ padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div key={item.id} className="activity-list-item activity-list-item--split">
                                  <div>
                                     <h4 style={{ margin: 0 }}>زيارة: {item.schoolName}</h4>
                                     <p style={{ margin: '4px 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.timestamp?.split('T')[0]} • {item.subjectName}</p>
