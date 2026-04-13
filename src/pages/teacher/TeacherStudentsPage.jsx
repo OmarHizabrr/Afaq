@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 
 const TeacherStudentsPage = ({ user }) => {
   const navigate = useNavigate();
+  const actorId = user?.uid || user?.id;
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -49,7 +50,7 @@ const TeacherStudentsPage = ({ user }) => {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!studentName.trim() || !activeSchoolId) return;
+    if (!studentName.trim() || !activeSchoolId || !actorId) return;
 
     try {
       setLoading(true);
@@ -59,7 +60,7 @@ const TeacherStudentsPage = ({ user }) => {
         studentName: studentName.trim(),
         age: parseInt(studentAge) || 0,
         schoolId: activeSchoolId,
-        teacherId: user.id
+        teacherId: actorId
       };
 
       if (isEditing) {

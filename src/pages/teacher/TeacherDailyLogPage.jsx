@@ -4,6 +4,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 
 const TeacherDailyLogPage = ({ user }) => {
+  const actorId = user?.uid || user?.id;
   const [students, setStudents] = useState([]);
   const [curriculumList, setCurriculumList] = useState([]); // List of subjects
   const [loading, setLoading] = useState(true);
@@ -83,6 +84,10 @@ const TeacherDailyLogPage = ({ user }) => {
       setError('يرجى اختيار المادة وتحديد الدرس/الأسبوع أولاً');
       return;
     }
+    if (!actorId) {
+      setError('تعذر تحديد معرف المعلم للحفظ.');
+      return;
+    }
 
     try {
       setSaving(true);
@@ -91,7 +96,7 @@ const TeacherDailyLogPage = ({ user }) => {
       
       const api = FirestoreApi.Api;
       const logId = api.getNewId('teacher_daily_logs');
-      const logRef = api.getSubDocument('teacher_daily_logs', user.id, 'teacher_daily_logs', logId);
+      const logRef = api.getSubDocument('teacher_daily_logs', actorId, 'teacher_daily_logs', logId);
       
       const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
       
@@ -107,7 +112,7 @@ const TeacherDailyLogPage = ({ user }) => {
       }
 
       const logPayload = {
-        teacherId: user.id,
+        teacherId: actorId,
         schoolId,
         date: today,
         subjectId: selectedSubjectId,

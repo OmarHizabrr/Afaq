@@ -49,6 +49,7 @@ const ReportItem = ({ title, fieldPath, state, onChange }) => {
 };
 
 const TeacherWeeklyReportPage = ({ user }) => {
+  const actorId = user?.uid || user?.id;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -72,6 +73,10 @@ const TeacherWeeklyReportPage = ({ user }) => {
   };
 
   const handleSaveReport = async () => {
+    if (!actorId) {
+      setError('تعذر تحديد معرف المعلم للحفظ.');
+      return;
+    }
     try {
       setLoading(true);
       setError('');
@@ -86,13 +91,13 @@ const TeacherWeeklyReportPage = ({ user }) => {
       }
 
       const reportId = api.getNewId('teacher_reports');
-      const docRef = api.getSubDocument('teacher_reports', user.id, 'teacher_reports', reportId);
+      const docRef = api.getSubDocument('teacher_reports', actorId, 'teacher_reports', reportId);
       const today = new Date().toISOString();
 
       await api.setData({
         docRef,
         data: {
-          teacherId: user.id,
+          teacherId: actorId,
           schoolId,
           submissionDate: today,
           reportData: reportState
