@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Home, School, Users, ChevronRight, Info, PieChart, MapPin } from 'lucide-react';
+import { School, ChevronRight, Info, PieChart, MapPin, Edit2, Trash2, Plus, Save, X } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 
@@ -11,6 +11,12 @@ const VillageDetailsPage = () => {
     const [schools, setSchools] = useState([]);
     const [newMuslims, setNewMuslims] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [newName, setNewName] = useState('');
+    const [newType, setNewType] = useState('رجل');
+    const [editingMuslimId, setEditingMuslimId] = useState(null);
+    const [editingName, setEditingName] = useState('');
+    const [editingType, setEditingType] = useState('رجل');
 
     useEffect(() => {
         const fetchVillageDetails = async () => {
@@ -58,6 +64,92 @@ const VillageDetailsPage = () => {
     const womenCount = newMuslims.filter((m) => m.type === 'امرأة').length;
     const childrenCount = newMuslims.filter((m) => m.type === 'طفل').length;
 
+    const syncVillageCounters = async (nextList) => {
+      if (!village?.regionId || !id) return;
+      const api = FirestoreApi.Api;
+      const docRef = api.getSubDocument('villages', village.regionId, 'villages', id);
+      await api.updateData({
+        docRef,
+        data: {
+          newMuslimsMen: nextList.filter((m) => m.type === 'رجل').length,
+          newMuslimsWomen: nextList.filter((m) => m.type === 'امرأة').length,
+          newMuslimsChildren: nextList.filter((m) => m.type === 'طفل').length,
+        },
+      });
+    };
+
+    const handleAddNewMuslim = async () => {
+      if (!newName.trim() || !id) return;
+      try {
+        setSaving(true);
+        const api = FirestoreApi.Api;
+        const docId = api.getNewId('new_muslims');
+        await api.setData({
+          docRef: api.getDocument('new_muslims', docId),
+          data: { villageId: id, name: newName.trim(), type: newType },
+        });
+        const next = [...newMuslims, { id: docId, villageId: id, name: newName.trim(), type: newType }];
+        setNewMuslims(next);
+        await syncVillageCounters(next);
+        setNewName('');
+        setNewType('رجل');
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const startEdit = (m) => {
+      setEditingMuslimId(m.id);
+      setEditingName(m.name || '');
+      setEditingType(m.type || 'رجل');
+    };
+
+    const cancelEdit = () => {
+      setEditingMuslimId(null);
+      setEditingName('');
+      setEditingType('رجل');
+    };
+
+    const handleSaveEdit = async () => {
+      if (!editingMuslimId || !editingName.trim()) return;
+      try {
+        setSaving(true);
+        const api = FirestoreApi.Api;
+        await api.updateData({
+          docRef: api.getDocument('new_muslims', editingMuslimId),
+          data: { name: editingName.trim(), type: editingType },
+        });
+        const next = newMuslims.map((m) =>
+          m.id === editingMuslimId ? { ...m, name: editingName.trim(), type: editingType } : m
+        );
+        setNewMuslims(next);
+        await syncVillageCounters(next);
+        cancelEdit();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const handleDeleteNewMuslim = async (m) => {
+      if (!window.confirm(`حذف السجل "${m.name}"؟`)) return;
+      try {
+        setSaving(true);
+        const api = FirestoreApi.Api;
+        await api.deleteData(api.getDocument('new_muslims', m.id));
+        const next = newMuslims.filter((x) => x.id !== m.id);
+        setNewMuslims(next);
+        await syncVillageCounters(next);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setSaving(false);
+      }
+    };
+
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <PageHeader
@@ -94,14 +186,67 @@ const VillageDetailsPage = () => {
                                 <div><strong>👧 أطفال:</strong> {childrenCount}</div>
                             </div>
                             <div style={{ marginTop: '1rem' }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px auto', gap: '8px', marginBottom: '10px' }}>
+                                <input
+                                  type="text"
+                                  value={newName}
+                                  onChange={(e) => setNewName(e.target.value)}
+                                  placeholder="اسم المهتدي الجديد"
+                                  style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--panel-color)', color: 'var(--text-primary)' }}
+                                />
+                                <select
+                                  value={newType}
+                                  onChange={(e) => setNewType(e.target.value)}
+                                  style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--panel-color)', color: 'var(--text-primary)' }}
+                                >
+                                  <option value="رجل">رجل</option>
+                                  <option value="امرأة">امرأة</option>
+                                  <option value="طفل">طفل</option>
+                                </select>
+                                <button type="button" className="icon-btn" onClick={handleAddNewMuslim} disabled={saving} title="إضافة">
+                                  <Plus size={16} />
+                                </button>
+                              </div>
                               {newMuslims.length === 0 ? (
                                 <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لا توجد سجلات مهتدين مضافة بعد.</p>
                               ) : (
                                 <div style={{ display: 'grid', gap: '8px' }}>
                                   {newMuslims.map((m) => (
                                     <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--panel-color)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '8px 10px' }}>
-                                      <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
-                                      <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.type}</span>
+                                      {editingMuslimId === m.id ? (
+                                        <>
+                                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1 }}>
+                                            <input
+                                              type="text"
+                                              value={editingName}
+                                              onChange={(e) => setEditingName(e.target.value)}
+                                              style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)', flex: 1 }}
+                                            />
+                                            <select
+                                              value={editingType}
+                                              onChange={(e) => setEditingType(e.target.value)}
+                                              style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
+                                            >
+                                              <option value="رجل">رجل</option>
+                                              <option value="امرأة">امرأة</option>
+                                              <option value="طفل">طفل</option>
+                                            </select>
+                                          </div>
+                                          <div style={{ display: 'flex', gap: '6px' }}>
+                                            <button type="button" className="icon-btn" onClick={handleSaveEdit} disabled={saving} title="حفظ"><Save size={14} /></button>
+                                            <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء"><X size={14} /></button>
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.type}</span>
+                                            <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
+                                            <button type="button" className="icon-btn" onClick={() => handleDeleteNewMuslim(m)} title="حذف"><Trash2 size={14} color="var(--danger-color)" /></button>
+                                          </div>
+                                        </>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
