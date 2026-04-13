@@ -22,7 +22,6 @@ import {
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
-import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const AdminLayout = ({ user }) => {
   const navigate = useNavigate();
@@ -152,8 +151,6 @@ const AdminLayout = ({ user }) => {
             <UserMenuDropdown user={user} tagline={user?.email || ''} />
           </div>
         </header>
-
-        <PwaInstallBanner />
 
         {/* Dynamic Page Content */}
         <main className="page-content">

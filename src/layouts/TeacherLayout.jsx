@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
-import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const TeacherLayout = ({ user }) => {
   const navigate = useNavigate();
@@ -140,8 +139,6 @@ const TeacherLayout = ({ user }) => {
             />
           </div>
         </header>
-
-        <PwaInstallBanner />
 
         <main className="page-content">
           <Outlet />

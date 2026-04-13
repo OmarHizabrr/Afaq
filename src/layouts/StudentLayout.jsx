@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
-import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const StudentLayout = ({ user }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -151,8 +150,6 @@ const StudentLayout = ({ user }) => {
             <UserMenuDropdown user={user} tagline="طالب نشط" />
           </div>
         </header>
-
-        <PwaInstallBanner />
 
         {/* Dynamic Page Content */}
         <main className="page-content">

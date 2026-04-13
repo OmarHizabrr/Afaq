@@ -1373,6 +1373,8 @@ html:not(.light-mode) .nav-link.active {
   justify-content: center;
   font-weight: 800;
   flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
 }
 
 .messenger-thread__body {
@@ -1438,6 +1440,12 @@ html:not(.light-mode) .nav-link.active {
 .messenger-msg__meta {
   font-size: 0.72rem;
   color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.messenger-msg__meta--mine {
+  font-weight: 700;
+  color: var(--md-primary);
   margin-bottom: 4px;
 }
 
@@ -1717,46 +1725,172 @@ html:not(.light-mode) .nav-link.active {
   line-height: 1;
 }
 
-/* شريط تثبيت PWA */
-.pwa-banner {
+/* بطاقة مستلم (إشعارات / محادثة جديدة) */
+.recipient-user-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 0.6rem 1.25rem;
-  background: linear-gradient(90deg, var(--accent-muted), var(--panel-color));
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.88rem;
-}
-
-.pwa-banner--ios {
-  justify-content: center;
-  text-align: center;
-}
-
-.pwa-banner__btn {
-  margin: 0 !important;
-}
-
-.pwa-banner__close {
-  margin-inline-start: auto;
-  border: none;
-  background: transparent;
+  gap: 0.65rem;
+  padding: 0.65rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--panel-color);
+  margin-bottom: 0.5rem;
   cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-align: right;
+}
+
+.recipient-user-card:hover {
+  border-color: var(--md-primary);
+  background: var(--accent-muted);
+}
+
+.recipient-user-card--selected {
+  border-color: var(--md-primary);
+  box-shadow: 0 0 0 1px rgba(26, 115, 232, 0.25);
+}
+
+.recipient-user-card__check {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.recipient-user-card__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.recipient-user-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipient-user-card__name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.recipient-user-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  padding: 6px;
-  border-radius: 8px;
+}
+
+.recipient-user-card__role {
+  background: var(--bg-color);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
+
+.recipient-user-card__profile {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.pwa-banner__close:hover {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: var(--md-primary);
   background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.pwa-banner--ios .pwa-banner__close {
-  margin-inline-start: 0;
+.recipient-user-card__profile:hover {
+  background: var(--accent-muted);
+  color: var(--accent-color);
+}
+
+.recipient-user-card__profile--disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* صف رسالة مع صورة */
+.messenger-msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.messenger-msg-row--mine {
+  flex-direction: row-reverse;
+}
+
+.messenger-msg__avatar-wrap {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--panel-color);
+}
+
+.messenger-msg__avatar-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.messenger-msg__avatar-wrap--letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--md-primary);
+}
+
+.messenger-msg__bubble-wrap {
+  flex: 1;
+  min-width: 0;
+  max-width: calc(100% - 42px);
+}
+
+.messenger-msg-row--mine .messenger-msg__bubble-wrap {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.messenger-thread__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.messenger-thread-head__avatar-inner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  background: var(--md-primary);
+}
+
+.messenger-thread-head__avatar-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .notif-list-stack {

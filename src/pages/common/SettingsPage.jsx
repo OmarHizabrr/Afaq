@@ -127,7 +127,7 @@ const SettingsPage = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                <Phone size={16} /> رقم هاتف التواصل (والدخول المخصص)
             </label>
             <input 
@@ -139,7 +139,7 @@ const SettingsPage = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                <KeyRound size={16} /> كلمة المرور (للدخول المخصص)
             </label>
             <input 

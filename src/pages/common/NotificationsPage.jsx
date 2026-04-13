@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Bell, Info, AlertTriangle, CheckCircle, Calendar, Send, MessageCircle, Users } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import FormModal from '../../components/FormModal';
 import MessengerPanel from '../../components/MessengerPanel';
+import RecipientUserCard from '../../components/RecipientUserCard';
+import { getUserProfilePath } from '../../utils/profileLinks';
 
 const ROLE_LABELS = {
   admin: 'مدير النظام',
@@ -15,6 +18,7 @@ const ROLE_LABELS = {
 };
 
 const NotificationsPage = ({ user }) => {
+  const location = useLocation();
   const actorId = user?.uid || user?.id;
   const [activeTab, setActiveTab] = useState('notifications');
   const [notifications, setNotifications] = useState([]);
@@ -300,7 +304,9 @@ const NotificationsPage = ({ user }) => {
       if (replyTo) {
         payload.replyToId = replyTo.id;
         payload.replyToText = replyTo.text;
-        payload.replyToSenderName = replyTo.senderName || '';
+        payload.replyToSenderId = replyTo.senderId || '';
+        payload.replyToSenderName =
+          replyTo.senderId === actorId ? 'أنت' : replyTo.senderName || '';
       }
       await api.setData({
         docRef: api.getConversationMessageDoc(selectedConversation.id, msgId),
@@ -473,6 +479,8 @@ const NotificationsPage = ({ user }) => {
         <div className="surface-card messenger-page-card">
           <MessengerPanel
             actorId={actorId}
+            actorPhotoURL={user?.photoURL || ''}
+            actorDisplayName={user?.displayName || ''}
             allUsers={allUsers}
             conversations={conversations}
             selectedConversation={selectedConversation}
@@ -513,20 +521,21 @@ const NotificationsPage = ({ user }) => {
               إلغاء التحديد
             </button>
           </div>
-          <div className="modal-scroll-box" style={{ maxHeight: 180, marginBottom: '0.75rem' }}>
+          <div className="modal-scroll-box" style={{ maxHeight: 320, marginBottom: '0.75rem' }}>
             {recipients.map((u) => (
-              <label key={u.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '6px' }}>
-                <input
-                  type="checkbox"
-                  checked={selectedRecipientIds.includes(u.id)}
-                  onChange={(e) => {
-                    setSelectedRecipientIds((prev) =>
-                      e.target.checked ? [...prev, u.id] : prev.filter((id) => id !== u.id)
-                    );
-                  }}
-                />
-                <span>{u.displayName || u.email || u.id}</span>
-              </label>
+              <RecipientUserCard
+                key={u.id}
+                user={u}
+                checked={selectedRecipientIds.includes(u.id)}
+                onToggle={(next) =>
+                  setSelectedRecipientIds((prev) => {
+                    if (next) return prev.includes(u.id) ? prev : [...prev, u.id];
+                    return prev.filter((id) => id !== u.id);
+                  })
+                }
+                profileHref={getUserProfilePath(location.pathname, u.id)}
+                roleLabel={ROLE_LABELS[u.role] || u.role || ''}
+              />
             ))}
           </div>
           <label className="app-label">نوع الرسالة</label>
@@ -573,18 +582,21 @@ const NotificationsPage = ({ user }) => {
               إلغاء التحديد
             </button>
           </div>
-          <div className="modal-scroll-box" style={{ maxHeight: 180, marginBottom: '1rem' }}>
+          <div className="modal-scroll-box" style={{ maxHeight: 320, marginBottom: '1rem' }}>
             {recipients.map((u) => (
-              <label key={u.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '6px' }}>
-                <input
-                  type="checkbox"
-                  checked={newChatUsers.includes(u.id)}
-                  onChange={(e) => {
-                    setNewChatUsers((prev) => (e.target.checked ? [...prev, u.id] : prev.filter((id) => id !== u.id)));
-                  }}
-                />
-                <span>{u.displayName || u.email || u.id}</span>
-              </label>
+              <RecipientUserCard
+                key={u.id}
+                user={u}
+                checked={newChatUsers.includes(u.id)}
+                onToggle={(next) =>
+                  setNewChatUsers((prev) => {
+                    if (next) return prev.includes(u.id) ? prev : [...prev, u.id];
+                    return prev.filter((id) => id !== u.id);
+                  })
+                }
+                profileHref={getUserProfilePath(location.pathname, u.id)}
+                roleLabel={ROLE_LABELS[u.role] || u.role || ''}
+              />
             ))}
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>

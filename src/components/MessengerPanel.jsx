@@ -19,8 +19,17 @@ function formatTime(iso) {
   }
 }
 
+function replySnippetLabel(m, actorId, actorDisplayName) {
+  if (m.replyToSenderId === actorId) return 'أنت';
+  if (m.replyToSenderName === 'أنت') return 'أنت';
+  if (!m.replyToSenderId && actorDisplayName && m.replyToSenderName === actorDisplayName) return 'أنت';
+  return m.replyToSenderName || '';
+}
+
 const MessengerPanel = ({
   actorId,
+  actorPhotoURL,
+  actorDisplayName,
   allUsers,
   conversations,
   selectedConversation,
@@ -42,6 +51,8 @@ const MessengerPanel = ({
   const [editingText, setEditingText] = useState('');
   const touchRef = useRef({ x: 0, y: 0, id: null });
 
+  const getUser = useCallback((id) => allUsers.find((u) => u.id === id), [allUsers]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, selectedConversation?.id]);
@@ -52,11 +63,45 @@ const MessengerPanel = ({
       if (c.isGroup) return c.title || 'مجموعة';
       const names = (c.participants || [])
         .filter((id) => id !== actorId)
-        .map((id) => allUsers.find((u) => u.id === id)?.displayName || id);
+        .map((id) => getUser(id)?.displayName || id);
       return names.join('، ') || 'محادثة';
     },
-    [actorId, allUsers]
+    [actorId, getUser]
   );
+
+  const threadAvatar = useCallback(
+    (c) => {
+      if (!c) return { letter: '?', src: null };
+      if (c.isGroup) {
+        const t = c.title || 'مجموعة';
+        return { letter: t.charAt(0), src: null };
+      }
+      const oid = (c.participants || []).find((id) => id !== actorId);
+      const u = oid ? getUser(oid) : null;
+      const name = u?.displayName || oid || '?';
+      if (u?.photoURL) return { letter: name.charAt(0), src: u.photoURL };
+      return {
+        letter: name.charAt(0),
+        src: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a73e8&color=fff`,
+      };
+    },
+    [actorId, getUser]
+  );
+
+  const headerAvatar = selectedConversation ? threadAvatar(selectedConversation) : { letter: '?', src: null };
+
+  const messageAvatarSrc = (m, mine) => {
+    if (mine) {
+      if (actorPhotoURL) return actorPhotoURL;
+      const n = encodeURIComponent(actorDisplayName || 'أنا');
+      return `https://ui-avatars.com/api/?name=${n}&background=1e8e3e&color=fff`;
+    }
+    if (m.senderPhotoURL) return m.senderPhotoURL;
+    const u = getUser(m.senderId);
+    if (u?.photoURL) return u.photoURL;
+    const name = m.senderName || m.senderId || '?';
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a73e8&color=fff`;
+  };
 
   const handleTouchStart = (e, m) => {
     const t = e.touches[0];
@@ -69,14 +114,23 @@ const MessengerPanel = ({
     if (id !== m.id) return;
     const dx = t.clientX - x;
     const dy = Math.abs(t.clientY - y);
-    // RTL: سحب لليسار (dx منفي كبير) يشبه «رد» في واجهة عربية
     if (dy < 40 && dx < -48) {
       setReplyTo({
         id: m.id,
         text: m.text,
         senderName: m.senderName || '',
+        senderId: m.senderId,
       });
     }
+  };
+
+  const pickReply = (m) => {
+    setReplyTo({
+      id: m.id,
+      text: m.text,
+      senderName: m.senderName || '',
+      senderId: m.senderId,
+    });
   };
 
   const startEdit = (m) => {
@@ -96,6 +150,9 @@ const MessengerPanel = ({
     cancelEdit();
   };
 
+  const replyStripWho =
+    replyTo && replyTo.senderId === actorId ? 'أنت' : replyTo?.senderName || 'رسالة';
+
   const listSection = (
     <div className={`messenger-col messenger-col--list ${hideListColumnSm ? 'messenger-col--hidden-sm' : ''}`}>
       <div className="messenger-col__head">
@@ -107,6 +164,7 @@ const MessengerPanel = ({
         ) : (
           conversations.map((c) => {
             const active = selectedConversation?.id === c.id;
+            const av = threadAvatar(c);
             return (
               <button
                 key={c.id}
@@ -115,15 +173,17 @@ const MessengerPanel = ({
                 onClick={() => onSelectConversation(c)}
               >
                 <div className="messenger-thread__avatar">
-                  {(partnerTitle(c) || '?').charAt(0)}
+                  {av.src ? (
+                    <img className="messenger-thread__avatar-img" src={av.src} alt="" />
+                  ) : (
+                    av.letter
+                  )}
                 </div>
                 <div className="messenger-thread__body">
                   <div className="messenger-thread__title">{partnerTitle(c)}</div>
                   <div className="messenger-thread__preview">{c.lastMessage || '…'}</div>
                 </div>
-                {c.lastSenderId && c.lastSenderId !== actorId && (
-                  <span className="messenger-thread__dot" aria-hidden />
-                )}
+                {c.lastSenderId && c.lastSenderId !== actorId && <span className="messenger-thread__dot" aria-hidden />}
               </button>
             );
           })
@@ -145,7 +205,9 @@ const MessengerPanel = ({
               <ChevronRight size={22} />
             </button>
             <div className="messenger-thread-head">
-              <div className="messenger-thread-head__avatar">{(partnerTitle(selectedConversation) || '?').charAt(0)}</div>
+              <div className="messenger-thread-head__avatar-inner">
+                {headerAvatar.src ? <img src={headerAvatar.src} alt="" /> : headerAvatar.letter}
+              </div>
               <div>
                 <div className="messenger-thread-head__title">{partnerTitle(selectedConversation)}</div>
                 <div className="messenger-thread-head__sub">
@@ -158,79 +220,87 @@ const MessengerPanel = ({
           <div className="messenger-messages">
             {messages.map((m) => {
               const mine = m.senderId === actorId;
+              const refLbl = replySnippetLabel(m, actorId, actorDisplayName);
               return (
                 <div
                   key={m.id}
-                  className={`messenger-msg ${mine ? 'messenger-msg--mine' : ''}`}
+                  className={`messenger-msg-row ${mine ? 'messenger-msg-row--mine' : ''}`}
                   onTouchStart={(e) => handleTouchStart(e, m)}
                   onTouchEnd={(e) => handleTouchEnd(e, m)}
                 >
-                  <div className="messenger-msg__bubble">
-                    {!mine && (
-                      <div className="messenger-msg__meta">
-                        {m.senderName}{' '}
-                        <span className="messenger-msg__role">
-                          {ROLE_LABELS[m.senderRole] || m.senderRole || ''}
-                        </span>
-                      </div>
-                    )}
-                    {m.replyToText && (
-                      <div className="messenger-msg__reply-ref">
-                        <Reply size={12} />
-                        <span>{m.replyToSenderName ? `${m.replyToSenderName}: ` : ''}{m.replyToText}</span>
-                      </div>
-                    )}
-                    {editingId === m.id ? (
-                      <div className="messenger-msg__edit">
-                        <textarea
-                          className="app-textarea"
-                          rows={2}
-                          value={editingText}
-                          onChange={(e) => setEditingText(e.target.value)}
-                        />
-                        <div className="messenger-msg__edit-actions">
-                          <button type="button" className="icon-btn" onClick={saveEdit} title="حفظ">
-                            <Check size={18} />
-                          </button>
-                          <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء">
-                            <X size={18} />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="messenger-msg__text">{m.text}</div>
-                    )}
-                    <div className="messenger-msg__foot">
-                      <span>{formatTime(m.createdAt)}</span>
-                      {m.editedAt && <span className="messenger-msg__edited">تم التعديل</span>}
-                      <div className="messenger-msg__actions">
-                        <button
-                          type="button"
-                          className="messenger-msg__icon-btn"
-                          title="رد (أو اسحب لليسار)"
-                          onClick={() =>
-                            setReplyTo({
-                              id: m.id,
-                              text: m.text,
-                              senderName: m.senderName || '',
-                            })
-                          }
-                        >
-                          <Reply size={14} />
-                        </button>
-                        {mine && editingId !== m.id && (
-                          <button
-                            type="button"
-                            className="messenger-msg__icon-btn"
-                            title="تعديل"
-                            onClick={() => startEdit(m)}
-                          >
-                            <Pencil size={14} />
-                          </button>
+                  {!mine && (
+                    <div className="messenger-msg__avatar-wrap">
+                      <img src={messageAvatarSrc(m, false)} alt="" />
+                    </div>
+                  )}
+                  <div className="messenger-msg__bubble-wrap">
+                    <div className={`messenger-msg ${mine ? 'messenger-msg--mine' : ''}`}>
+                      <div className="messenger-msg__bubble">
+                        {!mine && (
+                          <div className="messenger-msg__meta">
+                            {m.senderName}{' '}
+                            <span className="messenger-msg__role">{ROLE_LABELS[m.senderRole] || m.senderRole || ''}</span>
+                          </div>
                         )}
+                        {mine && (
+                          <div className="messenger-msg__meta messenger-msg__meta--mine">أنت</div>
+                        )}
+                        {m.replyToText && (
+                          <div className="messenger-msg__reply-ref">
+                            <Reply size={12} />
+                            <span>
+                              {refLbl ? `${refLbl}: ` : ''}
+                              {m.replyToText}
+                            </span>
+                          </div>
+                        )}
+                        {editingId === m.id ? (
+                          <div className="messenger-msg__edit">
+                            <textarea
+                              className="app-textarea"
+                              rows={2}
+                              value={editingText}
+                              onChange={(e) => setEditingText(e.target.value)}
+                            />
+                            <div className="messenger-msg__edit-actions">
+                              <button type="button" className="icon-btn" onClick={saveEdit} title="حفظ">
+                                <Check size={18} />
+                              </button>
+                              <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء">
+                                <X size={18} />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="messenger-msg__text">{m.text}</div>
+                        )}
+                        <div className="messenger-msg__foot">
+                          <span>{formatTime(m.createdAt)}</span>
+                          {m.editedAt && <span className="messenger-msg__edited">تم التعديل</span>}
+                          <div className="messenger-msg__actions">
+                            <button
+                              type="button"
+                              className="messenger-msg__icon-btn"
+                              title="رد (أو اسحب لليسار)"
+                              onClick={() => pickReply(m)}
+                            >
+                              <Reply size={14} />
+                            </button>
+                            {mine && editingId !== m.id && (
+                              <button type="button" className="messenger-msg__icon-btn" title="تعديل" onClick={() => startEdit(m)}>
+                                <Pencil size={14} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  {mine && (
+                    <div className="messenger-msg__avatar-wrap">
+                      <img src={messageAvatarSrc(m, true)} alt="" />
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -242,7 +312,7 @@ const MessengerPanel = ({
               <div className="messenger-reply-strip__inner">
                 <Reply size={16} />
                 <div>
-                  <div className="messenger-reply-strip__who">{replyTo.senderName || 'رسالة'}</div>
+                  <div className="messenger-reply-strip__who">{replyStripWho}</div>
                   <div className="messenger-reply-strip__txt">{replyTo.text}</div>
                 </div>
               </div>
