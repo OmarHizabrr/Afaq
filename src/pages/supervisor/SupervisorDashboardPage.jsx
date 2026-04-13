@@ -33,6 +33,7 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
 
 const SupervisorDashboardPage = ({ user }) => {
   const navigate = useNavigate();
+  const actorId = user?.uid || user?.id;
   const [stats, setStats] = useState({
     regionsCount: 0,
     visitsCount: 0,
@@ -44,16 +45,16 @@ const SupervisorDashboardPage = ({ user }) => {
 
   useEffect(() => {
     const fetchSupervisorStats = async () => {
-      if (!user?.uid) return;
+      if (!actorId) return;
       try {
         const api = FirestoreApi.Api;
         
         // 1. تعيينات المناطق من المرآة: Mygroup/{uid}/Mygroup/{regionId}
-        const assignedRegionsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(user.uid));
+        const assignedRegionsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
         const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
         
         // 2. Fetch total visits by this supervisor
-        const refVisits = api.getSubCollection('reports', user.uid, 'reports');
+        const refVisits = api.getSubCollection('reports', actorId, 'reports');
         const visitDocs = await api.getDocuments(refVisits);
         
         // Count this month
@@ -89,7 +90,7 @@ const SupervisorDashboardPage = ({ user }) => {
     };
 
     fetchSupervisorStats();
-  }, [user]);
+  }, [actorId]);
 
   return (
     <div>

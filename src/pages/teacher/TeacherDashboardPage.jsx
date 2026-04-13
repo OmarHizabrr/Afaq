@@ -33,6 +33,7 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
 
 const TeacherDashboardPage = ({ user }) => {
   const navigate = useNavigate();
+  const actorId = user?.uid || user?.id;
   const [stats, setStats] = useState({
     studentsCount: 0,
     dailyLogsCount: 0,
@@ -44,17 +45,16 @@ const TeacherDashboardPage = ({ user }) => {
 
   useEffect(() => {
     const fetchTeacherStats = async () => {
-      if (!user?.schoolId) {
-        setStats(prev => ({ ...prev, schoolName: 'غير معين لمدرسة حالياً' }));
-        setLoading(false);
-        return;
-      }
-
       try {
         const api = FirestoreApi.Api;
-        
+        if (!actorId) {
+          setStats(prev => ({ ...prev, schoolName: 'حساب غير معروف' }));
+          setLoading(false);
+          return;
+        }
+
         // 1. Fetch Assigned Schools from Mygroup mirror
-        const assignedSchoolsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(user.id));
+        const assignedSchoolsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
         const assignedSchoolIds = assignedSchoolsDocs.map(d => d.data().schoolId).filter(id => !!id);
         
         // If teacher has schools, pick the first one as active or use the one from user.schoolId if still set
@@ -77,11 +77,11 @@ const TeacherDashboardPage = ({ user }) => {
         }
 
         // 4. Fetch Daily Logs for this teacher
-        const refLogs = api.getSubCollection('teacher_daily_logs', user.id, 'teacher_daily_logs');
+        const refLogs = api.getSubCollection('teacher_daily_logs', actorId, 'teacher_daily_logs');
         const docsLogs = await api.getDocuments(refLogs);
         
         // 5. Fetch Weekly Reports for this teacher
-        const refReports = api.getSubCollection('teacher_reports', user.id, 'teacher_reports');
+        const refReports = api.getSubCollection('teacher_reports', actorId, 'teacher_reports');
         const docsReports = await api.getDocuments(refReports);
 
         setStats(prev => ({
@@ -104,7 +104,7 @@ const TeacherDashboardPage = ({ user }) => {
     };
 
     fetchTeacherStats();
-  }, [user]);
+  }, [actorId, user]);
 
   return (
     <div>

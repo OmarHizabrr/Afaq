@@ -5,6 +5,7 @@ import { uploadMedia } from '../../services/storageApi';
 import PageHeader from '../../components/PageHeader';
 
 const SupervisorVisitPage = ({ user }) => {
+  const actorId = user?.uid || user?.id;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -34,9 +35,14 @@ const SupervisorVisitPage = ({ user }) => {
     const fetchInitialData = async () => {
       try {
         const api = FirestoreApi.Api;
+        if (!actorId) {
+          setError('تعذر تحديد معرف المستخدم الحالي.');
+          setLoading(false);
+          return;
+        }
         
         // 1. Get Bilateral Assignments (Regions)
-        const assignedRegionsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(user.id));
+        const assignedRegionsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
         const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
 
         if (assignedRegionIds.length === 0 && user.role !== 'admin' && user.role !== 'supervisor_arab') {
@@ -75,7 +81,7 @@ const SupervisorVisitPage = ({ user }) => {
     };
 
     fetchInitialData();
-  }, [user]);
+  }, [actorId, user?.role]);
 
   // When school changes, fetch its students
   useEffect(() => {
@@ -155,7 +161,7 @@ const SupervisorVisitPage = ({ user }) => {
       // Upload Media First
       const mediaUrls = [];
       for (const file of mediaFiles) {
-        const url = await uploadMedia(file, `supervisor_reports/${user.id}`);
+        const url = await uploadMedia(file, `supervisor_reports/${actorId}`);
         if (url) mediaUrls.push({ url, name: file.name, type: file.type });
       }
 
@@ -165,7 +171,7 @@ const SupervisorVisitPage = ({ user }) => {
       const selectedSubjectName = getSelectedSubject()?.name;
 
       const payload = {
-        supervisorId: user.id,
+        supervisorId: actorId,
         supervisorName: user.displayName,
         schoolId: selectedSchoolId,
         schoolName: selectedSchoolName,
@@ -189,7 +195,7 @@ const SupervisorVisitPage = ({ user }) => {
         }
       };
 
-      const visitRef = api.getSubDocument('reports', user.id, 'reports', reportId);
+      const visitRef = api.getSubDocument('reports', actorId, 'reports', reportId);
       
       await api.setData({
         docRef: visitRef,
