@@ -4,9 +4,10 @@ import { User, Mail, Phone, Shield, Calendar, BookOpen, Clock, ChevronRight, Act
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 
-const UserDetailsPage = () => {
+const UserDetailsPage = ({ selfUser = null }) => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const targetId = id || selfUser?.uid || selfUser?.id || '';
     const [profile, setProfile] = useState(null);
     const [activity, setActivity] = useState([]);
     const [memberships, setMemberships] = useState([]);
@@ -14,13 +15,13 @@ const UserDetailsPage = () => {
 
     useEffect(() => {
         const fetchUserProfile = async () => {
-            if (!id) return;
+            if (!targetId) return;
             try {
                 const api = FirestoreApi.Api;
-                const userDoc = await api.getData(api.getDocument('users', id));
+                const userDoc = await api.getData(api.getUserDoc(targetId));
                 if (!userDoc) return;
-                setProfile({ id, ...userDoc });
-                const mirrorDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(id));
+                setProfile({ id: targetId, ...userDoc });
+                const mirrorDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(targetId));
                 setMemberships(
                   mirrorDocs.map((doc) => {
                     const data = doc.data() || {};
@@ -41,7 +42,7 @@ const UserDetailsPage = () => {
                     const studentData = [];
                     allReports.forEach(rep => {
                         const data = rep.data();
-                        const record = data.studentsTracking?.find(s => s.studentId === id);
+                        const record = data.studentsTracking?.find(s => s.studentId === targetId);
                         if (record) {
                             studentData.push({
                                 id: rep.id,
@@ -55,13 +56,13 @@ const UserDetailsPage = () => {
                     setActivity(studentData.sort((a,b) => new Date(b.date) - new Date(a.date)));
                 } else if (userDoc.role === 'teacher') {
                     // Fetch daily logs / weekly reports
-                    const logs = await api.getDocuments(api.getSubCollection('daily-logs', id, 'logs'));
+                    const logs = await api.getDocuments(api.getUserDailyLogsCollection(id));
                     setActivity(logs.map(l => ({ id: l.id, ...l.data() })).sort((a,b) => new Date(b.date) - new Date(a.date)));
                 } else if (userDoc.role?.includes('supervisor')) {
                     // Fetch visit history (reports created by him)
                     const allReports = await api.getCollectionGroupDocuments('reports');
                     const supReports = allReports
-                        .filter(r => r.data().supervisorId === id)
+                        .filter(r => r.data().supervisorId === targetId)
                         .map(r => ({ id: r.id, ...r.data() }))
                         .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
                     setActivity(supReports);
@@ -74,7 +75,7 @@ const UserDetailsPage = () => {
         };
 
         fetchUserProfile();
-    }, [id]);
+    }, [targetId, id]);
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!profile) return <div className="empty-state" style={{ margin: '2rem auto', maxWidth: '480px' }}>المستخدم غير موجود</div>;

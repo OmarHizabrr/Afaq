@@ -36,7 +36,7 @@ const VillageDetailsPage = () => {
                 const vilSchools = allSchools.filter(s => s.data().villageId === id).map(s => ({ id: s.id, ...s.data() }));
                 setSchools(vilSchools);
 
-                const newMuslimsDocs = await api.getDocuments(api.getCollection('new_muslims'));
+                const newMuslimsDocs = await api.getDocuments(api.getNewMuslimsCollection());
                 const villageNewMuslims = newMuslimsDocs
                   .map((doc) => ({ id: doc.id, ...doc.data() }))
                   .filter((doc) => doc.villageId === id);
@@ -69,7 +69,7 @@ const VillageDetailsPage = () => {
     const syncVillageCounters = async (nextList) => {
       if (!village?.regionId || !id) return;
       const api = FirestoreApi.Api;
-      const docRef = api.getSubDocument('villages', village.regionId, 'villages', id);
+      const docRef = api.getVillageDoc(village.regionId, id);
       await api.updateData({
         docRef,
         data: {
@@ -87,7 +87,7 @@ const VillageDetailsPage = () => {
         const api = FirestoreApi.Api;
         const docId = api.getNewId('new_muslims');
         await api.setData({
-          docRef: api.getDocument('new_muslims', docId),
+          docRef: api.getNewMuslimDoc(docId),
           data: { villageId: id, name: newName.trim(), type: newType },
         });
         const next = [...newMuslims, { id: docId, villageId: id, name: newName.trim(), type: newType }];
@@ -120,7 +120,7 @@ const VillageDetailsPage = () => {
         setSaving(true);
         const api = FirestoreApi.Api;
         await api.updateData({
-          docRef: api.getDocument('new_muslims', editingMuslimId),
+          docRef: api.getNewMuslimDoc(editingMuslimId),
           data: { name: editingName.trim(), type: editingType },
         });
         const next = newMuslims.map((m) =>
@@ -140,7 +140,7 @@ const VillageDetailsPage = () => {
       try {
         setSaving(true);
         const api = FirestoreApi.Api;
-        await api.deleteData(api.getDocument('new_muslims', m.id));
+        await api.deleteData(api.getNewMuslimDoc(m.id));
         const next = newMuslims.filter((x) => x.id !== m.id);
         setNewMuslims(next);
         await syncVillageCounters(next);

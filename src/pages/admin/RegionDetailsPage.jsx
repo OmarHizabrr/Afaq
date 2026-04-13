@@ -43,7 +43,7 @@ const RegionDetailsPage = () => {
             setSchools(regSchools);
 
             const [usersDocs, memberDocs] = await Promise.all([
-                api.getDocuments(api.getCollection('users')),
+                api.getDocuments(api.getUsersCollection()),
                 api.getDocuments(api.getGroupMembersCollection(id))
             ]);
 
@@ -91,7 +91,7 @@ const RegionDetailsPage = () => {
             const newRole = userToAssign.role === 'supervisor_arab' ? 'supervisor_arab' : 'supervisor_local';
 
             await api.updateData({
-                docRef: api.getDocument('users', userToAssign.id),
+                docRef: api.getUserDoc(userToAssign.id),
                 data: { role: newRole, schoolId: '' }
             });
 
@@ -110,7 +110,7 @@ const RegionDetailsPage = () => {
             ]);
 
             await api.setData({
-                docRef: api.getDocument('supervisor_assignments', userToAssign.id),
+                docRef: api.getSupervisorAssignmentDoc(userToAssign.id),
                 data: {
                     userId: userToAssign.id,
                     role: newRole,

@@ -27,7 +27,7 @@ const RegionsPage = () => {
       const api = FirestoreApi.Api;
       
       // Fetch Governorates for the dropdown
-      const govRef = api.getCollection('governorates');
+      const govRef = api.getGovernoratesCollection();
       const govDocs = await api.getDocuments(govRef);
       const govData = govDocs.map(doc => ({ id: doc.id, ...doc.data() }));
       setGovernorates(govData);
@@ -61,7 +61,7 @@ const RegionsPage = () => {
       // The new ID is for the region document
       const regId = api.getNewId('regions');
       // The parent document in the 'regions' collection is named after the govId
-      const docRef = api.getSubDocument('regions', selectedGovId, 'regions', regId);
+      const docRef = api.getRegionDoc(selectedGovId, regId);
       
       await api.setData({
         docRef,
@@ -92,7 +92,7 @@ const RegionsPage = () => {
 
     try {
       const api = FirestoreApi.Api;
-      const docRef = api.getSubDocument('regions', isEditing.govId, 'regions', isEditing.id);
+      const docRef = api.getRegionDoc(isEditing.govId, isEditing.id);
       
       await api.updateData({
         docRef,
@@ -124,7 +124,7 @@ const RegionsPage = () => {
   const handleDelete = async (region) => {
     try {
       const api = FirestoreApi.Api;
-      const docRef = api.getSubDocument('regions', region.govId, 'regions', region.id);
+      const docRef = api.getRegionDoc(region.govId, region.id);
       await api.deleteData(docRef);
       setSuccess('تم حذف المنطقة بنجاح.');
       setError('');

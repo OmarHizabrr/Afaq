@@ -20,7 +20,7 @@ const StudentManagementPage = () => {
       try {
         const api = FirestoreApi.Api;
         const [userDocs, schoolDocs, regionDocs, reportDocs] = await Promise.all([
-          api.getDocuments(api.getCollection('users')),
+          api.getDocuments(api.getUsersCollection()),
           api.getCollectionGroupDocuments('schools'),
           api.getCollectionGroupDocuments('regions'),
           api.getCollectionGroupDocuments('reports'),

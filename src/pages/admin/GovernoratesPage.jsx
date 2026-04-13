@@ -21,7 +21,7 @@ const GovernoratesPage = () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
-      const ref = api.getCollection('governorates');
+      const ref = api.getGovernoratesCollection();
       const docs = await api.getDocuments(ref);
       const data = docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setGovernorates(data);
@@ -44,7 +44,7 @@ const GovernoratesPage = () => {
     try {
       const api = FirestoreApi.Api;
       const docId = api.getNewId('governorates');
-      const docRef = api.getDocument('governorates', docId);
+      const docRef = api.getGovernorateDoc(docId);
       
       await api.setData({
         docRef,
@@ -68,7 +68,7 @@ const GovernoratesPage = () => {
 
     try {
       const api = FirestoreApi.Api;
-      const docRef = api.getDocument('governorates', isEditing.id);
+      const docRef = api.getGovernorateDoc(isEditing.id);
       
       await api.updateData({
         docRef,
@@ -95,7 +95,7 @@ const GovernoratesPage = () => {
   const handleDelete = async (id, name) => {
     try {
       const api = FirestoreApi.Api;
-      const docRef = api.getDocument('governorates', id);
+      const docRef = api.getGovernorateDoc(id);
       await api.deleteData(docRef);
       setSuccess('تم حذف المحافظة بنجاح.');
       setError('');

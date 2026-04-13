@@ -53,7 +53,7 @@ const SupervisorVisitPage = ({ user }) => {
         // 2. Fetch Schools and Curriculum
         const [schDocs, curDocs] = await Promise.all([
           api.getCollectionGroupDocuments('schools'),
-          api.getDocuments(api.getCollection('curriculum'))
+          api.getDocuments(api.getCurriculumCollection())
         ]);
 
         let schoolsData = schDocs.map(d => ({ id: d.id, ...d.data() }));
@@ -94,7 +94,7 @@ const SupervisorVisitPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         // Fetch from hierarchical subcollection: students/{schoolId}/students
-        const ref = api.getSubCollection('students', selectedSchoolId, 'students');
+        const ref = api.getSchoolStudentsCollection(selectedSchoolId);
         const docs = await api.getDocuments(ref);
         const data = docs.map(d => ({ id: d.id, ...d.data() }));
         
@@ -196,7 +196,7 @@ const SupervisorVisitPage = ({ user }) => {
         }
       };
 
-      const visitRef = api.getSubDocument('reports', actorId, 'reports', reportId);
+      const visitRef = api.getSupervisorReportDoc(actorId, reportId);
       
       await api.setData({
         docRef: visitRef,

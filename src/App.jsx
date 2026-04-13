@@ -25,6 +25,7 @@ import SupervisorVisitPage from './pages/supervisor/SupervisorVisitPage';
 import SupervisorHistoryPage from './pages/supervisor/SupervisorHistoryPage';
 import StudentLayout from './layouts/StudentLayout';
 import StudentDashboardPage from './pages/student/StudentDashboardPage';
+import StudentResultsPage from './pages/student/StudentResultsPage';
 import SchoolDetailsPage from './pages/admin/SchoolDetailsPage';
 import RegionDetailsPage from './pages/admin/RegionDetailsPage';
 import UserDetailsPage from './pages/admin/UserDetailsPage';
@@ -170,6 +171,8 @@ function App() {
           }
         >
           <Route index element={<StudentDashboardPage user={user} />} />
+          <Route path="results" element={<StudentResultsPage user={user} />} />
+          <Route path="profile" element={<UserDetailsPage selfUser={user} />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="notifications" element={<NotificationsPage user={user} />} />
         </Route>

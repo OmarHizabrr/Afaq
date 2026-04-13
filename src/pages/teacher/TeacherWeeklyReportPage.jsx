@@ -91,7 +91,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
       }
 
       const reportId = api.getNewId('teacher_reports');
-      const docRef = api.getSubDocument('teacher_reports', actorId, 'teacher_reports', reportId);
+      const docRef = api.getTeacherReportDoc(actorId, reportId);
       const today = new Date().toISOString();
 
       await api.setData({

@@ -42,7 +42,7 @@ const SchoolDetailsPage = () => {
             const memberData = membersDocs.map(doc => ({ id: doc.id, ...doc.data() }));
 
             // 3. Populate full user profiles
-            const usersDocs = await api.getDocuments(api.getCollection('users'));
+            const usersDocs = await api.getDocuments(api.getUsersCollection());
             const users = usersDocs.map(u => ({ id: u.id, ...u.data() }));
             setAllUsers(users);
 
@@ -75,7 +75,7 @@ const SchoolDetailsPage = () => {
 
     const assignUserToSchool = async (api, userToAssign) => {
       if (!userToAssign) return;
-      const userRef = api.getDocument('users', userToAssign.id);
+      const userRef = api.getUserDoc(userToAssign.id);
       await api.updateData({
         docRef: userRef,
         data: {
@@ -102,7 +102,7 @@ const SchoolDetailsPage = () => {
       });
 
       if (userToAssign.role === 'student') {
-        const legacyRef = api.getSubDocument('students', id, 'students', userToAssign.id);
+        const legacyRef = api.getSchoolStudentDoc(id, userToAssign.id);
         await api.setData({
           docRef: legacyRef,
           data: {

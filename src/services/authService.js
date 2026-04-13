@@ -35,7 +35,7 @@ class AuthService {
   /** مزامنة بيانات المستخدم مع Firestore */
   async syncUserToFirestore(user) {
     const api = FirestoreApi.Api;
-    const docRef = api.getDocument("users", user.uid);
+    const docRef = api.getUserDoc(user.uid);
     
     // Check if user already exists to preserve their role
     const existingDoc = await api.getData(docRef);
@@ -104,7 +104,7 @@ class AuthService {
         // Fetch full Firestore profile for Google users too
         try {
           const api = FirestoreApi.Api;
-          const docRef = api.getDocument("users", firebaseUser.uid);
+          const docRef = api.getUserDoc(firebaseUser.uid);
           const userData = await api.getData(docRef);
           
           if (userData) {
@@ -121,7 +121,7 @@ class AuthService {
           // جلب بيانات المستخدم المخصص من Firestore
           try {
             const api = FirestoreApi.Api;
-            const docRef = api.getDocument("users", customAuthUid);
+            const docRef = api.getUserDoc(customAuthUid);
             const userData = await api.getData(docRef);
             if (userData) {
               // إرسال كائن مستخدم وهمي يحمل الـ uid واسمه ليتعامل معه التطبيق كأنه حقيقي

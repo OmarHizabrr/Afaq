@@ -25,7 +25,7 @@ const SettingsPage = () => {
       if (firebaseUser) {
         // Fetch full profile from Firestore
         const api = FirestoreApi.Api;
-        const userData = await api.getData(api.getDocument('users', firebaseUser.uid));
+        const userData = await api.getData(api.getUserDoc(firebaseUser.uid));
         
         setUser(userData || firebaseUser);
         setDisplayName(userData?.displayName || firebaseUser.displayName || '');
@@ -56,7 +56,7 @@ const SettingsPage = () => {
       
       const api = FirestoreApi.Api;
       await api.updateData({
-        docRef: api.getDocument('users', user.uid || user.id),
+        docRef: api.getUserDoc(user.uid || user.id),
         data: {
           displayName: displayName.trim(),
           phoneNumber: phoneNumber.trim(),

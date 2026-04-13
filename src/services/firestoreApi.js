@@ -102,6 +102,167 @@ class FirestoreApi {
     return this.getSubDocument('members', groupId, 'members', userId);
   }
 
+  // ==============================
+  // مسارات الإشعارات والمحادثات
+  // ==============================
+
+  /** notifications */
+  getNotificationsCollection() {
+    return this.getCollection('notifications');
+  }
+
+  /** notifications/{notificationId} */
+  getNotificationDoc(notificationId) {
+    return this.getDocument('notifications', notificationId);
+  }
+
+  /** conversations */
+  getConversationsCollection() {
+    return this.getCollection('conversations');
+  }
+
+  /** conversations/{conversationId} */
+  getConversationDoc(conversationId) {
+    return this.getDocument('conversations', conversationId);
+  }
+
+  /**
+   * messages/{conversationId}/messages
+   * المسار المعتمد للرسائل المرتبطة بمحادثة.
+   */
+  getConversationMessagesCollection(conversationId) {
+    return this.getSubCollection('messages', conversationId, 'messages');
+  }
+
+  /** messages/{conversationId}/messages/{messageId} */
+  getConversationMessageDoc(conversationId, messageId) {
+    return this.getSubDocument('messages', conversationId, 'messages', messageId);
+  }
+
+  // ==============================
+  // مستخدمون، محتوى، هيكل جغرافي، تقارير
+  // ==============================
+
+  /** users */
+  getUsersCollection() {
+    return this.getCollection('users');
+  }
+
+  /** users/{userId} */
+  getUserDoc(userId) {
+    return this.getDocument('users', userId);
+  }
+
+  /** supervisor_assignments/{userId} */
+  getSupervisorAssignmentDoc(userId) {
+    return this.getDocument('supervisor_assignments', userId);
+  }
+
+  /** governorates */
+  getGovernoratesCollection() {
+    return this.getCollection('governorates');
+  }
+
+  /** governorates/{governorateId} */
+  getGovernorateDoc(governorateId) {
+    return this.getDocument('governorates', governorateId);
+  }
+
+  /** regions/{governorateId}/regions */
+  getRegionsSubcollection(governorateId) {
+    return this.getSubCollection('regions', governorateId, 'regions');
+  }
+
+  /** regions/{governorateId}/regions/{regionId} */
+  getRegionDoc(governorateId, regionId) {
+    return this.getSubDocument('regions', governorateId, 'regions', regionId);
+  }
+
+  /** villages/{regionId}/villages */
+  getVillagesSubcollection(regionId) {
+    return this.getSubCollection('villages', regionId, 'villages');
+  }
+
+  /** villages/{regionId}/villages/{villageId} */
+  getVillageDoc(regionId, villageId) {
+    return this.getSubDocument('villages', regionId, 'villages', villageId);
+  }
+
+  /** schools/{villageId}/schools */
+  getSchoolsSubcollection(villageId) {
+    return this.getSubCollection('schools', villageId, 'schools');
+  }
+
+  /** schools/{villageId}/schools/{schoolId} */
+  getSchoolDoc(villageId, schoolId) {
+    return this.getSubDocument('schools', villageId, 'schools', schoolId);
+  }
+
+  /** students/{schoolId}/students */
+  getSchoolStudentsCollection(schoolId) {
+    return this.getSubCollection('students', schoolId, 'students');
+  }
+
+  /** students/{schoolId}/students/{studentId} */
+  getSchoolStudentDoc(schoolId, studentId) {
+    return this.getSubDocument('students', schoolId, 'students', studentId);
+  }
+
+  /** curriculum */
+  getCurriculumCollection() {
+    return this.getCollection('curriculum');
+  }
+
+  /** curriculum/{subjectId} */
+  getCurriculumDoc(subjectId) {
+    return this.getDocument('curriculum', subjectId);
+  }
+
+  /** new_muslims */
+  getNewMuslimsCollection() {
+    return this.getCollection('new_muslims');
+  }
+
+  /** new_muslims/{id} */
+  getNewMuslimDoc(id) {
+    return this.getDocument('new_muslims', id);
+  }
+
+  /** reports/{supervisorId}/reports — زيارات المشرف */
+  getSupervisorReportsCollection(supervisorId) {
+    return this.getSubCollection('reports', supervisorId, 'reports');
+  }
+
+  /** reports/{supervisorId}/reports/{reportId} */
+  getSupervisorReportDoc(supervisorId, reportId) {
+    return this.getSubDocument('reports', supervisorId, 'reports', reportId);
+  }
+
+  /** teacher_daily_logs/{teacherId}/teacher_daily_logs */
+  getTeacherDailyLogsCollection(teacherId) {
+    return this.getSubCollection('teacher_daily_logs', teacherId, 'teacher_daily_logs');
+  }
+
+  /** teacher_daily_logs/{teacherId}/teacher_daily_logs/{logId} */
+  getTeacherDailyLogDoc(teacherId, logId) {
+    return this.getSubDocument('teacher_daily_logs', teacherId, 'teacher_daily_logs', logId);
+  }
+
+  /** teacher_reports/{teacherId}/teacher_reports */
+  getTeacherReportsCollection(teacherId) {
+    return this.getSubCollection('teacher_reports', teacherId, 'teacher_reports');
+  }
+
+  /** teacher_reports/{teacherId}/teacher_reports/{reportId} */
+  getTeacherReportDoc(teacherId, reportId) {
+    return this.getSubDocument('teacher_reports', teacherId, 'teacher_reports', reportId);
+  }
+
+  /** daily-logs/{userId}/logs — مسار قديم لسجلات المستخدم */
+  getUserDailyLogsCollection(userId) {
+    return this.getSubCollection('daily-logs', userId, 'logs');
+  }
+
   /**
    * معرّف المدرسة النشطة: من users.schoolId أو أول schoolId في مرايا Mygroup.
    */

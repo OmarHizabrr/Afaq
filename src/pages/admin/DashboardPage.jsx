@@ -57,7 +57,7 @@ const DashboardPage = () => {
         const api = FirestoreApi.Api;
         
         const [usersDocs, regionsDocs, villagesDocs, schoolsDocs, studentsDocs] = await Promise.all([
-          api.getDocuments(api.getCollection('users')),
+          api.getDocuments(api.getUsersCollection()),
           api.getCollectionGroupDocuments('regions'),
           api.getCollectionGroupDocuments('villages'),
           api.getCollectionGroupDocuments('schools'),

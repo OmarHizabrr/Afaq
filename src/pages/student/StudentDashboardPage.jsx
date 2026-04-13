@@ -44,6 +44,7 @@ const StatCard = ({ title, value, icon: Icon, color, subtext }) => (
 );
 
 const StudentDashboardPage = ({ user }) => {
+  const actorId = user?.uid || user?.id;
   const [stats, setStats] = useState({
     attendancePercent: 0,
     averageGrade: 0,
@@ -55,18 +56,20 @@ const StudentDashboardPage = ({ user }) => {
 
   useEffect(() => {
     const fetchStudentData = async () => {
-      if (!user?.uid) return;
+      if (!actorId) return;
       try {
         const api = FirestoreApi.Api;
         
-        // 1. Fetch assigned school
-        const assignedSchoolsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(user.uid)); 
-        const schoolId = assignedSchoolsDocs.length > 0 ? assignedSchoolsDocs[0].data().schoolId : (user.schoolId || '');
-
-        if (schoolId) {
-             const allSchools = await api.getCollectionGroupDocuments('schools');
-             const mySch = allSchools.find(s => s.id === schoolId);
-             if (mySch) setStats(prev => ({ ...prev, schoolName: mySch.data().name }));
+        // 1) Support multiple schools from memberships
+        const assignedSchoolsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
+        const schoolIds = assignedSchoolsDocs.map((d) => d.data()?.schoolId).filter(Boolean);
+        if (schoolIds.length > 0) {
+          const allSchools = await api.getCollectionGroupDocuments('schools');
+          const names = allSchools
+            .filter((s) => schoolIds.includes(s.id))
+            .map((s) => s.data()?.name)
+            .filter(Boolean);
+          setStats((prev) => ({ ...prev, schoolName: names.length > 0 ? names.join('، ') : 'غير محدد' }));
         }
 
         // 2. Fetch student performance from visits (collectionGroup)
@@ -78,7 +81,7 @@ const StudentDashboardPage = ({ user }) => {
 
         visitDocs.forEach(d => {
             const data = d.data();
-            const record = data.studentsTracking?.find(s => s.studentId === user.uid);
+            const record = data.studentsTracking?.find(s => s.studentId === actorId);
             if (record) {
                 totalAttend++;
                 if (record.isPresent) presentCount++;
@@ -108,7 +111,7 @@ const StudentDashboardPage = ({ user }) => {
     };
 
     fetchStudentData();
-  }, [user]);
+  }, [actorId]);
 
   if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
 

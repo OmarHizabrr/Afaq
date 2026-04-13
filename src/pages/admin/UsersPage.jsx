@@ -42,7 +42,7 @@ const UsersPage = () => {
       const api = FirestoreApi.Api;
 
       const [userDocs, regDocs] = await Promise.all([
-        api.getDocuments(api.getCollection('users')),
+        api.getDocuments(api.getUsersCollection()),
         api.getCollectionGroupDocuments('regions')
       ]);
 
@@ -68,7 +68,7 @@ const UsersPage = () => {
     if (user.role?.includes('supervisor')) {
       setSelectedRole(KEEP_SUPERVISOR);
       const api = FirestoreApi.Api;
-      const assignmentDoc = await api.getData(api.getDocument('supervisor_assignments', user.id));
+      const assignmentDoc = await api.getData(api.getSupervisorAssignmentDoc(user.id));
       if (assignmentDoc?.regionId) {
         setSelectedRegionId(assignmentDoc.regionId);
       }
@@ -94,7 +94,7 @@ const UsersPage = () => {
         selectedRole === 'supervisor_local' || selectedRole === 'supervisor_arab';
       if (!becomesSupervisor) {
         try {
-          await api.deleteData(api.getDocument('supervisor_assignments', editingUser.id));
+          await api.deleteData(api.getSupervisorAssignmentDoc(editingUser.id));
         } catch {
           /* المستند غير موجود */
         }
@@ -105,7 +105,7 @@ const UsersPage = () => {
       };
 
       await api.updateData({
-        docRef: api.getDocument('users', editingUser.id),
+        docRef: api.getUserDoc(editingUser.id),
         data: userDataPatch
       });
 

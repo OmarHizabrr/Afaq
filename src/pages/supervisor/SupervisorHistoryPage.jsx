@@ -16,7 +16,7 @@ const SupervisorHistoryPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         // Fetch specifically from this supervisor's subcollection
-        const ref = api.getSubCollection('reports', user.id, 'reports');
+        const ref = api.getSupervisorReportsCollection(user.id);
         const docs = await api.getDocuments(ref);
         const data = docs.map(d => ({ id: d.id, ...d.data() }));
         

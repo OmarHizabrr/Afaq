@@ -18,7 +18,7 @@ const GovernorateDetailsPage = () => {
             try {
                 const api = FirestoreApi.Api;
                 // Fetch Governorate
-                const govRef = api.getDocument('governorates', id);
+                const govRef = api.getGovernorateDoc(id);
                 const govDoc = await api.getData(govRef);
                 if (!govDoc) return;
                 setGov({ id, ...govDoc });

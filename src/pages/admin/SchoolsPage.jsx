@@ -74,11 +74,11 @@ const SchoolsPage = () => {
       };
 
       if (isEditing) {
-        const docRef = api.getSubDocument('schools', isEditing.villageId, 'schools', isEditing.id);
+        const docRef = api.getSchoolDoc(isEditing.villageId, isEditing.id);
         await api.updateData({ docRef, data: schoolData });
       } else {
         const newSchId = api.getNewId('schools');
-        const schRef = api.getSubDocument('schools', selectedVilId, 'schools', newSchId);
+        const schRef = api.getSchoolDoc(selectedVilId, newSchId);
         await api.setData({ docRef: schRef, data: schoolData });
       }
 
@@ -115,7 +115,7 @@ const SchoolsPage = () => {
       const schoolDoc = schools.find(s => s.id === id);
       if (!schoolDoc) return;
       
-      const docRef = api.getSubDocument('schools', schoolDoc.villageId, 'schools', id);
+      const docRef = api.getSchoolDoc(schoolDoc.villageId, id);
       await api.deleteData(docRef);
       setSuccess('تم حذف المدرسة بنجاح.');
       setError('');

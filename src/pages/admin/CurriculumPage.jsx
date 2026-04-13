@@ -26,7 +26,7 @@ const CurriculumPage = () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
-      const ref = api.getCollection('curriculum');
+      const ref = api.getCurriculumCollection();
       const docs = await api.getDocuments(ref);
       const data = docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setSubjects(data);
@@ -58,7 +58,7 @@ const CurriculumPage = () => {
       }));
 
       await api.setData({
-        docRef: api.getDocument('curriculum', docId),
+        docRef: api.getCurriculumDoc(docId),
         data: {
           name: newSubjectName.trim(),
           weeks: initialWeeks
@@ -80,7 +80,7 @@ const CurriculumPage = () => {
   const handleDeleteSubject = async (id, name) => {
     try {
       const api = FirestoreApi.Api;
-      await api.deleteData(api.getDocument('curriculum', id));
+      await api.deleteData(api.getCurriculumDoc(id));
       setSuccess('تم حذف المادة بنجاح.');
       setError('');
       fetchSubjects();
@@ -144,7 +144,7 @@ const CurriculumPage = () => {
       const api = FirestoreApi.Api;
       
       await api.updateData({
-        docRef: api.getDocument('curriculum', editingSubject.id),
+        docRef: api.getCurriculumDoc(editingSubject.id),
         data: { weeks: editingWeeks }
       });
       

@@ -10,7 +10,6 @@ const VillagesPage = () => {
   const navigate = useNavigate();
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
-  const [governorates, setGovernorates] = useState([]);
   const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
   
   const [loading, setLoading] = useState(true);
@@ -53,14 +52,14 @@ const VillagesPage = () => {
     const nextIds = new Set(nextWithIds.map((m) => m.id));
 
     const toDelete = currentItems.filter((m) => m.id && !nextIds.has(m.id));
-    const deletions = toDelete.map((m) => api.deleteData(api.getDocument('new_muslims', m.id)));
+    const deletions = toDelete.map((m) => api.deleteData(api.getNewMuslimDoc(m.id)));
 
     const upserts = nextItems.map((m) => {
       const docId = m.id || api.getNewId('new_muslims');
       const old = currentById.get(docId);
       if (old && old.name === m.name && old.type === m.type) return null;
       return api.setData({
-        docRef: api.getDocument('new_muslims', docId),
+        docRef: api.getNewMuslimDoc(docId),
         data: { villageId, name: m.name, type: m.type },
       });
     }).filter(Boolean);
@@ -73,15 +72,13 @@ const VillagesPage = () => {
     try {
       const api = FirestoreApi.Api;
       
-      // Fetch Governorates & Regions for relations
-      const [govDocs, regDocs, vilDocs, newMuslimsDocs] = await Promise.all([
-        api.getDocuments(api.getCollection('governorates')),
+      // Fetch regions, villages and linked new-muslims
+      const [regDocs, vilDocs, newMuslimsDocs] = await Promise.all([
         api.getCollectionGroupDocuments('regions'),
         api.getCollectionGroupDocuments('villages'),
-        api.getDocuments(api.getCollection('new_muslims')),
+        api.getDocuments(api.getNewMuslimsCollection()),
       ]);
 
-      setGovernorates(govDocs.map(doc => ({ id: doc.id, ...doc.data() })));
       setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
       setVillages(vilDocs.map(doc => ({ id: doc.id, ...doc.data() })));
 
@@ -152,13 +149,13 @@ const VillagesPage = () => {
       const counters = calculateNewMuslimsCounts(normalizedNewMuslims);
 
       if (isEditing) {
-        const docRef = api.getSubDocument('villages', isEditing.regionId, 'villages', isEditing.id);
+        const docRef = api.getVillageDoc(isEditing.regionId, isEditing.id);
         await api.updateData({ docRef, data: { ...villageData, ...counters } });
         const currentItems = newMuslimsDocsByVillage[isEditing.id] || [];
         await syncVillageNewMuslims(api, isEditing.id, normalizedNewMuslims, currentItems);
       } else {
         const newVilId = api.getNewId('villages');
-        const vilRef = api.getSubDocument('villages', selectedRegId, 'villages', newVilId);
+        const vilRef = api.getVillageDoc(selectedRegId, newVilId);
         
         await api.setData({
           docRef: vilRef,
@@ -200,7 +197,7 @@ const VillagesPage = () => {
     setNewMuslims((newMuslimsDocsByVillage[vil.id] || []).map((m) => ({ ...m })));
   };
 
-  const handleDelete = async (id, name) => {
+  const handleDelete = async (id) => {
     try {
       const api = FirestoreApi.Api;
       const villageDoc = villages.find(v => v.id === id);
@@ -209,11 +206,11 @@ const VillagesPage = () => {
       const linkedNewMuslims = newMuslimsDocsByVillage[id] || [];
       if (linkedNewMuslims.length > 0) {
         await Promise.all(
-          linkedNewMuslims.map((m) => api.deleteData(api.getDocument('new_muslims', m.id)))
+          linkedNewMuslims.map((m) => api.deleteData(api.getNewMuslimDoc(m.id)))
         );
       }
       
-      const docRef = api.getSubDocument('villages', villageDoc.regionId, 'villages', id);
+      const docRef = api.getVillageDoc(villageDoc.regionId, id);
       await api.deleteData(docRef);
       setSuccess('تم حذف القرية بنجاح.');
       setError('');
@@ -410,7 +407,7 @@ const VillagesPage = () => {
         onConfirm={async () => {
           const item = pendingDelete;
           setPendingDelete(null);
-          if (item) await handleDelete(item.id, item.name);
+          if (item) await handleDelete(item.id);
         }}
       />
     </div>

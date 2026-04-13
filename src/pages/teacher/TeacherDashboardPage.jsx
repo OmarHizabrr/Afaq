@@ -62,7 +62,7 @@ const TeacherDashboardPage = ({ user }) => {
 
         // 2. Fetch Students count for the active school
         if (activeSchoolId) {
-          const refStu = api.getSubCollection('students', activeSchoolId, 'students');
+          const refStu = api.getSchoolStudentsCollection(activeSchoolId);
           const docsStu = await api.getDocuments(refStu);
           
           // 3. Find School Name
@@ -77,11 +77,11 @@ const TeacherDashboardPage = ({ user }) => {
         }
 
         // 4. Fetch Daily Logs for this teacher
-        const refLogs = api.getSubCollection('teacher_daily_logs', actorId, 'teacher_daily_logs');
+        const refLogs = api.getTeacherDailyLogsCollection(actorId);
         const docsLogs = await api.getDocuments(refLogs);
         
         // 5. Fetch Weekly Reports for this teacher
-        const refReports = api.getSubCollection('teacher_reports', actorId, 'teacher_reports');
+        const refReports = api.getTeacherReportsCollection(actorId);
         const docsReports = await api.getDocuments(refReports);
 
         setStats(prev => ({

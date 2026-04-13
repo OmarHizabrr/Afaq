@@ -54,7 +54,7 @@ const SupervisorDashboardPage = ({ user }) => {
         const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
         
         // 2. Fetch total visits by this supervisor
-        const refVisits = api.getSubCollection('reports', actorId, 'reports');
+        const refVisits = api.getSupervisorReportsCollection(actorId);
         const visitDocs = await api.getDocuments(refVisits);
         
         // Count this month

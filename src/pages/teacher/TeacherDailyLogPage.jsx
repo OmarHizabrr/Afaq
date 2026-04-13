@@ -34,12 +34,12 @@ const TeacherDailyLogPage = ({ user }) => {
         }
 
         // Fetch Students for this school subcollection
-        const refStu = api.getSubCollection('students', schoolId, 'students');
+        const refStu = api.getSchoolStudentsCollection(schoolId);
         const docsStu = await api.getDocuments(refStu);
         const stData = docsStu.map(d => ({ id: d.id, ...d.data() }));
         
         // Fetch Curriculum
-        const refCur = api.getCollection('curriculum');
+        const refCur = api.getCurriculumCollection();
         const docsCur = await api.getDocuments(refCur);
         const curData = docsCur.map(d => ({ id: d.id, ...d.data() }));
 
@@ -96,7 +96,7 @@ const TeacherDailyLogPage = ({ user }) => {
       
       const api = FirestoreApi.Api;
       const logId = api.getNewId('teacher_daily_logs');
-      const logRef = api.getSubDocument('teacher_daily_logs', actorId, 'teacher_daily_logs', logId);
+      const logRef = api.getTeacherDailyLogDoc(actorId, logId);
       
       const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
       
