@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { BookOpen, Plus, Edit2, Trash2, Save, ChevronDown, ChevronUp } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 const CurriculumPage = () => {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   
   const [isAdding, setIsAdding] = useState(false);
   const [newSubjectName, setNewSubjectName] = useState('');
+  const [confirmConfig, setConfirmConfig] = useState(null);
   
   // Expanded state for the accordion
   const [expandedId, setExpandedId] = useState(null);
@@ -63,6 +66,8 @@ const CurriculumPage = () => {
 
       setNewSubjectName('');
       setIsAdding(false);
+      setSuccess('تمت إضافة المادة بنجاح.');
+      setError('');
       fetchSubjects();
     } catch (err) {
       console.error(err);
@@ -72,20 +77,41 @@ const CurriculumPage = () => {
   };
 
   const handleDeleteSubject = async (id, name) => {
-    if (!window.confirm(`هل أنت متأكد من حذف مادة "${name}" ومناهجها بالكامل؟`)) return;
     try {
       const api = FirestoreApi.Api;
       await api.deleteData(api.getDocument('curriculum', id));
+      setSuccess('تم حذف المادة بنجاح.');
+      setError('');
       fetchSubjects();
     } catch (err) {
       console.error(err);
-      alert('لا يمكن الحذف في الوقت الحالي');
+      setError('لا يمكن الحذف في الوقت الحالي.');
     }
   };
 
   const startEditingWeeks = (subject) => {
     if (editingSubject && editingSubject.id !== subject.id) {
-      if (!window.confirm('لديك تعديلات غير محفوظة، هل تريد تجاهلها وفتح مادة أخرى؟')) return;
+      setConfirmConfig({
+        title: 'تجاهل التعديلات غير المحفوظة',
+        message: 'لديك تعديلات حالية غير محفوظة. هل تريد تجاهلها وفتح مادة أخرى؟',
+        confirmLabel: 'تجاهل وفتح',
+        danger: true,
+        onConfirm: () => {
+          setExpandedId(subject.id);
+          setEditingSubject(subject);
+
+          let currentWeeks = Array.isArray(subject.weeks) ? [...subject.weeks] : [];
+          if (currentWeeks.length < 50) {
+            const existingWeeks = currentWeeks.reduce((acc, w) => { acc[w.week] = w.lesson; return acc; }, {});
+            currentWeeks = Array.from({ length: 50 }, (_, i) => ({
+              week: i + 1,
+              lesson: existingWeeks[i + 1] || ''
+            }));
+          }
+          setEditingWeeks(currentWeeks);
+        }
+      });
+      return;
     }
     
     setExpandedId(subject.id);
@@ -121,7 +147,8 @@ const CurriculumPage = () => {
         data: { weeks: editingWeeks }
       });
       
-      alert('تم حفظ توزيع المنهج بنجاح');
+      setSuccess('تم حفظ توزيع المنهج بنجاح.');
+      setError('');
       setEditingSubject(null);
       fetchSubjects();
     } catch (err) {
@@ -153,7 +180,8 @@ const CurriculumPage = () => {
         </button>
       </PageHeader>
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
       {/* Add New Subject Form */}
       {isAdding && (
@@ -230,7 +258,16 @@ const CurriculumPage = () => {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button 
                         className="icon-btn" 
-                        onClick={(e) => { e.stopPropagation(); handleDeleteSubject(subject.id, subject.name); }} 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmConfig({
+                            title: 'تأكيد حذف المادة',
+                            message: `سيتم حذف مادة "${subject.name}" وخطة الأسابيع بالكامل.`,
+                            confirmLabel: 'حذف نهائي',
+                            danger: true,
+                            onConfirm: () => handleDeleteSubject(subject.id, subject.name)
+                          });
+                        }} 
                         title="حذف المادة نهائياً"
                       >
                         <Trash2 size={18} color="var(--danger-color)" />
@@ -310,6 +347,20 @@ const CurriculumPage = () => {
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!confirmConfig}
+        title={confirmConfig?.title}
+        message={confirmConfig?.message}
+        confirmLabel={confirmConfig?.confirmLabel || 'تأكيد'}
+        danger={!!confirmConfig?.danger}
+        onCancel={() => setConfirmConfig(null)}
+        onConfirm={async () => {
+          const action = confirmConfig?.onConfirm;
+          setConfirmConfig(null);
+          if (action) await action();
+        }}
+      />
     </div>
   );
 };

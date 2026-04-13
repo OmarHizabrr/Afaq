@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Edit2, Trash2, UserPlus, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 const TeacherStudentsPage = ({ user }) => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const TeacherStudentsPage = ({ user }) => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
   
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
@@ -91,6 +94,8 @@ const TeacherStudentsPage = ({ user }) => {
       setStudentAge('');
       setIsAdding(false);
       setIsEditing(null);
+      setSuccess(isEditing ? 'تم تحديث بيانات الدارس بنجاح.' : 'تمت إضافة الدارس بنجاح.');
+      setError('');
       loadSchoolAndStudents();
     } catch (err) {
       console.error(err);
@@ -107,7 +112,6 @@ const TeacherStudentsPage = ({ user }) => {
 
   const handleDelete = async (id, name) => {
     if (!activeSchoolId) return;
-    if (!window.confirm(`هل أنت متأكد من حذف الدارس "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
       
@@ -122,10 +126,12 @@ const TeacherStudentsPage = ({ user }) => {
         api.deleteData(link2)
       ]);
       
+      setSuccess('تم حذف الدارس بنجاح.');
+      setError('');
       loadSchoolAndStudents();
     } catch (err) {
       console.error(err);
-      alert('لا يمكن الحذف في الوقت الحالي');
+      setError('لا يمكن الحذف في الوقت الحالي.');
     }
   };
 
@@ -157,7 +163,8 @@ const TeacherStudentsPage = ({ user }) => {
         </button>
       </PageHeader>
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
       {/* Add Form */}
       {isAdding && (
@@ -176,32 +183,16 @@ const TeacherStudentsPage = ({ user }) => {
             onChange={(e) => setStudentName(e.target.value)}
             required
             autoFocus
-            style={{
-              flex: 2,
-              minWidth: '200px',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-color)',
-              color: 'var(--text-primary)',
-              fontSize: '1rem'
-            }}
+            className="app-input"
+            style={{ flex: 2, minWidth: '200px' }}
           />
           <input 
             type="number" 
             placeholder="السن"
             value={studentAge}
             onChange={(e) => setStudentAge(e.target.value)}
-            style={{
-              flex: 1,
-              minWidth: '100px',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-color)',
-              color: 'var(--text-primary)',
-              fontSize: '1rem'
-            }}
+            className="app-input"
+            style={{ flex: 1, minWidth: '100px' }}
           />
           <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff' }}>
             حفظ
@@ -247,7 +238,7 @@ const TeacherStudentsPage = ({ user }) => {
                     <button className="icon-btn" onClick={() => handleEditClick(student)} title="تعديل" style={{ display: 'inline-flex' }}>
                       <Edit2 size={18} />
                     </button>
-                    <button className="icon-btn" onClick={() => handleDelete(student.id, student.studentName)} title="حذف" style={{ display: 'inline-flex' }}>
+                    <button className="icon-btn" onClick={() => setPendingDelete({ id: student.id, name: student.studentName })} title="حذف" style={{ display: 'inline-flex' }}>
                       <Trash2 size={18} color="var(--danger-color)" />
                     </button>
                   </td>
@@ -258,6 +249,20 @@ const TeacherStudentsPage = ({ user }) => {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!pendingDelete}
+        title="تأكيد حذف الدارس"
+        message={`سيتم حذف الدارس "${pendingDelete?.name || ''}" من السجل.`}
+        confirmLabel="حذف نهائي"
+        danger
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={async () => {
+          const item = pendingDelete;
+          setPendingDelete(null);
+          if (item) await handleDelete(item.id, item.name);
+        }}
+      />
     </div>
   );
 };

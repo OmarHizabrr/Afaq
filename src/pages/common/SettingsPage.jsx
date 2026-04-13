@@ -13,6 +13,7 @@ const SettingsPage = () => {
   const [theme, setTheme] = useState('light');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // Load current UI state
@@ -51,6 +52,7 @@ const SettingsPage = () => {
     try {
       setLoading(true);
       setSuccess('');
+      setError('');
       
       const api = FirestoreApi.Api;
       await api.updateData({
@@ -65,7 +67,7 @@ const SettingsPage = () => {
       setSuccess('تم تحديث إعدادات الملف الشخصي بنجاح!');
     } catch (err) {
       console.error(err);
-      alert('حدث خطأ أثناء حفظ الملف الشخصي');
+      setError('حدث خطأ أثناء حفظ الملف الشخصي.');
     } finally {
       setLoading(false);
     }
@@ -76,10 +78,11 @@ const SettingsPage = () => {
       <PageHeader icon={Settings} title="إعدادات النظام والملف الشخصي" />
 
       {success && (
-        <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success-color)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="app-alert app-alert--success" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Save size={18} /> {success}
         </div>
       )}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1.5rem' }}>{error}</div>}
 
       {/* Theme Settings */}
       <div className="surface-card surface-card--lg" style={{ padding: '2rem', marginBottom: '2rem' }}>

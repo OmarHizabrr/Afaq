@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, MapPin, Map, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 const RegionsPage = () => {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ const RegionsPage = () => {
   const [regionName, setRegionName] = useState('');
   const [selectedGovId, setSelectedGovId] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -71,6 +74,7 @@ const RegionsPage = () => {
       setSelectedGovId('');
       setIsAdding(false);
       setError('');
+      setSuccess('تمت إضافة المنطقة بنجاح.');
       fetchData();
     } catch (err) {
       console.error(err);
@@ -101,6 +105,7 @@ const RegionsPage = () => {
       setSelectedGovId('');
       setIsEditing(null);
       setError('');
+      setSuccess('تم تحديث المنطقة بنجاح.');
       fetchData();
     } catch (err) {
       console.error(err);
@@ -116,15 +121,16 @@ const RegionsPage = () => {
   };
 
   const handleDelete = async (region) => {
-    if (!window.confirm(`هل أنت متأكد من حذف منطقة "${region.name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
       const docRef = api.getSubDocument('regions', region.govId, 'regions', region.id);
       await api.deleteData(docRef);
+      setSuccess('تم حذف المنطقة بنجاح.');
+      setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      alert('لا يمكن الحذف في الوقت الحالي');
+      setError('لا يمكن الحذف في الوقت الحالي.');
     }
   };
 
@@ -142,7 +148,8 @@ const RegionsPage = () => {
         </button>
       </PageHeader>
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
       {/* Add/Edit Form */}
       {(isAdding || isEditing) && (
@@ -157,15 +164,8 @@ const RegionsPage = () => {
           <select 
             value={selectedGovId}
             onChange={(e) => setSelectedGovId(e.target.value)}
-            style={{
-              padding: '12px 16px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-color)',
-              color: 'var(--text-primary)',
-              fontSize: '1rem',
-              minWidth: '200px'
-            }}
+            className="app-select"
+            style={{ minWidth: '200px' }}
           >
             <option value="">-- اختر المحافظة --</option>
             {governorates.map(gov => (
@@ -178,16 +178,8 @@ const RegionsPage = () => {
             placeholder="اسم المنطقة (مثال: أزال)"
             value={regionName}
             onChange={(e) => setRegionName(e.target.value)}
-            style={{
-              flex: 1,
-              minWidth: '200px',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-color)',
-              color: 'var(--text-primary)',
-              fontSize: '1rem'
-            }}
+            className="app-input"
+            style={{ flex: 1, minWidth: '200px' }}
           />
           <button type="submit" className="google-btn" style={{ marginTop: 0, width: 'auto', background: 'var(--accent-color)', color: '#fff' }}>
             {isEditing ? 'تحديث' : 'حفظ'}
@@ -223,7 +215,7 @@ const RegionsPage = () => {
                 <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">
                   <Edit2 size={16} />
                 </button>
-                <button className="icon-btn" onClick={() => handleDelete(region)} title="حذف">
+                <button className="icon-btn" onClick={() => setPendingDelete(region)} title="حذف">
                   <Trash2 size={16} color="var(--danger-color)" />
                 </button>
               </div>
@@ -231,6 +223,20 @@ const RegionsPage = () => {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!pendingDelete}
+        title="تأكيد حذف المنطقة"
+        message={`سيتم حذف المنطقة "${pendingDelete?.name || ''}" نهائياً.`}
+        confirmLabel="حذف نهائي"
+        danger
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={async () => {
+          const item = pendingDelete;
+          setPendingDelete(null);
+          if (item) await handleDelete(item);
+        }}
+      />
     </div>
   );
 };

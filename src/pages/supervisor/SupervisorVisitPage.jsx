@@ -137,9 +137,13 @@ const SupervisorVisitPage = ({ user }) => {
       navigator.geolocation.getCurrentPosition(
         pos => {
           setGpsLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-          alert('تم التقاط الموقع بنجاح!');
+          setSuccess('تم التقاط الموقع الجغرافي بنجاح.');
+          setError('');
         },
-        () => alert('يرجى تفعيل الـ GPS وإعطاء الصلاحية للمتصفح.')
+        () => {
+          setError('يرجى تفعيل GPS ومنح صلاحية الموقع للمتصفح.');
+          setSuccess('');
+        }
       );
     }
   };
@@ -227,8 +231,8 @@ const SupervisorVisitPage = ({ user }) => {
         subtitle="توثيق تفصيلي لأداء المدارس مع الموقع الجغرافي"
       />
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
-      {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
       {/* Basic Info */}
       <div className="surface-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>

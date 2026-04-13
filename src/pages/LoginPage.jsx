@@ -43,7 +43,7 @@ const LoginPage = () => {
       setLoadingCustom(true);
       setError(null);
       await AuthService.Api.signInWithPhone(phone, password);
-    } catch (err) {
+    } catch {
       setError('رقم الهاتف أو كلمة المرور غير صحيحة');
     } finally {
       setLoadingCustom(false);
@@ -60,9 +60,9 @@ const LoginPage = () => {
           <p className="tagline" style={{ margin: 0 }}>منصة تعليمية — نفس وضوح وتجربة أدوات Google</p>
         </header>
 
-        <section style={{ width: '100%' }}>
+        <section style={{ width: '100%' }} className="entry-dialog">
           {error && (
-            <div className="md-alert" role="alert">
+            <div className="app-alert app-alert--error" role="alert">
               {error}
             </div>
           )}
@@ -123,6 +123,10 @@ const LoginPage = () => {
               </>
             )}
           </button>
+
+          <p className="app-alert app-alert--info" style={{ marginTop: '0.9rem', marginBottom: 0 }}>
+            أي مستخدم جديد يسجل عبر Google يتم اعتماده كـ طالب تلقائياً.
+          </p>
         </section>
 
         <p style={{ marginTop: '1.75rem', color: 'var(--text-secondary)', fontSize: '0.75rem', textAlign: 'center', lineHeight: 1.5 }}>

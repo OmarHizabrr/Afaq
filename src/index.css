@@ -81,6 +81,8 @@ html:not(.light-mode) {
 
 html {
   -webkit-tap-highlight-color: transparent;
+  scrollbar-color: color-mix(in srgb, var(--md-primary) 55%, var(--border-color)) transparent;
+  scrollbar-width: thin;
 }
 
 body {
@@ -352,6 +354,68 @@ body {
   font-size: 0.9rem;
 }
 
+/* —— Modern alerts & input dialog —— */
+.entry-dialog {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel-color) 90%, transparent), var(--panel-color));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+}
+
+.app-alert {
+  border-radius: var(--radius-md);
+  padding: 0.8rem 0.9rem;
+  font-size: 0.88rem;
+  border: 1px solid transparent;
+  line-height: 1.6;
+}
+
+.app-alert--error {
+  color: var(--danger-color);
+  background: color-mix(in srgb, var(--danger-color) 10%, transparent);
+  border-color: color-mix(in srgb, var(--danger-color) 35%, transparent);
+}
+
+.app-alert--success {
+  color: var(--success-color);
+  background: color-mix(in srgb, var(--success-color) 12%, transparent);
+  border-color: color-mix(in srgb, var(--success-color) 35%, transparent);
+}
+
+.app-alert--warning {
+  color: var(--warning-color);
+  background: color-mix(in srgb, var(--warning-color) 14%, transparent);
+  border-color: color-mix(in srgb, var(--warning-color) 34%, transparent);
+}
+
+.app-alert--info {
+  color: var(--md-primary);
+  background: color-mix(in srgb, var(--md-primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--md-primary) 30%, transparent);
+}
+
+/* —— Custom scrollbars (global) —— */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-secondary) 38%, var(--border-color));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--md-primary) 50%, var(--border-color));
+  background-clip: content-box;
+}
+
 .md-divider-label {
   display: flex;
   align-items: center;
@@ -550,6 +614,7 @@ html:not(.light-mode) .nav-link.active {
   overflow-x: hidden;
   padding: 24px;
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 /* Page title block (shared page headers) */
@@ -802,6 +867,57 @@ html:not(.light-mode) .nav-link.active {
   transform: scale(0.98);
 }
 
+/* —— Unified form controls —— */
+.app-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.app-field--grow {
+  flex: 1;
+}
+
+.app-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.app-input,
+.app-select,
+.app-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.app-textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.app-input:focus,
+.app-select:focus,
+.app-textarea:focus {
+  outline: none;
+  border-color: var(--md-primary);
+  box-shadow: 0 0 0 1px var(--md-primary);
+}
+
 /* —— Data tables (Material-like) —— */
 .md-table-scroll {
   overflow-x: auto;
@@ -980,6 +1096,41 @@ html:not(.light-mode) .nav-link.active {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 8px;
+}
+
+.confirm-dialog {
+  max-width: 440px;
+  text-align: center;
+}
+
+.confirm-dialog__icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 0.9rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--warning-color) 14%, transparent);
+}
+
+.confirm-dialog__title {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+}
+
+.confirm-dialog__message {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.confirm-dialog__actions {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 /* —— Accordion (curriculum) —— */

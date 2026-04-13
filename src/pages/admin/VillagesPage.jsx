@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 const VillagesPage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const VillagesPage = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   // Form State
   const [selectedRegId, setSelectedRegId] = useState('');
@@ -172,6 +175,7 @@ const VillagesPage = () => {
       setIsAdding(false);
       setIsEditing(null);
       setError('');
+      setSuccess(isEditing ? 'تم تحديث بيانات القرية بنجاح.' : 'تمت إضافة القرية بنجاح.');
       fetchData();
     } catch (err) {
       console.error(err);
@@ -196,7 +200,6 @@ const VillagesPage = () => {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`هل أنت متأكد من حذف قرية "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
       const villageDoc = villages.find(v => v.id === id);
@@ -211,10 +214,12 @@ const VillagesPage = () => {
       
       const docRef = api.getSubDocument('villages', villageDoc.regionId, 'villages', id);
       await api.deleteData(docRef);
+      setSuccess('تم حذف القرية بنجاح.');
+      setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      alert('لا يمكن الحذف في الوقت الحالي');
+      setError('لا يمكن الحذف في الوقت الحالي.');
     }
   };
 
@@ -243,7 +248,8 @@ const VillagesPage = () => {
         </button>
       </PageHeader>
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
       {/* Complex Add Form */}
       {isAdding && (
@@ -362,7 +368,7 @@ const VillagesPage = () => {
                 <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">
                   <Edit2 size={16} />
                 </button>
-                <button className="icon-btn" onClick={() => handleDelete(vil.id, vil.villageName)} title="حذف القرية">
+                <button className="icon-btn" onClick={() => setPendingDelete({ id: vil.id, name: vil.villageName })} title="حذف القرية">
                   <Trash2 size={16} color="var(--danger-color)" />
                 </button>
               </div>
@@ -389,6 +395,20 @@ const VillagesPage = () => {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!pendingDelete}
+        title="تأكيد حذف القرية"
+        message={`سيتم حذف قرية "${pendingDelete?.name || ''}" وكل السجلات المرتبطة بها.`}
+        confirmLabel="حذف نهائي"
+        danger
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={async () => {
+          const item = pendingDelete;
+          setPendingDelete(null);
+          if (item) await handleDelete(item.id, item.name);
+        }}
+      />
     </div>
   );
 };

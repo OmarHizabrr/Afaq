@@ -19,6 +19,7 @@ const SchoolDetailsPage = () => {
     const [studentSearch, setStudentSearch] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [assigning, setAssigning] = useState(false);
+    const [assignError, setAssignError] = useState('');
 
     const fetchSchoolDetails = async () => {
         if (!id) return;
@@ -74,6 +75,7 @@ const SchoolDetailsPage = () => {
     const handleAssignUser = async (userToAssign) => {
         if (!userToAssign || assigning) return;
         setAssigning(true);
+        setAssignError('');
         try {
             const api = FirestoreApi.Api;
             
@@ -124,7 +126,7 @@ const SchoolDetailsPage = () => {
             fetchSchoolDetails();
         } catch (err) {
             console.error(err);
-            alert('حدث خطأ أثناء التعيين');
+            setAssignError('حدث خطأ أثناء التعيين.');
         } finally {
             setAssigning(false);
         }
@@ -266,6 +268,7 @@ const SchoolDetailsPage = () => {
                               style={{ width: '100%', padding: '12px 40px 12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
                             />
                         </div>
+                        {assignError && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{assignError}</div>}
 
                         <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px' }}>
                             {filteredUsers.length === 0 ? <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>لا يوجد مستخدمين متاحين للتعيين.</p> : filteredUsers.map(u => (

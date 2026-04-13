@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { School, ChevronRight, Info, PieChart, MapPin, Edit2, Trash2, Plus, Save, X } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 const VillageDetailsPage = () => {
     const { id } = useParams();
@@ -17,6 +18,7 @@ const VillageDetailsPage = () => {
     const [editingMuslimId, setEditingMuslimId] = useState(null);
     const [editingName, setEditingName] = useState('');
     const [editingType, setEditingType] = useState('رجل');
+    const [pendingDelete, setPendingDelete] = useState(null);
 
     useEffect(() => {
         const fetchVillageDetails = async () => {
@@ -135,7 +137,6 @@ const VillageDetailsPage = () => {
     };
 
     const handleDeleteNewMuslim = async (m) => {
-      if (!window.confirm(`حذف السجل "${m.name}"؟`)) return;
       try {
         setSaving(true);
         const api = FirestoreApi.Api;
@@ -243,7 +244,7 @@ const VillageDetailsPage = () => {
                                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                             <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.type}</span>
                                             <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
-                                            <button type="button" className="icon-btn" onClick={() => handleDeleteNewMuslim(m)} title="حذف"><Trash2 size={14} color="var(--danger-color)" /></button>
+                                            <button type="button" className="icon-btn" onClick={() => setPendingDelete(m)} title="حذف"><Trash2 size={14} color="var(--danger-color)" /></button>
                                           </div>
                                         </>
                                       )}
@@ -298,6 +299,20 @@ const VillageDetailsPage = () => {
                     </div>
                 </div>
             </div>
+
+            <ConfirmDialog
+              open={!!pendingDelete}
+              title="تأكيد حذف السجل"
+              message={`سيتم حذف السجل "${pendingDelete?.name || ''}" من قائمة المهتدين الجدد.`}
+              confirmLabel="حذف نهائي"
+              danger
+              onCancel={() => setPendingDelete(null)}
+              onConfirm={async () => {
+                const item = pendingDelete;
+                setPendingDelete(null);
+                if (item) await handleDeleteNewMuslim(item);
+              }}
+            />
         </div>
     );
 };

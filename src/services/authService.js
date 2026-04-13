@@ -48,7 +48,7 @@ class AuthService {
       lastLogin: new Date().toISOString(),
     };
 
-    // Only set default role if it's a completely new user
+    // أي مستخدم Google جديد يعتبر طالباً افتراضياً
     if (!existingDoc || !existingDoc.role) {
       userData.role = "student";
     }
@@ -57,7 +57,7 @@ class AuthService {
     await api.setData({ 
       docRef, 
       data: userData, 
-      Overwrite: false // Ensure merge
+      merge: true
     });
   }
 

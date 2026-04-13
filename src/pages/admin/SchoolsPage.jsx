@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, School, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 const SchoolsPage = () => {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ const SchoolsPage = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   // Form State
   const [selectedRegId, setSelectedRegId] = useState('');
@@ -86,6 +89,7 @@ const SchoolsPage = () => {
       setIsAdding(false);
       setIsEditing(null);
       setError('');
+      setSuccess(isEditing ? 'تم تحديث المدرسة بنجاح.' : 'تمت إضافة المدرسة بنجاح.');
       fetchData();
     } catch (err) {
       console.error(err);
@@ -105,7 +109,6 @@ const SchoolsPage = () => {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`هل أنت متأكد من حذف مدرسة "${name}"؟`)) return;
     try {
       const api = FirestoreApi.Api;
       const schoolDoc = schools.find(s => s.id === id);
@@ -113,27 +116,18 @@ const SchoolsPage = () => {
       
       const docRef = api.getSubDocument('schools', schoolDoc.villageId, 'schools', id);
       await api.deleteData(docRef);
+      setSuccess('تم حذف المدرسة بنجاح.');
+      setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      alert('لا يمكن الحذف في الوقت الحالي');
+      setError('لا يمكن الحذف في الوقت الحالي.');
     }
   };
 
   const getVillageName = (vilId) => {
     const vil = villages.find(v => v.id === vilId);
     return vil ? vil.villageName : 'غير معروف';
-  };
-
-  const inputStyle = {
-    padding: '12px 16px',
-    borderRadius: '8px',
-    border: '1px solid var(--border-color)',
-    background: 'var(--bg-color)',
-    color: 'var(--text-primary)',
-    fontSize: '0.95rem',
-    width: '100%',
-    boxSizing: 'border-box'
   };
 
   return (
@@ -145,7 +139,8 @@ const SchoolsPage = () => {
         </button>
       </PageHeader>
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
       {/* Add Form */}
       {isAdding && (
@@ -158,7 +153,7 @@ const SchoolsPage = () => {
             {/* Cascading Dropdowns */}
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>تصفية حسب المنطقة</label>
-              <select value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} style={inputStyle}>
+              <select value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="app-select">
                 <option value="">-- كل المناطق --</option>
                 {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
               </select>
@@ -166,7 +161,7 @@ const SchoolsPage = () => {
 
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>القرية (مطلوب)</label>
-              <select value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} style={inputStyle} required>
+              <select value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="app-select" required>
                 <option value="">-- اختر القرية --</option>
                 {filteredVillages.map(v => <option key={v.id} value={v.id}>{v.villageName}</option>)}
               </select>
@@ -174,12 +169,12 @@ const SchoolsPage = () => {
 
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المدرسة (مطلوب)</label>
-              <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} style={inputStyle} required placeholder="مثال: مدرسة النور" />
+              <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input" required placeholder="مثال: مدرسة النور" />
             </div>
 
             <div>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المتبرع (اختياري)</label>
-              <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} style={inputStyle} placeholder="فاعل خير" />
+              <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input" placeholder="فاعل خير" />
             </div>
 
           </div>
@@ -220,7 +215,7 @@ const SchoolsPage = () => {
                 <button className="icon-btn" onClick={() => handleEditClick(sch)} title="تعديل">
                   <Edit2 size={16} />
                 </button>
-                <button className="icon-btn" onClick={() => handleDelete(sch.id, sch.name)} title="حذف">
+                <button className="icon-btn" onClick={() => setPendingDelete({ id: sch.id, name: sch.name })} title="حذف">
                   <Trash2 size={16} color="var(--danger-color)" />
                 </button>
               </div>
@@ -228,6 +223,20 @@ const SchoolsPage = () => {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!pendingDelete}
+        title="تأكيد حذف المدرسة"
+        message={`سيتم حذف مدرسة "${pendingDelete?.name || ''}" نهائياً.`}
+        confirmLabel="حذف نهائي"
+        danger
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={async () => {
+          const item = pendingDelete;
+          setPendingDelete(null);
+          if (item) await handleDelete(item.id, item.name);
+        }}
+      />
     </div>
   );
 };

@@ -26,6 +26,7 @@ const RegionDetailsPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [assigning, setAssigning] = useState(false);
     const [assignMsg, setAssignMsg] = useState('');
+    const [error, setError] = useState('');
 
     const fetchRegionDetails = async () => {
         if (!id) return;
@@ -76,11 +77,12 @@ const RegionDetailsPage = () => {
     const handleAssignSupervisor = async (userToAssign) => {
         if (!userToAssign || assigning || !id) return;
         if (userToAssign.role === 'admin') {
-            alert('لا يمكن تعيين مدير النظام مشرفاً ميدانياً من هذه النافذة.');
+            setError('لا يمكن تعيين مدير النظام مشرفاً ميدانياً من هذه النافذة.');
             return;
         }
         setAssigning(true);
         setAssignMsg('');
+        setError('');
         try {
             const api = FirestoreApi.Api;
 
@@ -121,7 +123,7 @@ const RegionDetailsPage = () => {
             setAssignMsg(`تم تعيين ${userToAssign.displayName || 'المستخدم'} بنجاح. يمكنك تعيين مشرفين آخرين.`);
         } catch (err) {
             console.error(err);
-            alert('حدث خطأ أثناء التعيين');
+            setError('حدث خطأ أثناء التعيين.');
         } finally {
             setAssigning(false);
         }
@@ -213,6 +215,7 @@ const RegionDetailsPage = () => {
                         {assignMsg && (
                           <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'var(--success-color)' }}>{assignMsg}</p>
                         )}
+                        {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
 
                         <div className="md-field" style={{ borderRadius: '12px', marginBottom: '1rem' }}>
                             <Search size={18} color="var(--text-secondary)" aria-hidden />
