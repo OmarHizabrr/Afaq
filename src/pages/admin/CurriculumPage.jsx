@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Plus, Edit2, Trash2, Save, ChevronDown, ChevronUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, Plus, Trash2, Save, ChevronDown, ChevronUp, Printer } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 
 const CurriculumPage = () => {
+  const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -250,6 +252,17 @@ const CurriculumPage = () => {
                       الخطة: 50 أسبوع
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/print/curriculum/${subject.id}`, { state: { autoPrint: true } });
+                        }}
+                        title="طباعة الخطة أو حفظ PDF (صفحة منفصلة)"
+                      >
+                        <Printer size={18} color="var(--md-primary)" />
+                      </button>
                       <button 
                         className="icon-btn" 
                         onClick={(e) => {

@@ -11,6 +11,7 @@ import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
 import StudentManagementPage from './pages/admin/StudentManagementPage';
 import CurriculumPage from './pages/admin/CurriculumPage';
+import CurriculumPrintPage from './pages/print/CurriculumPrintPage';
 import SettingsPage from './pages/common/SettingsPage';
 import NotificationsPage from './pages/common/NotificationsPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
@@ -178,6 +179,15 @@ function App() {
           <Route path="settings" element={<SettingsPage />} />
           <Route path="notifications" element={<NotificationsPage user={user} />} />
         </Route>
+
+        <Route
+          path="/print/curriculum/:subjectId"
+          element={
+            <AdminRoute>
+              <CurriculumPrintPage />
+            </AdminRoute>
+          }
+        />
 
         <Route path="*" element={
           <Navigate to={
