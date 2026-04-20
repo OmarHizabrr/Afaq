@@ -119,7 +119,7 @@ export default function CurriculumPrintPage() {
     <PrintDocumentShell
       documentTitle={subject.name}
       subtitle="خطة التوزيع الأسبوعي — خمسون أسبوعاً"
-      metaLines={[`تاريخ إصدار العرض: ${printedAt}`, `معرّف المادة: ${subject.id}`]}
+      metaLines={[`تاريخ إصدار العرض: ${printedAt}`]}
       onBack={handleBack}
     >
       <table className="print-table print-table--curriculum">

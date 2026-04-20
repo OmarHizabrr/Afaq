@@ -21,8 +21,31 @@ const CurriculumPage = () => {
   const [expandedId, setExpandedId] = useState(null);
 
   // Local state for editing weeks of a specific subject before saving
-  const [editingSubject, setEditingSubject] = useState(null); 
+  const [editingSubject, setEditingSubject] = useState(null);
+  const [editingSubjectName, setEditingSubjectName] = useState('');
   const [editingWeeks, setEditingWeeks] = useState([]); // [{week: 1, lesson: ''}, ...]
+
+  const buildWeeksFromSubject = (subject) => {
+    let currentWeeks = Array.isArray(subject.weeks) ? [...subject.weeks] : [];
+    if (currentWeeks.length < 50) {
+      const existingWeeks = currentWeeks.reduce((acc, w) => {
+        acc[w.week] = w.lesson;
+        return acc;
+      }, {});
+      currentWeeks = Array.from({ length: 50 }, (_, i) => ({
+        week: i + 1,
+        lesson: existingWeeks[i + 1] || '',
+      }));
+    }
+    return currentWeeks;
+  };
+
+  const openSubjectEditor = (subject) => {
+    setExpandedId(subject.id);
+    setEditingSubject(subject);
+    setEditingSubjectName(subject.name || '');
+    setEditingWeeks(buildWeeksFromSubject(subject));
+  };
 
   const fetchSubjects = async () => {
     setLoading(true);
@@ -100,36 +123,13 @@ const CurriculumPage = () => {
         confirmLabel: 'تجاهل وفتح',
         danger: true,
         onConfirm: () => {
-          setExpandedId(subject.id);
-          setEditingSubject(subject);
-
-          let currentWeeks = Array.isArray(subject.weeks) ? [...subject.weeks] : [];
-          if (currentWeeks.length < 50) {
-            const existingWeeks = currentWeeks.reduce((acc, w) => { acc[w.week] = w.lesson; return acc; }, {});
-            currentWeeks = Array.from({ length: 50 }, (_, i) => ({
-              week: i + 1,
-              lesson: existingWeeks[i + 1] || ''
-            }));
-          }
-          setEditingWeeks(currentWeeks);
-        }
+          openSubjectEditor(subject);
+        },
       });
       return;
     }
-    
-    setExpandedId(subject.id);
-    setEditingSubject(subject);
-    
-    // Ensure it has 50 weeks backwards compatible if array is missing
-    let currentWeeks = Array.isArray(subject.weeks) ? [...subject.weeks] : [];
-    if (currentWeeks.length < 50) {
-      const existingWeeks = currentWeeks.reduce((acc, w) => { acc[w.week] = w.lesson; return acc; }, {});
-      currentWeeks = Array.from({ length: 50 }, (_, i) => ({
-        week: i + 1,
-        lesson: existingWeeks[i + 1] || ''
-      }));
-    }
-    setEditingWeeks(currentWeeks);
+
+    openSubjectEditor(subject);
   };
 
   const handleWeekChange = (index, value) => {
@@ -140,14 +140,20 @@ const CurriculumPage = () => {
 
   const handleSaveCurriculum = async () => {
     if (!editingSubject) return;
-    
+
+    const name = editingSubjectName.trim();
+    if (!name) {
+      setError('يرجى إدخال اسم المادة قبل الحفظ');
+      return;
+    }
+
     try {
       setLoading(true);
       const api = FirestoreApi.Api;
-      
+
       await api.updateData({
         docRef: api.getCurriculumDoc(editingSubject.id),
-        data: { weeks: editingWeeks }
+        data: { name, weeks: editingWeeks },
       });
       
       setSuccess('تم حفظ توزيع المنهج بنجاح.');
@@ -287,6 +293,18 @@ const CurriculumPage = () => {
                 {/* Expanded Content (50 Weeks Form) */}
                 {isExpanded && editingSubject?.id === subject.id && (
                   <div style={{ padding: '2rem', borderTop: '1px solid var(--border-color)', background: 'var(--bg-color)' }}>
+                    <label htmlFor={`subject-name-${subject.id}`} className="md-field" style={{ display: 'block', marginBottom: '1.25rem' }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المادة</span>
+                      <input
+                        id={`subject-name-${subject.id}`}
+                        type="text"
+                        value={editingSubjectName}
+                        onChange={(e) => setEditingSubjectName(e.target.value)}
+                        placeholder="مثال: العقيدة"
+                        autoComplete="off"
+                        style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                      />
+                    </label>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                       <h4 style={{ margin: 0, color: 'var(--text-primary)' }}>توزيع الدروس الأسبوعية</h4>
                       <button 
