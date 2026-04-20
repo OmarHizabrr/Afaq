@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -18,6 +18,16 @@ const VillagesPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [pendingNewMuslimDelete, setPendingNewMuslimDelete] = useState(null);
+
+  /** لوحة المهتدين السريعة داخل البطاقة */
+  const [nmQuickVillageId, setNmQuickVillageId] = useState(null);
+  const [nmDraftName, setNmDraftName] = useState('');
+  const [nmDraftType, setNmDraftType] = useState('رجل');
+  const [nmEditingId, setNmEditingId] = useState(null);
+  const [nmEditingName, setNmEditingName] = useState('');
+  const [nmEditingType, setNmEditingType] = useState('رجل');
+  const [nmSaving, setNmSaving] = useState(false);
 
   // Form State
   const [selectedRegId, setSelectedRegId] = useState('');
@@ -183,6 +193,8 @@ const VillagesPage = () => {
   };
 
   const handleEditClick = (vil) => {
+    setNmQuickVillageId(null);
+    cancelNmQuickEdit();
     setIsEditing(vil);
     setIsAdding(true);
     setSelectedRegId(vil.regionId);
@@ -226,6 +238,113 @@ const VillagesPage = () => {
     return reg ? reg.name : 'غير معروف';
   };
 
+  const syncVillageNewMuslimCounters = async (regionId, villageId, items) => {
+    const api = FirestoreApi.Api;
+    await api.updateData({
+      docRef: api.getVillageDoc(regionId, villageId),
+      data: {
+        newMuslimsMen: items.filter((m) => m.type === 'رجل').length,
+        newMuslimsWomen: items.filter((m) => m.type === 'امرأة').length,
+        newMuslimsChildren: items.filter((m) => m.type === 'طفل').length,
+      },
+    });
+  };
+
+  const patchVillageNewMuslims = (villageId, nextItems) => {
+    setNewMuslimsDocsByVillage((prev) => ({ ...prev, [villageId]: nextItems }));
+  };
+
+  const cancelNmQuickEdit = () => {
+    setNmEditingId(null);
+    setNmEditingName('');
+    setNmEditingType('رجل');
+  };
+
+  const toggleQuickNewMuslims = (vilId) => {
+    setNmQuickVillageId((v) => (v === vilId ? null : vilId));
+    setNmDraftName('');
+    setNmDraftType('رجل');
+    cancelNmQuickEdit();
+  };
+
+  const startNmQuickEdit = (m) => {
+    setNmEditingId(m.id);
+    setNmEditingName(m.name || '');
+    setNmEditingType(m.type || 'رجل');
+  };
+
+  const handleQuickAddNewMuslim = async (vil) => {
+    if (!nmDraftName.trim() || nmQuickVillageId !== vil.id) return;
+    setNmSaving(true);
+    setError('');
+    try {
+      const api = FirestoreApi.Api;
+      const docId = api.getNewId('new_muslims');
+      await api.setData({
+        docRef: api.getNewMuslimDoc(docId),
+        data: { villageId: vil.id, name: nmDraftName.trim(), type: nmDraftType },
+      });
+      const list = [
+        ...(newMuslimsDocsByVillage[vil.id] || []),
+        { id: docId, villageId: vil.id, name: nmDraftName.trim(), type: nmDraftType },
+      ];
+      patchVillageNewMuslims(vil.id, list);
+      await syncVillageNewMuslimCounters(vil.regionId, vil.id, list);
+      setNmDraftName('');
+      setNmDraftType('رجل');
+      setSuccess('تمت إضافة المهتدي.');
+    } catch (err) {
+      console.error(err);
+      setError('تعذر إضافة السجل.');
+    } finally {
+      setNmSaving(false);
+    }
+  };
+
+  const handleQuickSaveNewMuslim = async (vil) => {
+    if (!nmEditingId || !nmEditingName.trim()) return;
+    setNmSaving(true);
+    setError('');
+    try {
+      const api = FirestoreApi.Api;
+      await api.updateData({
+        docRef: api.getNewMuslimDoc(nmEditingId),
+        data: { name: nmEditingName.trim(), type: nmEditingType },
+      });
+      const list = (newMuslimsDocsByVillage[vil.id] || []).map((m) =>
+        m.id === nmEditingId ? { ...m, name: nmEditingName.trim(), type: nmEditingType } : m
+      );
+      patchVillageNewMuslims(vil.id, list);
+      await syncVillageNewMuslimCounters(vil.regionId, vil.id, list);
+      cancelNmQuickEdit();
+      setSuccess('تم تحديث السجل.');
+    } catch (err) {
+      console.error(err);
+      setError('تعذر حفظ التعديل.');
+    } finally {
+      setNmSaving(false);
+    }
+  };
+
+  const handleQuickDeleteNewMuslim = async (vil, m) => {
+    setNmSaving(true);
+    setError('');
+    try {
+      const api = FirestoreApi.Api;
+      await api.deleteData(api.getNewMuslimDoc(m.id));
+      const list = (newMuslimsDocsByVillage[vil.id] || []).filter((x) => x.id !== m.id);
+      patchVillageNewMuslims(vil.id, list);
+      await syncVillageNewMuslimCounters(vil.regionId, vil.id, list);
+      if (nmEditingId === m.id) cancelNmQuickEdit();
+      setSuccess('تم حذف السجل.');
+    } catch (err) {
+      console.error(err);
+      setError('تعذر الحذف.');
+    } finally {
+      setNmSaving(false);
+    }
+  };
+
   return (
     <div>
       <PageHeader icon={Home} title="إدارة القرى" subtitle="البيانات الديموغرافية والمجموعات">
@@ -240,6 +359,8 @@ const VillagesPage = () => {
             setNewMuslims([]);
             setMuslimName('');
             setMuslimType('رجل');
+            setNmQuickVillageId(null);
+            cancelNmQuickEdit();
           }}
         >
           <Plus size={18} />
@@ -392,6 +513,166 @@ const VillagesPage = () => {
                 <span>جروب: {vil.groupName || '-'}</span>
                 <span>LTI: {vil.ltiName || '-'}</span>
               </div>
+
+              <button
+                type="button"
+                className="google-btn google-btn--toolbar"
+                style={{ width: '100%', marginTop: '0.85rem' }}
+                onClick={() => toggleQuickNewMuslims(vil.id)}
+              >
+                <UserPlus size={16} aria-hidden />
+                {nmQuickVillageId === vil.id ? (
+                  <>
+                    <ChevronUp size={16} aria-hidden />
+                    <span>طي إدارة المهتدين</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown size={16} aria-hidden />
+                    <span>إدارة المهتدين من البطاقة</span>
+                  </>
+                )}
+              </button>
+
+              {nmQuickVillageId === vil.id && (
+                <div
+                  className="surface-card"
+                  style={{
+                    marginTop: '0.75rem',
+                    padding: '0.85rem',
+                    borderRadius: '12px',
+                    border: '1px solid var(--border-color)',
+                    background: 'var(--panel-color)',
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <p style={{ margin: '0 0 0.65rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                    إضافة أو تعديل أو حذف دون فتح صفحة التفاصيل. العدادات تُحدَّث على القرية تلقائياً.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px auto', gap: '8px', marginBottom: '0.75rem' }}>
+                    <input
+                      type="text"
+                      value={nmDraftName}
+                      onChange={(e) => setNmDraftName(e.target.value)}
+                      placeholder="اسم المهتدي"
+                      className="app-input"
+                      style={{ marginBottom: 0 }}
+                      disabled={nmSaving}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleQuickAddNewMuslim(vil);
+                        }
+                      }}
+                    />
+                    <select
+                      value={nmDraftType}
+                      onChange={(e) => setNmDraftType(e.target.value)}
+                      className="app-select"
+                      disabled={nmSaving}
+                    >
+                      <option value="رجل">رجل</option>
+                      <option value="امرأة">امرأة</option>
+                      <option value="طفل">طفل</option>
+                    </select>
+                    <button
+                      type="button"
+                      className="google-btn google-btn--filled"
+                      style={{ marginTop: 0, width: 'auto', padding: '0 12px' }}
+                      disabled={nmSaving}
+                      onClick={() => handleQuickAddNewMuslim(vil)}
+                    >
+                      إضافة
+                    </button>
+                  </div>
+                  <div
+                    style={{
+                      maxHeight: '220px',
+                      overflowY: 'auto',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '8px',
+                      background: 'var(--bg-color)',
+                    }}
+                  >
+                    {(newMuslimsDocsByVillage[vil.id] || []).length === 0 ? (
+                      <p style={{ margin: 0, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        لا توجد سجلات بعد.
+                      </p>
+                    ) : (
+                      (newMuslimsDocsByVillage[vil.id] || []).map((m) => (
+                        <div
+                          key={m.id}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: nmEditingId === m.id ? '1fr 90px auto auto' : '1fr auto',
+                            gap: '8px',
+                            alignItems: 'center',
+                            padding: '8px 10px',
+                            borderBottom: '1px solid var(--border-color)',
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          {nmEditingId === m.id ? (
+                            <>
+                              <input
+                                type="text"
+                                value={nmEditingName}
+                                onChange={(e) => setNmEditingName(e.target.value)}
+                                className="app-input"
+                                style={{ marginBottom: 0 }}
+                                disabled={nmSaving}
+                              />
+                              <select
+                                value={nmEditingType}
+                                onChange={(e) => setNmEditingType(e.target.value)}
+                                className="app-select"
+                                disabled={nmSaving}
+                              >
+                                <option value="رجل">رجل</option>
+                                <option value="امرأة">امرأة</option>
+                                <option value="طفل">طفل</option>
+                              </select>
+                              <button
+                                type="button"
+                                className="icon-btn"
+                                title="حفظ"
+                                disabled={nmSaving}
+                                onClick={() => handleQuickSaveNewMuslim(vil)}
+                              >
+                                <Save size={16} color="var(--success-color)" />
+                              </button>
+                              <button type="button" className="icon-btn" title="إلغاء" disabled={nmSaving} onClick={cancelNmQuickEdit}>
+                                <X size={16} />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <span>
+                                {m.name}{' '}
+                                <span style={{ color: 'var(--text-secondary)', fontSize: '0.78rem' }}>({m.type})</span>
+                              </span>
+                              <span style={{ display: 'flex', gap: '4px' }}>
+                                <button type="button" className="icon-btn" title="تعديل" disabled={nmSaving} onClick={() => startNmQuickEdit(m)}>
+                                  <Edit2 size={16} />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="icon-btn"
+                                  title="حذف"
+                                  disabled={nmSaving}
+                                  onClick={() => setPendingNewMuslimDelete({ vil, m })}
+                                >
+                                  <Trash2 size={16} color="var(--danger-color)" />
+                                </button>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -408,6 +689,24 @@ const VillagesPage = () => {
           const item = pendingDelete;
           setPendingDelete(null);
           if (item) await handleDelete(item.id);
+        }}
+      />
+
+      <ConfirmDialog
+        open={!!pendingNewMuslimDelete}
+        title="حذف المهتدي"
+        message={
+          pendingNewMuslimDelete
+            ? `حذف "${pendingNewMuslimDelete.m.name}" من سجل قرية «${pendingNewMuslimDelete.vil.villageName}»؟`
+            : ''
+        }
+        confirmLabel="حذف"
+        danger
+        onCancel={() => setPendingNewMuslimDelete(null)}
+        onConfirm={async () => {
+          const p = pendingNewMuslimDelete;
+          setPendingNewMuslimDelete(null);
+          if (p) await handleQuickDeleteNewMuslim(p.vil, p.m);
         }}
       />
     </div>
