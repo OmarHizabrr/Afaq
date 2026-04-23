@@ -79,40 +79,40 @@ const SettingsPage = () => {
       <PageHeader icon={Settings} title="إعدادات النظام والملف الشخصي" />
 
       {success && (
-        <div className="app-alert app-alert--success" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="app-alert app-alert--success settings-alert settings-alert--success">
           <Save size={18} /> {success}
         </div>
       )}
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1.5rem' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error settings-alert">{error}</div>}
 
       {/* Theme Settings */}
-      <div className="surface-card surface-card--lg" style={{ padding: '2rem', marginBottom: '2rem' }}>
-        <h2 style={{ margin: 0, marginBottom: '1.5rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="surface-card surface-card--lg settings-theme-card">
+        <h2 className="settings-theme-card__title">
           <Monitor size={20} color="var(--text-secondary)" /> المظهر المفضل
         </h2>
         
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="settings-theme-card__options">
           <button 
             onClick={() => handleThemeChange('dark')}
-            style={{ flex: 1, padding: '1.5rem', background: theme === 'dark' ? 'var(--accent-glow)' : 'var(--bg-color)', border: `1px solid ${theme === 'dark' ? 'var(--accent-color)' : 'var(--border-color)'}`, borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-primary)', transition: 'all 0.2s' }}
+            className={`settings-theme-option ${theme === 'dark' ? 'settings-theme-option--active' : ''}`}
           >
             <Moon size={32} color={theme === 'dark' ? 'var(--accent-color)' : 'var(--text-secondary)'} />
-            <span style={{ fontWeight: 600 }}>الوضع الليلي</span>
+            <span className="settings-theme-option__label">الوضع الليلي</span>
           </button>
           
           <button 
             onClick={() => handleThemeChange('light')}
-            style={{ flex: 1, padding: '1.5rem', background: theme === 'light' ? 'var(--accent-glow)' : 'var(--bg-color)', border: `1px solid ${theme === 'light' ? 'var(--md-primary)' : 'var(--border-color)'}`, borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-primary)', transition: 'all 0.2s' }}
+            className={`settings-theme-option ${theme === 'light' ? 'settings-theme-option--active' : ''}`}
           >
             <Sun size={32} color={theme === 'light' ? 'var(--md-primary)' : 'var(--text-secondary)'} />
-            <span style={{ fontWeight: 600 }}>الوضع النهاري (افتراضي)</span>
+            <span className="settings-theme-option__label">الوضع النهاري (افتراضي)</span>
           </button>
         </div>
       </div>
 
       {/* Profile Settings */}
       <form onSubmit={handleSaveProfile} className="surface-card surface-card--lg settings-profile-form">
-        <h2 style={{ margin: 0, marginBottom: '1.5rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <h2 className="settings-profile-form__title">
           <User size={20} color="var(--text-secondary)" /> الحساب الشخصي
         </h2>
 
