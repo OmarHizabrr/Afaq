@@ -31,6 +31,8 @@ export const PERMISSION_PAGES = [
       { id: 'governorate_edit', label: 'تعديل محافظة' },
       { id: 'governorate_delete', label: 'حذف محافظة' },
       { id: 'governorate_view', label: 'عرض التفاصيل' },
+      { id: 'governorate_region_view', label: 'فتح تفاصيل المنطقة من صفحة المحافظة' },
+      { id: 'governorate_village_view', label: 'فتح تفاصيل القرية من صفحة المحافظة' },
     ],
   },
   {
@@ -92,6 +94,7 @@ export const PERMISSION_PAGES = [
     label: 'التقارير',
     actions: [
       { id: 'report_view', label: 'عرض تقرير' },
+      { id: 'report_edit', label: 'تعديل تقرير' },
       { id: 'report_delete', label: 'حذف تقرير' },
     ],
   },

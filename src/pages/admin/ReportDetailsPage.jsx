@@ -18,6 +18,8 @@ import {
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import MapLocationOpen from '../../components/MapLocationOpen';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -41,12 +43,15 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   const [saving, setSaving] = useState(false);
   const [adminError, setAdminError] = useState('');
   const [editMode, setEditMode] = useState(false);
+  const { can } = usePermissions();
 
   const [visitEdit, setVisitEdit] = useState({});
   const [dailyEdit, setDailyEdit] = useState({});
   const [weeklyEdit, setWeeklyEdit] = useState({ reportDataJson: '{}' });
 
   const isAdmin = viewerUser?.role === 'admin';
+  const canEditReport = can(PERMISSION_PAGE_IDS.reports, 'report_edit');
+  const canDeleteReport = can(PERMISSION_PAGE_IDS.reports, 'report_delete');
 
   const loadReport = useCallback(async () => {
     if (!id) return;
@@ -252,7 +257,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         }
       />
 
-      {isAdmin && (
+      {isAdmin && (canEditReport || canDeleteReport) && (
         <div
           className="surface-card"
           style={{
@@ -273,34 +278,38 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {!editMode ? (
               <>
-                <button
-                  type="button"
-                  className="google-btn"
-                  disabled={saving}
-                  onClick={beginEdit}
-                  style={{
-                    background: 'var(--accent-muted)',
-                    color: 'var(--text-primary)',
-                    border: '1px solid var(--border-color)'
-                  }}
-                >
-                  <Pencil size={18} style={{ marginLeft: 6 }} aria-hidden />
-                  تعديل
-                </button>
-                <button
-                  type="button"
-                  className="google-btn"
-                  disabled={saving}
-                  onClick={handleAdminDelete}
-                  style={{
-                    background: 'rgba(239, 68, 68, 0.12)',
-                    color: 'var(--danger-color)',
-                    border: '1px solid var(--danger-color)'
-                  }}
-                >
-                  <Trash2 size={18} style={{ marginLeft: 6 }} aria-hidden />
-                  حذف
-                </button>
+                {canEditReport && (
+                  <button
+                    type="button"
+                    className="google-btn"
+                    disabled={saving}
+                    onClick={beginEdit}
+                    style={{
+                      background: 'var(--accent-muted)',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-color)'
+                    }}
+                  >
+                    <Pencil size={18} style={{ marginLeft: 6 }} aria-hidden />
+                    تعديل
+                  </button>
+                )}
+                {canDeleteReport && (
+                  <button
+                    type="button"
+                    className="google-btn"
+                    disabled={saving}
+                    onClick={handleAdminDelete}
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.12)',
+                      color: 'var(--danger-color)',
+                      border: '1px solid var(--danger-color)'
+                    }}
+                  >
+                    <Trash2 size={18} style={{ marginLeft: 6 }} aria-hidden />
+                    حذف
+                  </button>
+                )}
               </>
             ) : (
               <>

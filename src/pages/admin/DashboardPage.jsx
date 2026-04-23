@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
-const StatCard = ({ title, value, icon: Icon, color, loading }) => (
+const StatCard = ({ title, value, icon, color, loading }) => {
+  const IconComponent = icon;
+  return (
   <div className="surface-card surface-card--lg" style={{
     padding: '1.5rem',
     display: 'flex',
@@ -27,7 +31,7 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
       justifyContent: 'center',
       boxShadow: `0 8px 16px -4px ${color}30`
     }}>
-      <Icon size={34} />
+      <IconComponent size={34} />
     </div>
     <div>
       <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>{title}</p>
@@ -36,10 +40,12 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
       </h3>
     </div>
   </div>
-);
+  );
+};
 
 const DashboardPage = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [stats, setStats] = useState({
     supervisors: 0,
     villages: 0,
@@ -165,9 +171,11 @@ const DashboardPage = () => {
                            <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                               📅 {act.date || act.timestamp?.split('T')[0]}
                            </p>
-                           <button onClick={() => navigate(`/reports/${act.id}`)} className="icon-btn" title="عرض التفاصيل">
-                              <Eye size={16} color="var(--accent-color)" />
-                           </button>
+                           {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
+                             <button onClick={() => navigate(`/reports/${act.id}`)} className="icon-btn" title="عرض التفاصيل">
+                                <Eye size={16} color="var(--accent-color)" />
+                             </button>
+                           )}
                         </div>
                     </div>
                 ))}

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Map, MapPin, Home, ChevronRight, Info } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const GovernorateDetailsPage = () => {
     const { id } = useParams();
@@ -11,6 +13,7 @@ const GovernorateDetailsPage = () => {
     const [regions, setRegions] = useState([]);
     const [villages, setVillages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { can } = usePermissions();
 
     useEffect(() => {
         const fetchGovDetails = async () => {
@@ -74,7 +77,9 @@ const GovernorateDetailsPage = () => {
                            {regions.map(reg => (
                               <div key={reg.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                  <h4 style={{ margin: 0 }}>{reg.name}</h4>
-                                 <button onClick={() => navigate(`/regions/${reg.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_region_view') && (
+                                   <button onClick={() => navigate(`/regions/${reg.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 )}
                               </div>
                            ))}
                         </div>
@@ -93,7 +98,9 @@ const GovernorateDetailsPage = () => {
                            {villages.map(vil => (
                               <div key={vil.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                  <h4 style={{ margin: 0 }}>{vil.villageName}</h4>
-                                 <button onClick={() => navigate(`/villages/${vil.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_village_view') && (
+                                   <button onClick={() => navigate(`/villages/${vil.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 )}
                               </div>
                            ))}
                         </div>
