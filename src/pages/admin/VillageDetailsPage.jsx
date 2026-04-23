@@ -56,12 +56,12 @@ const VillageDetailsPage = () => {
     }, [id]);
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
-    if (!village) return <div style={{ padding: '2rem', textAlign: 'center' }}>القرية غير موجودة</div>;
+    if (!village) return <div className="empty-state">القرية غير موجودة</div>;
 
     const StatBox = ({ label, value, color }) => (
-        <div className="surface-card" style={{ padding: '1.25rem', borderRadius: '16px', flex: 1, textAlign: 'center' }}>
-            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>{label}</p>
-            <h3 style={{ margin: 0, fontSize: '1.5rem', color: color }}>{value}</h3>
+        <div className="surface-card village-details-statbox">
+            <p className="village-details-statbox__label">{label}</p>
+            <h3 className="village-details-statbox__value" style={{ color }}>{value}</h3>
         </div>
     );
 
@@ -155,10 +155,10 @@ const VillageDetailsPage = () => {
     };
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="village-details-page">
             <PageHeader
               topRow={
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div className="village-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/villages')}>
                     <ChevronRight size={20} aria-hidden /> إدارة القرى
                   </button>
@@ -168,40 +168,40 @@ const VillageDetailsPage = () => {
               title={<>إحصائيات قرية: <span style={{ color: 'var(--md-primary)' }}>{village.villageName}</span></>}
             />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div className="village-details-layout">
+                <div className="village-details-main-col">
                     {/* Demographics Card */}
-                    <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                    <div className="surface-card surface-card--lg village-details-card">
+                        <div className="village-details-card__head">
                             <PieChart size={24} color="var(--accent-color)" />
-                            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>الإحصائيات السكانية والديموغرافية</h2>
+                            <h2 className="village-details-card__title">الإحصائيات السكانية والديموغرافية</h2>
                         </div>
-                        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                        <div className="village-details-card__stats">
                             <StatBox label="إجمالي السكان" value={village.populationCount} color="var(--text-primary)" />
                             <StatBox label="المسلمون" value={village.muslimsCount} color="var(--success-color)" />
                             <StatBox label="غير المسلمين" value={village.nonMuslimsCount} color="var(--danger-color)" />
                         </div>
                         
-                        <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-                            <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--success-color)' }}>المهتدون الجدد (New Muslims)</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                        <div className="village-details-new-muslims">
+                            <h3 className="village-details-new-muslims__title">المهتدون الجدد (New Muslims)</h3>
+                            <div className="village-details-new-muslims__summary">
                                 <div><strong>👨 رجال:</strong> {menCount}</div>
                                 <div><strong>👩 نساء:</strong> {womenCount}</div>
                                 <div><strong>👧 أطفال:</strong> {childrenCount}</div>
                             </div>
-                            <div style={{ marginTop: '1rem' }}>
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px auto', gap: '8px', marginBottom: '10px' }}>
+                            <div className="village-details-new-muslims__body">
+                              <div className="village-details-new-muslims__entry">
                                 <input
                                   type="text"
                                   value={newName}
                                   onChange={(e) => setNewName(e.target.value)}
                                   placeholder="اسم المهتدي الجديد"
-                                  style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--panel-color)', color: 'var(--text-primary)' }}
+                                  className="app-input"
                                 />
                                 <select
                                   value={newType}
                                   onChange={(e) => setNewType(e.target.value)}
-                                  style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--panel-color)', color: 'var(--text-primary)' }}
+                                  className="app-select"
                                 >
                                   <option value="رجل">رجل</option>
                                   <option value="امرأة">امرأة</option>
@@ -214,31 +214,31 @@ const VillageDetailsPage = () => {
                                 )}
                               </div>
                               {newMuslims.length === 0 ? (
-                                <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لا توجد سجلات مهتدين مضافة بعد.</p>
+                                <p className="village-details-new-muslims__empty">لا توجد سجلات مهتدين مضافة بعد.</p>
                               ) : (
-                                <div style={{ display: 'grid', gap: '8px' }}>
+                                <div className="village-details-new-muslims__list">
                                   {newMuslims.map((m) => (
-                                    <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--panel-color)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '8px 10px' }}>
+                                    <div key={m.id} className="village-details-new-muslims__item">
                                       {editingMuslimId === m.id ? (
                                         <>
-                                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1 }}>
+                                          <div className="village-details-new-muslims__item-edit">
                                             <input
                                               type="text"
                                               value={editingName}
                                               onChange={(e) => setEditingName(e.target.value)}
-                                              style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)', flex: 1 }}
+                                              className="app-input"
                                             />
                                             <select
                                               value={editingType}
                                               onChange={(e) => setEditingType(e.target.value)}
-                                              style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
+                                              className="app-select"
                                             >
                                               <option value="رجل">رجل</option>
                                               <option value="امرأة">امرأة</option>
                                               <option value="طفل">طفل</option>
                                             </select>
                                           </div>
-                                          <div style={{ display: 'flex', gap: '6px' }}>
+                                          <div className="village-details-new-muslims__item-actions">
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
                                               <button type="button" className="icon-btn" onClick={handleSaveEdit} disabled={saving} title="حفظ"><Save size={14} /></button>
                                             )}
@@ -248,8 +248,8 @@ const VillageDetailsPage = () => {
                                       ) : (
                                         <>
                                           <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.type}</span>
+                                          <div className="village-details-new-muslims__item-actions">
+                                            <span className="village-details-new-muslims__item-type">{m.type}</span>
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
                                               <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
                                             )}
@@ -268,18 +268,18 @@ const VillageDetailsPage = () => {
                     </div>
 
                     {/* Schools Card */}
-                    <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                    <div className="surface-card surface-card--lg village-details-card">
+                        <div className="village-details-card__head">
                             <School size={24} color="var(--accent-color)" />
-                            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>المدارس والمراكز التعليمية في القرية</h2>
+                            <h2 className="village-details-card__title">المدارس والمراكز التعليمية في القرية</h2>
                         </div>
-                        {schools.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا توجد مدارس مسجلة في هذه القرية حالياً.</p> : (
-                            <div style={{ display: 'grid', gap: '10px' }}>
+                        {schools.length === 0 ? <p className="village-details-card__empty">لا توجد مدارس مسجلة في هذه القرية حالياً.</p> : (
+                            <div className="village-details-schools-list">
                                 {schools.map(sch => (
-                                    <div key={sch.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                                    <div key={sch.id} className="village-details-schools-item">
                                         <div>
-                                            <h4 style={{ margin: 0 }}>{sch.name}</h4>
-                                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>🆔 {sch.id}</p>
+                                            <h4 className="village-details-schools-item__name">{sch.name}</h4>
+                                            <p className="village-details-schools-item__id">🆔 {sch.id}</p>
                                         </div>
                                         {can(PERMISSION_PAGE_IDS.villages, 'village_school_view') && (
                                           <button onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={18}/></button>
@@ -292,20 +292,20 @@ const VillageDetailsPage = () => {
                 </div>
 
                 {/* Sidebar Info */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                        <h3 style={{ marginTop: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}><MapPin size={18} color="var(--accent-color)"/> التصنيف الميداني</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '1.25rem' }}>
-                            <div style={{ fontSize: '0.9rem' }}>
-                                <span style={{ color: 'var(--text-secondary)' }}>اسم المجموعة:</span><br/>
+                <div className="village-details-side-col">
+                    <div className="surface-card surface-card--lg village-details-side-card">
+                        <h3 className="village-details-side-card__title"><MapPin size={18} color="var(--accent-color)"/> التصنيف الميداني</h3>
+                        <div className="village-details-side-card__rows">
+                            <div className="village-details-side-card__row">
+                                <span className="village-details-side-card__label">اسم المجموعة:</span><br/>
                                 <strong>{village.groupName || 'غير محدد'}</strong>
                             </div>
-                            <div style={{ fontSize: '0.9rem' }}>
-                                <span style={{ color: 'var(--text-secondary)' }}>تصنيف LTI:</span><br/>
+                            <div className="village-details-side-card__row">
+                                <span className="village-details-side-card__label">تصنيف LTI:</span><br/>
                                 <strong>{village.ltiName || 'غير محدد'}</strong>
                             </div>
-                            <div style={{ fontSize: '0.9rem' }}>
-                                <span style={{ color: 'var(--text-secondary)' }}>معرف المنطقة:</span><br/>
+                            <div className="village-details-side-card__row">
+                                <span className="village-details-side-card__label">معرف المنطقة:</span><br/>
                                 <strong>{village.regionId}</strong>
                             </div>
                         </div>

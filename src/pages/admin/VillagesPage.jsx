@@ -373,8 +373,8 @@ const VillagesPage = () => {
         )}
       </PageHeader>
 
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
-      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error villages-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success villages-alert">{success}</div>}
 
       {/* Complex Add/Edit Modal */}
       <FormModal
@@ -383,12 +383,12 @@ const VillagesPage = () => {
         size="lg"
         onClose={() => setIsAdding(false)}
       >
-          <form onSubmit={handleAdd} style={{ maxWidth: '960px' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '1.5rem', color: 'var(--accent-color)' }}>البيانات الأساسية</h3>
+          <form onSubmit={handleAdd} className="villages-form">
+          <h3 className="villages-form__title">البيانات الأساسية</h3>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المنطقة التابعة لها</label>
+          <div className="villages-form__grid">
+            <div className="app-field app-field--grow">
+              <label className="app-label">المنطقة التابعة لها</label>
               <select value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} className="app-select" required>
                 <option value="">-- اختر المنطقة --</option>
                 {regions.map(reg => (
@@ -396,81 +396,81 @@ const VillagesPage = () => {
                 ))}
               </select>
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم القرية</label>
+            <div className="app-field app-field--grow">
+              <label className="app-label">اسم القرية</label>
               <input name="villageName" type="text" value={formData.villageName} onChange={handleInputChange} className="app-input" required />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم الجروب</label>
+            <div className="app-field app-field--grow">
+              <label className="app-label">اسم الجروب</label>
               <input name="groupName" type="text" value={formData.groupName} onChange={handleInputChange} className="app-input" />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم الـ LTI</label>
+            <div className="app-field app-field--grow">
+              <label className="app-label">اسم الـ LTI</label>
               <input name="ltiName" type="text" value={formData.ltiName} onChange={handleInputChange} className="app-input" />
             </div>
           </div>
 
-          <hr style={{ border: 0, borderTop: '1px solid var(--border-color)', margin: '2rem 0' }} />
+          <hr className="villages-form__divider" />
 
-          <h3 style={{ marginTop: 0, marginBottom: '1.5rem', color: 'var(--accent-color)' }}>الإحصائيات السكانية</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>إجمالي السكان</label>
+          <h3 className="villages-form__title">الإحصائيات السكانية</h3>
+          <div className="villages-form__grid villages-form__grid--stats">
+            <div className="app-field app-field--grow">
+              <label className="app-label">إجمالي السكان</label>
               <input name="populationCount" type="number" min="0" value={formData.populationCount} onChange={handleInputChange} className="app-input" />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>عدد المسلمين</label>
+            <div className="app-field app-field--grow">
+              <label className="app-label">عدد المسلمين</label>
               <input name="muslimsCount" type="number" min="0" value={formData.muslimsCount} onChange={handleInputChange} className="app-input" />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>عدد غير المسلمين</label>
+            <div className="app-field app-field--grow">
+              <label className="app-label">عدد غير المسلمين</label>
               <input name="nonMuslimsCount" type="number" min="0" value={formData.nonMuslimsCount} onChange={handleInputChange} className="app-input" />
             </div>
           </div>
 
-          <hr style={{ border: 0, borderTop: '1px solid var(--border-color)', margin: '2rem 0' }} />
+          <hr className="villages-form__divider" />
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0, color: 'var(--accent-color)' }}>سجل المهتدين الجدد (يضاف للمجموعة المنفصلة)</h3>
-            <div style={{ fontSize: '0.8rem', color: 'var(--success-color)', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 10px', borderRadius: '12px' }}>
+          <div className="villages-form__head-row">
+            <h3 className="villages-form__title villages-form__title--inline">سجل المهتدين الجدد (يضاف للمجموعة المنفصلة)</h3>
+            <div className="villages-form__counter">
               الإجمالي: {newMuslims.length}
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: '150px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المهتدي</label>
+          <div className="villages-form__new-muslim-row">
+            <div className="app-field app-field--grow">
+              <label className="app-label">اسم المهتدي</label>
               <input type="text" value={muslimName} onChange={(e) => setMuslimName(e.target.value)} className="app-input" onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewMuslimToList())} />
             </div>
-            <div style={{ width: '120px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>الفئة</label>
+            <div className="app-field villages-form__new-muslim-type">
+              <label className="app-label">الفئة</label>
               <select value={muslimType} onChange={(e) => setMuslimType(e.target.value)} className="app-select">
                 <option value="رجل">رجل</option>
                 <option value="امرأة">امرأة</option>
                 <option value="طفل">طفل</option>
               </select>
             </div>
-            <button type="button" onClick={addNewMuslimToList} className="google-btn google-btn--toolbar" style={{ marginTop: 0, width: 'auto' }}>
+            <button type="button" onClick={addNewMuslimToList} className="google-btn google-btn--toolbar villages-form__new-muslim-btn">
               <UserPlus size={16} /> إضافة
             </button>
           </div>
 
           {newMuslims.length > 0 && (
-            <div style={{ background: 'var(--bg-color)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '2rem' }}>
+            <div className="villages-form__new-muslims-list">
               {newMuslims.map((m, index) => (
-                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: index !== newMuslims.length - 1 ? '1px solid var(--border-color)' : 'none' }}>
-                  <span style={{ fontSize: '0.9rem' }}>{m.name} - <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.type}</span></span>
+                <div key={index} className={`villages-form__new-muslims-item ${index !== newMuslims.length - 1 ? 'villages-form__new-muslims-item--with-border' : ''}`}>
+                  <span className="villages-form__new-muslims-name">{m.name} - <span className="villages-form__new-muslims-type">{m.type}</span></span>
                   <X size={16} color="var(--danger-color)" style={{ cursor: 'pointer' }} onClick={() => removeMuslimFromList(index)} />
                 </div>
               ))}
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem' }}>
-            <button type="button" onClick={() => setIsAdding(false)} className="google-btn" style={{ width: 'auto', marginTop: 0 }}>
+          <div className="villages-form__actions">
+            <button type="button" onClick={() => setIsAdding(false)} className="google-btn villages-form__action-btn">
               إلغاء
             </button>
-            <button type="submit" disabled={loading} className="google-btn google-btn--filled" style={{ marginTop: 0, width: 'auto', padding: '12px 32px' }}>
+            <button type="submit" disabled={loading} className="google-btn google-btn--filled villages-form__action-btn villages-form__action-btn--primary">
               {loading ? 'جاري الحفظ...' : isEditing ? 'تحديث القرية' : 'حفظ القرية'}
             </button>
           </div>
@@ -488,7 +488,7 @@ const VillagesPage = () => {
         <div className="entity-grid entity-grid--lg">
           {villages.map(vil => (
             <div key={vil.id} className="surface-card surface-card--village">
-              <div style={{ position: 'absolute', top: '1.25rem', left: '1.25rem', display: 'flex', gap: '8px' }}>
+              <div className="villages-card__actions">
                 {can(PERMISSION_PAGE_IDS.villages, 'village_view') && (
                   <button className="icon-btn" onClick={() => navigate(`/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
                     <Eye size={16} color="var(--accent-color)" />
@@ -506,21 +506,21 @@ const VillagesPage = () => {
                 )}
               </div>
               
-              <h3 style={{ margin: 0, fontSize: '1.2rem', marginBottom: '8px', color: 'var(--accent-color)' }}>{vil.villageName}</h3>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+              <h3 className="villages-card__title">{vil.villageName}</h3>
+              <p className="villages-card__subtitle">
                 المنطقة: {getRegionName(vil.regionId)}
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.8rem', background: 'var(--bg-color)', padding: '10px', borderRadius: '8px' }}>
+              <div className="villages-card__stats">
                 <div>👥 السكان: {vil.populationCount}</div>
                 <div>مسلمين: {vil.muslimsCount}</div>
-                <div style={{ color: 'var(--danger-color)' }}>غير المسلمين: {vil.nonMuslimsCount}</div>
-                <div style={{ color: 'var(--success-color)' }}>مهتدين (رجال): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'رجل').length}</div>
-                <div style={{ color: 'var(--success-color)' }}>مهتدين (نساء): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'امرأة').length}</div>
-                <div style={{ color: 'var(--success-color)' }}>مهتدين (أطفال): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'طفل').length}</div>
+                <div className="villages-card__stats-danger">غير المسلمين: {vil.nonMuslimsCount}</div>
+                <div className="villages-card__stats-success">مهتدين (رجال): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'رجل').length}</div>
+                <div className="villages-card__stats-success">مهتدين (نساء): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'امرأة').length}</div>
+                <div className="villages-card__stats-success">مهتدين (أطفال): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'طفل').length}</div>
               </div>
 
-              <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
+              <div className="villages-card__meta">
                 <span>جروب: {vil.groupName || '-'}</span>
                 <span>LTI: {vil.ltiName || '-'}</span>
               </div>
@@ -551,27 +551,19 @@ const VillagesPage = () => {
 
               {nmQuickVillageId === vil.id && (
                 <div
-                  className="surface-card"
-                  style={{
-                    marginTop: '0.75rem',
-                    padding: '0.85rem',
-                    borderRadius: '12px',
-                    border: '1px solid var(--border-color)',
-                    background: 'var(--panel-color)',
-                  }}
+                  className="surface-card villages-quick-panel"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <p style={{ margin: '0 0 0.65rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                  <p className="villages-quick-panel__hint">
                     إضافة أو تعديل أو حذف دون فتح صفحة التفاصيل. العدادات تُحدَّث على القرية تلقائياً.
                   </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px auto', gap: '8px', marginBottom: '0.75rem' }}>
+                  <div className="villages-quick-panel__entry-row">
                     <input
                       type="text"
                       value={nmDraftName}
                       onChange={(e) => setNmDraftName(e.target.value)}
                       placeholder="اسم المهتدي"
                       className="app-input"
-                      style={{ marginBottom: 0 }}
                       disabled={nmSaving}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -602,33 +594,14 @@ const VillagesPage = () => {
                       </button>
                     )}
                   </div>
-                  <div
-                    style={{
-                      maxHeight: '220px',
-                      overflowY: 'auto',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '8px',
-                      background: 'var(--bg-color)',
-                    }}
-                  >
+                  <div className="villages-quick-panel__list">
                     {(newMuslimsDocsByVillage[vil.id] || []).length === 0 ? (
-                      <p style={{ margin: 0, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      <p className="villages-quick-panel__empty">
                         لا توجد سجلات بعد.
                       </p>
                     ) : (
                       (newMuslimsDocsByVillage[vil.id] || []).map((m) => (
-                        <div
-                          key={m.id}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: nmEditingId === m.id ? '1fr 90px auto auto' : '1fr auto',
-                            gap: '8px',
-                            alignItems: 'center',
-                            padding: '8px 10px',
-                            borderBottom: '1px solid var(--border-color)',
-                            fontSize: '0.85rem',
-                          }}
-                        >
+                        <div key={m.id} className={`villages-quick-panel__item ${nmEditingId === m.id ? 'villages-quick-panel__item--editing' : ''}`}>
                           {nmEditingId === m.id ? (
                             <>
                               <input
@@ -636,7 +609,6 @@ const VillagesPage = () => {
                                 value={nmEditingName}
                                 onChange={(e) => setNmEditingName(e.target.value)}
                                 className="app-input"
-                                style={{ marginBottom: 0 }}
                                 disabled={nmSaving}
                               />
                               <select
@@ -666,7 +638,7 @@ const VillagesPage = () => {
                             <>
                               <span>
                                 {m.name}{' '}
-                                <span style={{ color: 'var(--text-secondary)', fontSize: '0.78rem' }}>({m.type})</span>
+                                <span className="villages-quick-panel__item-type">({m.type})</span>
                               </span>
                               <span style={{ display: 'flex', gap: '4px' }}>
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (

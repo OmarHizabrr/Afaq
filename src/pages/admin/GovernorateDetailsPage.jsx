@@ -48,13 +48,13 @@ const GovernorateDetailsPage = () => {
     }, [id]);
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
-    if (!gov) return <div style={{ padding: '2rem', textAlign: 'center' }}>المحافظة غير موجودة</div>;
+    if (!gov) return <div className="empty-state">المحافظة غير موجودة</div>;
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="governorate-details-page">
             <PageHeader
               topRow={
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div className="governorate-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/governorates')}>
                     <ChevronRight size={20} aria-hidden /> إدارة المحافظات
                   </button>
@@ -64,19 +64,19 @@ const GovernorateDetailsPage = () => {
               title={<>محافظة: <span style={{ color: 'var(--md-primary)' }}>{gov.name}</span></>}
             />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+            <div className="governorate-details-grid">
                 {/* Regions List */}
-                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="surface-card surface-card--lg governorate-details-panel">
+                    <div className="governorate-details-panel__head">
+                        <h2 className="governorate-details-panel__title">
                            <MapPin size={18} color="var(--accent-color)" /> المناطق التابعة
                         </h2>
                     </div>
-                    {regions.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا توجد مناطق مضافة لهذه المحافظة.</p> : (
-                        <div style={{ display: 'grid', gap: '10px' }}>
+                    {regions.length === 0 ? <p className="governorate-details-panel__empty">لا توجد مناطق مضافة لهذه المحافظة.</p> : (
+                        <div className="governorate-details-list">
                            {regions.map(reg => (
-                              <div key={reg.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-                                 <h4 style={{ margin: 0 }}>{reg.name}</h4>
+                              <div key={reg.id} className="governorate-details-item">
+                                 <h4 className="governorate-details-item__name">{reg.name}</h4>
                                  {can(PERMISSION_PAGE_IDS.governorates, 'governorate_region_view') && (
                                    <button onClick={() => navigate(`/regions/${reg.id}`)} className="icon-btn"><Info size={16}/></button>
                                  )}
@@ -87,17 +87,17 @@ const GovernorateDetailsPage = () => {
                 </div>
 
                 {/* Villages List */}
-                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="surface-card surface-card--lg governorate-details-panel">
+                    <div className="governorate-details-panel__head">
+                        <h2 className="governorate-details-panel__title">
                            <Home size={18} color="var(--success-color)" /> القرى التابعة
                         </h2>
                     </div>
-                    {villages.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا توجد قرى مضافة في هذه المحافظة.</p> : (
-                        <div style={{ display: 'grid', gap: '10px' }}>
+                    {villages.length === 0 ? <p className="governorate-details-panel__empty">لا توجد قرى مضافة في هذه المحافظة.</p> : (
+                        <div className="governorate-details-list">
                            {villages.map(vil => (
-                              <div key={vil.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-                                 <h4 style={{ margin: 0 }}>{vil.villageName}</h4>
+                              <div key={vil.id} className="governorate-details-item">
+                                 <h4 className="governorate-details-item__name">{vil.villageName}</h4>
                                  {can(PERMISSION_PAGE_IDS.governorates, 'governorate_village_view') && (
                                    <button onClick={() => navigate(`/villages/${vil.id}`)} className="icon-btn"><Info size={16}/></button>
                                  )}

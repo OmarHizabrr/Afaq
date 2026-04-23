@@ -145,8 +145,8 @@ const SchoolsPage = () => {
         )}
       </PageHeader>
 
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
-      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error schools-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success schools-alert">{success}</div>}
 
       {/* Add/Edit Modal */}
       <FormModal
@@ -154,30 +154,30 @@ const SchoolsPage = () => {
         title={isEditing ? 'تعديل المدرسة' : 'إضافة مدرسة'}
         onClose={() => setIsAdding(false)}
       >
-        <form onSubmit={handleAdd}>
+        <form onSubmit={handleAdd} className="schools-form">
           <label className="app-label">تصفية حسب المنطقة</label>
-          <select value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="app-select" style={{ marginBottom: '0.75rem' }}>
+          <select value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="app-select schools-form__field-gap">
             <option value="">-- كل المناطق --</option>
             {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
           </select>
 
           <label className="app-label">القرية (مطلوب)</label>
-          <select value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="app-select" required style={{ marginBottom: '0.75rem' }}>
+          <select value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="app-select schools-form__field-gap" required>
             <option value="">-- اختر القرية --</option>
             {filteredVillages.map(v => <option key={v.id} value={v.id}>{v.villageName}</option>)}
           </select>
 
           <label className="app-label">اسم المدرسة (مطلوب)</label>
-          <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input" required placeholder="مثال: مدرسة النور" style={{ marginBottom: '0.75rem' }} />
+          <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder="مثال: مدرسة النور" />
 
           <label className="app-label">اسم المتبرع (اختياري)</label>
-          <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input" placeholder="فاعل خير" style={{ marginBottom: '1rem' }} />
+          <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input schools-form__field-gap-lg" placeholder="فاعل خير" />
 
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-            <button type="button" onClick={() => setIsAdding(false)} className="google-btn" style={{ width: 'auto', marginTop: 0 }}>
+          <div className="schools-form__actions">
+            <button type="button" onClick={() => setIsAdding(false)} className="google-btn schools-form__action-btn">
               إلغاء
             </button>
-            <button type="submit" disabled={loading} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <button type="submit" disabled={loading} className="google-btn google-btn--filled schools-form__action-btn">
               حفظ المدرسة
             </button>
           </div>
@@ -196,13 +196,13 @@ const SchoolsPage = () => {
           {schools.map(sch => (
             <div key={sch.id} className="surface-card surface-card--entity">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary)', marginBottom: '4px' }}>{sch.name}</h3>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <h3 className="schools-card__title">{sch.name}</h3>
+                <div className="schools-card__meta">
                   <span>📍 القرية: {getVillageName(sch.villageId)}</span>
-                  {sch.donorName && <span style={{ color: 'var(--success-color)' }}>🤝 المتبرع: {sch.donorName}</span>}
+                  {sch.donorName && <span className="schools-card__donor">🤝 المتبرع: {sch.donorName}</span>}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="schools-card__actions">
                 {can(PERMISSION_PAGE_IDS.schools, 'school_view') && (
                   <button className="icon-btn" onClick={() => navigate(`/schools/${sch.id}`)} title="عرض التفاصيل">
                     <Eye size={16} color="var(--accent-color)" />

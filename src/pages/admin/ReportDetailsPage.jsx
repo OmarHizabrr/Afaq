@@ -239,7 +239,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
     '—';
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="report-details-page">
       <PageHeader
         topRow={
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -258,37 +258,19 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       />
 
       {isAdmin && (canEditReport || canDeleteReport) && (
-        <div
-          className="surface-card"
-          style={{
-            padding: '1rem 1.25rem',
-            marginBottom: '1.25rem',
-            borderRadius: '16px',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '10px',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            border: '1px solid var(--border-color)'
-          }}
-        >
-          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--md-primary)' }}>
+        <div className="surface-card report-admin-toolbar">
+          <span className="report-admin-toolbar__label">
             صلاحيات المدير: تعديل أو حذف هذا السجل
           </span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <div className="report-admin-toolbar__actions">
             {!editMode ? (
               <>
                 {canEditReport && (
                   <button
                     type="button"
-                    className="google-btn"
+                    className="google-btn google-btn--toolbar"
                     disabled={saving}
                     onClick={beginEdit}
-                    style={{
-                      background: 'var(--accent-muted)',
-                      color: 'var(--text-primary)',
-                      border: '1px solid var(--border-color)'
-                    }}
                   >
                     <Pencil size={18} style={{ marginLeft: 6 }} aria-hidden />
                     تعديل
@@ -297,14 +279,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 {canDeleteReport && (
                   <button
                     type="button"
-                    className="google-btn"
+                    className="google-btn google-btn--toolbar report-admin-toolbar__danger-btn"
                     disabled={saving}
                     onClick={handleAdminDelete}
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.12)',
-                      color: 'var(--danger-color)',
-                      border: '1px solid var(--danger-color)'
-                    }}
                   >
                     <Trash2 size={18} style={{ marginLeft: 6 }} aria-hidden />
                     حذف
@@ -315,23 +292,18 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               <>
                 <button
                   type="button"
-                  className="google-btn"
+                  className="google-btn google-btn--toolbar google-btn--filled"
                   disabled={saving}
                   onClick={handleAdminSave}
-                  style={{ background: 'var(--success-color)', color: '#fff' }}
                 >
                   <Save size={18} style={{ marginLeft: 6 }} aria-hidden />
                   {saving ? 'جاري الحفظ...' : 'حفظ'}
                 </button>
                 <button
                   type="button"
-                  className="google-btn"
+                  className="google-btn google-btn--toolbar"
                   disabled={saving}
                   onClick={cancelEdit}
-                  style={{
-                    background: 'var(--bg-color)',
-                    border: '1px solid var(--border-color)'
-                  }}
                 >
                   <X size={18} style={{ marginLeft: 6 }} aria-hidden />
                   إلغاء
@@ -348,21 +320,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         </div>
       )}
 
-      <div
-        className="surface-card surface-card--lg"
-        style={{ padding: '2rem', marginBottom: '2rem', borderRadius: '24px' }}
-      >
+      <div className="surface-card surface-card--lg report-details-card">
         {!editMode && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '2rem',
-              marginBottom: '2rem',
-              borderBottom: '1px solid var(--border-color)',
-              paddingBottom: '2rem'
-            }}
-          >
+          <div className="report-details-summary-grid">
             <div>
               <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 المشرف / المعلم
@@ -411,107 +371,107 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         )}
 
         {editMode && isAdmin && report.type === 'visit' && (
-          <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
-            <label className="md-field" style={{ display: 'block' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المدرسة</span>
+          <div className="report-edit-form">
+            <label className="app-field app-field--grow">
+              <span className="app-label">اسم المدرسة</span>
               <input
                 type="text"
                 value={visitEdit.schoolName}
                 onChange={(e) => setVisitEdit((s) => ({ ...s, schoolName: e.target.value }))}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                className="app-input"
               />
             </label>
-            <label className="md-field" style={{ display: 'block' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المادة</span>
+            <label className="app-field app-field--grow">
+              <span className="app-label">المادة</span>
               <input
                 type="text"
                 value={visitEdit.subjectName}
                 onChange={(e) => setVisitEdit((s) => ({ ...s, subjectName: e.target.value }))}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                className="app-input"
               />
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <label>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>تقييم المعلم /10</span>
+            <div className="report-edit-form__two-cols">
+              <label className="app-field app-field--grow">
+                <span className="app-label">تقييم المعلم /10</span>
                 <input
                   type="number"
                   min={0}
                   max={10}
                   value={visitEdit.teacherRating}
                   onChange={(e) => setVisitEdit((s) => ({ ...s, teacherRating: e.target.value }))}
-                  style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                  className="app-input"
                 />
               </label>
-              <label>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>تقييم القرية /10</span>
+              <label className="app-field app-field--grow">
+                <span className="app-label">تقييم القرية /10</span>
                 <input
                   type="number"
                   min={0}
                   max={10}
                   value={visitEdit.villageRating}
                   onChange={(e) => setVisitEdit((s) => ({ ...s, villageRating: e.target.value }))}
-                  style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                  className="app-input"
                 />
               </label>
             </div>
-            <label style={{ display: 'block' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ملاحظات المشرف</span>
+            <label className="app-field app-field--grow">
+              <span className="app-label">ملاحظات المشرف</span>
               <textarea
                 value={visitEdit.generalNotes}
                 onChange={(e) => setVisitEdit((s) => ({ ...s, generalNotes: e.target.value }))}
                 rows={5}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)', resize: 'vertical' }}
+                className="app-textarea"
               />
             </label>
           </div>
         )}
 
         {editMode && isAdmin && report.type === 'daily' && (
-          <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
-            <label>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>التاريخ</span>
+          <div className="report-edit-form">
+            <label className="app-field app-field--grow">
+              <span className="app-label">التاريخ</span>
               <input
                 type="text"
                 value={dailyEdit.date}
                 onChange={(e) => setDailyEdit((s) => ({ ...s, date: e.target.value }))}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                className="app-input"
               />
             </label>
-            <label>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المدرسة</span>
+            <label className="app-field app-field--grow">
+              <span className="app-label">المدرسة</span>
               <input
                 type="text"
                 value={dailyEdit.schoolName}
                 onChange={(e) => setDailyEdit((s) => ({ ...s, schoolName: e.target.value }))}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                className="app-input"
               />
             </label>
-            <label>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المعلم</span>
+            <label className="app-field app-field--grow">
+              <span className="app-label">اسم المعلم</span>
               <input
                 type="text"
                 value={dailyEdit.teacherName}
                 onChange={(e) => setDailyEdit((s) => ({ ...s, teacherName: e.target.value }))}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                className="app-input"
               />
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <label>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>حاضر</span>
+            <div className="report-edit-form__two-cols">
+              <label className="app-field app-field--grow">
+                <span className="app-label">حاضر</span>
                 <input
                   type="number"
                   value={dailyEdit.totalPresent}
                   onChange={(e) => setDailyEdit((s) => ({ ...s, totalPresent: e.target.value }))}
-                  style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                  className="app-input"
                 />
               </label>
-              <label>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>إجمالي الطلاب</span>
+              <label className="app-field app-field--grow">
+                <span className="app-label">إجمالي الطلاب</span>
                 <input
                   type="number"
                   value={dailyEdit.totalStudents}
                   onChange={(e) => setDailyEdit((s) => ({ ...s, totalStudents: e.target.value }))}
-                  style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                  className="app-input"
                 />
               </label>
             </div>
@@ -519,27 +479,27 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         )}
 
         {editMode && isAdmin && report.type === 'weekly' && (
-          <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
-            <label>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>تاريخ الإرسال</span>
+          <div className="report-edit-form">
+            <label className="app-field app-field--grow">
+              <span className="app-label">تاريخ الإرسال</span>
               <input
                 type="date"
                 value={weeklyEdit.submissionDate}
                 onChange={(e) => setWeeklyEdit((s) => ({ ...s, submissionDate: e.target.value }))}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                className="app-input"
               />
             </label>
-            <label>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>الأسبوع / الوصف</span>
+            <label className="app-field app-field--grow">
+              <span className="app-label">الأسبوع / الوصف</span>
               <input
                 type="text"
                 value={weeklyEdit.week}
                 onChange={(e) => setWeeklyEdit((s) => ({ ...s, week: e.target.value }))}
-                style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                className="app-input"
               />
             </label>
-            <label style={{ display: 'block' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            <label className="app-field app-field--grow">
+              <span className="app-label">
                 بيانات التقرير (JSON — مفاتيح الأنشطة)
               </span>
               <textarea
@@ -547,15 +507,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 onChange={(e) => setWeeklyEdit((s) => ({ ...s, reportDataJson: e.target.value }))}
                 rows={12}
                 dir="ltr"
-                style={{
-                  width: '100%',
-                  marginTop: 6,
-                  padding: '10px',
-                  borderRadius: 8,
-                  border: '1px solid var(--border-color)',
-                  fontFamily: 'monospace',
-                  fontSize: '0.8rem'
-                }}
+                className="app-textarea report-json-input"
               />
             </label>
           </div>

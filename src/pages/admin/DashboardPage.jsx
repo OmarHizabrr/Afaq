@@ -9,33 +9,16 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 const StatCard = ({ title, value, icon, color, loading }) => {
   const IconComponent = icon;
   return (
-  <div className="surface-card surface-card--lg" style={{
-    padding: '1.5rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1.25rem',
-    transition: 'box-shadow var(--motion-standard), transform var(--motion-fast)',
-    cursor: 'default'
-  }}
-  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; }}
-  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = ''; }}
-  >
-    <div style={{
-      width: '65px',
-      height: '65px',
-      borderRadius: '16px',
-      background: `linear-gradient(135deg, ${color}20, ${color}40)`,
-      color: color,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: `0 8px 16px -4px ${color}30`
-    }}>
+  <div className="surface-card surface-card--lg dashboard-stat-card">
+    <div
+      className="dashboard-stat-card__icon-wrap"
+      style={{ background: `linear-gradient(135deg, ${color}20, ${color}40)`, color, boxShadow: `0 8px 16px -4px ${color}30` }}
+    >
       <IconComponent size={34} />
     </div>
-    <div>
-      <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>{title}</p>
-      <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>
+    <div className="dashboard-stat-card__body">
+      <p className="dashboard-stat-card__label">{title}</p>
+      <h3 className="dashboard-stat-card__value">
         {loading ? '...' : value}
       </h3>
     </div>
@@ -111,12 +94,7 @@ const DashboardPage = () => {
       <PageHeader title="لوحة التحكم الرئيسية" subtitle="نظرة عامة على الإحصائيات الحيوية للمنصة" />
 
       {/* Stats Grid */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '1.5rem', 
-        marginBottom: '2rem' 
-      }}>
+      <div className="dashboard-stats-grid">
         <StatCard title="المشرفين" value={stats.supervisors} icon={Users} color="#10b981" loading={loading} />
         <StatCard title="القرى" value={stats.villages} icon={Home} color="#ec4899" loading={loading} />
         <StatCard title="المناطق" value={stats.regions} icon={Map} color="#3b82f6" loading={loading} />
@@ -126,13 +104,10 @@ const DashboardPage = () => {
       </div>
 
       {/* Recent Activity Section */}
-      <div className="surface-card surface-card--lg" style={{
-        padding: '2rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
+      <div className="surface-card surface-card--lg dashboard-activity-card">
+        <div className="dashboard-activity-card__head">
             <Activity size={24} color="var(--accent-color)" />
-            <h2 style={{ margin: 0, fontSize: '1.4rem' }}>أحدث النشاطات الميدانية</h2>
+            <h2 className="dashboard-activity-card__title">أحدث النشاطات الميدانية</h2>
         </div>
 
         {loading ? (
@@ -140,35 +115,24 @@ const DashboardPage = () => {
         ) : recentActivity.length === 0 ? (
             <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>لا توجد نشاطات مسجلة مؤخراً.</p>
         ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div className="dashboard-activity-grid">
                 {recentActivity.map((act) => (
-                    <div key={act.id} style={{
-                        padding: '1rem',
-                        borderRadius: '12px',
-                        background: 'var(--bg-color)',
-                        border: '1px solid var(--border-color)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '8px',
-                        position: 'relative'
-                    }}>
-                        <div style={{ 
-                            fontSize: '0.7rem', 
-                            padding: '2px 8px', 
-                            borderRadius: '10px', 
+                    <div key={act.id} className="dashboard-activity-item">
+                        <div
+                          className="dashboard-activity-item__badge"
+                          style={{
                             background: act.type === 'visit' ? '#3b82f620' : 'var(--success-color)20',
                             color: act.type === 'visit' ? '#3b82f6' : 'var(--success-color)',
-                            width: 'fit-content',
-                            fontWeight: 700
-                        }}>
+                          }}
+                        >
                             {act.type === 'visit' ? 'زيارة ميدانية' : 'تحضير يومي'}
                         </div>
-                        <h4 style={{ margin: 0, fontSize: '1rem' }}>{act.schoolName || 'مدرسة غير محددة'}</h4>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        <h4 className="dashboard-activity-item__school">{act.schoolName || 'مدرسة غير محددة'}</h4>
+                        <p className="dashboard-activity-item__author">
                            بواسطة: {act.supervisorName || act.teacherName || 'عضو غير معروف'}
                         </p>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
-                           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <div className="dashboard-activity-item__footer">
+                           <p className="dashboard-activity-item__date">
                               📅 {act.date || act.timestamp?.split('T')[0]}
                            </p>
                            {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (

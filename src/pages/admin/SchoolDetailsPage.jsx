@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -25,7 +25,7 @@ const SchoolDetailsPage = () => {
     const [selectedIds, setSelectedIds] = useState([]);
     const { can } = usePermissions();
 
-    const fetchSchoolDetails = async () => {
+    const fetchSchoolDetails = useCallback(async () => {
         if (!id) return;
         try {
             const api = FirestoreApi.Api;
@@ -70,11 +70,11 @@ const SchoolDetailsPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
     useEffect(() => {
         fetchSchoolDetails();
-    }, [id]);
+    }, [fetchSchoolDetails]);
 
     const assignUserToSchool = async (api, userToAssign) => {
       if (!userToAssign) return;
@@ -158,7 +158,7 @@ const SchoolDetailsPage = () => {
     };
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
-    if (!school) return <div style={{ padding: '2rem', textAlign: 'center' }}>المدرسة غير موجودة</div>;
+    if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
 
     const filteredUsers = allUsers.filter(u => {
         const matchesSearch = u.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -169,22 +169,22 @@ const SchoolDetailsPage = () => {
     });
 
     const renderStatCard = (label, value, IconComponent, color) => (
-      <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-          <div style={{ padding: '12px', background: `${color}15`, color: color, borderRadius: '12px' }}>
+      <div className="surface-card school-details-stat-card">
+          <div className="school-details-stat-card__icon" style={{ background: `${color}15`, color }}>
               <IconComponent size={24} />
           </div>
           <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{label}</p>
-              <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{value}</h3>
+              <p className="school-details-stat-card__label">{label}</p>
+              <h3 className="school-details-stat-card__value">{value}</h3>
           </div>
       </div>
     );
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="school-details-page">
             <PageHeader
               topRow={
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div className="school-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/schools')}>
                     <ChevronRight size={20} aria-hidden /> إدارة المدارس
                   </button>
@@ -194,28 +194,28 @@ const SchoolDetailsPage = () => {
               title={<>مدرسة: <span style={{ color: 'var(--md-primary)' }}>{school.name}</span></>}
             />
 
-            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
+            <div className="school-details-stats-row">
                 {renderStatCard('إجمالي الطلاب', students.length, Users, '#f59e0b')}
                 {renderStatCard('الكادر التعليمي', staff.length, School, 'var(--success-color)')}
                 {renderStatCard('التقارير الميدانية', '...', FileText, 'var(--accent-color)')}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+            <div className="school-details-grid">
                 {/* Teachers Section */}
-                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="surface-card surface-card--lg school-details-panel">
+                    <div className="school-details-panel__head">
+                        <h2 className="school-details-panel__title">
                            <School size={18} color="var(--success-color)" /> طاقم التدريس
                         </h2>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <div style={{ position: 'relative' }}>
-                                <Search size={14} style={{ position: 'absolute', right: '10px', top: '10px', opacity: 0.5 }} />
+                        <div className="school-details-panel__actions">
+                            <div className="school-details-panel__search-wrap">
+                                <Search size={14} className="school-details-panel__search-icon" />
                                 <input 
                                     type="text" 
                                     placeholder="بحث في الكادر..." 
                                     value={staffSearch}
                                     onChange={(e) => setStaffSearch(e.target.value)}
-                                    style={{ padding: '6px 30px 6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', fontSize: '0.8rem' }}
+                                    className="school-details-panel__search-input"
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
@@ -223,17 +223,17 @@ const SchoolDetailsPage = () => {
                             )}
                         </div>
                     </div>
-                    {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد نتائج للبحث.</p> : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 ? <p className="school-details-panel__empty">لا يوجد نتائج للبحث.</p> : (
+                        <div className="school-details-members-list">
                            {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).map(t => (
-                              <div key={t.id} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', background: 'var(--bg-color)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                                 <img src={t.photoURL || `https://ui-avatars.com/api/?name=${t.displayName}`} style={{ width: '36px', height: '36px', borderRadius: '50%' }} />
-                                 <div style={{ flex: 1 }}>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{t.displayName}</h4>
-                                    <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{t.email}</p>
+                              <div key={t.id} className="school-details-member-item">
+                                 <img src={t.photoURL || `https://ui-avatars.com/api/?name=${t.displayName}`} className="school-details-member-item__avatar" />
+                                 <div className="school-details-member-item__body">
+                                    <h4 className="school-details-member-item__name">{t.displayName}</h4>
+                                    <p className="school-details-member-item__sub">{t.email}</p>
                                  </div>
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
-                                   <button onClick={() => navigate(`/users/${t.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                   <button onClick={() => navigate(`/users/${t.id}`)} className="icon-btn"><Info size={16}/></button>
                                  )}
                               </div>
                            ))}
@@ -242,20 +242,20 @@ const SchoolDetailsPage = () => {
                 </div>
 
                 {/* Students Section */}
-                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="surface-card surface-card--lg school-details-panel">
+                    <div className="school-details-panel__head">
+                        <h2 className="school-details-panel__title">
                            <Users size={18} color="#f59e0b" /> قائمة الطلاب المسجلين
                         </h2>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <div style={{ position: 'relative' }}>
-                                <Search size={14} style={{ position: 'absolute', right: '10px', top: '10px', opacity: 0.5 }} />
+                        <div className="school-details-panel__actions">
+                            <div className="school-details-panel__search-wrap">
+                                <Search size={14} className="school-details-panel__search-icon" />
                                 <input 
                                     type="text" 
                                     placeholder="بحث في الطلاب..." 
                                     value={studentSearch}
                                     onChange={(e) => setStudentSearch(e.target.value)}
-                                    style={{ padding: '6px 30px 6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', fontSize: '0.8rem' }}
+                                    className="school-details-panel__search-input"
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
@@ -263,17 +263,17 @@ const SchoolDetailsPage = () => {
                             )}
                         </div>
                     </div>
-                    {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد نتائج للبحث.</p> : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 ? <p className="school-details-panel__empty">لا يوجد نتائج للبحث.</p> : (
+                        <div className="school-details-members-list">
                            {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).map(s => (
-                              <div key={s.id} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', background: 'var(--bg-color)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                                 <img src={s.photoURL || `https://ui-avatars.com/api/?name=${s.displayName}`} style={{ width: '36px', height: '36px', borderRadius: '50%' }} />
-                                 <div style={{ flex: 1 }}>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{s.displayName}</h4>
-                                    <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{s.phoneNumber || 'لا يوجد هاتف'}</p>
+                              <div key={s.id} className="school-details-member-item">
+                                 <img src={s.photoURL || `https://ui-avatars.com/api/?name=${s.displayName}`} className="school-details-member-item__avatar" />
+                                 <div className="school-details-member-item__body">
+                                    <h4 className="school-details-member-item__name">{s.displayName}</h4>
+                                    <p className="school-details-member-item__sub">{s.phoneNumber || 'لا يوجد هاتف'}</p>
                                  </div>
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
-                                   <button onClick={() => navigate(`/users/${s.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                   <button onClick={() => navigate(`/users/${s.id}`)} className="icon-btn"><Info size={16}/></button>
                                  )}
                               </div>
                            ))}
@@ -284,30 +284,30 @@ const SchoolDetailsPage = () => {
 
             {/* Quick Assign Modal */}
             {isModalOpen && can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setIsModalOpen(false)}>
-                    <div className="surface-card surface-card--lg" style={{ width: '100%', maxWidth: '500px', borderRadius: '24px', padding: '2rem' }} onClick={e => e.stopPropagation()}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                    <div className="surface-card surface-card--lg school-details-assign-modal" onClick={e => e.stopPropagation()}>
+                        <div className="school-details-assign-modal__head">
                             <h3 style={{ margin: 0 }}>تعيين عضو جديد للمدرسة</h3>
-                            <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><X size={20}/></button>
+                            <button onClick={() => setIsModalOpen(false)} className="icon-btn"><X size={20}/></button>
                         </div>
 
-                        <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-                            <Search size={18} style={{ position: 'absolute', right: '12px', top: '12px', color: 'var(--text-secondary)' }} />
+                        <div className="school-details-assign-modal__search-wrap">
+                            <Search size={18} className="school-details-assign-modal__search-icon" />
                             <input 
                               type="text" 
                               placeholder="بحث عن مستخدم (الاسم أو البريد)..." 
                               value={searchTerm}
                               onChange={(e) => setSearchTerm(e.target.value)}
-                              style={{ width: '100%', padding: '12px 40px 12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}
+                              className="app-input school-details-assign-modal__search-input"
                             />
                         </div>
-                        {assignError && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{assignError}</div>}
+                        {assignError && <div className="app-alert app-alert--error school-details-assign-modal__alert">{assignError}</div>}
                         {selectedIds.length > 0 && (
-                          <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+                          <div className="app-alert app-alert--info school-details-assign-modal__alert">
                             تم تحديد {selectedIds.length} عضو. يمكنك التعيين الجماعي الآن.
                           </div>
                         )}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                        <div className="school-details-assign-modal__toolbar">
                           <button
                             type="button"
                             className="google-btn google-btn--filled"
@@ -328,10 +328,10 @@ const SchoolDetailsPage = () => {
                           </button>
                         </div>
 
-                        <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px' }}>
-                            {filteredUsers.length === 0 ? <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>لا يوجد مستخدمين متاحين للتعيين.</p> : filteredUsers.map(u => (
-                                <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <div className="school-details-assign-modal__list">
+                            {filteredUsers.length === 0 ? <p className="school-details-assign-modal__empty">لا يوجد مستخدمين متاحين للتعيين.</p> : filteredUsers.map(u => (
+                                <div key={u.id} className="school-details-assign-modal__item">
+                                    <div className="school-details-assign-modal__item-main">
                                         <input
                                           type="checkbox"
                                           checked={selectedIds.includes(u.id)}
@@ -341,16 +341,16 @@ const SchoolDetailsPage = () => {
                                             );
                                           }}
                                         />
-                                        <img src={u.photoURL || `https://ui-avatars.com/api/?name=${u.displayName}`} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                                        <img src={u.photoURL || `https://ui-avatars.com/api/?name=${u.displayName}`} className="school-details-assign-modal__item-avatar" />
                                         <div>
-                                            <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{u.displayName}</div>
-                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{u.role === 'teacher' ? 'معلم' : 'طالب'} {u.schoolId ? '(لديه مدرسة حالية)' : '(غير محدد مدرسة)'}</div>
+                                            <div className="school-details-assign-modal__item-name">{u.displayName}</div>
+                                            <div className="school-details-assign-modal__item-sub">{u.role === 'teacher' ? 'معلم' : 'طالب'} {u.schoolId ? '(لديه مدرسة حالية)' : '(غير محدد مدرسة)'}</div>
                                         </div>
                                     </div>
                                     <button 
                                       onClick={() => handleAssignUser(u)}
                                       disabled={assigning}
-                                      style={{ padding: '6px 12px', background: 'var(--accent-color)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                      className="google-btn google-btn--filled school-details-assign-modal__assign-btn"
                                     >
                                         <Check size={14} /> تعيين
                                     </button>
