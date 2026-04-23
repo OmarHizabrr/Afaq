@@ -2841,6 +2841,142 @@ html:not(.light-mode) .nav-link.active {
   padding: 12px 32px;
 }
 
+/* —— Admin settings pages (branding/copy/user types) —— */
+.btn-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotate 0.75s linear infinite;
+}
+
+.admin-settings-alert {
+  margin-bottom: 0.9rem;
+}
+
+.admin-branding-card {
+  padding: 1rem;
+  max-width: 720px;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-settings-save-btn {
+  margin-top: 0.25rem;
+}
+
+.admin-site-copy-card {
+  padding: 1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.admin-site-copy-item {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.admin-site-copy-item__title {
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.admin-site-copy-item__key {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.admin-site-copy-item__save-btn {
+  margin-top: 0.5rem;
+}
+
+.admin-user-types-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+}
+
+.admin-user-types-sidebar,
+.admin-user-types-content {
+  padding: 1rem;
+}
+
+.admin-user-types-sidebar__head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.admin-user-types-sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-user-types-sidebar__item {
+  text-align: right;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.admin-user-types-sidebar__item--active {
+  background: var(--accent-muted);
+}
+
+.admin-user-types-content__empty {
+  color: var(--text-secondary);
+}
+
+.admin-user-types-content__name-field {
+  margin-bottom: 0.75rem;
+}
+
+.admin-user-types-content__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin-user-types-content__pages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-user-types-page-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.admin-user-types-page-card__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.admin-user-types-page-card__actions {
+  margin-top: 0.5rem;
+  padding-right: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.admin-user-types-page-card__action-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* —— Notification cards —— */
 .notif-card {
   padding: 1.5rem;
@@ -3147,6 +3283,14 @@ html:not(.light-mode) .nav-link.active {
     border-left: none;
     border-bottom: 1px solid var(--border-color);
     width: 100%;
+  }
+
+  .admin-user-types-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-user-types-content__actions .google-btn {
+    flex: 1;
   }
 }
 

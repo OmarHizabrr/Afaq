@@ -15,6 +15,7 @@ export default function AdminUserTypesPage({ user }) {
   const [name, setName] = useState('');
   const [pages, setPages] = useState({});
   const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState({ type: '', text: '' });
 
   useEffect(() => {
     const unsub = subscribePermissionProfiles(setList, () => {});
@@ -70,12 +71,17 @@ export default function AdminUserTypesPage({ user }) {
 
   const save = async () => {
     if (!selectedId || !name.trim()) return;
+    setStatus({ type: '', text: '' });
     setSaving(true);
     try {
       await savePermissionProfile(user, selectedId, {
         name,
         pages,
       });
+      setStatus({ type: 'success', text: 'تم حفظ نوع المستخدم والصلاحيات.' });
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: 'error', text: 'تعذر حفظ نوع المستخدم حالياً.' });
     } finally {
       setSaving(false);
     }
@@ -83,8 +89,15 @@ export default function AdminUserTypesPage({ user }) {
 
   const remove = async () => {
     if (!selectedId) return;
-    await deletePermissionProfile(selectedId);
-    setSelectedId('');
+    setStatus({ type: '', text: '' });
+    try {
+      await deletePermissionProfile(selectedId);
+      setSelectedId('');
+      setStatus({ type: 'success', text: 'تم حذف نوع المستخدم.' });
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: 'error', text: 'تعذر حذف نوع المستخدم.' });
+    }
   };
 
   return (
@@ -95,26 +108,25 @@ export default function AdminUserTypesPage({ user }) {
         icon={Shield}
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '1rem' }}>
-        <section className="surface-card" style={{ padding: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+      {status.text && (
+        <div className={`app-alert ${status.type === 'success' ? 'app-alert--success' : 'app-alert--error'} admin-settings-alert`}>
+          {status.text}
+        </div>
+      )}
+
+      <div className="admin-user-types-layout">
+        <section className="surface-card admin-user-types-sidebar">
+          <div className="admin-user-types-sidebar__head">
             <strong>الأنواع</strong>
             <button type="button" className="icon-btn" onClick={createNew} title="نوع جديد">+</button>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="admin-user-types-sidebar__list">
             {list.map((item) => (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => setSelectedId(item.id)}
-                style={{
-                  textAlign: 'right',
-                  padding: '0.6rem',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-color)',
-                  background: selectedId === item.id ? 'var(--accent-muted)' : 'var(--bg-color)',
-                  color: 'var(--text-primary)',
-                }}
+                className={`admin-user-types-sidebar__item ${selectedId === item.id ? 'admin-user-types-sidebar__item--active' : ''}`}
               >
                 {item.name || item.id}
               </button>
@@ -122,22 +134,23 @@ export default function AdminUserTypesPage({ user }) {
           </div>
         </section>
 
-        <section className="surface-card" style={{ padding: '1rem' }}>
+        <section className="surface-card admin-user-types-content">
           {!selectedId ? (
-            <p style={{ color: 'var(--text-secondary)' }}>اختر نوعاً من القائمة أو أنشئ نوعاً جديداً.</p>
+            <p className="admin-user-types-content__empty">اختر نوعاً من القائمة أو أنشئ نوعاً جديداً.</p>
           ) : (
             <>
-              <label style={{ display: 'block', marginBottom: '0.75rem' }}>
-                اسم النوع
+              <label className="app-field app-field--grow admin-user-types-content__name-field">
+                <span className="app-label">اسم النوع</span>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  style={{ width: '100%', marginTop: '0.3rem' }}
+                  className="app-input"
                 />
               </label>
-              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
-                <button type="button" className="google-btn" onClick={save} disabled={saving}>
-                  {saving ? 'جاري الحفظ...' : 'حفظ النوع'}
+              <div className="admin-user-types-content__actions">
+                <button type="button" className="google-btn google-btn--filled" onClick={save} disabled={saving}>
+                  {saving && <span className="btn-loading-spinner" aria-hidden />}
+                  <span>{saving ? 'جاري حفظ النوع...' : 'حفظ النوع'}</span>
                 </button>
                 {selected && (
                   <button type="button" className="icon-btn" onClick={remove} title="حذف النوع">
@@ -146,12 +159,12 @@ export default function AdminUserTypesPage({ user }) {
                 )}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div className="admin-user-types-content__pages">
                 {PERMISSION_PAGES.map((pg) => {
                   const pageAllowed = Boolean(pages[pg.id]);
                   return (
-                    <div key={pg.id} style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.75rem' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }}>
+                    <div key={pg.id} className="admin-user-types-page-card">
+                      <label className="admin-user-types-page-card__label">
                         <input
                           type="checkbox"
                           checked={pageAllowed}
@@ -160,9 +173,9 @@ export default function AdminUserTypesPage({ user }) {
                         {pg.label}
                       </label>
                       {pageAllowed && pg.actions?.length > 0 && (
-                        <div style={{ marginTop: '0.5rem', paddingRight: '1.2rem', display: 'grid', gap: '0.4rem' }}>
+                        <div className="admin-user-types-page-card__actions">
                           {pg.actions.map((a) => (
-                            <label key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <label key={a.id} className="admin-user-types-page-card__action-item">
                               <input
                                 type="checkbox"
                                 checked={pages?.[pg.id]?.actions?.[a.id] === true}

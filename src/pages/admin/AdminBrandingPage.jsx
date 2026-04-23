@@ -11,6 +11,7 @@ export default function AdminBrandingPage({ user }) {
   const [logoText, setLogoText] = useState('');
   const [adminSubtitle, setAdminSubtitle] = useState('');
   const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState({ type: '', text: '' });
 
   useEffect(() => {
     setSiteName(branding.siteName || '');
@@ -20,9 +21,14 @@ export default function AdminBrandingPage({ user }) {
   }, [branding]);
 
   const onSave = async () => {
+    setStatus({ type: '', text: '' });
     setSaving(true);
     try {
       await saveBranding(user, { siteName, siteTitle, logoText, adminSubtitle });
+      setStatus({ type: 'success', text: 'تم حفظ هوية الموقع بنجاح.' });
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: 'error', text: 'تعذر حفظ الهوية حالياً، حاول مرة أخرى.' });
     } finally {
       setSaving(false);
     }
@@ -36,26 +42,33 @@ export default function AdminBrandingPage({ user }) {
         icon={Palette}
       />
 
-      <div className="surface-card" style={{ padding: '1rem', maxWidth: '720px' }}>
-        <label style={{ display: 'block', marginBottom: '0.75rem' }}>
-          اسم المنصة
-          <input value={siteName} onChange={(e) => setSiteName(e.target.value)} style={{ width: '100%', marginTop: '0.3rem' }} />
+      <div className="surface-card admin-branding-card">
+        {status.text && (
+          <div className={`app-alert ${status.type === 'success' ? 'app-alert--success' : 'app-alert--error'} admin-settings-alert`}>
+            {status.text}
+          </div>
+        )}
+
+        <label className="app-field app-field--grow">
+          <span className="app-label">اسم المنصة</span>
+          <input value={siteName} onChange={(e) => setSiteName(e.target.value)} className="app-input" />
         </label>
-        <label style={{ display: 'block', marginBottom: '0.75rem' }}>
-          عنوان الصفحات
-          <input value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} style={{ width: '100%', marginTop: '0.3rem' }} />
+        <label className="app-field app-field--grow">
+          <span className="app-label">عنوان الصفحات</span>
+          <input value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} className="app-input" />
         </label>
-        <label style={{ display: 'block', marginBottom: '0.75rem' }}>
-          نص الشعار المختصر
-          <input value={logoText} onChange={(e) => setLogoText(e.target.value)} style={{ width: '100%', marginTop: '0.3rem' }} />
+        <label className="app-field app-field--grow">
+          <span className="app-label">نص الشعار المختصر</span>
+          <input value={logoText} onChange={(e) => setLogoText(e.target.value)} className="app-input" />
         </label>
-        <label style={{ display: 'block', marginBottom: '0.75rem' }}>
-          النص الفرعي في الشريط الجانبي
-          <input value={adminSubtitle} onChange={(e) => setAdminSubtitle(e.target.value)} style={{ width: '100%', marginTop: '0.3rem' }} />
+        <label className="app-field app-field--grow">
+          <span className="app-label">النص الفرعي في الشريط الجانبي</span>
+          <input value={adminSubtitle} onChange={(e) => setAdminSubtitle(e.target.value)} className="app-input" />
         </label>
 
-        <button type="button" className="google-btn" onClick={onSave} disabled={saving}>
-          {saving ? 'جاري الحفظ...' : 'حفظ الهوية'}
+        <button type="button" className="google-btn google-btn--filled admin-settings-save-btn" onClick={onSave} disabled={saving}>
+          {saving && <span className="btn-loading-spinner" aria-hidden />}
+          <span>{saving ? 'جاري حفظ الهوية...' : 'حفظ الهوية'}</span>
         </button>
       </div>
     </div>

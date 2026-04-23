@@ -16,13 +16,19 @@ export default function AdminSiteCopyPage({ user }) {
   const { strings } = useSiteContent();
   const [drafts, setDrafts] = useState({});
   const [savingKey, setSavingKey] = useState('');
+  const [status, setStatus] = useState({ type: '', text: '' });
 
   const valueOf = (key) => (Object.prototype.hasOwnProperty.call(drafts, key) ? drafts[key] : (strings?.[key] || ''));
 
   const saveOne = async (key) => {
+    setStatus({ type: '', text: '' });
     setSavingKey(key);
     try {
       await saveStrings(user, { [key]: valueOf(key) });
+      setStatus({ type: 'success', text: 'تم حفظ النص بنجاح.' });
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: 'error', text: 'تعذر حفظ النص حالياً.' });
     } finally {
       setSavingKey('');
     }
@@ -35,25 +41,30 @@ export default function AdminSiteCopyPage({ user }) {
         subtitle="عدّل النصوص الثابتة للواجهة بدون تغيير الكود."
         icon={FileText}
       />
-      <div className="surface-card" style={{ padding: '1rem', display: 'grid', gap: '0.9rem' }}>
+      <div className="surface-card admin-site-copy-card">
+        {status.text && (
+          <div className={`app-alert ${status.type === 'success' ? 'app-alert--success' : 'app-alert--error'} admin-settings-alert`}>
+            {status.text}
+          </div>
+        )}
         {COPY_KEYS.map((item) => (
-          <div key={item.key} style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.75rem' }}>
-            <div style={{ fontWeight: 700, marginBottom: '0.35rem' }}>{item.label}</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>{item.key}</div>
+          <div key={item.key} className="admin-site-copy-item">
+            <div className="admin-site-copy-item__title">{item.label}</div>
+            <div className="admin-site-copy-item__key">{item.key}</div>
             <textarea
               rows={2}
               value={valueOf(item.key)}
               onChange={(e) => setDrafts((prev) => ({ ...prev, [item.key]: e.target.value }))}
-              style={{ width: '100%' }}
+              className="app-textarea"
             />
             <button
               type="button"
-              className="google-btn"
-              style={{ marginTop: '0.5rem' }}
+              className="google-btn google-btn--filled admin-site-copy-item__save-btn"
               onClick={() => saveOne(item.key)}
               disabled={savingKey !== '' && savingKey !== item.key}
             >
-              {savingKey === item.key ? 'جاري الحفظ...' : 'حفظ النص'}
+              {savingKey === item.key && <span className="btn-loading-spinner" aria-hidden />}
+              <span>{savingKey === item.key ? 'جاري حفظ النص...' : 'حفظ النص'}</span>
             </button>
           </div>
         ))}
