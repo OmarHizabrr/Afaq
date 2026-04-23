@@ -104,7 +104,7 @@ export const PERMISSION_PAGES = [
     label: 'المستخدمون',
     actions: [
       { id: 'user_view_profile', label: 'عرض ملف المستخدم' },
-      { id: 'user_edit_role', label: 'تعديل رتبة المستخدم' },
+      { id: 'user_edit_role', label: 'تحديد نوع الصلاحيات' },
       { id: 'user_edit_permission_profile', label: 'تعديل نوع الصلاحيات' },
       { id: 'user_admin_disable', label: 'تعطيل/تفعيل الحساب' },
       { id: 'user_admin_delete', label: 'حذف المستخدم' },

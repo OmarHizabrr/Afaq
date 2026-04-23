@@ -8,6 +8,7 @@ export const siteContentDefaults = {
     adminSubtitle: 'لوحة تحكم الإدارة',
   },
   strings: {},
+  contacts: [],
 };
 
 export const SiteContentContext = createContext({

@@ -145,7 +145,7 @@ const LoginPage = () => {
           </button>
 
           <p className="app-alert app-alert--info" style={{ marginTop: '0.9rem', marginBottom: 0 }}>
-            أي مستخدم جديد يسجل عبر Google يتم اعتماده كـ طالب تلقائياً.
+            يتم تفعيل الصلاحيات فقط بعد تحديد نوع الصلاحيات من المدير.
           </p>
         </section>
 

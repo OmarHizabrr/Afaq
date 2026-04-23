@@ -15,18 +15,6 @@ import CurriculumPrintPage from './pages/print/CurriculumPrintPage';
 import SettingsPage from './pages/common/SettingsPage';
 import NotificationsPage from './pages/common/NotificationsPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
-import TeacherLayout from './layouts/TeacherLayout';
-import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
-import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage';
-import TeacherDailyLogPage from './pages/teacher/TeacherDailyLogPage';
-import TeacherWeeklyReportPage from './pages/teacher/TeacherWeeklyReportPage';
-import SupervisorLayout from './layouts/SupervisorLayout';
-import SupervisorDashboardPage from './pages/supervisor/SupervisorDashboardPage';
-import SupervisorVisitPage from './pages/supervisor/SupervisorVisitPage';
-import SupervisorHistoryPage from './pages/supervisor/SupervisorHistoryPage';
-import StudentLayout from './layouts/StudentLayout';
-import StudentDashboardPage from './pages/student/StudentDashboardPage';
-import StudentResultsPage from './pages/student/StudentResultsPage';
 import SchoolDetailsPage from './pages/admin/SchoolDetailsPage';
 import RegionDetailsPage from './pages/admin/RegionDetailsPage';
 import UserDetailsPage from './pages/admin/UserDetailsPage';
@@ -42,31 +30,27 @@ import AdminUserTypesPage from './pages/admin/AdminUserTypesPage';
 import AdminBrandingPage from './pages/admin/AdminBrandingPage';
 import AdminSiteCopyPage from './pages/admin/AdminSiteCopyPage';
 import { PERMISSION_PAGE_IDS } from './config/permissionRegistry';
+import NoPermissionsPage from './pages/common/NoPermissionsPage';
+import usePermissions from './context/usePermissions';
 
-const AdminRoute = ({ user, children }) => {
+const ProtectedRoute = ({ user, children }) => {
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role === 'teacher') return <Navigate to="/teacher" replace />;
-  if (user.role === 'supervisor_local' || user.role === 'supervisor_arab') return <Navigate to="/supervisor" replace />;
-  if (user.role === 'student') return <Navigate to="/student" replace />;
   return children;
 };
 
-const SupervisorRoute = ({ user, children }) => {
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'supervisor_local' && user.role !== 'supervisor_arab' && user.role !== 'admin') return <Navigate to="/" replace />;
-  return children;
-};
-
-const TeacherRoute = ({ user, children }) => {
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'teacher' && user.role !== 'admin') return <Navigate to="/" replace />;
-  return children;
-};
-
-const StudentRoute = ({ user, children }) => {
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'student' && user.role !== 'admin') return <Navigate to="/" replace />;
-  return children;
+const HomePageResolver = () => {
+  const { ready, hasPermissionProfile, canAccessPage } = usePermissions();
+  if (!ready) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+        <div className="loading-spinner" />
+      </div>
+    );
+  }
+  if (!hasPermissionProfile || !canAccessPage(PERMISSION_PAGE_IDS.dashboard)) {
+    return <NoPermissionsPage />;
+  }
+  return <DashboardPage />;
 };
 
 function App() {
@@ -101,7 +85,7 @@ function App() {
           path="/login" 
           element={
             user 
-              ? <Navigate to={user.role === 'teacher' ? '/teacher' : user.role === 'student' ? '/student' : (user.role === 'supervisor_local' || user.role === 'supervisor_arab') ? '/supervisor' : '/'} replace /> 
+              ? <Navigate to="/" replace /> 
               : <LoginPage />
           } 
         />
@@ -110,12 +94,12 @@ function App() {
         <Route 
           path="/" 
           element={
-            <AdminRoute user={user}>
+            <ProtectedRoute user={user}>
               <AdminLayout user={user} />
-            </AdminRoute>
+            </ProtectedRoute>
           }
         >
-          <Route index element={<PageGuard pageId={PERMISSION_PAGE_IDS.dashboard}><DashboardPage /></PageGuard>} />
+          <Route index element={<HomePageResolver />} />
           <Route path="governorates" element={<PageGuard pageId={PERMISSION_PAGE_IDS.governorates}><GovernoratesPage /></PageGuard>} />
           <Route path="regions" element={<PageGuard pageId={PERMISSION_PAGE_IDS.regions}><RegionsPage /></PageGuard>} />
           <Route path="villages" element={<PageGuard pageId={PERMISSION_PAGE_IDS.villages}><VillagesPage /></PageGuard>} />
@@ -137,75 +121,21 @@ function App() {
           <Route path="admin/site-copy" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_site_copy}><AdminSiteCopyPage user={user} /></PageGuard>} />
         </Route>
 
-        {/* Supervisor Portal Routes */}
-        <Route 
-          path="/supervisor" 
-          element={
-            <SupervisorRoute user={user}>
-              <SupervisorLayout user={user} />
-            </SupervisorRoute>
-          }
-        >
-          <Route index element={<SupervisorDashboardPage user={user} />} />
-          <Route path="visit" element={<SupervisorVisitPage user={user} />} />
-          <Route path="history" element={<SupervisorHistoryPage user={user} />} />
-          <Route path="reports/:id" element={<ReportDetailsPage viewerUser={user} />} />
-          <Route path="schools/:id" element={<SchoolDetailsPage />} />
-          <Route path="users/:id" element={<UserDetailsPage viewerUser={user} />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="notifications" element={<NotificationsPage user={user} />} />
-        </Route>
-
-        {/* Teacher Portal Routes */}
-        <Route 
-          path="/teacher" 
-          element={
-            <TeacherRoute user={user}>
-              <TeacherLayout user={user} />
-            </TeacherRoute>
-          }
-        >
-          <Route index element={<TeacherDashboardPage user={user} />} />
-          <Route path="students" element={<TeacherStudentsPage user={user} />} />
-          <Route path="students/:id" element={<UserDetailsPage viewerUser={user} />} />
-          <Route path="daily-log" element={<TeacherDailyLogPage user={user} />} />
-          <Route path="weekly-report" element={<TeacherWeeklyReportPage user={user} />} />
-          <Route path="reports/:id" element={<ReportDetailsPage viewerUser={user} />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="notifications" element={<NotificationsPage user={user} />} />
-        </Route>
-
-        {/* Student Portal Routes */}
-        <Route 
-          path="/student" 
-          element={
-            <StudentRoute user={user}>
-              <StudentLayout user={user} />
-            </StudentRoute>
-          }
-        >
-          <Route index element={<StudentDashboardPage user={user} />} />
-          <Route path="results" element={<StudentResultsPage user={user} />} />
-          <Route path="profile" element={<UserDetailsPage selfUser={user} />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="notifications" element={<NotificationsPage user={user} />} />
-        </Route>
+        <Route path="/supervisor/*" element={<Navigate to="/" replace />} />
+        <Route path="/teacher/*" element={<Navigate to="/" replace />} />
+        <Route path="/student/*" element={<Navigate to="/" replace />} />
 
         <Route
           path="/print/curriculum/:subjectId"
           element={
-            <AdminRoute user={user}>
+            <ProtectedRoute user={user}>
               <CurriculumPrintPage />
-            </AdminRoute>
+            </ProtectedRoute>
           }
         />
 
         <Route path="*" element={
-          <Navigate to={
-            user?.role === 'teacher' ? '/teacher' : 
-            user?.role === 'student' ? '/student' :
-            (user?.role === 'supervisor_local' || user?.role === 'supervisor_arab') ? '/supervisor' : '/'
-          } replace />
+          <Navigate to={user ? '/' : '/login'} replace />
         } />
       </Routes>
       </NotificationsBadgeProvider>

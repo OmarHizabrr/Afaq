@@ -23,3 +23,15 @@ export async function saveStrings(user, stringsPatch) {
   });
 }
 
+export async function saveContacts(user, contacts) {
+  const api = FirestoreApi.Api;
+  await api.setData({
+    docRef: api.getSiteConfigDoc('global'),
+    data: {
+      contacts: Array.isArray(contacts) ? contacts : [],
+    },
+    merge: true,
+    userData: user || {},
+  });
+}
+

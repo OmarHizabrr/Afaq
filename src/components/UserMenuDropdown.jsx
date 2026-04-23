@@ -13,28 +13,6 @@ import { useNotificationBadge } from '../context/NotificationsBadgeContext';
 
 function resolvePaths(user) {
   const uid = user?.uid || user?.id;
-  const role = user?.role;
-  if (role === 'teacher') {
-    return {
-      notifications: '/teacher/notifications',
-      settings: '/teacher/settings',
-      profile: '/teacher/settings',
-    };
-  }
-  if (role === 'supervisor_local' || role === 'supervisor_arab') {
-    return {
-      notifications: '/supervisor/notifications',
-      settings: '/supervisor/settings',
-      profile: '/supervisor/settings',
-    };
-  }
-  if (role === 'student') {
-    return {
-      notifications: '/student/notifications',
-      settings: '/student/settings',
-      profile: '/student/profile',
-    };
-  }
   return {
     notifications: '/notifications',
     settings: '/settings',

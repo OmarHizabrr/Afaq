@@ -67,12 +67,7 @@ class AuthService {
       lastLogin: new Date().toISOString(),
     };
 
-    // أي مستخدم Google جديد يعتبر طالباً افتراضياً
-    if (!existingDoc || !existingDoc.role) {
-      userData.role = "student";
-    }
-
-    // Merge data - specifically don't overwrite role if it exists
+    // لا نعيّن رتبة افتراضية؛ نوع الصلاحيات يحدده المدير عبر permissionProfileId
     await api.setData({ 
       docRef, 
       data: userData, 
@@ -143,7 +138,7 @@ class AuthService {
           } else {
             callback({ ...firebaseUser, uid: firebaseUser.uid, id: firebaseUser.uid });
           }
-        } catch (e) {
+        } catch {
           callback(firebaseUser);
         }
       } else {
@@ -167,7 +162,7 @@ class AuthService {
               localStorage.removeItem('afaq_custom_auth_uid');
               callback(null);
             }
-          } catch (e) {
+          } catch {
             callback(null);
           }
         } else {

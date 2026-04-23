@@ -41,19 +41,12 @@ export default function PermissionsProvider({ user, children }) {
   }, [user?.uid, user?.permissionProfileId]);
 
   const value = useMemo(() => {
-    const isAdmin = user?.role === 'admin';
     if (!user) {
       return {
         ready: true,
+        hasPermissionProfile: false,
         canAccessPage: () => false,
         can: () => false,
-      };
-    }
-    if (isAdmin && !user?.permissionProfileId) {
-      return {
-        ready: true,
-        canAccessPage: () => true,
-        can: () => true,
       };
     }
 
@@ -61,14 +54,16 @@ export default function PermissionsProvider({ user, children }) {
     if (!pid) {
       return {
         ready: true,
-        canAccessPage: () => true,
-        can: () => true,
+        hasPermissionProfile: false,
+        canAccessPage: () => false,
+        can: () => false,
       };
     }
 
     if (profileState.loading || profileState.profileId !== pid) {
       return {
         ready: false,
+        hasPermissionProfile: true,
         canAccessPage: () => false,
         can: () => false,
       };
@@ -77,6 +72,7 @@ export default function PermissionsProvider({ user, children }) {
     const pages = profileState.profile?.pages || {};
     return {
       ready: true,
+      hasPermissionProfile: Boolean(profileState.profile),
       canAccessPage: (pageId) => {
         if (!pageId) return true;
         return pageVisible(pages, pageId);

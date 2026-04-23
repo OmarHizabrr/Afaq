@@ -20,6 +20,7 @@ export default function SiteContentProvider({ children }) {
           strings: {
             ...(raw.strings || {}),
           },
+          contacts: Array.isArray(raw.contacts) ? raw.contacts : [],
         });
       },
       () => {

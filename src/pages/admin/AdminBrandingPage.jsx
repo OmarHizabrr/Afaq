@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Palette } from 'lucide-react';
+import { Palette, Plus, Trash2 } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import useSiteContent from '../../context/useSiteContent';
-import { saveBranding } from '../../services/siteConfigService';
+import { saveBranding, saveContacts } from '../../services/siteConfigService';
 
 export default function AdminBrandingPage({ user }) {
-  const { branding } = useSiteContent();
+  const { branding, contacts } = useSiteContent();
   const [siteName, setSiteName] = useState('');
   const [siteTitle, setSiteTitle] = useState('');
   const [logoText, setLogoText] = useState('');
   const [adminSubtitle, setAdminSubtitle] = useState('');
+  const [contactsDraft, setContactsDraft] = useState([]);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState({ type: '', text: '' });
 
@@ -20,11 +21,18 @@ export default function AdminBrandingPage({ user }) {
     setAdminSubtitle(branding.adminSubtitle || '');
   }, [branding]);
 
+  useEffect(() => {
+    setContactsDraft(Array.isArray(contacts) ? contacts : []);
+  }, [contacts]);
+
   const onSave = async () => {
     setStatus({ type: '', text: '' });
     setSaving(true);
     try {
-      await saveBranding(user, { siteName, siteTitle, logoText, adminSubtitle });
+      await Promise.all([
+        saveBranding(user, { siteName, siteTitle, logoText, adminSubtitle }),
+        saveContacts(user, contactsDraft),
+      ]);
       setStatus({ type: 'success', text: 'تم حفظ هوية الموقع بنجاح.' });
     } catch (err) {
       console.error(err);
@@ -65,6 +73,80 @@ export default function AdminBrandingPage({ user }) {
           <span className="app-label">النص الفرعي في الشريط الجانبي</span>
           <input value={adminSubtitle} onChange={(e) => setAdminSubtitle(e.target.value)} className="app-input" />
         </label>
+
+        <div className="admin-branding-contacts">
+          <div className="admin-branding-contacts__head">
+            <strong>وسائل تواصل الإدارة</strong>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() =>
+                setContactsDraft((prev) => [
+                  ...prev,
+                  { id: `c_${Date.now()}`, label: '', channel: 'whatsapp', value: '' },
+                ])
+              }
+              title="إضافة وسيلة تواصل"
+            >
+              <Plus size={18} />
+            </button>
+          </div>
+          <div className="admin-branding-contacts__list">
+            {contactsDraft.map((item, idx) => (
+              <div key={item.id || idx} className="admin-branding-contacts__row">
+                <input
+                  className="app-input"
+                  placeholder="المسمى (مثال: مدير المنصة)"
+                  value={item.label || ''}
+                  onChange={(e) =>
+                    setContactsDraft((prev) =>
+                      prev.map((x, i) => (i === idx ? { ...x, label: e.target.value } : x)),
+                    )
+                  }
+                />
+                <select
+                  className="app-select"
+                  value={item.channel || 'whatsapp'}
+                  onChange={(e) =>
+                    setContactsDraft((prev) =>
+                      prev.map((x, i) => (i === idx ? { ...x, channel: e.target.value } : x)),
+                    )
+                  }
+                >
+                  <option value="whatsapp">واتساب</option>
+                  <option value="telegram">تلجرام</option>
+                  <option value="phone">اتصال هاتفي</option>
+                  <option value="email">بريد إلكتروني</option>
+                  <option value="instagram">انستغرام</option>
+                  <option value="facebook">فيسبوك</option>
+                  <option value="x">X / تويتر</option>
+                  <option value="other">أخرى</option>
+                </select>
+                <input
+                  className="app-input"
+                  placeholder="رقم أو رابط الحساب"
+                  value={item.value || ''}
+                  onChange={(e) =>
+                    setContactsDraft((prev) =>
+                      prev.map((x, i) => (i === idx ? { ...x, value: e.target.value } : x)),
+                    )
+                  }
+                />
+                <button
+                  type="button"
+                  className="icon-btn"
+                  title="حذف"
+                  onClick={() => setContactsDraft((prev) => prev.filter((_, i) => i !== idx))}
+                >
+                  <Trash2 size={17} color="var(--danger-color)" />
+                </button>
+              </div>
+            ))}
+            {contactsDraft.length === 0 && (
+              <p className="admin-branding-contacts__empty">لا توجد وسائل تواصل بعد. أضف وسيلة من زر +.</p>
+            )}
+          </div>
+        </div>
 
         <button type="button" className="google-btn google-btn--filled admin-settings-save-btn" onClick={onSave} disabled={saving}>
           {saving && <span className="btn-loading-spinner" aria-hidden />}
