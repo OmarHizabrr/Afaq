@@ -95,10 +95,13 @@ const LoginPage = () => {
                 <Phone size={20} color="var(--text-secondary)" aria-hidden />
                 <input 
                   type="tel" 
-                  placeholder="رقم الهاتف للإدارة والميدان"
+                  placeholder="رقم الهاتف"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                   autoComplete="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={15}
                 />
               </div>
             </div>
