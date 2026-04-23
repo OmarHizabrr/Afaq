@@ -21,6 +21,10 @@ export default function SiteContentProvider({ children }) {
             ...(raw.strings || {}),
           },
           contacts: Array.isArray(raw.contacts) ? raw.contacts : [],
+          contactsMessage:
+            typeof raw.contactsMessage === 'string' && raw.contactsMessage.trim()
+              ? raw.contactsMessage
+              : siteContentDefaults.contactsMessage,
         });
       },
       () => {

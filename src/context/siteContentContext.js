@@ -9,6 +9,7 @@ export const siteContentDefaults = {
   },
   strings: {},
   contacts: [],
+  contactsMessage: 'يرجى التواصل مع الإدارة لتحديد نوع الصلاحيات المناسبة لحسابك.',
 };
 
 export const SiteContentContext = createContext({

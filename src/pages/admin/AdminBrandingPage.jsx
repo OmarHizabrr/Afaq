@@ -5,11 +5,12 @@ import useSiteContent from '../../context/useSiteContent';
 import { saveBranding, saveContacts } from '../../services/siteConfigService';
 
 export default function AdminBrandingPage({ user }) {
-  const { branding, contacts } = useSiteContent();
+  const { branding, contacts, contactsMessage } = useSiteContent();
   const [siteName, setSiteName] = useState('');
   const [siteTitle, setSiteTitle] = useState('');
   const [logoText, setLogoText] = useState('');
   const [adminSubtitle, setAdminSubtitle] = useState('');
+  const [contactsMessageDraft, setContactsMessageDraft] = useState('');
   const [contactsDraft, setContactsDraft] = useState([]);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState({ type: '', text: '' });
@@ -22,6 +23,10 @@ export default function AdminBrandingPage({ user }) {
   }, [branding]);
 
   useEffect(() => {
+    setContactsMessageDraft(contactsMessage || '');
+  }, [contactsMessage]);
+
+  useEffect(() => {
     setContactsDraft(Array.isArray(contacts) ? contacts : []);
   }, [contacts]);
 
@@ -31,7 +36,7 @@ export default function AdminBrandingPage({ user }) {
     try {
       await Promise.all([
         saveBranding(user, { siteName, siteTitle, logoText, adminSubtitle }),
-        saveContacts(user, contactsDraft),
+        saveContacts(user, contactsDraft, contactsMessageDraft),
       ]);
       setStatus({ type: 'success', text: 'تم حفظ هوية الموقع بنجاح.' });
     } catch (err) {
@@ -92,6 +97,16 @@ export default function AdminBrandingPage({ user }) {
             </button>
           </div>
           <div className="admin-branding-contacts__list">
+            <label className="app-field app-field--grow">
+              <span className="app-label">رسالة توضيحية للمستخدم</span>
+              <textarea
+                className="app-textarea"
+                rows={3}
+                placeholder="مثال: يرجى التواصل مع الإدارة عبر الوسائل التالية لتفعيل الصلاحيات."
+                value={contactsMessageDraft}
+                onChange={(e) => setContactsMessageDraft(e.target.value)}
+              />
+            </label>
             {contactsDraft.map((item, idx) => (
               <div key={item.id || idx} className="admin-branding-contacts__row">
                 <input
