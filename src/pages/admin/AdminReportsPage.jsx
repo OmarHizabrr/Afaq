@@ -4,9 +4,12 @@ import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolI
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import MapLocationOpen from '../../components/MapLocationOpen';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const AdminReportsPage = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [activeTab, setActiveTab] = useState('daily'); // 'daily', 'weekly', 'visits'
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -209,30 +212,34 @@ const AdminReportsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={() => navigate(`/reports/${rpt.id}`)}
-                  title="عرض التفاصيل الكاملة"
-                  style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}
-                >
-                  <Eye size={22} />
-                </button>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={() => handleDeleteReportRow(rpt)}
-                  title="حذف التقرير"
-                  style={{
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    color: 'var(--danger-color)',
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '12px'
-                  }}
-                >
-                  <Trash2 size={20} />
-                </button>
+                {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => navigate(`/reports/${rpt.id}`)}
+                    title="عرض التفاصيل الكاملة"
+                    style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}
+                  >
+                    <Eye size={22} />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.reports, 'report_delete') && (
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => handleDeleteReportRow(rpt)}
+                    title="حذف التقرير"
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      color: 'var(--danger-color)',
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '12px'
+                    }}
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                )}
               </div>
             </div>
           ))}

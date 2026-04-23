@@ -3,9 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { GraduationCap, Search, Activity, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const StudentManagementPage = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [students, setStudents] = useState([]);
@@ -184,9 +187,11 @@ const StudentManagementPage = () => {
                       {s.lastActivity ? new Date(s.lastActivity).toLocaleDateString('ar-EG') : 'لا يوجد'}
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <button className="icon-btn" onClick={() => navigate(`/users/${s.id}`)} title="عرض ملف الطالب">
-                        <Eye size={17} color="var(--accent-color)" />
-                      </button>
+                      {can(PERMISSION_PAGE_IDS.students_management, 'student_management_view_profile') && (
+                        <button className="icon-btn" onClick={() => navigate(`/users/${s.id}`)} title="عرض ملف الطالب">
+                          <Eye size={17} color="var(--accent-color)" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

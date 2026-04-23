@@ -5,9 +5,12 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const VillagesPage = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
   const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
@@ -348,24 +351,26 @@ const VillagesPage = () => {
   return (
     <div>
       <PageHeader icon={Home} title="إدارة القرى" subtitle="البيانات الديموغرافية والمجموعات">
-        <button
-          type="button"
-          className="google-btn google-btn--toolbar"
-          onClick={() => {
-            setIsAdding(true);
-            setIsEditing(null);
-            setSelectedRegId('');
-            setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
-            setNewMuslims([]);
-            setMuslimName('');
-            setMuslimType('رجل');
-            setNmQuickVillageId(null);
-            cancelNmQuickEdit();
-          }}
-        >
-          <Plus size={18} />
-          <span>إضافة قرية جديدة</span>
-        </button>
+        {can(PERMISSION_PAGE_IDS.villages, 'village_add') && (
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => {
+              setIsAdding(true);
+              setIsEditing(null);
+              setSelectedRegId('');
+              setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
+              setNewMuslims([]);
+              setMuslimName('');
+              setMuslimType('رجل');
+              setNmQuickVillageId(null);
+              cancelNmQuickEdit();
+            }}
+          >
+            <Plus size={18} />
+            <span>إضافة قرية جديدة</span>
+          </button>
+        )}
       </PageHeader>
 
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
@@ -484,15 +489,21 @@ const VillagesPage = () => {
           {villages.map(vil => (
             <div key={vil.id} className="surface-card surface-card--village">
               <div style={{ position: 'absolute', top: '1.25rem', left: '1.25rem', display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" onClick={() => navigate(`/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
-                  <Eye size={16} color="var(--accent-color)" />
-                </button>
-                <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">
-                  <Edit2 size={16} />
-                </button>
-                <button className="icon-btn" onClick={() => setPendingDelete({ id: vil.id, name: vil.villageName })} title="حذف القرية">
-                  <Trash2 size={16} color="var(--danger-color)" />
-                </button>
+                {can(PERMISSION_PAGE_IDS.villages, 'village_view') && (
+                  <button className="icon-btn" onClick={() => navigate(`/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
+                    <Eye size={16} color="var(--accent-color)" />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.villages, 'village_edit') && (
+                  <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">
+                    <Edit2 size={16} />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.villages, 'village_delete') && (
+                  <button className="icon-btn" onClick={() => setPendingDelete({ id: vil.id, name: vil.villageName })} title="حذف القرية">
+                    <Trash2 size={16} color="var(--danger-color)" />
+                  </button>
+                )}
               </div>
               
               <h3 style={{ margin: 0, fontSize: '1.2rem', marginBottom: '8px', color: 'var(--accent-color)' }}>{vil.villageName}</h3>
@@ -514,25 +525,29 @@ const VillagesPage = () => {
                 <span>LTI: {vil.ltiName || '-'}</span>
               </div>
 
-              <button
-                type="button"
-                className="google-btn google-btn--toolbar"
-                style={{ width: '100%', marginTop: '0.85rem' }}
-                onClick={() => toggleQuickNewMuslims(vil.id)}
-              >
-                <UserPlus size={16} aria-hidden />
-                {nmQuickVillageId === vil.id ? (
-                  <>
-                    <ChevronUp size={16} aria-hidden />
-                    <span>طي إدارة المهتدين</span>
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown size={16} aria-hidden />
-                    <span>إدارة المهتدين من البطاقة</span>
-                  </>
-                )}
-              </button>
+              {(can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') ||
+                can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') ||
+                can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_delete')) && (
+                <button
+                  type="button"
+                  className="google-btn google-btn--toolbar"
+                  style={{ width: '100%', marginTop: '0.85rem' }}
+                  onClick={() => toggleQuickNewMuslims(vil.id)}
+                >
+                  <UserPlus size={16} aria-hidden />
+                  {nmQuickVillageId === vil.id ? (
+                    <>
+                      <ChevronUp size={16} aria-hidden />
+                      <span>طي إدارة المهتدين</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown size={16} aria-hidden />
+                      <span>إدارة المهتدين من البطاقة</span>
+                    </>
+                  )}
+                </button>
+              )}
 
               {nmQuickVillageId === vil.id && (
                 <div
@@ -575,15 +590,17 @@ const VillagesPage = () => {
                       <option value="امرأة">امرأة</option>
                       <option value="طفل">طفل</option>
                     </select>
-                    <button
-                      type="button"
-                      className="google-btn google-btn--filled"
-                      style={{ marginTop: 0, width: 'auto', padding: '0 12px' }}
-                      disabled={nmSaving}
-                      onClick={() => handleQuickAddNewMuslim(vil)}
-                    >
-                      إضافة
-                    </button>
+                    {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
+                      <button
+                        type="button"
+                        className="google-btn google-btn--filled"
+                        style={{ marginTop: 0, width: 'auto', padding: '0 12px' }}
+                        disabled={nmSaving}
+                        onClick={() => handleQuickAddNewMuslim(vil)}
+                      >
+                        إضافة
+                      </button>
+                    )}
                   </div>
                   <div
                     style={{
@@ -652,18 +669,22 @@ const VillagesPage = () => {
                                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.78rem' }}>({m.type})</span>
                               </span>
                               <span style={{ display: 'flex', gap: '4px' }}>
-                                <button type="button" className="icon-btn" title="تعديل" disabled={nmSaving} onClick={() => startNmQuickEdit(m)}>
-                                  <Edit2 size={16} />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="icon-btn"
-                                  title="حذف"
-                                  disabled={nmSaving}
-                                  onClick={() => setPendingNewMuslimDelete({ vil, m })}
-                                >
-                                  <Trash2 size={16} color="var(--danger-color)" />
-                                </button>
+                                {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
+                                  <button type="button" className="icon-btn" title="تعديل" disabled={nmSaving} onClick={() => startNmQuickEdit(m)}>
+                                    <Edit2 size={16} />
+                                  </button>
+                                )}
+                                {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_delete') && (
+                                  <button
+                                    type="button"
+                                    className="icon-btn"
+                                    title="حذف"
+                                    disabled={nmSaving}
+                                    onClick={() => setPendingNewMuslimDelete({ vil, m })}
+                                  >
+                                    <Trash2 size={16} color="var(--danger-color)" />
+                                  </button>
+                                )}
                               </span>
                             </>
                           )}

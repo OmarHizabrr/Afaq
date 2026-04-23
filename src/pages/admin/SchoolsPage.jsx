@@ -5,9 +5,12 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const SchoolsPage = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [schools, setSchools] = useState([]);
   const [regions, setRegions] = useState([]);
   const [villages, setVillages] = useState([]);
@@ -109,7 +112,7 @@ const SchoolsPage = () => {
     setDonorName(sch.donorName || '');
   };
 
-  const handleDelete = async (id, name) => {
+  const handleDelete = async (id) => {
     try {
       const api = FirestoreApi.Api;
       const schoolDoc = schools.find(s => s.id === id);
@@ -134,10 +137,12 @@ const SchoolsPage = () => {
   return (
     <div>
       <PageHeader icon={School} title="إدارة المدارس">
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); }}>
-          <Plus size={18} />
-          <span>إضافة مدرسة</span>
-        </button>
+        {can(PERMISSION_PAGE_IDS.schools, 'school_add') && (
+          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); }}>
+            <Plus size={18} />
+            <span>إضافة مدرسة</span>
+          </button>
+        )}
       </PageHeader>
 
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
@@ -198,15 +203,21 @@ const SchoolsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" onClick={() => navigate(`/schools/${sch.id}`)} title="عرض التفاصيل">
-                  <Eye size={16} color="var(--accent-color)" />
-                </button>
-                <button className="icon-btn" onClick={() => handleEditClick(sch)} title="تعديل">
-                  <Edit2 size={16} />
-                </button>
-                <button className="icon-btn" onClick={() => setPendingDelete({ id: sch.id, name: sch.name })} title="حذف">
-                  <Trash2 size={16} color="var(--danger-color)" />
-                </button>
+                {can(PERMISSION_PAGE_IDS.schools, 'school_view') && (
+                  <button className="icon-btn" onClick={() => navigate(`/schools/${sch.id}`)} title="عرض التفاصيل">
+                    <Eye size={16} color="var(--accent-color)" />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.schools, 'school_edit') && (
+                  <button className="icon-btn" onClick={() => handleEditClick(sch)} title="تعديل">
+                    <Edit2 size={16} />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.schools, 'school_delete') && (
+                  <button className="icon-btn" onClick={() => setPendingDelete({ id: sch.id, name: sch.name })} title="حذف">
+                    <Trash2 size={16} color="var(--danger-color)" />
+                  </button>
+                )}
               </div>
             </div>
           ))}

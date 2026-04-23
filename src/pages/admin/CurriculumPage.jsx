@@ -5,9 +5,12 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const CurriculumPage = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -102,7 +105,7 @@ const CurriculumPage = () => {
     }
   };
 
-  const handleDeleteSubject = async (id, name) => {
+  const handleDeleteSubject = async (id) => {
     try {
       const api = FirestoreApi.Api;
       await api.deleteData(api.getCurriculumDoc(id));
@@ -183,10 +186,12 @@ const CurriculumPage = () => {
         title="إدارة المناهج الأساسية"
         subtitle="توزيع خطة الأسابيع (٥٠ أسبوعاً)"
       >
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
-          <Plus size={18} />
-          <span>إضافة مادة جديدة</span>
-        </button>
+        {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_add_subject') && (
+          <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
+            <Plus size={18} />
+            <span>إضافة مادة جديدة</span>
+          </button>
+        )}
       </PageHeader>
 
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
@@ -258,33 +263,37 @@ const CurriculumPage = () => {
                       الخطة: 50 أسبوع
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      <button
-                        type="button"
-                        className="icon-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/print/curriculum/${subject.id}`, { state: { autoPrint: true } });
-                        }}
-                        title="طباعة الخطة أو حفظ PDF (صفحة منفصلة)"
-                      >
-                        <Printer size={18} color="var(--md-primary)" />
-                      </button>
-                      <button 
-                        className="icon-btn" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setConfirmConfig({
-                            title: 'تأكيد حذف المادة',
-                            message: `سيتم حذف مادة "${subject.name}" وخطة الأسابيع بالكامل.`,
-                            confirmLabel: 'حذف نهائي',
-                            danger: true,
-                            onConfirm: () => handleDeleteSubject(subject.id, subject.name)
-                          });
-                        }} 
-                        title="حذف المادة نهائياً"
-                      >
-                        <Trash2 size={18} color="var(--danger-color)" />
-                      </button>
+                      {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_print_subject') && (
+                        <button
+                          type="button"
+                          className="icon-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/print/curriculum/${subject.id}`, { state: { autoPrint: true } });
+                          }}
+                          title="طباعة الخطة أو حفظ PDF (صفحة منفصلة)"
+                        >
+                          <Printer size={18} color="var(--md-primary)" />
+                        </button>
+                      )}
+                      {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_delete_subject') && (
+                        <button 
+                          className="icon-btn" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmConfig({
+                              title: 'تأكيد حذف المادة',
+                              message: `سيتم حذف مادة "${subject.name}" وخطة الأسابيع بالكامل.`,
+                              confirmLabel: 'حذف نهائي',
+                              danger: true,
+                              onConfirm: () => handleDeleteSubject(subject.id, subject.name)
+                            });
+                          }} 
+                          title="حذف المادة نهائياً"
+                        >
+                          <Trash2 size={18} color="var(--danger-color)" />
+                        </button>
+                      )}
                       {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                     </div>
                   </div>
@@ -307,14 +316,16 @@ const CurriculumPage = () => {
                     </label>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                       <h4 style={{ margin: 0, color: 'var(--text-primary)' }}>توزيع الدروس الأسبوعية</h4>
-                      <button 
-                        className="google-btn" 
-                        onClick={handleSaveCurriculum}
-                        disabled={loading}
-                        style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff' }}
-                      >
-                        <Save size={18} /> حفظ التوزيع
-                      </button>
+                      {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
+                        <button 
+                          className="google-btn" 
+                          onClick={handleSaveCurriculum}
+                          disabled={loading}
+                          style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff' }}
+                        >
+                          <Save size={18} /> حفظ التوزيع
+                        </button>
+                      )}
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
@@ -355,16 +366,18 @@ const CurriculumPage = () => {
                       ))}
                     </div>
                     
-                    <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '2rem' }}>
-                      <button 
-                        className="google-btn" 
-                        onClick={handleSaveCurriculum}
-                        disabled={loading}
-                        style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff', padding: '12px 32px' }}
-                      >
-                         حفظ التوزيع النهائي للمادة
-                      </button>
-                    </div>
+                    {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
+                      <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '2rem' }}>
+                        <button 
+                          className="google-btn" 
+                          onClick={handleSaveCurriculum}
+                          disabled={loading}
+                          style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff', padding: '12px 32px' }}
+                        >
+                           حفظ التوزيع النهائي للمادة
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

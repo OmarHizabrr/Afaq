@@ -5,9 +5,12 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const RegionsPage = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [regions, setRegions] = useState([]);
   const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -143,10 +146,12 @@ const RegionsPage = () => {
   return (
     <div>
       <PageHeader icon={MapPin} title="إدارة المناطق">
-        <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
-          <Plus size={18} />
-          <span>إضافة منطقة</span>
-        </button>
+        {can(PERMISSION_PAGE_IDS.regions, 'region_add') && (
+          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
+            <Plus size={18} />
+            <span>إضافة منطقة</span>
+          </button>
+        )}
       </PageHeader>
 
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
@@ -209,15 +214,21 @@ const RegionsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="icon-btn" onClick={() => navigate(`/regions/${region.id}`)} title="عرض التفاصيل">
-                  <Eye size={16} color="var(--accent-color)" />
-                </button>
-                <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">
-                  <Edit2 size={16} />
-                </button>
-                <button className="icon-btn" onClick={() => setPendingDelete(region)} title="حذف">
-                  <Trash2 size={16} color="var(--danger-color)" />
-                </button>
+                {can(PERMISSION_PAGE_IDS.regions, 'region_view') && (
+                  <button className="icon-btn" onClick={() => navigate(`/regions/${region.id}`)} title="عرض التفاصيل">
+                    <Eye size={16} color="var(--accent-color)" />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.regions, 'region_edit') && (
+                  <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">
+                    <Edit2 size={16} />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.regions, 'region_delete') && (
+                  <button className="icon-btn" onClick={() => setPendingDelete(region)} title="حذف">
+                    <Trash2 size={16} color="var(--danger-color)" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
