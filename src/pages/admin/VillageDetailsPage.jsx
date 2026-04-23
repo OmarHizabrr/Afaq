@@ -4,6 +4,8 @@ import { School, ChevronRight, Info, PieChart, MapPin, Edit2, Trash2, Plus, Save
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const VillageDetailsPage = () => {
     const { id } = useParams();
@@ -19,6 +21,7 @@ const VillageDetailsPage = () => {
     const [editingName, setEditingName] = useState('');
     const [editingType, setEditingType] = useState('رجل');
     const [pendingDelete, setPendingDelete] = useState(null);
+    const { can } = usePermissions();
 
     useEffect(() => {
         const fetchVillageDetails = async () => {
@@ -204,9 +207,11 @@ const VillageDetailsPage = () => {
                                   <option value="امرأة">امرأة</option>
                                   <option value="طفل">طفل</option>
                                 </select>
-                                <button type="button" className="icon-btn" onClick={handleAddNewMuslim} disabled={saving} title="إضافة">
-                                  <Plus size={16} />
-                                </button>
+                                {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
+                                  <button type="button" className="icon-btn" onClick={handleAddNewMuslim} disabled={saving} title="إضافة">
+                                    <Plus size={16} />
+                                  </button>
+                                )}
                               </div>
                               {newMuslims.length === 0 ? (
                                 <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لا توجد سجلات مهتدين مضافة بعد.</p>
@@ -234,7 +239,9 @@ const VillageDetailsPage = () => {
                                             </select>
                                           </div>
                                           <div style={{ display: 'flex', gap: '6px' }}>
-                                            <button type="button" className="icon-btn" onClick={handleSaveEdit} disabled={saving} title="حفظ"><Save size={14} /></button>
+                                            {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
+                                              <button type="button" className="icon-btn" onClick={handleSaveEdit} disabled={saving} title="حفظ"><Save size={14} /></button>
+                                            )}
                                             <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء"><X size={14} /></button>
                                           </div>
                                         </>
@@ -243,8 +250,12 @@ const VillageDetailsPage = () => {
                                           <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
                                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                             <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.type}</span>
-                                            <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
-                                            <button type="button" className="icon-btn" onClick={() => setPendingDelete(m)} title="حذف"><Trash2 size={14} color="var(--danger-color)" /></button>
+                                            {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
+                                              <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
+                                            )}
+                                            {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_delete') && (
+                                              <button type="button" className="icon-btn" onClick={() => setPendingDelete(m)} title="حذف"><Trash2 size={14} color="var(--danger-color)" /></button>
+                                            )}
                                           </div>
                                         </>
                                       )}
@@ -270,7 +281,9 @@ const VillageDetailsPage = () => {
                                             <h4 style={{ margin: 0 }}>{sch.name}</h4>
                                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>🆔 {sch.id}</p>
                                         </div>
-                                        <button onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={18}/></button>
+                                        {can(PERMISSION_PAGE_IDS.villages, 'village_school_view') && (
+                                          <button onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={18}/></button>
+                                        )}
                                     </div>
                                 ))}
                             </div>

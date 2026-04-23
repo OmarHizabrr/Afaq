@@ -124,12 +124,12 @@ function App() {
           <Route path="students-management" element={<PageGuard pageId={PERMISSION_PAGE_IDS.students_management}><StudentManagementPage /></PageGuard>} />
           <Route path="curriculum" element={<PageGuard pageId={PERMISSION_PAGE_IDS.curriculum}><CurriculumPage /></PageGuard>} />
           <Route path="reports" element={<PageGuard pageId={PERMISSION_PAGE_IDS.reports}><AdminReportsPage /></PageGuard>} />
-          <Route path="reports/:id" element={<ReportDetailsPage viewerUser={user} />} />
-          <Route path="schools/:id" element={<SchoolDetailsPage />} />
-          <Route path="regions/:id" element={<RegionDetailsPage />} />
-          <Route path="users/:id" element={<UserDetailsPage viewerUser={user} />} />
-          <Route path="governorates/:id" element={<GovernorateDetailsPage />} />
-          <Route path="villages/:id" element={<VillageDetailsPage />} />
+          <Route path="reports/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.reports}><ReportDetailsPage viewerUser={user} /></PageGuard>} />
+          <Route path="schools/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolDetailsPage /></PageGuard>} />
+          <Route path="regions/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.regions}><RegionDetailsPage /></PageGuard>} />
+          <Route path="users/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.users}><UserDetailsPage viewerUser={user} /></PageGuard>} />
+          <Route path="governorates/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.governorates}><GovernorateDetailsPage /></PageGuard>} />
+          <Route path="villages/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.villages}><VillageDetailsPage /></PageGuard>} />
           <Route path="settings" element={<PageGuard pageId={PERMISSION_PAGE_IDS.settings}><SettingsPage /></PageGuard>} />
           <Route path="notifications" element={<PageGuard pageId={PERMISSION_PAGE_IDS.notifications}><NotificationsPage user={user} /></PageGuard>} />
           <Route path="admin/user-types" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_user_types}><AdminUserTypesPage user={user} /></PageGuard>} />

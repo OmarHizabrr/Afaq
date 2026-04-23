@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, School, Users, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const ROLE_LABELS = {
     admin: 'مدير النظام',
@@ -27,6 +29,7 @@ const RegionDetailsPage = () => {
     const [assigning, setAssigning] = useState(false);
     const [assignMsg, setAssignMsg] = useState('');
     const [error, setError] = useState('');
+    const { can } = usePermissions();
 
     const fetchRegionDetails = async () => {
         if (!id) return;
@@ -171,7 +174,9 @@ const RegionDetailsPage = () => {
                            {schools.map(sch => (
                               <div key={sch.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                  <h4 style={{ margin: 0 }}>{sch.name}</h4>
-                                 <button type="button" onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 {can(PERMISSION_PAGE_IDS.regions, 'region_school_view') && (
+                                   <button type="button" onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 )}
                               </div>
                            ))}
                         </div>
@@ -183,7 +188,9 @@ const RegionDetailsPage = () => {
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                            <Users size={18} color="var(--success-color)" /> المشرفون الميدانيون
                         </h2>
-                        <button type="button" className="icon-btn" title="تعيين مشرف" onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); }}><UserPlus size={18} /></button>
+                        {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
+                          <button type="button" className="icon-btn" title="تعيين مشرف" onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); }}><UserPlus size={18} /></button>
+                        )}
                     </div>
                     {supervisors.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد مشرفون معينون لهذه المنطقة حالياً.</p> : (
                         <div style={{ display: 'grid', gap: '10px' }}>
@@ -193,7 +200,9 @@ const RegionDetailsPage = () => {
                                     <img src={sup.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(sup.displayName || '')}`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
                                     <h4 style={{ margin: 0 }}>{sup.displayName}</h4>
                                  </div>
-                                 <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_view_profile') && (
+                                   <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn"><Info size={16}/></button>
+                                 )}
                               </div>
                            ))}
                         </div>
@@ -201,7 +210,7 @@ const RegionDetailsPage = () => {
                 </div>
             </div>
 
-            {isModalOpen && (
+            {isModalOpen && can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
                 <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="region-assign-title" onClick={() => setIsModalOpen(false)}>
                     <div className="modal-card modal-card--sm" onClick={e => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

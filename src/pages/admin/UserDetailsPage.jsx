@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, Shield, Calendar, BookOpen, ChevronRight, Activity, TrendingUp, Info, Ban, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const { id } = useParams();
@@ -14,6 +16,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const [loading, setLoading] = useState(true);
     const [adminWorking, setAdminWorking] = useState(false);
     const [adminError, setAdminError] = useState('');
+    const { can } = usePermissions();
 
     const viewerId = viewerUser?.uid || viewerUser?.id || '';
     const canAdminManage =
@@ -185,38 +188,42 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                     </div>
                                 )}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    <button
-                                        type="button"
-                                        className="google-btn"
-                                        disabled={adminWorking}
-                                        onClick={handleToggleAccountDisabled}
-                                        style={{
-                                            width: '100%',
-                                            justifyContent: 'center',
-                                            background: profile.accountDisabled ? 'var(--success-color)' : 'rgba(245, 158, 11, 0.15)',
-                                            color: profile.accountDisabled ? '#fff' : 'var(--text-primary)',
-                                            border: '1px solid var(--border-color)'
-                                        }}
-                                    >
-                                        <Ban size={18} style={{ marginLeft: 8 }} aria-hidden />
-                                        {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="google-btn"
-                                        disabled={adminWorking}
-                                        onClick={handleAdminDeleteUser}
-                                        style={{
-                                            width: '100%',
-                                            justifyContent: 'center',
-                                            background: 'rgba(239, 68, 68, 0.12)',
-                                            color: 'var(--danger-color)',
-                                            border: '1px solid var(--danger-color)'
-                                        }}
-                                    >
-                                        <Trash2 size={18} style={{ marginLeft: 8 }} aria-hidden />
-                                        حذف المستخدم نهائياً من النظام
-                                    </button>
+                                    {can(PERMISSION_PAGE_IDS.users, 'user_admin_disable') && (
+                                      <button
+                                          type="button"
+                                          className="google-btn"
+                                          disabled={adminWorking}
+                                          onClick={handleToggleAccountDisabled}
+                                          style={{
+                                              width: '100%',
+                                              justifyContent: 'center',
+                                              background: profile.accountDisabled ? 'var(--success-color)' : 'rgba(245, 158, 11, 0.15)',
+                                              color: profile.accountDisabled ? '#fff' : 'var(--text-primary)',
+                                              border: '1px solid var(--border-color)'
+                                          }}
+                                      >
+                                          <Ban size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                          {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
+                                      </button>
+                                    )}
+                                    {can(PERMISSION_PAGE_IDS.users, 'user_admin_delete') && (
+                                      <button
+                                          type="button"
+                                          className="google-btn"
+                                          disabled={adminWorking}
+                                          onClick={handleAdminDeleteUser}
+                                          style={{
+                                              width: '100%',
+                                              justifyContent: 'center',
+                                              background: 'rgba(239, 68, 68, 0.12)',
+                                              color: 'var(--danger-color)',
+                                              border: '1px solid var(--danger-color)'
+                                          }}
+                                      >
+                                          <Trash2 size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                          حذف المستخدم نهائياً من النظام
+                                      </button>
+                                    )}
                                 </div>
                             </div>
                         )}

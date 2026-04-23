@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const SchoolDetailsPage = () => {
     const { id } = useParams();
@@ -21,6 +23,7 @@ const SchoolDetailsPage = () => {
     const [assigning, setAssigning] = useState(false);
     const [assignError, setAssignError] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
+    const { can } = usePermissions();
 
     const fetchSchoolDetails = async () => {
         if (!id) return;
@@ -165,16 +168,16 @@ const SchoolDetailsPage = () => {
         return matchesSearch && !alreadyMember && validRole;
     });
 
-    const StatCard = ({ label, value, icon: Icon, color }) => (
-        <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-            <div style={{ padding: '12px', background: `${color}15`, color: color, borderRadius: '12px' }}>
-                <Icon size={24} />
-            </div>
-            <div>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{label}</p>
-                <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{value}</h3>
-            </div>
-        </div>
+    const renderStatCard = (label, value, IconComponent, color) => (
+      <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+          <div style={{ padding: '12px', background: `${color}15`, color: color, borderRadius: '12px' }}>
+              <IconComponent size={24} />
+          </div>
+          <div>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{label}</p>
+              <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{value}</h3>
+          </div>
+      </div>
     );
 
     return (
@@ -192,9 +195,9 @@ const SchoolDetailsPage = () => {
             />
 
             <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
-                <StatCard label="إجمالي الطلاب" value={students.length} icon={Users} color="#f59e0b" />
-                <StatCard label="الكادر التعليمي" value={staff.length} icon={School} color="var(--success-color)" />
-                <StatCard label="التقارير الميدانية" value="..." icon={FileText} color="var(--accent-color)" />
+                {renderStatCard('إجمالي الطلاب', students.length, Users, '#f59e0b')}
+                {renderStatCard('الكادر التعليمي', staff.length, School, 'var(--success-color)')}
+                {renderStatCard('التقارير الميدانية', '...', FileText, 'var(--accent-color)')}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
@@ -215,7 +218,9 @@ const SchoolDetailsPage = () => {
                                     style={{ padding: '6px 30px 6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', fontSize: '0.8rem' }}
                                 />
                             </div>
-                            <button className="icon-btn" title="إضافة معلم" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                            {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
+                              <button className="icon-btn" title="إضافة معلم" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                            )}
                         </div>
                     </div>
                     {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد نتائج للبحث.</p> : (
@@ -227,7 +232,9 @@ const SchoolDetailsPage = () => {
                                     <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{t.displayName}</h4>
                                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{t.email}</p>
                                  </div>
-                                 <button onClick={() => navigate(`/users/${t.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                 {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
+                                   <button onClick={() => navigate(`/users/${t.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                 )}
                               </div>
                            ))}
                         </div>
@@ -251,7 +258,9 @@ const SchoolDetailsPage = () => {
                                     style={{ padding: '6px 30px 6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', fontSize: '0.8rem' }}
                                 />
                             </div>
-                            <button className="icon-btn" title="إضافة طالب" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                            {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
+                              <button className="icon-btn" title="إضافة طالب" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                            )}
                         </div>
                     </div>
                     {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد نتائج للبحث.</p> : (
@@ -263,7 +272,9 @@ const SchoolDetailsPage = () => {
                                     <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{s.displayName}</h4>
                                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{s.phoneNumber || 'لا يوجد هاتف'}</p>
                                  </div>
-                                 <button onClick={() => navigate(`/users/${s.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                 {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
+                                   <button onClick={() => navigate(`/users/${s.id}`)} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer' }}><Info size={16}/></button>
+                                 )}
                               </div>
                            ))}
                         </div>
@@ -272,7 +283,7 @@ const SchoolDetailsPage = () => {
             </div>
 
             {/* Quick Assign Modal */}
-            {isModalOpen && (
+            {isModalOpen && can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setIsModalOpen(false)}>
                     <div className="surface-card surface-card--lg" style={{ width: '100%', maxWidth: '500px', borderRadius: '24px', padding: '2rem' }} onClick={e => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>

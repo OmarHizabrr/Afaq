@@ -42,6 +42,9 @@ export const PERMISSION_PAGES = [
       { id: 'region_edit', label: 'تعديل منطقة' },
       { id: 'region_delete', label: 'حذف منطقة' },
       { id: 'region_view', label: 'عرض التفاصيل' },
+      { id: 'region_school_view', label: 'تفاصيل المدرسة من صفحة المنطقة' },
+      { id: 'region_supervisor_assign', label: 'تعيين مشرف للمنطقة' },
+      { id: 'region_supervisor_view_profile', label: 'عرض ملف المشرف من صفحة المنطقة' },
     ],
   },
   {
@@ -56,6 +59,7 @@ export const PERMISSION_PAGES = [
       { id: 'village_new_muslim_add', label: 'إضافة مهتدي' },
       { id: 'village_new_muslim_edit', label: 'تعديل مهتدي' },
       { id: 'village_new_muslim_delete', label: 'حذف مهتدي' },
+      { id: 'village_school_view', label: 'تفاصيل المدرسة من صفحة القرية' },
     ],
   },
   {
@@ -67,6 +71,8 @@ export const PERMISSION_PAGES = [
       { id: 'school_edit', label: 'تعديل مدرسة' },
       { id: 'school_delete', label: 'حذف مدرسة' },
       { id: 'school_view', label: 'عرض التفاصيل' },
+      { id: 'school_member_assign', label: 'إضافة/تعيين أعضاء المدرسة' },
+      { id: 'school_member_view_profile', label: 'عرض ملفات أعضاء المدرسة' },
     ],
   },
   {
@@ -97,6 +103,8 @@ export const PERMISSION_PAGES = [
       { id: 'user_view_profile', label: 'عرض ملف المستخدم' },
       { id: 'user_edit_role', label: 'تعديل رتبة المستخدم' },
       { id: 'user_edit_permission_profile', label: 'تعديل نوع الصلاحيات' },
+      { id: 'user_admin_disable', label: 'تعطيل/تفعيل الحساب' },
+      { id: 'user_admin_delete', label: 'حذف المستخدم' },
     ],
   },
   {
