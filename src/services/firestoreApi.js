@@ -158,6 +158,21 @@ class FirestoreApi {
     return this.getDocument('supervisor_assignments', userId);
   }
 
+  /** permission_profiles */
+  getPermissionProfilesCollection() {
+    return this.getCollection('permission_profiles');
+  }
+
+  /** permission_profiles/{profileId} */
+  getPermissionProfileDoc(profileId) {
+    return this.getDocument('permission_profiles', profileId);
+  }
+
+  /** site_config/{docId} */
+  getSiteConfigDoc(docId = 'global') {
+    return this.getDocument('site_config', docId);
+  }
+
   /** governorates */
   getGovernoratesCollection() {
     return this.getCollection('governorates');

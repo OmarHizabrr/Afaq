@@ -35,6 +35,39 @@ import GovernorateDetailsPage from './pages/admin/GovernorateDetailsPage';
 import VillageDetailsPage from './pages/admin/VillageDetailsPage';
 import AuthService from './services/authService';
 import { NotificationsBadgeProvider } from './context/NotificationsBadgeContext';
+import PermissionsProvider from './context/PermissionsProvider';
+import SiteContentProvider from './context/SiteContentProvider';
+import PageGuard from './routes/PageGuard';
+import AdminUserTypesPage from './pages/admin/AdminUserTypesPage';
+import AdminBrandingPage from './pages/admin/AdminBrandingPage';
+import AdminSiteCopyPage from './pages/admin/AdminSiteCopyPage';
+import { PERMISSION_PAGE_IDS } from './config/permissionRegistry';
+
+const AdminRoute = ({ user, children }) => {
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'teacher') return <Navigate to="/teacher" replace />;
+  if (user.role === 'supervisor_local' || user.role === 'supervisor_arab') return <Navigate to="/supervisor" replace />;
+  if (user.role === 'student') return <Navigate to="/student" replace />;
+  return children;
+};
+
+const SupervisorRoute = ({ user, children }) => {
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'supervisor_local' && user.role !== 'supervisor_arab' && user.role !== 'admin') return <Navigate to="/" replace />;
+  return children;
+};
+
+const TeacherRoute = ({ user, children }) => {
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'teacher' && user.role !== 'admin') return <Navigate to="/" replace />;
+  return children;
+};
+
+const StudentRoute = ({ user, children }) => {
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'student' && user.role !== 'admin') return <Navigate to="/" replace />;
+  return children;
+};
 
 function App() {
   const [user, setUser] = useState(null);
@@ -58,34 +91,9 @@ function App() {
     );
   }
 
-  // Role-based Route Wrappers
-  const AdminRoute = ({ children }) => {
-    if (!user) return <Navigate to="/login" replace />;
-    if (user.role === 'teacher') return <Navigate to="/teacher" replace />;
-    if (user.role === 'supervisor_local' || user.role === 'supervisor_arab') return <Navigate to="/supervisor" replace />;
-    if (user.role === 'student') return <Navigate to="/student" replace />;
-    return children;
-  };
-
-  const SupervisorRoute = ({ children }) => {
-    if (!user) return <Navigate to="/login" replace />;
-    if (user.role !== 'supervisor_local' && user.role !== 'supervisor_arab' && user.role !== 'admin') return <Navigate to="/" replace />;
-    return children;
-  };
-
-  const TeacherRoute = ({ children }) => {
-    if (!user) return <Navigate to="/login" replace />;
-    if (user.role !== 'teacher' && user.role !== 'admin') return <Navigate to="/" replace />;
-    return children;
-  };
-
-  const StudentRoute = ({ children }) => {
-    if (!user) return <Navigate to="/login" replace />;
-    if (user.role !== 'student' && user.role !== 'admin') return <Navigate to="/" replace />;
-    return children;
-  };
-
   return (
+    <SiteContentProvider>
+    <PermissionsProvider user={user}>
     <BrowserRouter>
       <NotificationsBadgeProvider user={user}>
       <Routes>
@@ -102,35 +110,38 @@ function App() {
         <Route 
           path="/" 
           element={
-            <AdminRoute>
+            <AdminRoute user={user}>
               <AdminLayout user={user} />
             </AdminRoute>
           }
         >
-          <Route index element={<DashboardPage />} />
-          <Route path="governorates" element={<GovernoratesPage />} />
-          <Route path="regions" element={<RegionsPage />} />
-          <Route path="villages" element={<VillagesPage />} />
-          <Route path="schools" element={<SchoolsPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="students-management" element={<StudentManagementPage />} />
-          <Route path="curriculum" element={<CurriculumPage />} />
-          <Route path="reports" element={<AdminReportsPage />} />
+          <Route index element={<PageGuard pageId={PERMISSION_PAGE_IDS.dashboard}><DashboardPage /></PageGuard>} />
+          <Route path="governorates" element={<PageGuard pageId={PERMISSION_PAGE_IDS.governorates}><GovernoratesPage /></PageGuard>} />
+          <Route path="regions" element={<PageGuard pageId={PERMISSION_PAGE_IDS.regions}><RegionsPage /></PageGuard>} />
+          <Route path="villages" element={<PageGuard pageId={PERMISSION_PAGE_IDS.villages}><VillagesPage /></PageGuard>} />
+          <Route path="schools" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolsPage /></PageGuard>} />
+          <Route path="users" element={<PageGuard pageId={PERMISSION_PAGE_IDS.users}><UsersPage /></PageGuard>} />
+          <Route path="students-management" element={<PageGuard pageId={PERMISSION_PAGE_IDS.students_management}><StudentManagementPage /></PageGuard>} />
+          <Route path="curriculum" element={<PageGuard pageId={PERMISSION_PAGE_IDS.curriculum}><CurriculumPage /></PageGuard>} />
+          <Route path="reports" element={<PageGuard pageId={PERMISSION_PAGE_IDS.reports}><AdminReportsPage /></PageGuard>} />
           <Route path="reports/:id" element={<ReportDetailsPage viewerUser={user} />} />
           <Route path="schools/:id" element={<SchoolDetailsPage />} />
           <Route path="regions/:id" element={<RegionDetailsPage />} />
           <Route path="users/:id" element={<UserDetailsPage viewerUser={user} />} />
           <Route path="governorates/:id" element={<GovernorateDetailsPage />} />
           <Route path="villages/:id" element={<VillageDetailsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="notifications" element={<NotificationsPage user={user} />} />
+          <Route path="settings" element={<PageGuard pageId={PERMISSION_PAGE_IDS.settings}><SettingsPage /></PageGuard>} />
+          <Route path="notifications" element={<PageGuard pageId={PERMISSION_PAGE_IDS.notifications}><NotificationsPage user={user} /></PageGuard>} />
+          <Route path="admin/user-types" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_user_types}><AdminUserTypesPage user={user} /></PageGuard>} />
+          <Route path="admin/branding" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_branding}><AdminBrandingPage user={user} /></PageGuard>} />
+          <Route path="admin/site-copy" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_site_copy}><AdminSiteCopyPage user={user} /></PageGuard>} />
         </Route>
 
         {/* Supervisor Portal Routes */}
         <Route 
           path="/supervisor" 
           element={
-            <SupervisorRoute>
+            <SupervisorRoute user={user}>
               <SupervisorLayout user={user} />
             </SupervisorRoute>
           }
@@ -149,7 +160,7 @@ function App() {
         <Route 
           path="/teacher" 
           element={
-            <TeacherRoute>
+            <TeacherRoute user={user}>
               <TeacherLayout user={user} />
             </TeacherRoute>
           }
@@ -168,7 +179,7 @@ function App() {
         <Route 
           path="/student" 
           element={
-            <StudentRoute>
+            <StudentRoute user={user}>
               <StudentLayout user={user} />
             </StudentRoute>
           }
@@ -183,7 +194,7 @@ function App() {
         <Route
           path="/print/curriculum/:subjectId"
           element={
-            <AdminRoute>
+            <AdminRoute user={user}>
               <CurriculumPrintPage />
             </AdminRoute>
           }
@@ -199,6 +210,8 @@ function App() {
       </Routes>
       </NotificationsBadgeProvider>
     </BrowserRouter>
+    </PermissionsProvider>
+    </SiteContentProvider>
   );
 }
 

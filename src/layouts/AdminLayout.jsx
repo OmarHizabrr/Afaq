@@ -18,13 +18,21 @@ import {
   ChevronRight,
   ChevronLeft,
   ClipboardList,
-  GraduationCap
+  GraduationCap,
+  Shield,
+  Palette,
+  FileText
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
+import usePermissions from '../context/usePermissions';
+import useSiteContent from '../context/useSiteContent';
+import { PERMISSION_PAGE_IDS } from '../config/permissionRegistry';
 
 const AdminLayout = ({ user }) => {
   const navigate = useNavigate();
+  const { canAccessPage } = usePermissions();
+  const { branding, str } = useSiteContent();
   const [isDarkMode, setIsDarkMode] = useState(() =>
     typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
   );
@@ -62,18 +70,22 @@ const AdminLayout = ({ user }) => {
   };
 
   const navItems = [
-    { name: 'الرئيسية', icon: LayoutDashboard, path: '/' },
-    { name: 'المحافظات', icon: Map, path: '/governorates' },
-    { name: 'المناطق', icon: MapPin, path: '/regions' },
-    { name: 'القرى', icon: Home, path: '/villages' },
-    { name: 'المدارس', icon: School, path: '/schools' },
-    {name: 'المنَاهِج', icon: BookOpen, path: '/curriculum' },
-    {name: 'التقارير', icon: ClipboardList, path: '/reports' },
-    {name: 'المستخدمين', icon: Users, path: '/users' },
-    {name: 'إدارة الطلاب', icon: GraduationCap, path: '/students-management' },
-    {name: 'الإشعارات', icon: Bell, path: '/notifications' },
-    {name: 'الإعدادات', icon: Settings, path: '/settings' },
+    { name: str('layout.nav_dashboard', 'الرئيسية'), icon: LayoutDashboard, path: '/', pageId: PERMISSION_PAGE_IDS.dashboard },
+    { name: 'المحافظات', icon: Map, path: '/governorates', pageId: PERMISSION_PAGE_IDS.governorates },
+    { name: 'المناطق', icon: MapPin, path: '/regions', pageId: PERMISSION_PAGE_IDS.regions },
+    { name: 'القرى', icon: Home, path: '/villages', pageId: PERMISSION_PAGE_IDS.villages },
+    { name: 'المدارس', icon: School, path: '/schools', pageId: PERMISSION_PAGE_IDS.schools },
+    { name: 'المنَاهِج', icon: BookOpen, path: '/curriculum', pageId: PERMISSION_PAGE_IDS.curriculum },
+    { name: 'التقارير', icon: ClipboardList, path: '/reports', pageId: PERMISSION_PAGE_IDS.reports },
+    { name: str('layout.nav_users', 'المستخدمين'), icon: Users, path: '/users', pageId: PERMISSION_PAGE_IDS.users },
+    { name: 'إدارة الطلاب', icon: GraduationCap, path: '/students-management', pageId: PERMISSION_PAGE_IDS.students_management },
+    { name: str('layout.nav_notifications', 'الإشعارات'), icon: Bell, path: '/notifications', pageId: PERMISSION_PAGE_IDS.notifications },
+    { name: str('layout.nav_settings', 'الإعدادات'), icon: Settings, path: '/settings', pageId: PERMISSION_PAGE_IDS.settings },
+    { name: 'أنواع المستخدمين', icon: Shield, path: '/admin/user-types', pageId: PERMISSION_PAGE_IDS.admin_user_types },
+    { name: 'هوية الموقع', icon: Palette, path: '/admin/branding', pageId: PERMISSION_PAGE_IDS.admin_branding },
+    { name: 'النصوص الثابتة', icon: FileText, path: '/admin/site-copy', pageId: PERMISSION_PAGE_IDS.admin_site_copy },
   ];
+  const visibleNavItems = navItems.filter((item) => !item.pageId || canAccessPage(item.pageId));
 
   const closeSidebar = () => {
     if (window.innerWidth <= 768) setIsSidebarOpen(false);
@@ -93,8 +105,12 @@ const AdminLayout = ({ user }) => {
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 className="logo-text" style={{ fontSize: '2rem', margin: 0, animation: 'none', transform: 'none', opacity: 1 }}>آفاق</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>لوحة تحكم الإدارة</p>
+            <h2 className="logo-text" style={{ fontSize: '2rem', margin: 0, animation: 'none', transform: 'none', opacity: 1 }}>
+              {branding.logoText || branding.siteName || 'آفاق'}
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>
+              {branding.adminSubtitle || 'لوحة تحكم الإدارة'}
+            </p>
           </div>
           
           <button 
@@ -111,7 +127,7 @@ const AdminLayout = ({ user }) => {
         </div>
 
         <nav className="sidebar-nav">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink 
               key={item.path} 
               to={item.path} 

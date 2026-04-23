@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Edit2, X, Eye, Info } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import usePermissions from '../../context/usePermissions';
+import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const ROLE_LABELS = {
   admin: 'مدير النظام',
@@ -28,6 +31,7 @@ const UsersPage = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [regions, setRegions] = useState([]);
+  const [permissionProfiles, setPermissionProfiles] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
@@ -35,6 +39,8 @@ const UsersPage = () => {
 
   const [selectedRole, setSelectedRole] = useState('unassigned');
   const [selectedRegionId, setSelectedRegionId] = useState('');
+  const [selectedPermissionProfileId, setSelectedPermissionProfileId] = useState('');
+  const { can } = usePermissions();
 
   const fetchData = async () => {
     setLoading(true);
@@ -60,6 +66,11 @@ const UsersPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const unsub = subscribePermissionProfiles(setPermissionProfiles, () => {});
+    return () => unsub();
+  }, []);
+
   const openEditModal = async (user) => {
     setEditingUser(user);
     setError('');
@@ -75,6 +86,7 @@ const UsersPage = () => {
     } else {
       setSelectedRole(user.role || 'unassigned');
     }
+    setSelectedPermissionProfileId(user.permissionProfileId || '');
   };
 
   const handleSaveRole = async () => {
@@ -101,7 +113,8 @@ const UsersPage = () => {
       }
 
       const userDataPatch = {
-        role: selectedRole
+        role: selectedRole,
+        permissionProfileId: selectedPermissionProfileId || null,
       };
 
       await api.updateData({
@@ -198,24 +211,28 @@ const UsersPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '6px' }}>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={() => navigate(`/users/${user.id}`)}
-                  title="عرض الملف الشخصي"
-                  style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
-                >
-                  <Eye size={18} color="var(--accent-color)" />
-                </button>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={() => openEditModal(user)}
-                  title="تعديل الصلاحيات"
-                  style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
-                >
-                  <Edit2 size={18} />
-                </button>
+                {can(PERMISSION_PAGE_IDS.users, 'user_view_profile') && (
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => navigate(`/users/${user.id}`)}
+                    title="عرض الملف الشخصي"
+                    style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
+                  >
+                    <Eye size={18} color="var(--accent-color)" />
+                  </button>
+                )}
+                {can(PERMISSION_PAGE_IDS.users, 'user_edit_role') && (
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => openEditModal(user)}
+                    title="تعديل الصلاحيات"
+                    style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -291,6 +308,30 @@ const UsersPage = () => {
               </select>
             </div>
 
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                نوع الصلاحيات
+              </label>
+              <select
+                value={selectedPermissionProfileId}
+                onChange={e => setSelectedPermissionProfileId(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-color)',
+                  color: 'var(--text-primary)'
+                }}
+                disabled={!can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')}
+              >
+                <option value="">وصول كامل (بدون نوع مخصص)</option>
+                {permissionProfiles.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name || p.id}</option>
+                ))}
+              </select>
+            </div>
+
             {(selectedRole === 'student' || selectedRole === 'teacher') && (
               <div className="app-alert app-alert--info" style={{ marginBottom: '1.5rem' }}>
                 ربط {selectedRole === 'student' ? 'الطالب' : 'المعلم'} بالمدرسة يتم من داخل صفحة المدرسة نفسها (نمط أعضاء المجموعة).
@@ -302,7 +343,7 @@ const UsersPage = () => {
                 type="button"
                 className="google-btn"
                 onClick={handleSaveRole}
-                disabled={loading}
+                disabled={loading || !can(PERMISSION_PAGE_IDS.users, 'user_edit_role')}
                 style={{ width: '100%', justifyContent: 'center', background: 'var(--accent-color)', color: '#fff' }}
               >
                 {loading ? 'الرجاء الانتظار...' : 'حفظ التغييرات'}
