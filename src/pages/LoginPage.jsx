@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AuthService, { ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE } from '../services/authService';
-import { Phone, Lock, LogIn } from 'lucide-react';
+import { Phone, Lock, LogIn, Eye, EyeOff } from 'lucide-react';
 
 const GoogleIcon = () => (
   <svg className="google-icon" viewBox="0 0 48 48">
@@ -18,6 +18,7 @@ const LoginPage = () => {
   
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     try {
@@ -80,16 +81,17 @@ const LoginPage = () => {
           <p className="tagline" style={{ margin: 0 }}>منصة تعليمية — نفس وضوح وتجربة أدوات Google</p>
         </header>
 
-        <section style={{ width: '100%' }} className="entry-dialog">
+        <section className="entry-dialog login-entry-dialog">
           {error && (
             <div className="app-alert app-alert--error" role="alert">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleCustomLogin} style={{ width: '100%', marginBottom: '1.25rem' }}>
-            <div style={{ marginBottom: '1rem' }}>
-              <div className="md-field">
+          <form onSubmit={handleCustomLogin} className="login-form">
+            <label className="login-form__label">رقم الهاتف</label>
+            <div className="login-form__field-wrap">
+              <div className="md-field login-form__field">
                 <Phone size={20} color="var(--text-secondary)" aria-hidden />
                 <input 
                   type="tel" 
@@ -101,16 +103,26 @@ const LoginPage = () => {
               </div>
             </div>
             
-            <div style={{ marginBottom: '1.25rem' }}>
-              <div className="md-field">
+            <label className="login-form__label">كلمة المرور</label>
+            <div className="login-form__field-wrap">
+              <div className="md-field login-form__field">
                 <Lock size={20} color="var(--text-secondary)" aria-hidden />
                 <input 
-                  type="password" 
+                  type={showPassword ? 'text' : 'password'} 
                   placeholder="كلمة المرور المخصصة"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                 />
+                <button
+                  type="button"
+                  className="icon-btn login-form__password-toggle"
+                  onClick={() => setShowPassword((v) => !v)}
+                  title={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                  aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
@@ -144,7 +156,7 @@ const LoginPage = () => {
             )}
           </button>
 
-          <p className="app-alert app-alert--info" style={{ marginTop: '0.9rem', marginBottom: 0 }}>
+          <p className="app-alert app-alert--info login-form__hint">
             يتم تفعيل الصلاحيات فقط بعد تحديد نوع الصلاحيات من المدير.
           </p>
         </section>

@@ -362,6 +362,88 @@ body {
   padding: 1rem;
 }
 
+.login-entry-dialog {
+  width: 100%;
+}
+
+.login-form {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.login-form__label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.login-form__field-wrap {
+  margin-bottom: 1rem;
+}
+
+.login-form__field {
+  min-height: 54px;
+}
+
+.login-form__password-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+}
+
+.login-form__password-toggle:hover {
+  background: var(--accent-muted);
+  color: var(--md-primary);
+}
+
+.login-form__hint {
+  margin-top: 0.9rem;
+  margin-bottom: 0;
+}
+
+.login-entry-dialog {
+  width: 100%;
+}
+
+.login-form {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.login-form__label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.login-form__field-wrap {
+  margin-bottom: 1rem;
+}
+
+.login-form__field {
+  min-height: 54px;
+}
+
+.login-form__password-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+}
+
+.login-form__password-toggle:hover {
+  background: var(--accent-muted);
+  color: var(--md-primary);
+}
+
+.login-form__hint {
+  margin-top: 0.9rem;
+  margin-bottom: 0;
+}
+
 .app-alert {
   border-radius: var(--radius-md);
   padding: 0.8rem 0.9rem;
@@ -2972,6 +3054,69 @@ html:not(.light-mode) .nav-link.active {
 .no-permissions-card__contact-meta {
   font-size: 0.78rem;
   color: var(--text-secondary);
+}
+
+.settings-page {
+  max-width: 800px;
+}
+
+.settings-profile-form {
+  padding: 2rem;
+}
+
+.settings-profile-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.settings-profile-form__label-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-profile-form__password-field {
+  min-height: 52px;
+}
+
+.settings-profile-form__password-field input {
+  padding: 12px 0;
+}
+
+.settings-profile-form__password-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+}
+
+.settings-profile-form__password-toggle:hover {
+  background: var(--accent-muted);
+  color: var(--md-primary);
+}
+
+.settings-profile-form__readonly {
+  color: var(--text-secondary);
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.settings-profile-form__permission-readonly {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+.settings-profile-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.settings-profile-form__save-btn {
+  padding: 12px 32px;
 }
 
 .admin-site-copy-card {
