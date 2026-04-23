@@ -2134,6 +2134,713 @@ html:not(.light-mode) .nav-link.active {
   margin-top: 0;
 }
 
+/* —— Users pages —— */
+.users-alert {
+  margin-bottom: 1rem;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.users-card {
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.users-card__avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.users-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.users-card__name {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.users-card__email {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.users-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.users-card__role-chip {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.users-card__disabled-chip {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger-color);
+}
+
+.users-card__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.users-modal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.users-modal__title {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.users-modal__supervisor-note {
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--md-primary);
+  background: var(--accent-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.users-modal__supervisor-note-text {
+  margin: 0 0 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.users-modal__supervisor-note-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.users-modal__supervisor-note-code {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  direction: ltr;
+  text-align: left;
+}
+
+.users-modal__supervisor-note-sub {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.users-modal__supervisor-note-sub--mt {
+  margin-top: 8px;
+}
+
+.users-modal__field {
+  margin-bottom: 1.5rem;
+}
+
+.users-modal__helper-alert {
+  margin-bottom: 1.5rem;
+}
+
+.users-modal__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.users-modal__save-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.user-details-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.user-details-page__top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.user-details-empty {
+  margin: 2rem auto;
+  max-width: 480px;
+}
+
+.user-details-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+.user-details-profile-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.user-details-profile-card {
+  padding: 2rem;
+  border-radius: 24px;
+  text-align: center;
+}
+
+.user-details-profile-card__avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--accent-glow);
+  margin-bottom: 1.5rem;
+}
+
+.user-details-profile-card__name {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.user-details-profile-card__role {
+  font-size: 0.85rem;
+  color: var(--accent-color);
+  font-weight: 700;
+  background: var(--accent-glow);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+.user-details-profile-card__disabled {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.12);
+  padding: 6px 12px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.user-details-admin-card {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  text-align: right;
+}
+
+.user-details-admin-card__title {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-primary);
+}
+
+.user-details-admin-card__alert {
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+}
+
+.user-details-admin-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-details-admin-card__btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.user-details-admin-card__btn--enable {
+  background: var(--success-color);
+  color: #fff;
+  border: 1px solid var(--border-color);
+}
+
+.user-details-admin-card__btn--disable {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.user-details-admin-card__btn--delete {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+
+.user-details-profile-card__meta {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: right;
+}
+
+.user-details-profile-card__meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.user-details-memberships-card {
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+}
+
+.user-details-memberships-card__title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.user-details-memberships-card__empty {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.user-details-memberships-list {
+  display: grid;
+  gap: 8px;
+}
+
+.user-details-memberships-item {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px;
+  background: var(--bg-color);
+  text-align: right;
+}
+
+.user-details-memberships-item__line {
+  font-size: 0.8rem;
+}
+
+.user-details-memberships-item__sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.user-details-activity-card {
+  padding: 2rem;
+  border-radius: 24px;
+}
+
+.user-details-activity-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.user-details-activity-card__title {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.user-details-activity-card__empty {
+  padding: 3rem 1.5rem;
+}
+
+.user-details-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-details-activity-list__status-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-details-activity-list__status-chip {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.user-details-activity-list__status-chip--present {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success-color);
+}
+
+.user-details-activity-list__status-chip--absent {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+}
+
+.user-details-activity-list__teacher-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.user-details-activity-list__teacher-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-details-activity-list__teacher-subject {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.user-details-activity-list__teacher-lesson {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* —— Admin reports page —— */
+.admin-reports-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-reports-tabs__btn {
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-bottom: 3px solid transparent;
+}
+
+.admin-reports-tabs__btn--active {
+  color: var(--accent-color);
+  font-weight: 700;
+  border-bottom-color: var(--accent-color);
+}
+
+.admin-reports-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-reports-filters__field {
+  flex: 1;
+  position: relative;
+}
+
+.admin-reports-filters__input {
+  padding-left: 40px;
+}
+
+.admin-reports-filters__icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.4;
+}
+
+.admin-reports-error {
+  text-align: center;
+}
+
+.admin-reports-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.admin-reports-list__meta-wrap {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  flex-wrap: wrap;
+  margin-right: 1rem;
+}
+
+.admin-reports-list__meta-block {
+  min-width: 140px;
+}
+
+.admin-reports-list__meta-label {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.admin-reports-list__meta-value {
+  margin: 0;
+  font-weight: 700;
+}
+
+.admin-reports-list__meta-value--medium {
+  font-weight: 600;
+}
+
+.admin-reports-list__summary {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.admin-reports-list__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-reports-list__view-btn {
+  background: var(--bg-color);
+  color: var(--accent-color);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.admin-reports-list__delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+/* —— Student management page —— */
+.student-management-alert {
+  margin-bottom: 1rem;
+}
+
+.student-management-filters {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.student-management-filters__search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.student-management-filters__search-icon {
+  position: absolute;
+  right: 12px;
+  top: 13px;
+  color: var(--text-secondary);
+}
+
+.student-management-filters__search-input {
+  padding-right: 34px;
+}
+
+.student-management-filters__select {
+  min-width: 180px;
+}
+
+.student-management-table-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.student-management-table {
+  min-width: 920px;
+}
+
+.student-management-student-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.student-management-student-cell__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.student-management-student-cell__name {
+  font-weight: 600;
+}
+
+.student-management-student-cell__email {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.student-management-cell-muted {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.student-management-activity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.student-management-cell-center {
+  text-align: center;
+}
+
+/* —— Curriculum page —— */
+.curriculum-alert {
+  margin-bottom: 1rem;
+}
+
+.curriculum-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.curriculum-modal-actions__btn {
+  width: auto;
+  margin-top: 0;
+}
+
+.curriculum-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.curriculum-item__title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.curriculum-item__title--active {
+  color: var(--md-primary);
+}
+
+.curriculum-item__meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.curriculum-item__badge {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg-color);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.curriculum-item__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.curriculum-editor {
+  padding: 2rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-color);
+}
+
+.curriculum-editor__subject-name {
+  margin-bottom: 1.25rem;
+}
+
+.curriculum-editor__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.curriculum-editor__subtitle {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.curriculum-editor__save-btn {
+  margin-top: 0;
+  width: auto;
+  background: var(--success-color);
+  color: #fff;
+}
+
+.curriculum-editor__weeks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.curriculum-editor__week-item {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.curriculum-editor__week-badge {
+  background: var(--accent-glow);
+  color: var(--accent-color);
+  padding: 12px 16px;
+  font-weight: 700;
+  border-left: 1px solid var(--border-color);
+  min-width: 95px;
+  text-align: center;
+}
+
+.curriculum-editor__week-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.curriculum-editor__footer {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.curriculum-editor__save-btn--final {
+  padding: 12px 32px;
+}
+
 /* —— Notification cards —— */
 .notif-card {
   padding: 1.5rem;
@@ -2370,6 +3077,76 @@ html:not(.light-mode) .nav-link.active {
   .school-details-assign-modal__item {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .users-card {
+    flex-wrap: wrap;
+  }
+
+  .users-card__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .user-details-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .user-details-profile-card,
+  .user-details-activity-card {
+    padding: 1rem;
+  }
+
+  .user-details-activity-list__teacher-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .admin-reports-tabs {
+    gap: 0.25rem;
+  }
+
+  .admin-reports-tabs__btn {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .admin-reports-list__meta-wrap {
+    gap: 1rem;
+    margin-right: 0;
+  }
+
+  .student-management-filters__select {
+    min-width: 100%;
+  }
+
+  .curriculum-editor {
+    padding: 1rem;
+  }
+
+  .curriculum-item__meta-row {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .curriculum-editor__weeks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .curriculum-editor__week-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .curriculum-editor__week-badge {
+    border-left: none;
+    border-bottom: 1px solid var(--border-color);
+    width: 100%;
   }
 }
 

@@ -116,26 +116,25 @@ const StudentManagementPage = () => {
         subtitle="عرض الارتباطات والتحركات لكل طالب بنمط عضويات المجموعات"
       />
 
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error student-management-alert">{error}</div>}
 
-      <div className="surface-card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+      <div className="surface-card student-management-filters">
         <div className="app-form-row">
-          <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
-            <Search size={16} style={{ position: 'absolute', right: 12, top: 13, color: 'var(--text-secondary)' }} />
+          <div className="student-management-filters__search-wrap">
+            <Search size={16} className="student-management-filters__search-icon" />
             <input
               type="text"
-              className="app-input"
-              style={{ paddingRight: 34 }}
+              className="app-input student-management-filters__search-input"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="بحث بالاسم أو البريد أو الارتباط..."
             />
           </div>
-          <select className="app-select" style={{ minWidth: '180px' }} value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
+          <select className="app-select student-management-filters__select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
             <option value="">كل المدارس</option>
             {schoolOptions.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select className="app-select" style={{ minWidth: '180px' }} value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)}>
+          <select className="app-select student-management-filters__select" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)}>
             <option value="">كل المناطق</option>
             {regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
@@ -147,9 +146,9 @@ const StudentManagementPage = () => {
       ) : filtered.length === 0 ? (
         <div className="empty-state">لا يوجد طلاب مطابقون للفلاتر الحالية.</div>
       ) : (
-        <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
+        <div className="surface-card student-management-table-wrap">
           <div className="md-table-scroll">
-            <table className="md-table" style={{ minWidth: 920 }}>
+            <table className="md-table student-management-table">
               <thead>
                 <tr>
                   <th>الطالب</th>
@@ -163,30 +162,30 @@ const StudentManagementPage = () => {
                 {filtered.map((s) => (
                   <tr key={s.id}>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className="student-management-student-cell">
                         <img
                           src={s.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.displayName || '')}`}
                           alt=""
-                          style={{ width: 32, height: 32, borderRadius: '50%' }}
+                          className="student-management-student-cell__avatar"
                         />
                         <div>
-                          <div style={{ fontWeight: 600 }}>{s.displayName || 'بدون اسم'}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{s.email || 'بدون بريد'}</div>
+                          <div className="student-management-student-cell__name">{s.displayName || 'بدون اسم'}</div>
+                          <div className="student-management-student-cell__email">{s.email || 'بدون بريد'}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    <td className="student-management-cell-muted">
                       {s.membershipText || 'غير مرتبط بأي مجموعة'}
                     </td>
                     <td>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <span className="student-management-activity-chip">
                         <Activity size={14} /> {s.activityCount}
                       </span>
                     </td>
-                    <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    <td className="student-management-cell-muted">
                       {s.lastActivity ? new Date(s.lastActivity).toLocaleDateString('ar-EG') : 'لا يوجد'}
                     </td>
-                    <td style={{ textAlign: 'center' }}>
+                    <td className="student-management-cell-center">
                       {can(PERMISSION_PAGE_IDS.students_management, 'student_management_view_profile') && (
                         <button className="icon-btn" onClick={() => navigate(`/users/${s.id}`)} title="عرض ملف الطالب">
                           <Eye size={17} color="var(--accent-color)" />

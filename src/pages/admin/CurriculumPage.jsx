@@ -194,8 +194,8 @@ const CurriculumPage = () => {
         )}
       </PageHeader>
 
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
-      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error curriculum-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success curriculum-alert">{success}</div>}
 
       {/* Add New Subject Modal */}
       <FormModal
@@ -213,11 +213,11 @@ const CurriculumPage = () => {
             className="app-input"
             style={{ marginBottom: '1rem' }}
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsAdding(false)}>
+          <div className="curriculum-modal-actions">
+            <button type="button" className="google-btn curriculum-modal-actions__btn" onClick={() => setIsAdding(false)}>
               إلغاء
             </button>
-            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <button type="submit" className="google-btn google-btn--filled curriculum-modal-actions__btn">
               إنشاء الخطة
             </button>
           </div>
@@ -232,7 +232,7 @@ const CurriculumPage = () => {
           لا توجد مناهج مضافة. ابدأ بإضافة مواد الخطة السنوية.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="curriculum-list">
           {subjects.map(subject => {
             const isExpanded = expandedId === subject.id;
             
@@ -254,15 +254,15 @@ const CurriculumPage = () => {
                   onClick={() => toggleExpand(subject)}
                   className={`accordion-item__header ${isExpanded ? 'accordion-item__header--active' : ''}`}
                 >
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', color: isExpanded ? 'var(--md-primary)' : 'var(--text-primary)' }}>
+                  <h3 className={`curriculum-item__title ${isExpanded ? 'curriculum-item__title--active' : ''}`}>
                     {subject.name}
                   </h3>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'var(--bg-color)', padding: '4px 10px', borderRadius: '12px' }}>
+                  <div className="curriculum-item__meta-row">
+                    <div className="curriculum-item__badge">
                       الخطة: 50 أسبوع
                     </div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div className="curriculum-item__actions">
                       {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_print_subject') && (
                         <button
                           type="button"
@@ -301,9 +301,9 @@ const CurriculumPage = () => {
 
                 {/* Expanded Content (50 Weeks Form) */}
                 {isExpanded && editingSubject?.id === subject.id && (
-                  <div style={{ padding: '2rem', borderTop: '1px solid var(--border-color)', background: 'var(--bg-color)' }}>
-                    <label htmlFor={`subject-name-${subject.id}`} className="md-field" style={{ display: 'block', marginBottom: '1.25rem' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>اسم المادة</span>
+                  <div className="curriculum-editor">
+                    <label htmlFor={`subject-name-${subject.id}`} className="app-field app-field--grow curriculum-editor__subject-name">
+                      <span className="app-label">اسم المادة</span>
                       <input
                         id={`subject-name-${subject.id}`}
                         type="text"
@@ -311,40 +311,26 @@ const CurriculumPage = () => {
                         onChange={(e) => setEditingSubjectName(e.target.value)}
                         placeholder="مثال: العقيدة"
                         autoComplete="off"
-                        style={{ width: '100%', marginTop: 6, padding: '10px', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                        className="app-input"
                       />
                     </label>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                      <h4 style={{ margin: 0, color: 'var(--text-primary)' }}>توزيع الدروس الأسبوعية</h4>
+                    <div className="curriculum-editor__head">
+                      <h4 className="curriculum-editor__subtitle">توزيع الدروس الأسبوعية</h4>
                       {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
                         <button 
-                          className="google-btn" 
+                          className="google-btn curriculum-editor__save-btn" 
                           onClick={handleSaveCurriculum}
                           disabled={loading}
-                          style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff' }}
                         >
                           <Save size={18} /> حفظ التوزيع
                         </button>
                       )}
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+                    <div className="curriculum-editor__weeks-grid">
                       {editingWeeks.map((wConfig, index) => (
-                        <div key={index} className="surface-card" style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          borderRadius: '8px',
-                          overflow: 'hidden'
-                        }}>
-                          <div style={{ 
-                            background: 'var(--accent-glow)', 
-                            color: 'var(--accent-color)', 
-                            padding: '12px 16px',
-                            fontWeight: 'bold',
-                            borderLeft: '1px solid var(--border-color)', // RTL layout
-                            minWidth: '95px',
-                            textAlign: 'center'
-                          }}>
+                        <div key={index} className="surface-card curriculum-editor__week-item">
+                          <div className="curriculum-editor__week-badge">
                             الأسبوع {wConfig.week}
                           </div>
                           <input 
@@ -352,27 +338,18 @@ const CurriculumPage = () => {
                             placeholder="حدد الدرس أو الهدف..."
                             value={wConfig.lesson}
                             onChange={(e) => handleWeekChange(index, e.target.value)}
-                            style={{
-                              flex: 1,
-                              padding: '12px 16px',
-                              border: 'none',
-                              background: 'transparent',
-                              color: 'var(--text-primary)',
-                              outline: 'none',
-                              fontSize: '0.9rem'
-                            }}
+                            className="curriculum-editor__week-input"
                           />
                         </div>
                       ))}
                     </div>
                     
                     {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
-                      <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '2rem' }}>
+                      <div className="curriculum-editor__footer">
                         <button 
-                          className="google-btn" 
+                          className="google-btn curriculum-editor__save-btn curriculum-editor__save-btn--final" 
                           onClick={handleSaveCurriculum}
                           disabled={loading}
-                          style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff', padding: '12px 32px' }}
                         >
                            حفظ التوزيع النهائي للمادة
                         </button>

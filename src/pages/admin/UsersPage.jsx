@@ -140,84 +140,42 @@ const UsersPage = () => {
     <div>
       <PageHeader icon={Shield} title="إدارة المستخدمين والصلاحيات" subtitle="تعديل الرتبة فقط. الربط بالمجموعات يتم من داخل صفحة المجموعة." />
 
-      {error && (
-        <div
-          style={{
-            color: 'var(--danger-color)',
-            marginBottom: '1rem',
-            padding: '1rem',
-            background: 'rgba(239, 68, 68, 0.1)',
-            borderRadius: '8px'
-          }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <div className="app-alert app-alert--error users-alert">{error}</div>}
 
       {loading && !editingUser ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+        <div className="users-grid">
           {users.map(user => (
-            <div
-              key={user.id}
-              className="surface-card"
-              style={{
-                padding: '1.25rem',
-                display: 'flex',
-                gap: '1rem',
-                alignItems: 'center'
-              }}
-            >
+            <div key={user.id} className="surface-card users-card">
               <img
                 src={user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || '')}
                 alt=""
-                style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }}
+                className="users-card__avatar"
               />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{user.displayName || 'بدون اسم'}</h3>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+              <div className="users-card__body">
+                <h3 className="users-card__name">{user.displayName || 'بدون اسم'}</h3>
+                <p className="users-card__email">
                   {user.email}
                 </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
-                  <div
-                    style={{
-                      display: 'inline-block',
-                      padding: '4px 8px',
-                      borderRadius: '12px',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      background: `${ROLE_COLORS[user.role || 'unassigned']}20`,
-                      color: ROLE_COLORS[user.role || 'unassigned']
-                    }}
-                  >
+                <div className="users-card__chips">
+                  <div className="users-card__role-chip" style={{ background: `${ROLE_COLORS[user.role || 'unassigned']}20`, color: ROLE_COLORS[user.role || 'unassigned'] }}>
                     {ROLE_LABELS[user.role || 'unassigned']}
                   </div>
                   {user.accountDisabled && (
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        padding: '4px 8px',
-                        borderRadius: '12px',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        background: 'rgba(239, 68, 68, 0.15)',
-                        color: 'var(--danger-color)'
-                      }}
-                    >
+                    <span className="users-card__disabled-chip">
                       معطّل
                     </span>
                   )}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '6px' }}>
+              <div className="users-card__actions">
                 {can(PERMISSION_PAGE_IDS.users, 'user_view_profile') && (
                   <button
                     type="button"
                     className="icon-btn"
                     onClick={() => navigate(`/users/${user.id}`)}
                     title="عرض الملف الشخصي"
-                    style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
                   >
                     <Eye size={18} color="var(--accent-color)" />
                   </button>
@@ -228,7 +186,6 @@ const UsersPage = () => {
                     className="icon-btn"
                     onClick={() => openEditModal(user)}
                     title="تعديل الصلاحيات"
-                    style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}
                   >
                     <Edit2 size={18} />
                   </button>
@@ -242,61 +199,44 @@ const UsersPage = () => {
       {editingUser && (
         <div className="modal-overlay" onClick={() => setEditingUser(null)}>
           <div className="modal-card modal-card--sm" onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ margin: 0, fontSize: '1.4rem' }}>تعديل صلاحيات ({editingUser.displayName})</h2>
+            <div className="users-modal__head">
+              <h2 className="users-modal__title">تعديل صلاحيات ({editingUser.displayName})</h2>
               <button type="button" className="icon-btn" onClick={() => setEditingUser(null)}>
                 <X size={20} />
               </button>
             </div>
 
             {editingUser.role?.includes('supervisor') && (
-              <div
-                className="surface-card"
-                style={{
-                  padding: '1rem',
-                  marginBottom: '1.25rem',
-                  border: '1px solid var(--md-primary)',
-                  background: 'var(--accent-muted)',
-                  fontSize: '0.9rem',
-                  lineHeight: 1.6
-                }}
-              >
-                <p style={{ margin: '0 0 8px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                  <Info size={18} style={{ flexShrink: 0, marginTop: 2 }} color="var(--md-primary)" />
+              <div className="surface-card users-modal__supervisor-note">
+                <p className="users-modal__supervisor-note-text">
+                  <Info size={18} className="users-modal__supervisor-note-icon" color="var(--md-primary)" />
                   <span>
                     <strong>المشرفون مرتبطون بالمنطقة عبر أعضائها:</strong> الترقية لتصبح مشرفاً على منطقة تتم من{' '}
                     <strong>صفحة تفاصيل المنطقة</strong> (قائمة المناطق)، وليس من هنا. الربط الثنائي في Firestore:
-                    <code style={{ display: 'block', marginTop: '8px', fontSize: '0.8rem', direction: 'ltr', textAlign: 'left' }}>
+                    <code className="users-modal__supervisor-note-code">
                       members/{'{'}groupId{'}'}/members/{'{'}userId{'}'} ↔ Mygroup/{'{'}userId{'}'}/Mygroup/{'{'}groupId{'}'}
                     </code>
                   </span>
                 </p>
                 {regionNameForSupervisor && (
-                  <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
+                  <p className="users-modal__supervisor-note-sub">
                     المنطقة المسندة حالياً: <strong>{regionNameForSupervisor}</strong>
                   </p>
                 )}
-                <p style={{ margin: '8px 0 0', color: 'var(--text-secondary)' }}>
+                <p className="users-modal__supervisor-note-sub users-modal__supervisor-note-sub--mt">
                   لإلغاء صلاحية الإشراف اختر دوراً آخر أدناه واحفظ.
                 </p>
               </div>
             )}
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <div className="users-modal__field">
+              <label className="app-label">
                 الرتبة / الصلاحية
               </label>
               <select
                 value={selectedRole}
                 onChange={e => setSelectedRole(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-color)',
-                  background: 'var(--bg-color)',
-                  color: 'var(--text-primary)'
-                }}
+                className="app-select"
               >
                 {editingUser.role?.includes('supervisor') && (
                   <option value={KEEP_SUPERVISOR}>— الإبقاء كمشرف (بدون تغيير من هنا) —</option>
@@ -308,21 +248,14 @@ const UsersPage = () => {
               </select>
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <div className="users-modal__field">
+              <label className="app-label">
                 نوع الصلاحيات
               </label>
               <select
                 value={selectedPermissionProfileId}
                 onChange={e => setSelectedPermissionProfileId(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-color)',
-                  background: 'var(--bg-color)',
-                  color: 'var(--text-primary)'
-                }}
+                className="app-select"
                 disabled={!can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')}
               >
                 <option value="">وصول كامل (بدون نوع مخصص)</option>
@@ -333,18 +266,17 @@ const UsersPage = () => {
             </div>
 
             {(selectedRole === 'student' || selectedRole === 'teacher') && (
-              <div className="app-alert app-alert--info" style={{ marginBottom: '1.5rem' }}>
+              <div className="app-alert app-alert--info users-modal__helper-alert">
                 ربط {selectedRole === 'student' ? 'الطالب' : 'المعلم'} بالمدرسة يتم من داخل صفحة المدرسة نفسها (نمط أعضاء المجموعة).
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+            <div className="users-modal__actions">
               <button
                 type="button"
-                className="google-btn"
+                className="google-btn google-btn--filled users-modal__save-btn"
                 onClick={handleSaveRole}
                 disabled={loading || !can(PERMISSION_PAGE_IDS.users, 'user_edit_role')}
-                style={{ width: '100%', justifyContent: 'center', background: 'var(--accent-color)', color: '#fff' }}
               >
                 {loading ? 'الرجاء الانتظار...' : 'حفظ التغييرات'}
               </button>

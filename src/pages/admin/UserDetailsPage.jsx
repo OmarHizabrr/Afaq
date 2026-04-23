@@ -133,7 +133,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     };
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
-    if (!profile) return <div className="empty-state" style={{ margin: '2rem auto', maxWidth: '480px' }}>المستخدم غير موجود</div>;
+    if (!profile) return <div className="empty-state user-details-empty">المستخدم غير موجود</div>;
 
     const ROLE_LABELS = {
         admin: 'مدير النظام',
@@ -145,10 +145,10 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     };
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div className="user-details-page">
             <PageHeader
               topRow={
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div className="user-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate(-1)}>
                     <ChevronRight size={20} aria-hidden /> رجوع
                   </button>
@@ -158,49 +158,42 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
               title={<>عرض ملف: <span style={{ color: 'var(--md-primary)' }}>{profile.displayName}</span></>}
             />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+            <div className="user-details-layout">
                 {/* Profile Card */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px', textAlign: 'center' }}>
+                <div className="user-details-profile-col">
+                    <div className="surface-card surface-card--lg user-details-profile-card">
                         <img 
                           src={profile.photoURL || `https://ui-avatars.com/api/?name=${profile.displayName}&size=128`} 
                           alt="Profile" 
-                          style={{ width: '120px', height: '120px', borderRadius: '50%', border: '4px solid var(--accent-glow)', marginBottom: '1.5rem' }}
+                          className="user-details-profile-card__avatar"
                         />
-                        <h2 style={{ margin: 0, fontSize: '1.3rem' }}>{profile.displayName}</h2>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--accent-color)', fontWeight: 700, background: 'var(--accent-glow)', padding: '4px 12px', borderRadius: '20px', marginTop: '10px', display: 'inline-block' }}>
+                        <h2 className="user-details-profile-card__name">{profile.displayName}</h2>
+                        <span className="user-details-profile-card__role">
                             {ROLE_LABELS[profile.role] || profile.role}
                         </span>
                         {profile.accountDisabled && (
-                            <div style={{ marginTop: '10px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--danger-color)', background: 'rgba(239, 68, 68, 0.12)', padding: '6px 12px', borderRadius: '12px', display: 'inline-block' }}>
+                            <div className="user-details-profile-card__disabled">
                                 الحساب معطّل — لا يمكنه تسجيل الدخول
                             </div>
                         )}
 
                         {canAdminManage && (
-                            <div className="surface-card" style={{ marginTop: '1.25rem', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border-color)', textAlign: 'right' }}>
-                                <h3 style={{ margin: '0 0 10px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--md-primary)' }}>
+                            <div className="surface-card user-details-admin-card">
+                                <h3 className="user-details-admin-card__title">
                                     <Shield size={18} /> تحكم المدير
                                 </h3>
                                 {adminError && (
-                                    <div className="app-alert app-alert--error" style={{ marginBottom: '10px', fontSize: '0.85rem' }} role="alert">
+                                    <div className="app-alert app-alert--error user-details-admin-card__alert" role="alert">
                                         {adminError}
                                     </div>
                                 )}
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <div className="user-details-admin-card__actions">
                                     {can(PERMISSION_PAGE_IDS.users, 'user_admin_disable') && (
                                       <button
                                           type="button"
-                                          className="google-btn"
+                                          className={`google-btn user-details-admin-card__btn ${profile.accountDisabled ? 'user-details-admin-card__btn--enable' : 'user-details-admin-card__btn--disable'}`}
                                           disabled={adminWorking}
                                           onClick={handleToggleAccountDisabled}
-                                          style={{
-                                              width: '100%',
-                                              justifyContent: 'center',
-                                              background: profile.accountDisabled ? 'var(--success-color)' : 'rgba(245, 158, 11, 0.15)',
-                                              color: profile.accountDisabled ? '#fff' : 'var(--text-primary)',
-                                              border: '1px solid var(--border-color)'
-                                          }}
                                       >
                                           <Ban size={18} style={{ marginLeft: 8 }} aria-hidden />
                                           {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
@@ -209,16 +202,9 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                     {can(PERMISSION_PAGE_IDS.users, 'user_admin_delete') && (
                                       <button
                                           type="button"
-                                          className="google-btn"
+                                          className="google-btn user-details-admin-card__btn user-details-admin-card__btn--delete"
                                           disabled={adminWorking}
                                           onClick={handleAdminDeleteUser}
-                                          style={{
-                                              width: '100%',
-                                              justifyContent: 'center',
-                                              background: 'rgba(239, 68, 68, 0.12)',
-                                              color: 'var(--danger-color)',
-                                              border: '1px solid var(--danger-color)'
-                                          }}
                                       >
                                           <Trash2 size={18} style={{ marginLeft: 8 }} aria-hidden />
                                           حذف المستخدم نهائياً من النظام
@@ -228,32 +214,32 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                             </div>
                         )}
                         
-                        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'right' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                        <div className="user-details-profile-card__meta">
+                            <div className="user-details-profile-card__meta-row">
                                 <Mail size={16} /> {profile.email}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                            <div className="user-details-profile-card__meta-row">
                                 <Phone size={16} /> {profile.phoneNumber || 'لا يوجد رقم'}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                            <div className="user-details-profile-card__meta-row">
                                 <Shield size={16} /> المعرف: {profile.id.substring(0, 8)}...
                             </div>
                         </div>
                     </div>
-                    <div className="surface-card" style={{ padding: '1rem 1.1rem', borderRadius: '16px' }}>
-                        <h3 style={{ margin: '0 0 10px', fontSize: '1rem', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div className="surface-card user-details-memberships-card">
+                        <h3 className="user-details-memberships-card__title">
                           <BookOpen size={16} /> الارتباطات (Memberships)
                         </h3>
                         {memberships.length === 0 ? (
-                          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لا توجد ارتباطات مجموعات حالياً.</p>
+                          <p className="user-details-memberships-card__empty">لا توجد ارتباطات مجموعات حالياً.</p>
                         ) : (
-                          <div style={{ display: 'grid', gap: '8px' }}>
+                          <div className="user-details-memberships-list">
                             {memberships.map((m) => (
-                              <div key={m.id} style={{ border: '1px solid var(--border-color)', borderRadius: '10px', padding: '8px', background: 'var(--bg-color)', textAlign: 'right' }}>
-                                <div style={{ fontSize: '0.8rem' }}>
+                              <div key={m.id} className="user-details-memberships-item">
+                                <div className="user-details-memberships-item__line">
                                   {m.schoolId ? `مدرسة: ${m.schoolId}` : m.regionId ? `منطقة: ${m.regionId}` : `مجموعة: ${m.id}`}
                                 </div>
-                                {m.role && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>الدور: {m.role}</div>}
+                                {m.role && <div className="user-details-memberships-item__sub">الدور: {m.role}</div>}
                               </div>
                             ))}
                           </div>
@@ -262,26 +248,26 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 </div>
 
                 {/* Role-Specific Activity */}
-                <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                <div className="surface-card surface-card--lg user-details-activity-card">
+                    <div className="user-details-activity-card__head">
                         <Activity size={24} color="var(--accent-color)" />
-                        <h2 style={{ margin: 0, fontSize: '1.3rem' }}>السجل والنشاطات</h2>
+                        <h2 className="user-details-activity-card__title">السجل والنشاطات</h2>
                     </div>
 
                     {activity.length === 0 ? (
-                        <div className="empty-state" style={{ padding: '3rem 1.5rem' }}>
+                        <div className="empty-state user-details-activity-card__empty">
                            لا يوجد سجلات نشطة لهذا الحساب حالياً.
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div className="user-details-activity-list">
                            {profile.role === 'student' && activity.map(item => (
                               <div key={item.id} className="activity-list-item activity-list-item--split">
                                  <div>
                                     <h4 style={{ margin: 0 }}>{item.subject}</h4>
                                     <p style={{ margin: '4px 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.date} • {item.school}</p>
                                  </div>
-                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <span style={{ fontSize: '0.8rem', background: item.isPresent ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: item.isPresent ? 'var(--success-color)' : 'var(--danger-color)', padding: '4px 10px', borderRadius: '12px' }}>
+                                 <div className="user-details-activity-list__status-wrap">
+                                    <span className={`user-details-activity-list__status-chip ${item.isPresent ? 'user-details-activity-list__status-chip--present' : 'user-details-activity-list__status-chip--absent'}`}>
                                        {item.isPresent ? 'حاضر' : 'غائب'}
                                     </span>
                                     {item.isTested && <TrendingUp size={16} color="var(--success-color)" />}
@@ -291,14 +277,14 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
 
                            {profile.role === 'teacher' && activity.map(item => (
                               <div key={item.id} className="activity-list-item">
-                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                 <div className="user-details-activity-list__teacher-row">
+                                    <div className="user-details-activity-list__teacher-date">
                                        <Calendar size={14} color="var(--accent-color)" />
                                        <span style={{ fontWeight: 600 }}>{item.date}</span>
                                     </div>
-                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.subject}</span>
+                                    <span className="user-details-activity-list__teacher-subject">{item.subject}</span>
                                  </div>
-                                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>📖 {item.lessonTitle}</p>
+                                 <p className="user-details-activity-list__teacher-lesson">📖 {item.lessonTitle}</p>
                               </div>
                            ))}
 

@@ -90,135 +90,96 @@ const AdminReportsPage = () => {
       />
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+      <div className="admin-reports-tabs">
         <button 
           onClick={() => setActiveTab('daily')} 
-          style={{ 
-            background: 'transparent', border: 'none', padding: '10px 20px', cursor: 'pointer',
-            color: activeTab === 'daily' ? 'var(--accent-color)' : 'var(--text-secondary)',
-            fontWeight: activeTab === 'daily' ? 'bold' : 'normal',
-            borderBottom: activeTab === 'daily' ? '3px solid var(--accent-color)' : 'none'
-          }}
+          className={`admin-reports-tabs__btn ${activeTab === 'daily' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
           <Calendar size={18} style={{ marginLeft: '6px' }} /> التحضير اليومي
         </button>
         <button 
           onClick={() => setActiveTab('weekly')} 
-          style={{ 
-            background: 'transparent', border: 'none', padding: '10px 20px', cursor: 'pointer',
-            color: activeTab === 'weekly' ? 'var(--accent-color)' : 'var(--text-secondary)',
-            fontWeight: activeTab === 'weekly' ? 'bold' : 'normal',
-            borderBottom: activeTab === 'weekly' ? '3px solid var(--accent-color)' : 'none'
-          }}
+          className={`admin-reports-tabs__btn ${activeTab === 'weekly' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
           <ClipboardList size={18} style={{ marginLeft: '6px' }} /> التقارير الأسبوعية
         </button>
         <button 
           onClick={() => setActiveTab('visits')} 
-          style={{ 
-            background: 'transparent', border: 'none', padding: '10px 20px', cursor: 'pointer',
-            color: activeTab === 'visits' ? 'var(--accent-color)' : 'var(--text-secondary)',
-            fontWeight: activeTab === 'visits' ? 'bold' : 'normal',
-            borderBottom: activeTab === 'visits' ? '3px solid var(--accent-color)' : 'none'
-          }}
+          className={`admin-reports-tabs__btn ${activeTab === 'visits' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
           <MapPin size={18} style={{ marginLeft: '6px' }} /> زيارات المشرفين
         </button>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="surface-card" style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem', 
-        padding: '1rem', 
-        alignItems: 'center',
-        flexWrap: 'wrap'
-      }}>
-        <div style={{ flex: 1, position: 'relative' }}>
+      <div className="surface-card admin-reports-filters">
+        <div className="admin-reports-filters__field">
           <input 
             type="text" 
             placeholder="البحث باسم المعلم أو المشرف..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ 
-                width: '100%', 
-                padding: '12px 12px 12px 40px', 
-                borderRadius: '8px', 
-                border: '1px solid var(--border-color)', 
-                background: 'var(--bg-color)', 
-                color: 'var(--text-primary)',
-                fontSize: '0.9rem'
-            }}
+            className="app-input admin-reports-filters__input"
           />
-          <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
+          <Search size={18} className="admin-reports-filters__icon" />
         </div>
-        <div style={{ flex: 1, position: 'relative' }}>
+        <div className="admin-reports-filters__field">
           <input 
             type="text" 
             placeholder="فلترة حسب المدرسة..." 
             value={filterSchool}
             onChange={(e) => setFilterSchool(e.target.value)}
-            style={{ 
-                width: '100%', 
-                padding: '12px 12px 12px 40px', 
-                borderRadius: '8px', 
-                border: '1px solid var(--border-color)', 
-                background: 'var(--bg-color)', 
-                color: 'var(--text-primary)',
-                fontSize: '0.9rem'
-            }}
+            className="app-input admin-reports-filters__input"
           />
-          <Filter size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
+          <Filter size={18} className="admin-reports-filters__icon" />
         </div>
       </div>
 
       {loading ? (
         <div className="loading-spinner" style={{ margin: '3rem auto' }}></div>
       ) : error ? (
-        <div style={{ color: 'var(--danger-color)', textAlign: 'center' }}>{error}</div>
+        <div className="app-alert app-alert--error admin-reports-error">{error}</div>
       ) : reports.length === 0 ? (
         <div className="empty-state empty-state--lg">لا توجد تقارير في هذا القسم بعد.</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.25rem' }}>
+        <div className="admin-reports-list">
           {reports
             .filter(r => (r.teacherName || r.supervisorName || '').includes(searchTerm) && (r.schoolName || '').includes(filterSchool))
             .map((rpt) => (
             <div key={rpt.id} className="surface-card report-row-card">
               <div className="report-row-card__accent" style={{ background: activeTab === 'visits' ? 'var(--md-primary)' : activeTab === 'weekly' ? 'var(--md-primary)' : 'var(--success-color)' }} />
               
-              <div style={{ display: 'flex', gap: '2rem', flex: 1, flexWrap: 'wrap', marginRight: '1rem' }}>
-                <div style={{ minWidth: '130px' }}>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>التاريخ</p>
-                  <p style={{ margin: 0, fontWeight: 700 }}>{rpt.date || rpt.submissionDate?.split('T')[0] || rpt.timestamp?.split('T')[0]}</p>
+              <div className="admin-reports-list__meta-wrap">
+                <div className="admin-reports-list__meta-block">
+                  <p className="admin-reports-list__meta-label">التاريخ</p>
+                  <p className="admin-reports-list__meta-value">{rpt.date || rpt.submissionDate?.split('T')[0] || rpt.timestamp?.split('T')[0]}</p>
                 </div>
-                <div style={{ minWidth: '150px' }}>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{activeTab === 'visits' ? 'المشرف' : 'المعلم'}</p>
-                    <p style={{ margin: 0, fontWeight: 700 }}>{rpt.supervisorName || rpt.teacherName || 'ID: ' + (rpt.teacherId || rpt.supervisorId || '').substring(0,8)}</p>
+                <div className="admin-reports-list__meta-block">
+                    <p className="admin-reports-list__meta-label">{activeTab === 'visits' ? 'المشرف' : 'المعلم'}</p>
+                    <p className="admin-reports-list__meta-value">{rpt.supervisorName || rpt.teacherName || 'ID: ' + (rpt.teacherId || rpt.supervisorId || '').substring(0,8)}</p>
                 </div>
                 {rpt.schoolName && (
-                  <div style={{ minWidth: '150px' }}>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>المدرسة</p>
-                    <p style={{ margin: 0, fontWeight: 600 }}>{rpt.schoolName}</p>
+                  <div className="admin-reports-list__meta-block">
+                    <p className="admin-reports-list__meta-label">المدرسة</p>
+                    <p className="admin-reports-list__meta-value admin-reports-list__meta-value--medium">{rpt.schoolName}</p>
                   </div>
                 )}
-                <div style={{ minWidth: '160px' }}>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>ملخص النشاط</p>
-                    <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                <div className="admin-reports-list__meta-block">
+                    <p className="admin-reports-list__meta-label">ملخص النشاط</p>
+                    <p className="admin-reports-list__summary">
                         {activeTab === 'daily' ? `الحضور: ${rpt.totalPresent}/${rpt.totalStudents}` :
                          activeTab === 'weekly' ? 'تقرير أعمال أسبوعي' :
                          `تقييم الأداء: ${rpt.teacherRating}/10`}
                     </p>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div className="admin-reports-list__actions">
                 {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
                   <button
                     type="button"
-                    className="icon-btn"
                     onClick={() => navigate(`/reports/${rpt.id}`)}
                     title="عرض التفاصيل الكاملة"
-                    style={{ background: 'var(--bg-color)', color: 'var(--accent-color)', width: '44px', height: '44px', borderRadius: '12px' }}
+                    className="icon-btn admin-reports-list__view-btn"
                   >
                     <Eye size={22} />
                   </button>
@@ -226,16 +187,9 @@ const AdminReportsPage = () => {
                 {can(PERMISSION_PAGE_IDS.reports, 'report_delete') && (
                   <button
                     type="button"
-                    className="icon-btn"
+                    className="icon-btn admin-reports-list__delete-btn"
                     onClick={() => handleDeleteReportRow(rpt)}
                     title="حذف التقرير"
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      color: 'var(--danger-color)',
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '12px'
-                    }}
                   >
                     <Trash2 size={20} />
                   </button>
