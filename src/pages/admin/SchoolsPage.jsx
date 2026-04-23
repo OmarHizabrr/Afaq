@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, School, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, School, Eye, MapPin, Handshake } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -198,8 +198,8 @@ const SchoolsPage = () => {
               <div>
                 <h3 className="schools-card__title">{sch.name}</h3>
                 <div className="schools-card__meta">
-                  <span>📍 القرية: {getVillageName(sch.villageId)}</span>
-                  {sch.donorName && <span className="schools-card__donor">🤝 المتبرع: {sch.donorName}</span>}
+                  <span><MapPin size={14} /> القرية: {getVillageName(sch.villageId)}</span>
+                  {sch.donorName && <span className="schools-card__donor"><Handshake size={14} /> المتبرع: {sch.donorName}</span>}
                 </div>
               </div>
               <div className="schools-card__actions">

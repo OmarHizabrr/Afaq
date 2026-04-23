@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Navigation, Save, CheckCircle, XCircle, Star, Image as ImageIcon, Video, Camera } from 'lucide-react';
+import { MapPin, Navigation, CheckCircle, CheckCircle2, XCircle, Star, Image as ImageIcon, Camera } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import { openGoogleMaps } from '../../utils/maps';
 import { uploadMedia } from '../../services/storageApi';
@@ -361,8 +361,8 @@ const SupervisorVisitPage = ({ user }) => {
                     className="map-location-open map-location-open--clickable map-location-open--compact"
                     title="فتح في خرائط Google"
                   >
-                    <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>
-                      ✔ تم تحديد الموقع ({gpsLocation.lat.toFixed(4)}, {gpsLocation.lng.toFixed(4)})
+                    <span style={{ color: 'var(--success-color)', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <CheckCircle2 size={14} /> تم تحديد الموقع ({gpsLocation.lat.toFixed(4)}, {gpsLocation.lng.toFixed(4)})
                     </span>
                     <span className="map-location-open__hint" style={{ marginTop: 6, display: 'block' }}>
                       اضغط للعرض على الخريطة

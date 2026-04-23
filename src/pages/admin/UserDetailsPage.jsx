@@ -284,7 +284,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                     </div>
                                     <span className="user-details-activity-list__teacher-subject">{item.subject}</span>
                                  </div>
-                                 <p className="user-details-activity-list__teacher-lesson">📖 {item.lessonTitle}</p>
+                                 <p className="user-details-activity-list__teacher-lesson"><BookOpen size={14} /> {item.lessonTitle}</p>
                               </div>
                            ))}
 

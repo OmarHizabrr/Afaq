@@ -4,15 +4,18 @@ import {
   Calendar, 
   BookOpen, 
   TrendingUp, 
-  School,
   CheckCircle,
   FileText,
-  Activity
+  Activity,
+  Lightbulb,
+  Rocket
 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 
-const StatCard = ({ title, value, icon: Icon, color, subtext }) => (
+const StatCard = ({ title, value, icon, color, subtext }) => {
+  const IconComponent = icon;
+  return (
   <div className="surface-card surface-card--lg" style={{
     padding: '1.5rem',
     borderRadius: '20px',
@@ -33,7 +36,7 @@ const StatCard = ({ title, value, icon: Icon, color, subtext }) => (
       justifyContent: 'center',
       boxShadow: `0 8px 30px ${color}20`
     }}>
-      <Icon size={30} />
+      <IconComponent size={30} />
     </div>
     <div>
       <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{title}</p>
@@ -41,7 +44,8 @@ const StatCard = ({ title, value, icon: Icon, color, subtext }) => (
       {subtext && <p style={{ margin: '4px 0 0', fontSize: '0.75rem', color: 'var(--success-color)', fontWeight: 600 }}>{subtext}</p>}
     </div>
   </div>
-);
+  );
+};
 
 const StudentDashboardPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
@@ -122,7 +126,7 @@ const StudentDashboardPage = ({ user }) => {
         title={
           <>
             مرحباً يا{' '}
-            <span style={{ color: 'var(--md-primary)' }}>{user?.displayName?.split(/\s+/)[0] || 'طالب'}</span> 👋
+            <span style={{ color: 'var(--md-primary)' }}>{user?.displayName?.split(/\s+/)[0] || 'طالب'}</span>
           </>
         }
         subtitle={
@@ -182,10 +186,10 @@ const StudentDashboardPage = ({ user }) => {
         {/* Small Progress / Tips Card */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ background: 'linear-gradient(135deg, var(--accent-color), #3b82f6)', padding: '2rem', borderRadius: '24px', color: '#fff', boxShadow: '0 15px 30px rgba(59, 130, 246, 0.3)' }}>
-                <h3 style={{ margin: 0, fontSize: '1.2rem' }}>نصيحة اليوم 💡</h3>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Lightbulb size={18} /> نصيحة اليوم</h3>
                 <p style={{ marginTop: '1rem', opacity: 0.9, lineHeight: 1.6 }}>الاستمرار في الحضور اليومي والمراجعة المستمرة هو سر التفوق في حلقات آفاق التعليمية.</p>
                 <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.2)', fontSize: '0.9rem', fontWeight: 600 }}>
-                    شعارنا: نتفكر في الآفاق 🚀
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} /> شعارنا: نتفكر في الآفاق</span>
                 </div>
             </div>
 

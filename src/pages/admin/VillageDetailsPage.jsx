@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { School, ChevronRight, Info, PieChart, MapPin, Edit2, Trash2, Plus, Save, X } from 'lucide-react';
+import { School, ChevronRight, Info, PieChart, MapPin, Edit2, Trash2, Plus, Save, X, User, Users, Baby, Hash } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -185,9 +185,9 @@ const VillageDetailsPage = () => {
                         <div className="village-details-new-muslims">
                             <h3 className="village-details-new-muslims__title">المهتدون الجدد (New Muslims)</h3>
                             <div className="village-details-new-muslims__summary">
-                                <div><strong>👨 رجال:</strong> {menCount}</div>
-                                <div><strong>👩 نساء:</strong> {womenCount}</div>
-                                <div><strong>👧 أطفال:</strong> {childrenCount}</div>
+                                <div><strong><User size={14} /> رجال:</strong> {menCount}</div>
+                                <div><strong><Users size={14} /> نساء:</strong> {womenCount}</div>
+                                <div><strong><Baby size={14} /> أطفال:</strong> {childrenCount}</div>
                             </div>
                             <div className="village-details-new-muslims__body">
                               <div className="village-details-new-muslims__entry">
@@ -279,7 +279,7 @@ const VillageDetailsPage = () => {
                                     <div key={sch.id} className="village-details-schools-item">
                                         <div>
                                             <h4 className="village-details-schools-item__name">{sch.name}</h4>
-                                            <p className="village-details-schools-item__id">🆔 {sch.id}</p>
+                                            <p className="village-details-schools-item__id"><Hash size={14} /> {sch.id}</p>
                                         </div>
                                         {can(PERMISSION_PAGE_IDS.villages, 'village_school_view') && (
                                           <button onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={18}/></button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolIcon, Search, Filter, Trash2 } from 'lucide-react';
+import { FileText, ClipboardList, MapPin, Eye, Calendar, User, School as SchoolIcon, Search, Filter, Trash2, CheckCircle2, XCircle } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import MapLocationOpen from '../../components/MapLocationOpen';
@@ -77,8 +77,8 @@ const AdminReportsPage = () => {
   };
 
   const renderStatus = (val) => {
-      if (val === true || val === 'isActive') return <span style={{ color: 'var(--success-color)' }}>✅ منجز</span>;
-      return <span style={{ color: 'var(--danger-color)' }}>❌ لم ينجز</span>;
+      if (val === true || val === 'isActive') return <span style={{ color: 'var(--success-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={14} /> منجز</span>;
+      return <span style={{ color: 'var(--danger-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}><XCircle size={14} /> لم ينجز</span>;
   };
 
   return (

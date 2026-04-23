@@ -9,6 +9,7 @@ import {
   Info,
   ChevronRight,
   CheckCircle,
+  CheckCircle2,
   XCircle,
   Trash2,
   Pencil,
@@ -585,9 +586,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                       </div>
                       <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                         {st.isPresent ? (
-                          <span style={{ color: 'var(--success-color)', fontSize: '0.85rem' }}>حاضر ✅</span>
+                          <span style={{ color: 'var(--success-color)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={14} /> حاضر</span>
                         ) : (
-                          <span style={{ color: 'var(--danger-color)', fontSize: '0.85rem' }}>غائب ❌</span>
+                          <span style={{ color: 'var(--danger-color)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}><XCircle size={14} /> غائب</span>
                         )}
                         <div
                           style={{
@@ -628,7 +629,17 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                     {report.records?.map((r) => (
                       <tr key={r.studentId} className={!r.isPresent ? 'md-table__row--absent' : ''}>
                         <td style={{ fontWeight: 600 }}>{r.name}</td>
-                        <td>{r.isPresent ? '✅ حاضر' : '❌ غائب'}</td>
+                        <td>
+                          {r.isPresent ? (
+                            <span style={{ color: 'var(--success-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                              <CheckCircle2 size={14} /> حاضر
+                            </span>
+                          ) : (
+                            <span style={{ color: 'var(--danger-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                              <XCircle size={14} /> غائب
+                            </span>
+                          )}
+                        </td>
                         <td>{r.memorization || '—'}</td>
                         <td>{r.review || '—'}</td>
                       </tr>

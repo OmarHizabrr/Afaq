@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye } from 'lucide-react';
+import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye, CalendarDays } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
@@ -133,7 +133,7 @@ const DashboardPage = () => {
                         </p>
                         <div className="dashboard-activity-item__footer">
                            <p className="dashboard-activity-item__date">
-                              📅 {act.date || act.timestamp?.split('T')[0]}
+                              <CalendarDays size={14} /> {act.date || act.timestamp?.split('T')[0]}
                            </p>
                            {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
                              <button onClick={() => navigate(`/reports/${act.id}`)} className="icon-btn" title="عرض التفاصيل">

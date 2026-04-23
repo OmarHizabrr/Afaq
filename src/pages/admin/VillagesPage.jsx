@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -512,7 +512,7 @@ const VillagesPage = () => {
               </p>
 
               <div className="villages-card__stats">
-                <div>👥 السكان: {vil.populationCount}</div>
+                <div><Users size={14} /> السكان: {vil.populationCount}</div>
                 <div>مسلمين: {vil.muslimsCount}</div>
                 <div className="villages-card__stats-danger">غير المسلمين: {vil.nonMuslimsCount}</div>
                 <div className="villages-card__stats-success">مهتدين (رجال): {(newMuslimsDocsByVillage[vil.id] || []).filter(m => m.type === 'رجل').length}</div>
