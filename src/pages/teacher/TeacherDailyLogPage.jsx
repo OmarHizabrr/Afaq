@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Save, CheckCircle, XCircle } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import AppSelect from '../../components/AppSelect';
 
 const TeacherDailyLogPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
@@ -176,20 +177,20 @@ const TeacherDailyLogPage = ({ user }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المادة</label>
-            <select value={selectedSubjectId} onChange={(e) => { setSelectedSubjectId(e.target.value); setSelectedWeek(''); }} style={inputStyle}>
+            <AppSelect value={selectedSubjectId} onChange={(e) => { setSelectedSubjectId(e.target.value); setSelectedWeek(''); }} style={inputStyle}>
               <option value="">-- اختر المادة --</option>
               {curriculumList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            </AppSelect>
           </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>الدرس المدرج بالخطة للاختيار</label>
-            <select value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} style={inputStyle} disabled={!selectedSubjectId}>
+            <AppSelect value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} style={inputStyle} disabled={!selectedSubjectId}>
               <option value="">-- اختر الدرس (الأسبوع) --</option>
               {availableWeeks.map(w => (
                 <option key={w.week} value={w.week}>أسبوع {w.week}: {w.lesson || 'لم يحدد درس'}</option>
               ))}
-            </select>
+            </AppSelect>
           </div>
         </div>
       </div>

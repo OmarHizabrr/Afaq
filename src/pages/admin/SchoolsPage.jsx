@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
+import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
@@ -156,16 +157,16 @@ const SchoolsPage = () => {
       >
         <form onSubmit={handleAdd} className="schools-form">
           <label className="app-label">تصفية حسب المنطقة</label>
-          <select value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="app-select schools-form__field-gap">
+          <AppSelect value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="schools-form__field-gap">
             <option value="">-- كل المناطق --</option>
             {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
+          </AppSelect>
 
           <label className="app-label">القرية (مطلوب)</label>
-          <select value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="app-select schools-form__field-gap" required>
+          <AppSelect value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="schools-form__field-gap" required>
             <option value="">-- اختر القرية --</option>
             {filteredVillages.map(v => <option key={v.id} value={v.id}>{v.villageName}</option>)}
-          </select>
+          </AppSelect>
 
           <label className="app-label">اسم المدرسة (مطلوب)</label>
           <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder="مثال: مدرسة النور" />

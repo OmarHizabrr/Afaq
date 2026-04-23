@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Palette, Plus, Trash2 } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
+import AppSelect from '../../components/AppSelect';
 import useSiteContent from '../../context/useSiteContent';
 import { saveBranding, saveContacts } from '../../services/siteConfigService';
 
@@ -119,7 +120,7 @@ export default function AdminBrandingPage({ user }) {
                     )
                   }
                 />
-                <select
+                <AppSelect
                   className="app-select"
                   value={item.channel || 'whatsapp'}
                   onChange={(e) =>
@@ -136,7 +137,7 @@ export default function AdminBrandingPage({ user }) {
                   <option value="facebook">فيسبوك</option>
                   <option value="x">X / تويتر</option>
                   <option value="other">أخرى</option>
-                </select>
+                </AppSelect>
                 <input
                   className="app-input"
                   placeholder="رقم أو رابط الحساب"

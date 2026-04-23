@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Edit2, X, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
@@ -154,7 +155,7 @@ const UsersPage = () => {
               <label className="app-label">
                 نوع الصلاحيات
               </label>
-              <select
+              <AppSelect
                 value={selectedPermissionProfileId}
                 onChange={e => setSelectedPermissionProfileId(e.target.value)}
                 className="app-select"
@@ -164,7 +165,7 @@ const UsersPage = () => {
                 {permissionProfiles.map((p) => (
                   <option key={p.id} value={p.id}>{p.name || p.id}</option>
                 ))}
-              </select>
+              </AppSelect>
             </div>
             <div className="app-alert app-alert--info users-modal__helper-alert">
               إذا تُرك الحقل فارغاً فلن يرى المستخدم أي صفحات، وسيظهر له تنبيه طلب الصلاحيات بعد تسجيل الدخول.

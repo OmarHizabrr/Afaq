@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { GraduationCap, Search, Activity, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
@@ -130,14 +131,14 @@ const StudentManagementPage = () => {
               placeholder="بحث بالاسم أو البريد أو الارتباط..."
             />
           </div>
-          <select className="app-select student-management-filters__select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
+          <AppSelect className="student-management-filters__select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
             <option value="">كل المدارس</option>
             {schoolOptions.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <select className="app-select student-management-filters__select" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)}>
+          </AppSelect>
+          <AppSelect className="student-management-filters__select" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)}>
             <option value="">كل المناطق</option>
             {regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}
-          </select>
+          </AppSelect>
         </div>
       </div>
 

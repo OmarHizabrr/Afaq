@@ -4,6 +4,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import { openGoogleMaps } from '../../utils/maps';
 import { uploadMedia } from '../../services/storageApi';
 import PageHeader from '../../components/PageHeader';
+import AppSelect from '../../components/AppSelect';
 
 const SupervisorVisitPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
@@ -240,24 +241,24 @@ const SupervisorVisitPage = ({ user }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>المدرسة المُزارة</label>
-            <select value={selectedSchoolId} onChange={(e) => setSelectedSchoolId(e.target.value)} style={inputStyle}>
+            <AppSelect value={selectedSchoolId} onChange={(e) => setSelectedSchoolId(e.target.value)} style={inputStyle}>
               <option value="">-- اختر المدرسة --</option>
               {assignedSchools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
+            </AppSelect>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>المادة</label>
-            <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} style={inputStyle}>
+            <AppSelect value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} style={inputStyle}>
               <option value="">-- اختر المادة --</option>
               {curriculumList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            </AppSelect>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>الدرس المدرج بالخطة</label>
-            <select value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} style={inputStyle} disabled={!selectedSubjectId}>
+            <AppSelect value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} style={inputStyle} disabled={!selectedSubjectId}>
               <option value="">-- اختر الدرس --</option>
               {availableWeeks.map(w => <option key={w.week} value={w.week}>أسبوع {w.week}: {w.lesson || '-'}</option>)}
-            </select>
+            </AppSelect>
           </div>
         </div>
       </div>

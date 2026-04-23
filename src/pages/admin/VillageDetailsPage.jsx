@@ -4,6 +4,7 @@ import { School, ChevronRight, Info, PieChart, MapPin, Edit2, Trash2, Plus, Save
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
@@ -198,15 +199,15 @@ const VillageDetailsPage = () => {
                                   placeholder="اسم المهتدي الجديد"
                                   className="app-input"
                                 />
-                                <select
+                                <AppSelect
                                   value={newType}
                                   onChange={(e) => setNewType(e.target.value)}
-                                  className="app-select"
+                                  className=""
                                 >
                                   <option value="رجل">رجل</option>
                                   <option value="امرأة">امرأة</option>
                                   <option value="طفل">طفل</option>
-                                </select>
+                                </AppSelect>
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
                                   <button type="button" className="icon-btn" onClick={handleAddNewMuslim} disabled={saving} title="إضافة">
                                     <Plus size={16} />
@@ -228,15 +229,15 @@ const VillageDetailsPage = () => {
                                               onChange={(e) => setEditingName(e.target.value)}
                                               className="app-input"
                                             />
-                                            <select
+                                            <AppSelect
                                               value={editingType}
                                               onChange={(e) => setEditingType(e.target.value)}
-                                              className="app-select"
+                                              className=""
                                             >
                                               <option value="رجل">رجل</option>
                                               <option value="امرأة">امرأة</option>
                                               <option value="طفل">طفل</option>
-                                            </select>
+                                            </AppSelect>
                                           </div>
                                           <div className="village-details-new-muslims__item-actions">
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (

@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
+import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
@@ -389,12 +390,12 @@ const VillagesPage = () => {
           <div className="villages-form__grid">
             <div className="app-field app-field--grow">
               <label className="app-label">المنطقة التابعة لها</label>
-              <select value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} className="app-select" required>
+              <AppSelect value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} required>
                 <option value="">-- اختر المنطقة --</option>
                 {regions.map(reg => (
                   <option key={reg.id} value={reg.id}>{reg.name} ({getRegionName(reg.id)})</option> // Simplified
                 ))}
-              </select>
+              </AppSelect>
             </div>
             <div className="app-field app-field--grow">
               <label className="app-label">اسم القرية</label>
@@ -444,11 +445,11 @@ const VillagesPage = () => {
             </div>
             <div className="app-field villages-form__new-muslim-type">
               <label className="app-label">الفئة</label>
-              <select value={muslimType} onChange={(e) => setMuslimType(e.target.value)} className="app-select">
+              <AppSelect value={muslimType} onChange={(e) => setMuslimType(e.target.value)}>
                 <option value="رجل">رجل</option>
                 <option value="امرأة">امرأة</option>
                 <option value="طفل">طفل</option>
-              </select>
+              </AppSelect>
             </div>
             <button type="button" onClick={addNewMuslimToList} className="google-btn google-btn--toolbar villages-form__new-muslim-btn">
               <UserPlus size={16} /> إضافة
@@ -572,16 +573,15 @@ const VillagesPage = () => {
                         }
                       }}
                     />
-                    <select
+                    <AppSelect
                       value={nmDraftType}
                       onChange={(e) => setNmDraftType(e.target.value)}
-                      className="app-select"
                       disabled={nmSaving}
                     >
                       <option value="رجل">رجل</option>
                       <option value="امرأة">امرأة</option>
                       <option value="طفل">طفل</option>
-                    </select>
+                    </AppSelect>
                     {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
                       <button
                         type="button"
@@ -611,16 +611,15 @@ const VillagesPage = () => {
                                 className="app-input"
                                 disabled={nmSaving}
                               />
-                              <select
+                              <AppSelect
                                 value={nmEditingType}
                                 onChange={(e) => setNmEditingType(e.target.value)}
-                                className="app-select"
                                 disabled={nmSaving}
                               >
                                 <option value="رجل">رجل</option>
                                 <option value="امرأة">امرأة</option>
                                 <option value="طفل">طفل</option>
-                              </select>
+                              </AppSelect>
                               <button
                                 type="button"
                                 className="icon-btn"

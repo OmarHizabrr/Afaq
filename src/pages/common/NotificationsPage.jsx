@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import FormModal from '../../components/FormModal';
 import MessengerPanel from '../../components/MessengerPanel';
 import RecipientUserCard from '../../components/RecipientUserCard';
+import AppSelect from '../../components/AppSelect';
 import { getUserProfilePath } from '../../utils/profileLinks';
 
 const ROLE_LABELS = {
@@ -539,11 +540,11 @@ const NotificationsPage = ({ user }) => {
             ))}
           </div>
           <label className="app-label">نوع الرسالة</label>
-          <select className="app-select" value={type} onChange={(e) => setType(e.target.value)} style={{ marginBottom: '0.75rem' }}>
+          <AppSelect className="app-select" value={type} onChange={(e) => setType(e.target.value)} style={{ marginBottom: '0.75rem' }}>
             <option value="info">معلومة</option>
             <option value="success">نجاح</option>
             <option value="warning">تنبيه</option>
-          </select>
+          </AppSelect>
           <label className="app-label">العنوان</label>
           <input className="app-input" value={title} onChange={(e) => setTitle(e.target.value)} style={{ marginBottom: '0.75rem' }} />
           <label className="app-label">المحتوى</label>

@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
+import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
@@ -164,7 +165,7 @@ const RegionsPage = () => {
         onClose={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}
       >
         <form onSubmit={isEditing ? handleEdit : handleAdd}>
-          <select 
+          <AppSelect
             value={selectedGovId}
             onChange={(e) => setSelectedGovId(e.target.value)}
             className="app-select"
@@ -174,7 +175,7 @@ const RegionsPage = () => {
             {governorates.map(gov => (
               <option key={gov.id} value={gov.id}>{gov.name}</option>
             ))}
-          </select>
+          </AppSelect>
 
           <input 
             type="text" 

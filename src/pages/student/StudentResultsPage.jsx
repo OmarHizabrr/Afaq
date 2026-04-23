@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FileText, School, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import AppSelect from '../../components/AppSelect';
 
 const StudentResultsPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
@@ -59,12 +60,12 @@ const StudentResultsPage = ({ user }) => {
 
       <div className="surface-card" style={{ padding: '1rem', marginBottom: '1rem' }}>
         <label className="app-label">تصفية حسب المدرسة</label>
-        <select className="app-select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
+        <AppSelect className="app-select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
           <option value="">كل المدارس</option>
           {schools.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
-        </select>
+        </AppSelect>
       </div>
 
       {filtered.length === 0 ? (
