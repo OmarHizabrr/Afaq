@@ -6,6 +6,9 @@ import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
+const schoolLevelSubtitle = (sl) =>
+  sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
+
 const SchoolDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -192,6 +195,7 @@ const SchoolDetailsPage = () => {
                 </div>
               }
               title={<>مدرسة: <span style={{ color: 'var(--md-primary)' }}>{school.name}</span></>}
+              subtitle={schoolLevelSubtitle(school.schoolLevel)}
             />
 
             <div className="school-details-stats-row">

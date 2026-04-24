@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Save, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Save, CheckCircle, XCircle, Users } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
@@ -71,6 +71,21 @@ const TeacherDailyLogPage = ({ user }) => {
     setTrackingData(prev => prev.map(item => 
       item.studentId === studentId ? { ...item, [field]: value } : item
     ));
+  };
+
+  const markAllPresent = () => {
+    setTrackingData((prev) => prev.map((item) => ({ ...item, isPresent: true })));
+  };
+
+  const markAllAbsent = () => {
+    setTrackingData((prev) =>
+      prev.map((item) => ({
+        ...item,
+        isPresent: false,
+        memorization: '',
+        review: '',
+      }))
+    );
   };
 
   const getSelectedSubject = () => {
@@ -202,11 +217,31 @@ const TeacherDailyLogPage = ({ user }) => {
         </div>
       ) : (
         <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
-          <div className="md-table-panel__head">
+          <div className="md-table-panel__head" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem' }}>سجل الطلاب ({trackingData.length})</h3>
             <span style={{ fontSize: '0.85rem', color: 'var(--success-color)', fontWeight: 'bold' }}>
-              الحاضرون: {trackingData.filter(s => s.isPresent).length}
+              الحاضرون: {trackingData.filter(s => s.isPresent).length} / {trackingData.length}
             </span>
+            <div className="teacher-daily-bulk" style={{ marginInlineStart: 'auto' }}>
+              <button
+                type="button"
+                className="google-btn google-btn--filled"
+                style={{ background: 'var(--success-color)', color: '#fff' }}
+                onClick={markAllPresent}
+                title="تسجيل كل الطلاب حاضرين"
+              >
+                <Users size={16} style={{ marginLeft: 6 }} />
+                تحضير الجميع
+              </button>
+              <button
+                type="button"
+                className="google-btn"
+                onClick={markAllAbsent}
+                title="تسجيل كل الطلاب غياباً ومسح حقول الحفظ والمراجعة"
+              >
+                الكل غائب
+              </button>
+            </div>
           </div>
 
           <div className="md-table-scroll">

@@ -4,6 +4,7 @@ import { History, Eye, MapPin, Calendar, Star } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import { hasValidGps, openGoogleMaps } from '../../utils/maps';
+import { formatVisitRatingLabel } from '../../utils/visitRating';
 
 const SupervisorHistoryPage = ({ user }) => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const SupervisorHistoryPage = ({ user }) => {
                   <Calendar size={14} /> {rpt.timestamp?.split('T')[0]}
                 </span>
                 <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--md-primary)' }}>
-                  <Star size={14} inline style={{ marginBottom: '-2px' }} /> {rpt.teacherRating}/10
+                  <Star size={14} inline style={{ marginBottom: '-2px' }} /> {formatVisitRatingLabel(rpt.teacherRating)}
                 </span>
               </div>
               

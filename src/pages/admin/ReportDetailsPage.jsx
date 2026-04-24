@@ -21,6 +21,8 @@ import PageHeader from '../../components/PageHeader';
 import MapLocationOpen from '../../components/MapLocationOpen';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import StarRatingInput from '../../components/StarRatingInput';
+import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -102,8 +104,8 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         schoolName: report.schoolName || '',
         subjectName: report.subjectName || '',
         generalNotes: report.generalNotes || '',
-        teacherRating: report.teacherRating ?? '',
-        villageRating: report.villageRating ?? ''
+        teacherRating: toStarDisplayValue(report.teacherRating),
+        villageRating: toStarDisplayValue(report.villageRating),
       });
     } else if (report.type === 'daily') {
       setDailyEdit({
@@ -148,8 +150,8 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
           schoolName: visitEdit.schoolName,
           subjectName: visitEdit.subjectName,
           generalNotes: visitEdit.generalNotes,
-          teacherRating: Number(visitEdit.teacherRating) || 0,
-          villageRating: Number(visitEdit.villageRating) || 0
+          teacherRating: clampVisitRatingSave(visitEdit.teacherRating),
+          villageRating: clampVisitRatingSave(visitEdit.villageRating),
         };
       } else if (report.type === 'daily') {
         data = {
@@ -391,29 +393,21 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 className="app-input"
               />
             </label>
-            <div className="report-edit-form__two-cols">
-              <label className="app-field app-field--grow">
-                <span className="app-label">تقييم المعلم /10</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={10}
+            <div className="report-edit-form__two-cols" style={{ alignItems: 'flex-start' }}>
+              <div className="app-field app-field--grow">
+                <StarRatingInput
+                  label="تقييم المعلم (من 5 نجوم)"
                   value={visitEdit.teacherRating}
-                  onChange={(e) => setVisitEdit((s) => ({ ...s, teacherRating: e.target.value }))}
-                  className="app-input"
+                  onChange={(n) => setVisitEdit((s) => ({ ...s, teacherRating: n }))}
                 />
-              </label>
-              <label className="app-field app-field--grow">
-                <span className="app-label">تقييم القرية /10</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={10}
+              </div>
+              <div className="app-field app-field--grow">
+                <StarRatingInput
+                  label="تقييم القرية (من 5 نجوم)"
                   value={visitEdit.villageRating}
-                  onChange={(e) => setVisitEdit((s) => ({ ...s, villageRating: e.target.value }))}
-                  className="app-input"
+                  onChange={(n) => setVisitEdit((s) => ({ ...s, villageRating: n }))}
                 />
-              </label>
+              </div>
             </div>
             <label className="app-field app-field--grow">
               <span className="app-label">ملاحظات المشرف</span>
@@ -528,7 +522,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 <Star size={24} color="#f59e0b" style={{ marginBottom: '8px' }} />
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>تقييم المعلم</p>
                 <h2 style={{ margin: '8px 0 0', fontSize: '2rem', color: '#f59e0b' }}>
-                  {report.teacherRating}/10
+                  {formatVisitRatingLabel(report.teacherRating)}
                 </h2>
               </div>
               <div className="stat-tile">
@@ -537,7 +531,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                   تقييم القرية / الموقع
                 </p>
                 <h2 style={{ margin: '8px 0 0', fontSize: '2rem', color: 'var(--success-color)' }}>
-                  {report.villageRating}/10
+                  {formatVisitRatingLabel(report.villageRating)}
                 </h2>
               </div>
             </div>

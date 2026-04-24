@@ -9,6 +9,13 @@ import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
+const SCHOOL_LEVEL_OPTIONS = [
+  { value: 'adults', label: 'كبار' },
+  { value: 'children', label: 'صغار' },
+];
+
+const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?.label || 'غير محدد';
+
 const SchoolsPage = () => {
   const navigate = useNavigate();
   const { can } = usePermissions();
@@ -27,6 +34,7 @@ const SchoolsPage = () => {
   const [selectedRegId, setSelectedRegId] = useState('');
   const [selectedVilId, setSelectedVilId] = useState('');
   const [schoolName, setSchoolName] = useState('');
+  const [schoolLevel, setSchoolLevel] = useState('children');
   const [donorName, setDonorName] = useState('');
 
   const fetchData = async () => {
@@ -62,8 +70,8 @@ const SchoolsPage = () => {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!schoolName.trim() || !selectedVilId) {
-      setError('يرجى إدخال اسم المدرسة واختيار القرية');
+    if (!schoolName.trim() || !selectedVilId || !schoolLevel) {
+      setError('يرجى إدخال اسم المدرسة واختيار القرية ونوع المدرسة (كبار / صغار)');
       return;
     }
 
@@ -74,6 +82,7 @@ const SchoolsPage = () => {
       const schoolData = {
         name: schoolName.trim(),
         villageId: selectedVilId,
+        schoolLevel,
         donorName: donorName.trim() || '',
       };
 
@@ -88,6 +97,7 @@ const SchoolsPage = () => {
 
       // Reset
       setSchoolName('');
+      setSchoolLevel('children');
       setDonorName('');
       setSelectedVilId('');
       setSelectedRegId('');
@@ -110,6 +120,7 @@ const SchoolsPage = () => {
     const vil = villages.find(v => v.id === sch.villageId);
     if (vil) setSelectedRegId(vil.regionId);
     setSchoolName(sch.name);
+    setSchoolLevel(sch.schoolLevel || 'children');
     setDonorName(sch.donorName || '');
   };
 
@@ -139,7 +150,19 @@ const SchoolsPage = () => {
     <div>
       <PageHeader icon={School} title="إدارة المدارس">
         {can(PERMISSION_PAGE_IDS.schools, 'school_add') && (
-          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); }}>
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => {
+              setIsAdding(true);
+              setIsEditing(null);
+              setSchoolLevel('children');
+              setSchoolName('');
+              setDonorName('');
+              setSelectedVilId('');
+              setSelectedRegId('');
+            }}
+          >
             <Plus size={18} />
             <span>إضافة مدرسة</span>
           </button>
@@ -171,6 +194,20 @@ const SchoolsPage = () => {
           <label className="app-label">اسم المدرسة (مطلوب)</label>
           <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder="مثال: مدرسة النور" />
 
+          <label className="app-label">نوع المدرسة (مطلوب)</label>
+          <AppSelect
+            value={schoolLevel}
+            onChange={(e) => setSchoolLevel(e.target.value)}
+            className="schools-form__field-gap"
+            required
+          >
+            {SCHOOL_LEVEL_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </AppSelect>
+
           <label className="app-label">اسم المتبرع (اختياري)</label>
           <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input schools-form__field-gap-lg" placeholder="فاعل خير" />
 
@@ -200,6 +237,7 @@ const SchoolsPage = () => {
                 <h3 className="schools-card__title">{sch.name}</h3>
                 <div className="schools-card__meta">
                   <span><MapPin size={14} /> القرية: {getVillageName(sch.villageId)}</span>
+                  <span>النوع: {schoolLevelLabel(sch.schoolLevel)}</span>
                   {sch.donorName && <span className="schools-card__donor"><Handshake size={14} /> المتبرع: {sch.donorName}</span>}
                 </div>
               </div>

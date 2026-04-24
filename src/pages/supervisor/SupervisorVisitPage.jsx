@@ -5,6 +5,8 @@ import { openGoogleMaps } from '../../utils/maps';
 import { uploadMedia } from '../../services/storageApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
+import StarRatingInput from '../../components/StarRatingInput';
+import { clampVisitRatingSave } from '../../utils/visitRating';
 
 const SupervisorVisitPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
@@ -21,8 +23,8 @@ const SupervisorVisitPage = ({ user }) => {
   const [selectedSchoolId, setSelectedSchoolId] = useState('');
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [selectedWeek, setSelectedWeek] = useState('');
-  const [teacherRating, setTeacherRating] = useState(10);
-  const [villageRating, setVillageRating] = useState(10);
+  const [teacherRating, setTeacherRating] = useState(5);
+  const [villageRating, setVillageRating] = useState(5);
   const [generalNotes, setGeneralNotes] = useState('');
   
   // Array of students tracking { id, name, isPresent, isTested, note }
@@ -183,8 +185,8 @@ const SupervisorVisitPage = ({ user }) => {
         week: selectedWeek,
         timestamp: new Date().toISOString(),
         gpsLocation,
-        teacherRating,
-        villageRating,
+        teacherRating: clampVisitRatingSave(teacherRating),
+        villageRating: clampVisitRatingSave(villageRating),
         generalNotes,
         mediaUrls,
         studentsTracking: trackingData,
@@ -212,6 +214,8 @@ const SupervisorVisitPage = ({ user }) => {
       setSelectedWeek('');
       setMediaFiles([]);
       setGeneralNotes('');
+      setTeacherRating(5);
+      setVillageRating(5);
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء رفع التقرير.');
@@ -267,8 +271,32 @@ const SupervisorVisitPage = ({ user }) => {
         <>
           {/* Students Cross-Check */}
           <div className="surface-card" style={{ borderRadius: '12px', marginBottom: '1.5rem', overflow: 'hidden' }}>
-            <div className="md-table-panel__head">
+            <div className="md-table-panel__head" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
               <h3 style={{ margin: 0, fontSize: '1.1rem' }}>سجل الطلاب والتقييم الفردي</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginInlineStart: 'auto' }}>
+                <button
+                  type="button"
+                  className="google-btn"
+                  style={{ fontSize: '0.85rem', padding: '8px 14px' }}
+                  onClick={() =>
+                    setTrackingData((prev) => prev.map((r) => ({ ...r, isPresent: true })))
+                  }
+                >
+                  الكل حاضر
+                </button>
+                <button
+                  type="button"
+                  className="google-btn"
+                  style={{ fontSize: '0.85rem', padding: '8px 14px' }}
+                  onClick={() =>
+                    setTrackingData((prev) =>
+                      prev.map((r) => ({ ...r, isPresent: false, isTested: false, note: '' }))
+                    )
+                  }
+                >
+                  الكل غائب
+                </button>
+              </div>
             </div>
             <div className="md-table-scroll">
               <table className="md-table">
@@ -339,11 +367,19 @@ const SupervisorVisitPage = ({ user }) => {
                 <Star size={20} color="#f59e0b" /> التقييم العام
               </h3>
               
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>تقييم المدرس (من 10)</label>
-              <input type="number" min="1" max="10" value={teacherRating} onChange={(e) => setTeacherRating(e.target.value)} style={{...inputStyle, marginBottom: '1rem'}} />
+              <StarRatingInput
+                label="تقييم المدرّس (من 5 نجوم)"
+                value={teacherRating}
+                onChange={setTeacherRating}
+                style={{ marginBottom: '1rem' }}
+              />
 
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>التقييم العام للقرية (من 10)</label>
-              <input type="number" min="1" max="10" value={villageRating} onChange={(e) => setVillageRating(e.target.value)} style={{...inputStyle, marginBottom: '1rem'}} />
+              <StarRatingInput
+                label="التقييم العام للقرية (من 5 نجوم)"
+                value={villageRating}
+                onChange={setVillageRating}
+                style={{ marginBottom: '1rem' }}
+              />
 
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>الملاحظات والتوجيهات</label>
               <textarea value={generalNotes} onChange={(e) => setGeneralNotes(e.target.value)} placeholder="اكتب رأيك العام عن الزيارة..." style={{...inputStyle, minHeight: '100px'}} />

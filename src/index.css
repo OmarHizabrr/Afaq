@@ -2803,6 +2803,152 @@ html:not(.light-mode) .nav-link.active {
   border-radius: 12px;
 }
 
+.admin-reports-filters__row--dates {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.admin-reports-filters__date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.admin-reports-filters__date-field .app-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.admin-reports-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin-reports-preset-chips__label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-inline-end: 4px;
+}
+
+.admin-reports-preset-chip {
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.admin-reports-preset-chip:hover {
+  border-color: var(--md-primary);
+  color: var(--md-primary);
+}
+
+.admin-reports-preset-chip--active {
+  background: var(--md-primary-container);
+  border-color: var(--md-primary);
+  color: var(--md-on-primary-container);
+  font-weight: 600;
+}
+
+.print-only {
+  display: none;
+}
+
+.admin-reports-print-header {
+  display: none;
+}
+
+.admin-reports-print-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.admin-reports-print-header p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.star-rating-input__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0;
+  border-radius: 8px;
+}
+
+.star-rating-input__btn:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+.teacher-daily-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.teacher-daily-bulk .google-btn {
+  font-size: 0.85rem;
+  padding: 8px 14px;
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+  }
+
+  .admin-reports-print-header {
+    display: block !important;
+  }
+
+  .no-print,
+  .sidebar,
+  .topbar,
+  .main-content__toolbar,
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+
+  .main-content {
+    margin: 0 !important;
+    padding: 12px !important;
+    max-width: 100% !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .admin-reports-print-header {
+    display: block !important;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .report-row-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .admin-reports-list__actions {
+    display: none !important;
+  }
+}
+
 /* —— Student management page —— */
 .student-management-alert {
   margin-bottom: 1rem;

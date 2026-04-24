@@ -15,6 +15,8 @@ const StudentManagementPage = () => {
   const [error, setError] = useState('');
   const [students, setStudents] = useState([]);
   const [schoolsCatalog, setSchoolsCatalog] = useState([]);
+  /** @type {{ id: string, name: string }[]} */
+  const [regionsCatalog, setRegionsCatalog] = useState([]);
   const [query, setQuery] = useState('');
   const [schoolFilter, setSchoolFilter] = useState('');
   const [regionFilter, setRegionFilter] = useState('');
@@ -41,18 +43,50 @@ const StudentManagementPage = () => {
     setError('');
     try {
       const api = FirestoreApi.Api;
-      const [userDocs, schoolDocs, regionDocs, reportDocs] = await Promise.all([
+      const [userDocs, schoolDocs, regionDocs, villageDocs, reportDocs] = await Promise.all([
         api.getDocuments(api.getUsersCollection()),
         api.getCollectionGroupDocuments('schools'),
         api.getCollectionGroupDocuments('regions'),
+        api.getCollectionGroupDocuments('villages'),
         api.getCollectionGroupDocuments('reports'),
       ]);
 
-      const schoolsMap = Object.fromEntries(schoolDocs.map((d) => [d.id, d.data()?.name || d.id]));
-      setSchoolsCatalog(
-        schoolDocs.map((d) => ({ id: d.id, name: d.data()?.name || d.id, villageId: d.data()?.villageId || '' }))
-      );
       const regionsMap = Object.fromEntries(regionDocs.map((d) => [d.id, d.data()?.name || d.id]));
+      const regionsSorted = regionDocs
+        .map((d) => ({ id: d.id, name: d.data()?.name || d.id }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+      setRegionsCatalog(regionsSorted);
+
+      const villageToRegion = Object.fromEntries(
+        villageDocs.map((d) => {
+          const data = d.data() || {};
+          return [d.id, data.regionId || ''];
+        })
+      );
+
+      /** @type {Record<string, { name: string, villageId: string, regionId: string, regionName: string }>} */
+      const schoolById = {};
+      schoolDocs.forEach((d) => {
+        const data = d.data() || {};
+        const vid = data.villageId || '';
+        const rid = villageToRegion[vid] || '';
+        schoolById[d.id] = {
+          name: (data.name || '').trim() || d.id,
+          villageId: vid,
+          regionId: rid,
+          regionName: rid ? regionsMap[rid] || rid : '',
+        };
+      });
+
+      const schoolsMap = Object.fromEntries(Object.entries(schoolById).map(([id, s]) => [id, s.name]));
+      setSchoolsCatalog(
+        schoolDocs.map((d) => ({
+          id: d.id,
+          name: schoolById[d.id]?.name || d.id,
+          villageId: d.data()?.villageId || '',
+          regionId: schoolById[d.id]?.regionId || '',
+        }))
+      );
       const reports = reportDocs.map((d) => d.data() || {});
 
       const studentUsers = userDocs
@@ -64,13 +98,27 @@ const StudentManagementPage = () => {
         const mirrors = await api.getDocuments(api.getUserMembershipMirrorCollection(student.id));
         const memberships = mirrors.map((m) => {
           const data = m.data() || {};
+          const sid = data.schoolId || '';
+          const fromSchool = sid ? schoolById[sid] : null;
+          const regionId = data.regionId || fromSchool?.regionId || '';
+          const regionName =
+            (data.regionId ? regionsMap[data.regionId] : '') || fromSchool?.regionName || '';
+          const schoolName = sid ? fromSchool?.name || schoolsMap[sid] || sid : '';
           return {
-            schoolId: data.schoolId || '',
-            schoolName: data.schoolId ? schoolsMap[data.schoolId] || data.schoolId : '',
-            regionId: data.regionId || '',
-            regionName: data.regionId ? regionsMap[data.regionId] || data.regionId : '',
+            schoolId: sid,
+            schoolName,
+            regionId,
+            regionName,
+            villageId: data.villageId || fromSchool?.villageId || '',
           };
         });
+
+        const regionNamesSet = new Set(memberships.map((m) => m.regionName).filter(Boolean));
+        const primarySid = student.primarySchoolId || '';
+        if (primarySid && schoolById[primarySid]?.regionName) {
+          regionNamesSet.add(schoolById[primarySid].regionName);
+        }
+        const regionNames = Array.from(regionNamesSet);
 
         const studentActivity = reports.filter((r) =>
           Array.isArray(r.studentsTracking) && r.studentsTracking.some((s) => s.studentId === student.id)
@@ -83,8 +131,14 @@ const StudentManagementPage = () => {
         rows.push({
           ...student,
           memberships,
+          regionNames,
           membershipText: memberships
-            .map((m) => (m.schoolName ? `مدرسة: ${m.schoolName}` : m.regionName ? `منطقة: ${m.regionName}` : ''))
+            .map((m) => {
+              const parts = [];
+              if (m.schoolName) parts.push(`مدرسة: ${m.schoolName}`);
+              if (m.regionName) parts.push(`منطقة: ${m.regionName}`);
+              return parts.length ? parts.join(' — ') : '';
+            })
             .filter(Boolean)
             .join('، '),
           activityCount: studentActivity.length,
@@ -244,11 +298,10 @@ const StudentManagementPage = () => {
     return Array.from(setVals).sort();
   }, [students]);
 
-  const regionOptions = useMemo(() => {
-    const setVals = new Set();
-    students.forEach((s) => s.memberships.forEach((m) => m.regionName && setVals.add(m.regionName)));
-    return Array.from(setVals).sort();
-  }, [students]);
+  const regionOptions = useMemo(
+    () => regionsCatalog.map((r) => r.name),
+    [regionsCatalog]
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -259,7 +312,10 @@ const StudentManagementPage = () => {
         s.email?.toLowerCase().includes(q) ||
         s.membershipText?.toLowerCase().includes(q);
       const matchSchool = !schoolFilter || s.memberships.some((m) => m.schoolName === schoolFilter);
-      const matchRegion = !regionFilter || s.memberships.some((m) => m.regionName === regionFilter);
+      const matchRegion =
+        !regionFilter ||
+        (Array.isArray(s.regionNames) && s.regionNames.includes(regionFilter)) ||
+        s.memberships.some((m) => m.regionName === regionFilter);
       return matchQuery && matchSchool && matchRegion;
     });
   }, [students, query, schoolFilter, regionFilter]);
