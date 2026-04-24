@@ -24,6 +24,8 @@ const VillagesPage = () => {
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
   const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
+  /** @type {Record<string, { id: string, name: string }[]>} */
+  const [schoolsByVillage, setSchoolsByVillage] = useState({});
   
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -38,6 +40,8 @@ const VillagesPage = () => {
   const [nmDraftName, setNmDraftName] = useState('');
   const [nmDraftType, setNmDraftType] = useState('رجل');
   const [nmDraftCategory, setNmDraftCategory] = useState(normalizeMuslimCategory());
+  /** مدارس القرية المختارة للتسجيل السريع (افتراضي أول مدرسة) */
+  const [nmDraftSchoolIds, setNmDraftSchoolIds] = useState([]);
   const [nmEditingId, setNmEditingId] = useState(null);
   const [nmEditingName, setNmEditingName] = useState('');
   const [nmEditingType, setNmEditingType] = useState('رجل');
@@ -60,6 +64,8 @@ const VillagesPage = () => {
   const [muslimName, setMuslimName] = useState('');
   const [muslimType, setMuslimType] = useState('رجل');
   const [muslimCategoryForm, setMuslimCategoryForm] = useState(normalizeMuslimCategory());
+  /** عند تعديل القرية: المدارس التي يُسجَّل فيها كل سجل جديد من نموذج القرية */
+  const [villageModalSchoolIds, setVillageModalSchoolIds] = useState([]);
 
   const normalizeNewMuslims = (items) =>
     items
@@ -71,7 +77,7 @@ const VillagesPage = () => {
       }))
       .filter((m) => m.name.length > 0);
 
-  const syncVillageNewMuslims = async (api, villageId, nextItems, currentItems) => {
+  const syncVillageNewMuslims = async (api, villageId, nextItems, currentItems, preferredSchoolIds = null) => {
     const currentById = new Map(currentItems.filter((m) => m.id).map((m) => [m.id, m]));
     const nextWithIds = nextItems.filter((m) => m.id);
     const nextIds = new Set(nextWithIds.map((m) => m.id));
@@ -79,19 +85,25 @@ const VillagesPage = () => {
     const toDelete = currentItems.filter((m) => m.id && !nextIds.has(m.id));
     await Promise.all(toDelete.map((m) => deleteVillageListedPersonFully(api, m.id)));
 
+    const schoolIdsForNew =
+      Array.isArray(preferredSchoolIds) && preferredSchoolIds.length > 0 ? preferredSchoolIds : null;
+
     for (const m of nextItems) {
       const docId = m.id || api.getNewId('new_muslims');
       const old = currentById.get(docId);
       const mc = normalizeMuslimCategory(m.muslimCategory);
-      const hadEnrollment = Boolean(old?.enrolledSchoolId);
+      const hadEnrollment = Boolean(
+        old?.enrolledSchoolId || (Array.isArray(old?.enrolledSchoolIds) && old.enrolledSchoolIds.length)
+      );
 
       if (!hadEnrollment) {
-        const { schoolId } = await enrollVillagePersonAsStudent(api, {
+        const { schoolIds } = await enrollVillagePersonAsStudent(api, {
           personId: docId,
           villageId,
           displayName: m.name,
           listingType: m.type,
           muslimCategory: mc,
+          schoolIds: schoolIdsForNew,
         });
         await api.setData({
           docRef: api.getNewMuslimDoc(docId),
@@ -100,7 +112,8 @@ const VillagesPage = () => {
             name: m.name,
             type: m.type,
             muslimCategory: mc,
-            enrolledSchoolId: schoolId,
+            enrolledSchoolId: schoolIds[0],
+            enrolledSchoolIds: schoolIds,
           },
         });
       } else {
@@ -125,14 +138,27 @@ const VillagesPage = () => {
       const api = FirestoreApi.Api;
       
       // Fetch regions, villages and linked new-muslims
-      const [regDocs, vilDocs, newMuslimsDocs] = await Promise.all([
+      const [regDocs, vilDocs, newMuslimsDocs, schoolDocs] = await Promise.all([
         api.getCollectionGroupDocuments('regions'),
         api.getCollectionGroupDocuments('villages'),
         api.getDocuments(api.getNewMuslimsCollection()),
+        api.getCollectionGroupDocuments('schools'),
       ]);
 
       setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
       setVillages(vilDocs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      const byVil = {};
+      schoolDocs.forEach((doc) => {
+        const vid = doc.data()?.villageId;
+        if (!vid) return;
+        if (!byVil[vid]) byVil[vid] = [];
+        byVil[vid].push({ id: doc.id, name: (doc.data()?.name || '').trim() || doc.id });
+      });
+      Object.keys(byVil).forEach((k) => {
+        byVil[k].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+      });
+      setSchoolsByVillage(byVil);
 
       const grouped = {};
       newMuslimsDocs.forEach((doc) => {
@@ -140,13 +166,20 @@ const VillagesPage = () => {
         const villageId = data.villageId;
         if (!villageId) return;
         if (!grouped[villageId]) grouped[villageId] = [];
+        const enrolledSchoolIds =
+          Array.isArray(data.enrolledSchoolIds) && data.enrolledSchoolIds.length > 0
+            ? data.enrolledSchoolIds
+            : data.enrolledSchoolId
+              ? [data.enrolledSchoolId]
+              : [];
         grouped[villageId].push({
           id: doc.id,
           villageId,
           name: data.name || '',
           type: data.type || 'رجل',
           muslimCategory: normalizeMuslimCategory(data.muslimCategory),
-          enrolledSchoolId: data.enrolledSchoolId || '',
+          enrolledSchoolId: data.enrolledSchoolId || enrolledSchoolIds[0] || '',
+          enrolledSchoolIds,
         });
       });
       setNewMuslimsDocsByVillage(grouped);
@@ -213,7 +246,7 @@ const VillagesPage = () => {
         const docRef = api.getVillageDoc(isEditing.regionId, isEditing.id);
         await api.updateData({ docRef, data: { ...villageData, ...counters } });
         const currentItems = newMuslimsDocsByVillage[isEditing.id] || [];
-        await syncVillageNewMuslims(api, isEditing.id, normalizedNewMuslims, currentItems);
+        await syncVillageNewMuslims(api, isEditing.id, normalizedNewMuslims, currentItems, villageModalSchoolIds);
       } else {
         const newVilId = api.getNewId('villages');
         const vilRef = api.getVillageDoc(selectedRegId, newVilId);
@@ -233,6 +266,7 @@ const VillagesPage = () => {
       setNewMuslims([]);
       setIsAdding(false);
       setIsEditing(null);
+      setVillageModalSchoolIds([]);
       setError('');
       setSuccess(isEditing ? 'تم تحديث بيانات القرية بنجاح.' : 'تمت إضافة القرية بنجاح.');
       fetchData();
@@ -267,6 +301,8 @@ const VillagesPage = () => {
         muslimCategory: normalizeMuslimCategory(m.muslimCategory),
       }))
     );
+    const sch = schoolsByVillage[vil.id] || [];
+    setVillageModalSchoolIds(sch.length ? [sch[0].id] : []);
   };
 
   const handleDelete = async (id) => {
@@ -315,11 +351,34 @@ const VillagesPage = () => {
     setNmEditingCategory(normalizeMuslimCategory());
   };
 
+  const toggleNmDraftSchool = (schoolId) => {
+    setNmDraftSchoolIds((prev) => {
+      if (prev.includes(schoolId)) {
+        if (prev.length <= 1) return prev;
+        return prev.filter((id) => id !== schoolId);
+      }
+      return [...prev, schoolId];
+    });
+  };
+
+  const toggleVillageModalSchool = (schoolId) => {
+    setVillageModalSchoolIds((prev) => {
+      if (prev.includes(schoolId)) {
+        if (prev.length <= 1) return prev;
+        return prev.filter((id) => id !== schoolId);
+      }
+      return [...prev, schoolId];
+    });
+  };
+
   const toggleQuickNewMuslims = (vilId) => {
+    const opening = nmQuickVillageId !== vilId;
     setNmQuickVillageId((v) => (v === vilId ? null : vilId));
     setNmDraftName('');
     setNmDraftType('رجل');
     setNmDraftCategory(normalizeMuslimCategory());
+    const sch = schoolsByVillage[vilId] || [];
+    setNmDraftSchoolIds(opening && sch.length ? [sch[0].id] : []);
     cancelNmQuickEdit();
   };
 
@@ -332,18 +391,24 @@ const VillagesPage = () => {
 
   const handleQuickAddNewMuslim = async (vil) => {
     if (!nmDraftName.trim() || nmQuickVillageId !== vil.id) return;
+    const schList = schoolsByVillage[vil.id] || [];
+    if (schList.length && nmDraftSchoolIds.length === 0) {
+      setError('اختر مدرسة واحدة على الأقل للتسجيل.');
+      return;
+    }
     setNmSaving(true);
     setError('');
     try {
       const api = FirestoreApi.Api;
       const docId = api.getNewId('new_muslims');
       const mc = normalizeMuslimCategory(nmDraftCategory);
-      const { schoolId } = await enrollVillagePersonAsStudent(api, {
+      const { schoolIds } = await enrollVillagePersonAsStudent(api, {
         personId: docId,
         villageId: vil.id,
         displayName: nmDraftName.trim(),
         listingType: nmDraftType,
         muslimCategory: mc,
+        schoolIds: nmDraftSchoolIds.length > 0 ? nmDraftSchoolIds : null,
       });
       await api.setData({
         docRef: api.getNewMuslimDoc(docId),
@@ -352,7 +417,8 @@ const VillagesPage = () => {
           name: nmDraftName.trim(),
           type: nmDraftType,
           muslimCategory: mc,
-          enrolledSchoolId: schoolId,
+          enrolledSchoolId: schoolIds[0],
+          enrolledSchoolIds: schoolIds,
         },
       });
       const list = [
@@ -363,7 +429,8 @@ const VillagesPage = () => {
           name: nmDraftName.trim(),
           type: nmDraftType,
           muslimCategory: mc,
-          enrolledSchoolId: schoolId,
+          enrolledSchoolId: schoolIds[0],
+          enrolledSchoolIds: schoolIds,
         },
       ];
       patchVillageNewMuslims(vil.id, list);
@@ -371,7 +438,12 @@ const VillagesPage = () => {
       setNmDraftName('');
       setNmDraftType('رجل');
       setNmDraftCategory(normalizeMuslimCategory());
-      setSuccess('تمت إضافة السجل وتسجيله كطالب في أول مدرسة بالقرية.');
+      setNmDraftSchoolIds(schList.length ? [schList[0].id] : []);
+      setSuccess(
+        schoolIds.length > 1
+          ? `تمت إضافة السجل وتسجيله كطالب في ${schoolIds.length} مدارس.`
+          : 'تمت إضافة السجل وتسجيله كطالب في المدرسة المحددة.'
+      );
     } catch (err) {
       console.error(err);
       if (err.code === 'NO_SCHOOL_IN_VILLAGE') {
@@ -457,6 +529,7 @@ const VillagesPage = () => {
               setMuslimName('');
               setMuslimType('رجل');
               setMuslimCategoryForm(normalizeMuslimCategory());
+              setVillageModalSchoolIds([]);
               setNmQuickVillageId(null);
               cancelNmQuickEdit();
             }}
@@ -525,11 +598,38 @@ const VillagesPage = () => {
           <hr className="villages-form__divider" />
 
           <div className="villages-form__head-row">
-            <h3 className="villages-form__title villages-form__title--inline">سجل المهتدين والمسلمين القدامى (يُسجَّلون كطلاب في أول مدرسة بالقرية)</h3>
+            <h3 className="villages-form__title villages-form__title--inline">سجل المهتدين والمسلمين القدامى (يُسجَّلون كطلاب في المدارس التي تختارها)</h3>
             <div className="villages-form__counter">
               الإجمالي: {newMuslims.length}
             </div>
           </div>
+
+          {isEditing && (schoolsByVillage[isEditing.id] || []).length > 0 && (
+            <div className="app-field app-field--grow" style={{ marginBottom: '1rem' }}>
+              <label className="app-label">مدارس القرية للتسجيل كطالب (قائمة الطلاب المسجلين في كل مدرسة)</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px', marginTop: 8 }}>
+                {(schoolsByVillage[isEditing.id] || []).map((sch) => (
+                  <label key={sch.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={villageModalSchoolIds.includes(sch.id)}
+                      onChange={() => toggleVillageModalSchool(sch.id)}
+                    />
+                    <span>{sch.name}</span>
+                  </label>
+                ))}
+              </div>
+              <p style={{ fontSize: '0.85rem', opacity: 0.85, marginTop: 8 }}>
+                الافتراضي أول مدرسة؛ يمكنك تحديد أكثر من مدرسة. يجب بقاء خيار واحد على الأقل.
+              </p>
+            </div>
+          )}
+
+          {isEditing && (schoolsByVillage[isEditing.id] || []).length === 0 && newMuslims.length > 0 && (
+            <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+              لا توجد مدارس مرتبطة بهذه القرية بعد. أضف مدرسة للقرية أولاً، أو سجّل المهتدين لاحقاً من بطاقة القرية بعد ربط المدارس.
+            </div>
+          )}
           
           <div className="villages-form__new-muslim-row">
             <div className="app-field app-field--grow">
@@ -670,8 +770,23 @@ const VillagesPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <p className="villages-quick-panel__hint">
-                    يُسجَّل الشخص كطالب في أول مدرسة بالقرية (حسب الاسم). يُحدَّث عدّ القرية تلقائياً.
+                    يُسجَّل الشخص في المدارس المحددة ضمن قائمة الطلاب لكل مدرسة. الافتراضي أول مدرسة؛ يمكن اختيار أكثر من مدرسة.
                   </p>
+                  {(schoolsByVillage[vil.id] || []).length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 14px', marginBottom: 10 }}>
+                      {(schoolsByVillage[vil.id] || []).map((sch) => (
+                        <label key={sch.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.9rem' }}>
+                          <input
+                            type="checkbox"
+                            checked={nmDraftSchoolIds.includes(sch.id)}
+                            onChange={() => toggleNmDraftSchool(sch.id)}
+                            disabled={nmSaving}
+                          />
+                          <span>{sch.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                   <div className="villages-quick-panel__entry-row">
                     <input
                       type="text"

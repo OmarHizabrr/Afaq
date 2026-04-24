@@ -26,17 +26,23 @@ export function villageMuslimCounterFields(items) {
   };
 }
 
-export async function findFirstSchoolIdInVillage(api, villageId) {
+export async function listSchoolsInVillageSorted(api, villageId) {
   const docs = await api.getCollectionGroupDocuments('schools');
   const list = docs
     .filter((d) => (d.data()?.villageId || '') === villageId)
     .map((d) => ({ id: d.id, name: (d.data()?.name || '').trim() }));
   list.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  return list;
+}
+
+export async function findFirstSchoolIdInVillage(api, villageId) {
+  const list = await listSchoolsInVillageSorted(api, villageId);
   return list[0]?.id || null;
 }
 
 /**
- * يربط الشخص كطالب في أول مدرسة بالقرية، وينشئ مستخدم role=student بنفس المعرف.
+ * يربط الشخص كطالب في مدارس القرية (واحدة أو أكثر)، وينشئ مستخدم role=student بنفس المعرف.
+ * @param {string[]|null} schoolIds - معرفات مدارس تابعة للقرية؛ إن وُجدت تُستخدم بعد التحقق. وإلا تُستخدم أول مدرسة بالقرية.
  */
 export async function enrollVillagePersonAsStudent(api, {
   personId,
@@ -45,34 +51,51 @@ export async function enrollVillagePersonAsStudent(api, {
   listingType,
   muslimCategory,
   teacherId = '',
+  schoolIds: explicitSchoolIds = null,
 }) {
-  const schoolId = await findFirstSchoolIdInVillage(api, villageId);
-  if (!schoolId) {
-    const e = new Error('NO_SCHOOL_IN_VILLAGE');
-    e.code = 'NO_SCHOOL_IN_VILLAGE';
-    throw e;
+  const sortedSchools = await listSchoolsInVillageSorted(api, villageId);
+  const allowed = new Set(sortedSchools.map((s) => s.id));
+
+  let ids =
+    Array.isArray(explicitSchoolIds) && explicitSchoolIds.length > 0
+      ? [...new Set(explicitSchoolIds)].filter((id) => allowed.has(id))
+      : null;
+
+  if (!ids || ids.length === 0) {
+    const first = sortedSchools[0]?.id || null;
+    if (!first) {
+      const e = new Error('NO_SCHOOL_IN_VILLAGE');
+      e.code = 'NO_SCHOOL_IN_VILLAGE';
+      throw e;
+    }
+    ids = [first];
   }
 
+  const primarySchoolId = ids[0];
   const cat = normalizeMuslimCategory(muslimCategory);
-  const studentData = {
-    studentName: displayName,
-    age: 0,
-    schoolId,
-    villageId,
-    teacherId,
-    muslimListingType: listingType || 'رجل',
-    muslimCategory: cat,
-  };
+  const lt = listingType || 'رجل';
 
-  await api.setData({ docRef: api.getSchoolStudentDoc(schoolId, personId), data: studentData });
-  await api.setData({
-    docRef: api.getGroupMemberDoc(schoolId, personId),
-    data: { ...studentData, id: personId, type: 'student' },
-  });
-  await api.setData({
-    docRef: api.getUserMembershipMirrorDoc(personId, schoolId),
-    data: { schoolId, villageId, studentName: displayName },
-  });
+  for (const schoolId of ids) {
+    const studentData = {
+      studentName: displayName,
+      age: 0,
+      schoolId,
+      villageId,
+      teacherId,
+      muslimListingType: lt,
+      muslimCategory: cat,
+    };
+    await api.setData({ docRef: api.getSchoolStudentDoc(schoolId, personId), data: studentData });
+    await api.setData({
+      docRef: api.getGroupMemberDoc(schoolId, personId),
+      data: { ...studentData, id: personId, type: 'student' },
+    });
+    await api.setData({
+      docRef: api.getUserMembershipMirrorDoc(personId, schoolId),
+      data: { schoolId, villageId, studentName: displayName },
+    });
+  }
+
   await api.setData({
     docRef: api.getUserDoc(personId),
     data: {
@@ -86,12 +109,12 @@ export async function enrollVillagePersonAsStudent(api, {
       permissionProfileId: null,
       accountDisabled: false,
       villageId,
-      primarySchoolId: schoolId,
+      primarySchoolId,
     },
     merge: true,
   });
 
-  return { schoolId };
+  return { schoolIds: ids, primarySchoolId };
 }
 
 export async function syncStudentDisplayNameAcrossStores(api, studentId, newName) {
@@ -121,17 +144,18 @@ export async function syncStudentDisplayNameAcrossStores(api, studentId, newName
   }
 }
 
-/** مزامنة نوع السجل (رجل/…) والفئة (مهتد/مسلم قديم) مع وثيقة الطالب وعضو المجموعة */
+/** مزامنة نوع السجل (رجل/…) والفئة (مهتد/مسلم قديم) مع كل وثائق الطالب وعضويات المدارس */
 export async function syncVillageListingPersonStudentFields(api, personId, { listingType, muslimCategory }) {
   const mirrors = await api.getDocuments(api.getUserMembershipMirrorCollection(personId));
-  const schoolMirror = mirrors.find((d) => (d.data() || {}).schoolId);
-  if (!schoolMirror) return;
-  const schoolId = schoolMirror.data().schoolId;
   const cat = normalizeMuslimCategory(muslimCategory);
   const lt = listingType || 'رجل';
   const patch = { muslimListingType: lt, muslimCategory: cat };
-  await api.updateData({ docRef: api.getSchoolStudentDoc(schoolId, personId), data: patch });
-  await api.updateData({ docRef: api.getGroupMemberDoc(schoolId, personId), data: patch });
+  for (const d of mirrors) {
+    const data = d.data() || {};
+    if (!data.schoolId) continue;
+    await api.updateData({ docRef: api.getSchoolStudentDoc(data.schoolId, personId), data: patch });
+    await api.updateData({ docRef: api.getGroupMemberDoc(data.schoolId, personId), data: patch });
+  }
 }
 
 /** حذف سجل القرية (مهتد/مسلم قديم) إن وُجد، مع مستخدم الطالب وعضوياته ووثيقة الطالب في المدرسة */

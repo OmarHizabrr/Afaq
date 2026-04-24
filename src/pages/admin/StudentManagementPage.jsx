@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, Search, Activity, Eye, Plus, Edit2 } from 'lucide-react';
+import { GraduationCap, Search, Activity, Eye, EyeOff, Plus, Edit2, Lock } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
@@ -24,8 +24,17 @@ const StudentManagementPage = () => {
   const [formEmail, setFormEmail] = useState('');
   const [formPhone, setFormPhone] = useState('');
   const [formPassword, setFormPassword] = useState('');
-  const [formSchoolId, setFormSchoolId] = useState('');
+  const [showFormPassword, setShowFormPassword] = useState(false);
+  const [formPhotoURL, setFormPhotoURL] = useState('');
+  const [formAccountDisabled, setFormAccountDisabled] = useState(false);
+  /** @type {string[]} */
+  const [formSchoolIds, setFormSchoolIds] = useState([]);
   const [saving, setSaving] = useState(false);
+
+  const sortedSchoolsCatalog = useMemo(
+    () => [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar')),
+    [schoolsCatalog]
+  );
 
   const fetchStudentsData = async () => {
     setLoading(true);
@@ -101,8 +110,21 @@ const StudentManagementPage = () => {
     setFormEmail('');
     setFormPhone('');
     setFormPassword('');
-    setFormSchoolId('');
+    setShowFormPassword(false);
+    setFormPhotoURL('');
+    setFormAccountDisabled(false);
+    setFormSchoolIds([]);
     setEditingStudent(null);
+  };
+
+  const toggleFormSchool = (schoolId) => {
+    setFormSchoolIds((prev) => {
+      if (prev.includes(schoolId)) {
+        if (prev.length <= 1) return prev;
+        return prev.filter((x) => x !== schoolId);
+      }
+      return [...prev, schoolId];
+    });
   };
 
   const openEdit = (student) => {
@@ -110,8 +132,13 @@ const StudentManagementPage = () => {
     setFormName(student.displayName || '');
     setFormEmail(student.email || '');
     setFormPhone(student.phoneNumber || '');
-    setFormPassword(student.password || '');
-    setFormSchoolId(student.primarySchoolId || student.memberships.find((m) => m.schoolId)?.schoolId || '');
+    setFormPassword('');
+    setShowFormPassword(false);
+    setFormPhotoURL(student.photoURL || '');
+    setFormAccountDisabled(Boolean(student.accountDisabled));
+    const fromMirrors = student.memberships.map((m) => m.schoolId).filter(Boolean);
+    const ids = fromMirrors.length ? fromMirrors : student.primarySchoolId ? [student.primarySchoolId] : [];
+    setFormSchoolIds(ids.length ? [...new Set(ids)] : []);
     setIsAddOpen(true);
   };
 
@@ -129,41 +156,73 @@ const StudentManagementPage = () => {
       setError('');
       const api = FirestoreApi.Api;
       const studentId = editingStudent?.id || api.getNewId('users');
-      const selectedSchool = schoolsCatalog.find((s) => s.id === formSchoolId);
+      const nextSchoolIds = [...new Set(formSchoolIds.filter(Boolean))];
+      const prevSchoolIds = editingStudent
+        ? editingStudent.memberships.map((m) => m.schoolId).filter(Boolean)
+        : [];
+      const primarySchoolId = nextSchoolIds[0] || '';
+      const villageFromSchool = schoolsCatalog.find((s) => s.id === primarySchoolId)?.villageId || '';
+
+      const emailNorm = formEmail.trim().toLowerCase();
+      const userData = {
+        uid: studentId,
+        displayName: formName.trim(),
+        email: emailNorm,
+        phoneNumber: formPhone.trim(),
+        role: 'student',
+        permissionProfileId: null,
+        photoURL: formPhotoURL.trim(),
+        accountDisabled: formAccountDisabled,
+        primarySchoolId,
+        villageId: villageFromSchool,
+      };
+      if (!editingStudent) {
+        userData.password = formPassword.trim();
+      } else if (formPassword.trim()) {
+        userData.password = formPassword.trim();
+      }
+
       await api.setData({
         docRef: api.getUserDoc(studentId),
-        data: {
-          uid: studentId,
-          displayName: formName.trim(),
-          email: formEmail.trim(),
-          phoneNumber: formPhone.trim(),
-          password: formPassword.trim(),
-          role: 'student',
-          permissionProfileId: null,
-          accountDisabled: false,
-          primarySchoolId: formSchoolId || '',
-          villageId: selectedSchool?.villageId || '',
-        },
+        data: userData,
         merge: true,
       });
 
-      if (formSchoolId) {
+      if (editingStudent) {
+        const toRemove = prevSchoolIds.filter((sid) => !nextSchoolIds.includes(sid));
+        for (const schoolId of toRemove) {
+          try {
+            await api.deleteData(api.getSchoolStudentDoc(schoolId, studentId));
+            await api.deleteData(api.getGroupMemberDoc(schoolId, studentId));
+            await api.deleteData(api.getUserMembershipMirrorDoc(studentId, schoolId));
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      }
+
+      for (const schoolId of nextSchoolIds) {
+        const selectedSchool = schoolsCatalog.find((s) => s.id === schoolId);
         const studentData = {
           studentName: formName.trim(),
           age: 0,
-          schoolId: formSchoolId,
+          schoolId,
           villageId: selectedSchool?.villageId || '',
           teacherId: '',
         };
-        await api.setData({ docRef: api.getSchoolStudentDoc(formSchoolId, studentId), data: studentData, merge: true });
+        await api.setData({ docRef: api.getSchoolStudentDoc(schoolId, studentId), data: studentData, merge: true });
         await api.setData({
-          docRef: api.getGroupMemberDoc(formSchoolId, studentId),
+          docRef: api.getGroupMemberDoc(schoolId, studentId),
           data: { ...studentData, id: studentId, type: 'student' },
           merge: true,
         });
         await api.setData({
-          docRef: api.getUserMembershipMirrorDoc(studentId, formSchoolId),
-          data: { schoolId: formSchoolId, villageId: selectedSchool?.villageId || '', studentName: formName.trim() },
+          docRef: api.getUserMembershipMirrorDoc(studentId, schoolId),
+          data: {
+            schoolId,
+            villageId: selectedSchool?.villageId || '',
+            studentName: formName.trim(),
+          },
           merge: true,
         });
       }
@@ -219,6 +278,8 @@ const StudentManagementPage = () => {
             onClick={() => {
               resetForm();
               setIsAddOpen(true);
+              const sorted = [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+              if (sorted.length) setFormSchoolIds([sorted[0].id]);
             }}
           >
             <Plus size={16} /> إضافة طالب
@@ -326,32 +387,95 @@ const StudentManagementPage = () => {
       >
         <div className="app-form-grid">
           <div className="app-field app-field--grow">
-            <label className="app-label">الاسم</label>
+            <label className="app-label">الاسم الكامل</label>
             <input className="app-input" value={formName} onChange={(e) => setFormName(e.target.value)} />
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">البريد</label>
-            <input className="app-input" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} />
+            <label className="app-label">البريد الإلكتروني (اختياري)</label>
+            <input
+              className="app-input"
+              type="email"
+              value={formEmail}
+              onChange={(e) => setFormEmail(e.target.value)}
+              placeholder="example@email.com"
+            />
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">رقم الهاتف</label>
-            <input className="app-input" value={formPhone} onChange={(e) => setFormPhone(e.target.value)} />
+            <label className="app-label">رقم الهاتف {!editingStudent && '(إجباري)'}</label>
+            <input
+              className="app-input"
+              value={formPhone}
+              onChange={(e) => setFormPhone(e.target.value.replace(/\D/g, ''))}
+              inputMode="numeric"
+              maxLength={15}
+              placeholder="07xxxxxxxx"
+            />
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">كلمة المرور</label>
-            <input className="app-input" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} />
+            <label className="app-label">
+              كلمة المرور {!editingStudent ? '(إجباري)' : '(اتركها فارغة للإبقاء على الحالية)'}
+            </label>
+            <div className="md-field settings-profile-form__password-field">
+              <Lock size={18} color="var(--text-secondary)" aria-hidden />
+              <input
+                className="app-input"
+                type={showFormPassword ? 'text' : 'password'}
+                value={formPassword}
+                onChange={(e) => setFormPassword(e.target.value)}
+                autoComplete={editingStudent ? 'new-password' : 'new-password'}
+                placeholder={editingStudent ? '—' : 'كلمة مرور الطالب'}
+              />
+              <button
+                type="button"
+                className="icon-btn settings-profile-form__password-toggle"
+                onClick={() => setShowFormPassword((v) => !v)}
+                title={showFormPassword ? 'إخفاء' : 'إظهار'}
+                aria-label={showFormPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+              >
+                {showFormPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">المدرسة</label>
-            <AppSelect value={formSchoolId} onChange={(e) => setFormSchoolId(e.target.value)}>
-              <option value="">بدون مدرسة حالياً</option>
-              {schoolsCatalog.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
+            <label className="app-label">رابط صورة شخصية (اختياري)</label>
+            <input
+              className="app-input"
+              type="url"
+              value={formPhotoURL}
+              onChange={(e) => setFormPhotoURL(e.target.value)}
+              placeholder="https://..."
+            />
+          </div>
+          <div className="app-field app-field--grow" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={formAccountDisabled}
+                onChange={(e) => setFormAccountDisabled(e.target.checked)}
+              />
+              <span>حساب معطّل (لا يستطيع تسجيل الدخول)</span>
+            </label>
+          </div>
+          <div className="app-field app-field--grow">
+            <label className="app-label">المدارس (قائمة الطلاب المسجلين — يمكن أكثر من مدرسة)</label>
+            <p style={{ fontSize: '0.85rem', opacity: 0.85, margin: '0 0 8px' }}>
+              الافتراضي عند التعديل: مدارس الارتباط الحالية. يجب إبقاء مدرسة واحدة على الأقل إن وُجدت مدارس محددة.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 14px' }}>
+              {sortedSchoolsCatalog.map((s) => (
+                <label key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.9rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={formSchoolIds.includes(s.id)}
+                    onChange={() => toggleFormSchool(s.id)}
+                  />
+                  <span>{s.name}</span>
+                </label>
               ))}
-            </AppSelect>
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
-            <button type="button" className="google-btn" onClick={() => setIsAddOpen(false)}>إلغاء</button>
+            <button type="button" className="google-btn" onClick={() => { setIsAddOpen(false); resetForm(); }}>إلغاء</button>
             <button type="button" className="google-btn google-btn--filled" onClick={handleSaveStudent} disabled={saving}>
               {saving ? 'جارٍ الحفظ...' : 'حفظ'}
             </button>

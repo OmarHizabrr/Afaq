@@ -28,6 +28,7 @@ const VillageDetailsPage = () => {
     const [newName, setNewName] = useState('');
     const [newType, setNewType] = useState('رجل');
     const [newMuslimCategory, setNewMuslimCategory] = useState(normalizeMuslimCategory());
+    const [addMuslimSchoolIds, setAddMuslimSchoolIds] = useState([]);
     const [editingMuslimId, setEditingMuslimId] = useState(null);
     const [editingName, setEditingName] = useState('');
     const [editingType, setEditingType] = useState('رجل');
@@ -38,6 +39,7 @@ const VillageDetailsPage = () => {
     useEffect(() => {
         const fetchVillageDetails = async () => {
             if (!id) return;
+            setSchools([]);
             try {
                 const api = FirestoreApi.Api;
                 // Fetch Village
@@ -53,12 +55,22 @@ const VillageDetailsPage = () => {
 
                 const newMuslimsDocs = await api.getDocuments(api.getNewMuslimsCollection());
                 const villageNewMuslims = newMuslimsDocs
-                  .map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    muslimCategory: normalizeMuslimCategory(doc.data()?.muslimCategory),
-                    enrolledSchoolId: doc.data()?.enrolledSchoolId || '',
-                  }))
+                  .map((doc) => {
+                    const data = doc.data() || {};
+                    const enrolledSchoolIds =
+                      Array.isArray(data.enrolledSchoolIds) && data.enrolledSchoolIds.length > 0
+                        ? data.enrolledSchoolIds
+                        : data.enrolledSchoolId
+                          ? [data.enrolledSchoolId]
+                          : [];
+                    return {
+                      id: doc.id,
+                      ...data,
+                      muslimCategory: normalizeMuslimCategory(data.muslimCategory),
+                      enrolledSchoolId: data.enrolledSchoolId || enrolledSchoolIds[0] || '',
+                      enrolledSchoolIds,
+                    };
+                  })
                   .filter((doc) => doc.villageId === id);
                 setNewMuslims(villageNewMuslims);
 
@@ -71,6 +83,31 @@ const VillageDetailsPage = () => {
 
         fetchVillageDetails();
     }, [id]);
+
+    useEffect(() => {
+      setAddMuslimSchoolIds([]);
+    }, [id]);
+
+    useEffect(() => {
+      if (!schools.length) {
+        setAddMuslimSchoolIds([]);
+        return;
+      }
+      setAddMuslimSchoolIds((prev) => {
+        const kept = prev.filter((pid) => schools.some((s) => s.id === pid));
+        return kept.length ? kept : [schools[0].id];
+      });
+    }, [schools]);
+
+    const toggleAddMuslimSchool = (schoolId) => {
+      setAddMuslimSchoolIds((prev) => {
+        if (prev.includes(schoolId)) {
+          if (prev.length <= 1) return prev;
+          return prev.filter((x) => x !== schoolId);
+        }
+        return [...prev, schoolId];
+      });
+    };
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!village) return <div className="empty-state">القرية غير موجودة</div>;
@@ -104,17 +141,22 @@ const VillageDetailsPage = () => {
 
     const handleAddNewMuslim = async () => {
       if (!newName.trim() || !id) return;
+      if (schools.length > 0 && addMuslimSchoolIds.length === 0) {
+        window.alert('اختر مدرسة واحدة على الأقل للتسجيل.');
+        return;
+      }
       try {
         setSaving(true);
         const api = FirestoreApi.Api;
         const docId = api.getNewId('new_muslims');
         const mc = normalizeMuslimCategory(newMuslimCategory);
-        const { schoolId } = await enrollVillagePersonAsStudent(api, {
+        const { schoolIds } = await enrollVillagePersonAsStudent(api, {
           personId: docId,
           villageId: id,
           displayName: newName.trim(),
           listingType: newType,
           muslimCategory: mc,
+          schoolIds: addMuslimSchoolIds.length > 0 ? addMuslimSchoolIds : null,
         });
         await api.setData({
           docRef: api.getNewMuslimDoc(docId),
@@ -123,7 +165,8 @@ const VillageDetailsPage = () => {
             name: newName.trim(),
             type: newType,
             muslimCategory: mc,
-            enrolledSchoolId: schoolId,
+            enrolledSchoolId: schoolIds[0],
+            enrolledSchoolIds: schoolIds,
           },
         });
         const next = [
@@ -134,7 +177,8 @@ const VillageDetailsPage = () => {
             name: newName.trim(),
             type: newType,
             muslimCategory: mc,
-            enrolledSchoolId: schoolId,
+            enrolledSchoolId: schoolIds[0],
+            enrolledSchoolIds: schoolIds,
           },
         ];
         setNewMuslims(next);
@@ -253,6 +297,22 @@ const VillageDetailsPage = () => {
                                 <div><strong>مسلمون قدامى — أطفال:</strong> {bornChildren}</div>
                             </div>
                             <div className="village-details-new-muslims__body">
+                              {schools.length > 0 && (
+                                <div style={{ marginBottom: 12, display: 'flex', flexWrap: 'wrap', gap: '8px 14px' }}>
+                                  <span style={{ width: '100%', fontSize: '0.9rem', fontWeight: 600 }}>المدارس (قائمة الطلاب المسجلين):</span>
+                                  {schools.map((sch) => (
+                                    <label key={sch.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.9rem' }}>
+                                      <input
+                                        type="checkbox"
+                                        checked={addMuslimSchoolIds.includes(sch.id)}
+                                        onChange={() => toggleAddMuslimSchool(sch.id)}
+                                        disabled={saving}
+                                      />
+                                      <span>{sch.name}</span>
+                                    </label>
+                                  ))}
+                                </div>
+                              )}
                               <div className="village-details-new-muslims__entry">
                                 <input
                                   type="text"
@@ -326,11 +386,14 @@ const VillageDetailsPage = () => {
                                         </>
                                       ) : (
                                         <>
-                                          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
+                                            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
                                           <div className="village-details-new-muslims__item-actions">
                                             <span className="village-details-new-muslims__item-type">
                                               {m.type}
                                               {isBornRow(m) ? ' · مسلم قديم' : ' · مهتد'}
+                                              {(m.enrolledSchoolIds?.length || 0) > 0 && (
+                                                <span style={{ opacity: 0.85 }}> · {(m.enrolledSchoolIds?.length || 0)} مدرسة</span>
+                                              )}
                                             </span>
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
                                               <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
