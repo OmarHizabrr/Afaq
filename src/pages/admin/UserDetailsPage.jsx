@@ -7,9 +7,9 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
 const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
-    const { id } = useParams();
+    const { id: routeUserId } = useParams();
     const navigate = useNavigate();
-    const targetId = id || selfUser?.uid || selfUser?.id || '';
+    const targetId = routeUserId || selfUser?.uid || selfUser?.id || '';
     const [profile, setProfile] = useState(null);
     const [activity, setActivity] = useState([]);
     const [memberships, setMemberships] = useState([]);
@@ -29,6 +29,10 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 const api = FirestoreApi.Api;
                 const userDoc = await api.getData(api.getUserDoc(targetId));
                 if (!userDoc) return;
+                if (userDoc.role === 'student' && routeUserId && !selfUser) {
+                    navigate(`/students/${targetId}`, { replace: true });
+                    return;
+                }
                 setProfile({ id: targetId, ...userDoc });
                 const mirrorDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(targetId));
                 setMemberships(
@@ -83,7 +87,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
         };
 
         fetchUserProfile();
-    }, [targetId, id]);
+    }, [targetId, routeUserId, selfUser, navigate]);
 
     const handleToggleAccountDisabled = async () => {
         if (!canAdminManage || !targetId) return;

@@ -7,6 +7,15 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import {
+  MUSLIM_CATEGORY_BORN,
+  normalizeMuslimCategory,
+  villageMuslimCounterFields,
+  enrollVillagePersonAsStudent,
+  syncStudentDisplayNameAcrossStores,
+  syncVillageListingPersonStudentFields,
+  deleteVillageListedPersonFully,
+} from '../../services/villageStudentEnrollment';
 
 const VillageDetailsPage = () => {
     const { id } = useParams();
@@ -18,9 +27,11 @@ const VillageDetailsPage = () => {
     const [saving, setSaving] = useState(false);
     const [newName, setNewName] = useState('');
     const [newType, setNewType] = useState('رجل');
+    const [newMuslimCategory, setNewMuslimCategory] = useState(normalizeMuslimCategory());
     const [editingMuslimId, setEditingMuslimId] = useState(null);
     const [editingName, setEditingName] = useState('');
     const [editingType, setEditingType] = useState('رجل');
+    const [editingMuslimCategory, setEditingMuslimCategory] = useState(normalizeMuslimCategory());
     const [pendingDelete, setPendingDelete] = useState(null);
     const { can } = usePermissions();
 
@@ -42,7 +53,12 @@ const VillageDetailsPage = () => {
 
                 const newMuslimsDocs = await api.getDocuments(api.getNewMuslimsCollection());
                 const villageNewMuslims = newMuslimsDocs
-                  .map((doc) => ({ id: doc.id, ...doc.data() }))
+                  .map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    muslimCategory: normalizeMuslimCategory(doc.data()?.muslimCategory),
+                    enrolledSchoolId: doc.data()?.enrolledSchoolId || '',
+                  }))
                   .filter((doc) => doc.villageId === id);
                 setNewMuslims(villageNewMuslims);
 
@@ -66,9 +82,15 @@ const VillageDetailsPage = () => {
         </div>
     );
 
-    const menCount = newMuslims.filter((m) => m.type === 'رجل').length;
-    const womenCount = newMuslims.filter((m) => m.type === 'امرأة').length;
-    const childrenCount = newMuslims.filter((m) => m.type === 'طفل').length;
+    const isBornRow = (m) => normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN;
+    const convertsOnly = newMuslims.filter((m) => !isBornRow(m));
+    const bornOnly = newMuslims.filter(isBornRow);
+    const menCount = convertsOnly.filter((m) => m.type === 'رجل').length;
+    const womenCount = convertsOnly.filter((m) => m.type === 'امرأة').length;
+    const childrenCount = convertsOnly.filter((m) => m.type === 'طفل').length;
+    const bornMen = bornOnly.filter((m) => m.type === 'رجل').length;
+    const bornWomen = bornOnly.filter((m) => m.type === 'امرأة').length;
+    const bornChildren = bornOnly.filter((m) => m.type === 'طفل').length;
 
     const syncVillageCounters = async (nextList) => {
       if (!village?.regionId || !id) return;
@@ -76,11 +98,7 @@ const VillageDetailsPage = () => {
       const docRef = api.getVillageDoc(village.regionId, id);
       await api.updateData({
         docRef,
-        data: {
-          newMuslimsMen: nextList.filter((m) => m.type === 'رجل').length,
-          newMuslimsWomen: nextList.filter((m) => m.type === 'امرأة').length,
-          newMuslimsChildren: nextList.filter((m) => m.type === 'طفل').length,
-        },
+        data: villageMuslimCounterFields(nextList),
       });
     };
 
@@ -90,17 +108,45 @@ const VillageDetailsPage = () => {
         setSaving(true);
         const api = FirestoreApi.Api;
         const docId = api.getNewId('new_muslims');
+        const mc = normalizeMuslimCategory(newMuslimCategory);
+        const { schoolId } = await enrollVillagePersonAsStudent(api, {
+          personId: docId,
+          villageId: id,
+          displayName: newName.trim(),
+          listingType: newType,
+          muslimCategory: mc,
+        });
         await api.setData({
           docRef: api.getNewMuslimDoc(docId),
-          data: { villageId: id, name: newName.trim(), type: newType },
+          data: {
+            villageId: id,
+            name: newName.trim(),
+            type: newType,
+            muslimCategory: mc,
+            enrolledSchoolId: schoolId,
+          },
         });
-        const next = [...newMuslims, { id: docId, villageId: id, name: newName.trim(), type: newType }];
+        const next = [
+          ...newMuslims,
+          {
+            id: docId,
+            villageId: id,
+            name: newName.trim(),
+            type: newType,
+            muslimCategory: mc,
+            enrolledSchoolId: schoolId,
+          },
+        ];
         setNewMuslims(next);
         await syncVillageCounters(next);
         setNewName('');
         setNewType('رجل');
+        setNewMuslimCategory(normalizeMuslimCategory());
       } catch (err) {
         console.error(err);
+        if (err.code === 'NO_SCHOOL_IN_VILLAGE') {
+          window.alert('لا توجد مدرسة في هذه القرية لتسجيل الطالب تلقائياً.');
+        }
       } finally {
         setSaving(false);
       }
@@ -110,12 +156,14 @@ const VillageDetailsPage = () => {
       setEditingMuslimId(m.id);
       setEditingName(m.name || '');
       setEditingType(m.type || 'رجل');
+      setEditingMuslimCategory(normalizeMuslimCategory(m.muslimCategory));
     };
 
     const cancelEdit = () => {
       setEditingMuslimId(null);
       setEditingName('');
       setEditingType('رجل');
+      setEditingMuslimCategory(normalizeMuslimCategory());
     };
 
     const handleSaveEdit = async () => {
@@ -123,12 +171,23 @@ const VillageDetailsPage = () => {
       try {
         setSaving(true);
         const api = FirestoreApi.Api;
+        const prev = newMuslims.find((x) => x.id === editingMuslimId);
+        const mc = normalizeMuslimCategory(editingMuslimCategory);
+        if (prev && prev.name !== editingName.trim()) {
+          await syncStudentDisplayNameAcrossStores(api, editingMuslimId, editingName.trim());
+        }
+        if (prev && (prev.type !== editingType || normalizeMuslimCategory(prev.muslimCategory) !== mc)) {
+          await syncVillageListingPersonStudentFields(api, editingMuslimId, {
+            listingType: editingType,
+            muslimCategory: mc,
+          });
+        }
         await api.updateData({
           docRef: api.getNewMuslimDoc(editingMuslimId),
-          data: { name: editingName.trim(), type: editingType },
+          data: { name: editingName.trim(), type: editingType, muslimCategory: mc },
         });
         const next = newMuslims.map((m) =>
-          m.id === editingMuslimId ? { ...m, name: editingName.trim(), type: editingType } : m
+          m.id === editingMuslimId ? { ...m, name: editingName.trim(), type: editingType, muslimCategory: mc } : m
         );
         setNewMuslims(next);
         await syncVillageCounters(next);
@@ -144,7 +203,7 @@ const VillageDetailsPage = () => {
       try {
         setSaving(true);
         const api = FirestoreApi.Api;
-        await api.deleteData(api.getNewMuslimDoc(m.id));
+        await deleteVillageListedPersonFully(api, m.id);
         const next = newMuslims.filter((x) => x.id !== m.id);
         setNewMuslims(next);
         await syncVillageCounters(next);
@@ -184,11 +243,14 @@ const VillageDetailsPage = () => {
                         </div>
                         
                         <div className="village-details-new-muslims">
-                            <h3 className="village-details-new-muslims__title">المهتدون الجدد (New Muslims)</h3>
+                            <h3 className="village-details-new-muslims__title">المهتدون والمسلمون القدامى (يُسجَّلون كطلاب)</h3>
                             <div className="village-details-new-muslims__summary">
-                                <div><strong><User size={14} /> رجال:</strong> {menCount}</div>
-                                <div><strong><Users size={14} /> نساء:</strong> {womenCount}</div>
-                                <div><strong><Baby size={14} /> أطفال:</strong> {childrenCount}</div>
+                                <div><strong><User size={14} /> مهتدون — رجال:</strong> {menCount}</div>
+                                <div><strong><Users size={14} /> مهتدون — نساء:</strong> {womenCount}</div>
+                                <div><strong><Baby size={14} /> مهتدون — أطفال:</strong> {childrenCount}</div>
+                                <div style={{ marginTop: 8, opacity: 0.9 }}><strong>مسلمون قدامى — رجال:</strong> {bornMen}</div>
+                                <div><strong>مسلمون قدامى — نساء:</strong> {bornWomen}</div>
+                                <div><strong>مسلمون قدامى — أطفال:</strong> {bornChildren}</div>
                             </div>
                             <div className="village-details-new-muslims__body">
                               <div className="village-details-new-muslims__entry">
@@ -196,7 +258,7 @@ const VillageDetailsPage = () => {
                                   type="text"
                                   value={newName}
                                   onChange={(e) => setNewName(e.target.value)}
-                                  placeholder="اسم المهتدي الجديد"
+                                  placeholder="الاسم"
                                   className="app-input"
                                 />
                                 <AppSelect
@@ -208,6 +270,14 @@ const VillageDetailsPage = () => {
                                   <option value="امرأة">امرأة</option>
                                   <option value="طفل">طفل</option>
                                 </AppSelect>
+                                <AppSelect
+                                  value={newMuslimCategory}
+                                  onChange={(e) => setNewMuslimCategory(normalizeMuslimCategory(e.target.value))}
+                                  className=""
+                                >
+                                  <option value="convert">مهتد</option>
+                                  <option value="born">مسلم قديم</option>
+                                </AppSelect>
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
                                   <button type="button" className="icon-btn" onClick={handleAddNewMuslim} disabled={saving} title="إضافة">
                                     <Plus size={16} />
@@ -215,7 +285,7 @@ const VillageDetailsPage = () => {
                                 )}
                               </div>
                               {newMuslims.length === 0 ? (
-                                <p className="village-details-new-muslims__empty">لا توجد سجلات مهتدين مضافة بعد.</p>
+                                <p className="village-details-new-muslims__empty">لا توجد سجلات بعد.</p>
                               ) : (
                                 <div className="village-details-new-muslims__list">
                                   {newMuslims.map((m) => (
@@ -238,6 +308,14 @@ const VillageDetailsPage = () => {
                                               <option value="امرأة">امرأة</option>
                                               <option value="طفل">طفل</option>
                                             </AppSelect>
+                                            <AppSelect
+                                              value={editingMuslimCategory}
+                                              onChange={(e) => setEditingMuslimCategory(normalizeMuslimCategory(e.target.value))}
+                                              className=""
+                                            >
+                                              <option value="convert">مهتد</option>
+                                              <option value="born">مسلم قديم</option>
+                                            </AppSelect>
                                           </div>
                                           <div className="village-details-new-muslims__item-actions">
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
@@ -250,7 +328,10 @@ const VillageDetailsPage = () => {
                                         <>
                                           <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{m.name}</span>
                                           <div className="village-details-new-muslims__item-actions">
-                                            <span className="village-details-new-muslims__item-type">{m.type}</span>
+                                            <span className="village-details-new-muslims__item-type">
+                                              {m.type}
+                                              {isBornRow(m) ? ' · مسلم قديم' : ' · مهتد'}
+                                            </span>
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
                                               <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
                                             )}
@@ -317,7 +398,7 @@ const VillageDetailsPage = () => {
             <ConfirmDialog
               open={!!pendingDelete}
               title="تأكيد حذف السجل"
-              message={`سيتم حذف السجل "${pendingDelete?.name || ''}" من قائمة المهتدين الجدد.`}
+              message={`سيتم حذف «${pendingDelete?.name || ''}» من السجل وإزالة حساب الطالب وارتباطاته.`}
               confirmLabel="حذف نهائي"
               danger
               onCancel={() => setPendingDelete(null)}

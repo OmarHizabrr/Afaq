@@ -33,7 +33,11 @@ const UsersPage = () => {
       const api = FirestoreApi.Api;
 
       const userDocs = await api.getDocuments(api.getUsersCollection());
-      setUsers(userDocs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setUsers(
+        userDocs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .filter((u) => u.role !== 'student')
+      );
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');

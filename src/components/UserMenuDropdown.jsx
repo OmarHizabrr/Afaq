@@ -13,10 +13,12 @@ import { useNotificationBadge } from '../context/NotificationsBadgeContext';
 
 function resolvePaths(user) {
   const uid = user?.uid || user?.id;
+  const profilePath =
+    uid && user?.role === 'student' ? `/students/${uid}` : uid ? `/users/${uid}` : '/settings';
   return {
     notifications: '/notifications',
     settings: '/settings',
-    profile: uid ? `/users/${uid}` : '/settings',
+    profile: profilePath,
   };
 }
 

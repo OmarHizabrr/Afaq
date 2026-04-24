@@ -10,6 +10,7 @@ import VillagesPage from './pages/admin/VillagesPage';
 import SchoolsPage from './pages/admin/SchoolsPage';
 import UsersPage from './pages/admin/UsersPage';
 import StudentManagementPage from './pages/admin/StudentManagementPage';
+import StudentDetailsPage from './pages/admin/StudentDetailsPage';
 import CurriculumPage from './pages/admin/CurriculumPage';
 import CurriculumPrintPage from './pages/print/CurriculumPrintPage';
 import SettingsPage from './pages/common/SettingsPage';
@@ -112,6 +113,7 @@ function App() {
           <Route path="schools/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolDetailsPage /></PageGuard>} />
           <Route path="regions/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.regions}><RegionDetailsPage /></PageGuard>} />
           <Route path="users/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.users}><UserDetailsPage viewerUser={user} /></PageGuard>} />
+          <Route path="students/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.students_management}><StudentDetailsPage /></PageGuard>} />
           <Route path="governorates/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.governorates}><GovernorateDetailsPage /></PageGuard>} />
           <Route path="villages/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.villages}><VillageDetailsPage /></PageGuard>} />
           <Route path="settings" element={<PageGuard pageId={PERMISSION_PAGE_IDS.settings}><SettingsPage /></PageGuard>} />
