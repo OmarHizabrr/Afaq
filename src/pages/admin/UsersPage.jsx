@@ -8,6 +8,15 @@ import usePermissions from '../../context/usePermissions';
 import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 
+const USER_ROLE_LABELS = {
+  admin: 'مدير النظام',
+  supervisor_arab: 'مشرف عام',
+  supervisor_local: 'مشرف منطقة',
+  teacher: 'معلم',
+  student: 'طالب',
+  unassigned: 'غير معيّن',
+};
+
 const UsersPage = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -33,11 +42,7 @@ const UsersPage = () => {
       const api = FirestoreApi.Api;
 
       const userDocs = await api.getDocuments(api.getUsersCollection());
-      setUsers(
-        userDocs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter((u) => u.role !== 'student')
-      );
+      setUsers(userDocs.map((doc) => ({ id: doc.id, ...doc.data() })));
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
@@ -142,7 +147,11 @@ const UsersPage = () => {
 
   return (
     <div>
-      <PageHeader icon={Shield} title="إدارة المستخدمين والصلاحيات" subtitle="تعديل الرتبة فقط. الربط بالمجموعات يتم من داخل صفحة المجموعة.">
+      <PageHeader
+        icon={Shield}
+        title="إدارة المستخدمين والصلاحيات"
+        subtitle="عرض جميع الحسابات بما فيها الطلاب ومدير النظام. تعديل نوع الصلاحيات من هنا؛ الربط بالمدارس والمناطق من صفحات تلك المجموعات."
+      >
         {(can(PERMISSION_PAGE_IDS.users, 'user_edit_role') || can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')) && (
           <button
             type="button"
@@ -178,6 +187,9 @@ const UsersPage = () => {
                   {user.email}
                 </p>
                 <div className="users-card__chips">
+                  <div className="users-card__role-chip" title="الدور في النظام">
+                    {USER_ROLE_LABELS[user.role] || user.role || '—'}
+                  </div>
                   <div className="users-card__role-chip">
                     {user.permissionProfileId ? 'نوع صلاحيات مخصص' : 'بدون نوع صلاحيات'}
                   </div>

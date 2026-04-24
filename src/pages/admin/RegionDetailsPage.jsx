@@ -60,12 +60,8 @@ const RegionDetailsPage = () => {
                 })
             );
 
-            const regSupervisors = users.filter(
-                u =>
-                    memberUserIds.has(u.id) &&
-                    (u.role === 'supervisor_local' || u.role === 'supervisor_arab')
-            );
-            setSupervisors(regSupervisors);
+            const regionMembers = users.filter((u) => memberUserIds.has(u.id));
+            setSupervisors(regionMembers);
         } catch (err) {
             console.error(err);
         } finally {
@@ -79,10 +75,6 @@ const RegionDetailsPage = () => {
 
     const handleAssignSupervisor = async (userToAssign) => {
         if (!userToAssign || assigning || !id) return;
-        if (userToAssign.role === 'admin') {
-            setError('لا يمكن تعيين مدير النظام مشرفاً ميدانياً من هذه النافذة.');
-            return;
-        }
         setAssigning(true);
         setAssignMsg('');
         setError('');
@@ -143,7 +135,6 @@ const RegionDetailsPage = () => {
             !q ||
             u.displayName?.toLowerCase().includes(q) ||
             u.email?.toLowerCase().includes(q);
-        if (u.role === 'admin') return false;
         if (supervisorIds.has(u.id)) return false;
         return matchesSearch;
     });
@@ -186,13 +177,13 @@ const RegionDetailsPage = () => {
                 <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                           <Users size={18} color="var(--success-color)" /> المشرفون الميدانيون
+                           <Users size={18} color="var(--success-color)" /> أعضاء المنطقة
                         </h2>
                         {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
                           <button type="button" className="icon-btn" title="تعيين مشرف" onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); }}><UserPlus size={18} /></button>
                         )}
                     </div>
-                    {supervisors.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد مشرفون معينون لهذه المنطقة حالياً.</p> : (
+                    {supervisors.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد أعضاء مسجّلون لهذه المنطقة حالياً.</p> : (
                         <div style={{ display: 'grid', gap: '10px' }}>
                            {supervisors.map(sup => (
                               <div key={sup.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
@@ -219,7 +210,7 @@ const RegionDetailsPage = () => {
                         </div>
                         <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                           المنطقة هي مجموعة (group): يُسجَّل العضو في <code style={{ fontSize: '0.75rem' }}>members/{'{'}معرف_المنطقة{'}'}/members/{'{'}userId{'}'}</code> مع المرآة{' '}
-                          <code style={{ fontSize: '0.75rem' }}>Mygroup/{'{'}userId{'}'}/Mygroup/{'{'}معرف_المنطقة{'}'}</code>. اختر من المستخدمين (عدا المدير والمعيّنين هنا) — يمكنك تعيين أكثر من مشرف دون إغلاق النافذة.
+                          <code style={{ fontSize: '0.75rem' }}>Mygroup/{'{'}userId{'}'}/Mygroup/{'{'}معرف_المنطقة{'}'}</code>. يظهر هنا جميع المستخدمين بما فيهم مدير النظام، باستثناء من عُيِّن مسبقاً لهذه المنطقة — يمكنك تعيين أكثر من مشرف دون إغلاق النافذة.
                         </p>
                         {assignMsg && (
                           <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'var(--success-color)' }}>{assignMsg}</p>

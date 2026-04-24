@@ -9,6 +9,17 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 const schoolLevelSubtitle = (sl) =>
   sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
 
+const USER_ROLE_LABELS = {
+  admin: 'مدير النظام',
+  supervisor_arab: 'مشرف عام',
+  supervisor_local: 'مشرف منطقة',
+  teacher: 'معلم',
+  student: 'طالب',
+  unassigned: 'غير معيّن',
+};
+
+const userRoleLabel = (role) => USER_ROLE_LABELS[role] || role || 'مستخدم';
+
 const SchoolDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -61,8 +72,8 @@ const SchoolDetailsPage = () => {
             memberData.forEach(m => {
                 const profile = userMap[m.userId];
                 if (profile) {
-                    if (profile.role === 'teacher') detailedStaff.push(profile);
-                    else if (profile.role === 'student' || m.type === 'student') detailedStudents.push(profile);
+                    if (profile.role === 'student' || m.type === 'student') detailedStudents.push(profile);
+                    else detailedStaff.push(profile);
                 }
             });
 
@@ -163,12 +174,14 @@ const SchoolDetailsPage = () => {
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
 
-    const filteredUsers = allUsers.filter(u => {
-        const matchesSearch = u.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                             u.email?.toLowerCase().includes(searchTerm.toLowerCase());
-        const alreadyMember = staff.find(s => s.id === u.id) || students.find(s => s.id === u.id);
-        const validRole = u.role === 'teacher' || u.role === 'student';
-        return matchesSearch && !alreadyMember && validRole;
+    const filteredUsers = allUsers.filter((u) => {
+        const q = searchTerm.trim().toLowerCase();
+        const matchesSearch =
+            !q ||
+            u.displayName?.toLowerCase().includes(q) ||
+            u.email?.toLowerCase().includes(q);
+        const alreadyMember = staff.find((s) => s.id === u.id) || students.find((s) => s.id === u.id);
+        return matchesSearch && !alreadyMember;
     });
 
     const renderStatCard = (label, value, IconComponent, color) => (
@@ -209,7 +222,7 @@ const SchoolDetailsPage = () => {
                 <div className="surface-card surface-card--lg school-details-panel">
                     <div className="school-details-panel__head">
                         <h2 className="school-details-panel__title">
-                           <School size={18} color="var(--success-color)" /> طاقم التدريس
+                           <School size={18} color="var(--success-color)" /> طاقم التدريس والكادر
                         </h2>
                         <div className="school-details-panel__actions">
                             <div className="school-details-panel__search-wrap">
@@ -223,7 +236,7 @@ const SchoolDetailsPage = () => {
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                              <button className="icon-btn" title="إضافة معلم" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
                             )}
                         </div>
                     </div>
@@ -263,7 +276,7 @@ const SchoolDetailsPage = () => {
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                              <button className="icon-btn" title="إضافة طالب" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
                             )}
                         </div>
                     </div>
@@ -291,7 +304,7 @@ const SchoolDetailsPage = () => {
                 <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                     <div className="surface-card surface-card--lg school-details-assign-modal" onClick={e => e.stopPropagation()}>
                         <div className="school-details-assign-modal__head">
-                            <h3 style={{ margin: 0 }}>تعيين عضو جديد للمدرسة</h3>
+                            <h3 style={{ margin: 0 }}>تعيين عضو للمدرسة</h3>
                             <button onClick={() => setIsModalOpen(false)} className="icon-btn"><X size={20}/></button>
                         </div>
 
@@ -348,7 +361,9 @@ const SchoolDetailsPage = () => {
                                         <img src={u.photoURL || `https://ui-avatars.com/api/?name=${u.displayName}`} className="school-details-assign-modal__item-avatar" />
                                         <div>
                                             <div className="school-details-assign-modal__item-name">{u.displayName}</div>
-                                            <div className="school-details-assign-modal__item-sub">{u.role === 'teacher' ? 'معلم' : 'طالب'} {u.schoolId ? '(لديه مدرسة حالية)' : '(غير محدد مدرسة)'}</div>
+                                            <div className="school-details-assign-modal__item-sub">
+                                              {userRoleLabel(u.role)} {u.schoolId && u.schoolId !== id ? '(مرتبط بمدرسة أخرى)' : ''}
+                                            </div>
                                         </div>
                                     </div>
                                     <button 

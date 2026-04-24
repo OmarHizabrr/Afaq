@@ -40,7 +40,6 @@ const NotificationsPage = ({ user }) => {
   const [newChatUsers, setNewChatUsers] = useState([]);
   const [sendingMessage, setSendingMessage] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(true);
-  const [sharedSupervisorIds, setSharedSupervisorIds] = useState([]);
   const [isNarrow, setIsNarrow] = useState(false);
   const [chatMobileMode, setChatMobileMode] = useState('list');
 
@@ -53,45 +52,19 @@ const NotificationsPage = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    const loadUsersAndRules = async () => {
+    const loadUsers = async () => {
       if (!actorId) return;
       setLoadingUsers(true);
       const api = FirestoreApi.Api;
       try {
         const userDocs = await api.getDocuments(api.getUsersCollection());
-        const users = userDocs.map((d) => ({ id: d.id, ...d.data() }));
-        setAllUsers(users);
-
-        if (user?.role === 'student') {
-          const myMirrors = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
-          const myGroupIds = new Set(
-            myMirrors
-              .map((m) => {
-                const data = m.data() || {};
-                return data.schoolId || data.regionId || '';
-              })
-              .filter(Boolean)
-          );
-
-          const supervisors = users.filter((u) => u.role?.includes('supervisor'));
-          const allowed = [];
-          for (const sup of supervisors) {
-            const supMirrors = await api.getDocuments(api.getUserMembershipMirrorCollection(sup.id));
-            const hasShared = supMirrors.some((m) => {
-              const data = m.data() || {};
-              const gid = data.schoolId || data.regionId || '';
-              return gid && myGroupIds.has(gid);
-            });
-            if (hasShared) allowed.push(sup.id);
-          }
-          setSharedSupervisorIds(allowed);
-        }
+        setAllUsers(userDocs.map((d) => ({ id: d.id, ...d.data() })));
       } finally {
         setLoadingUsers(false);
       }
     };
-    loadUsersAndRules();
-  }, [actorId, user?.role]);
+    loadUsers();
+  }, [actorId]);
 
   useEffect(() => {
     if (!actorId) return undefined;
@@ -144,19 +117,11 @@ const NotificationsPage = ({ user }) => {
     );
   }, [selectedConversation?.id]);
 
+  /** قائمة المستلمين: جميع المستخدمين ما عدا الحساب الحالي (إشعارات ومحادثات جديدة). */
   const recipients = useMemo(() => {
-    if (!user?.role) return [];
-    const isAdmin = user.role === 'admin';
-    if (isAdmin) {
-      return allUsers.filter((u) => u.id !== actorId);
-    }
-    if (user.role === 'student') {
-      return allUsers.filter(
-        (u) => u.id !== actorId && (u.role === 'admin' || (u.role?.includes('supervisor') && sharedSupervisorIds.includes(u.id)))
-      );
-    }
-    return allUsers.filter((u) => u.id !== actorId && u.role === 'admin');
-  }, [allUsers, user?.role, actorId, sharedSupervisorIds]);
+    if (!actorId) return [];
+    return allUsers.filter((u) => u.id !== actorId);
+  }, [allUsers, actorId]);
 
   const recipientsMap = useMemo(() => Object.fromEntries(recipients.map((r) => [r.id, r])), [recipients]);
 
