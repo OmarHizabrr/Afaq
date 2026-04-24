@@ -50,7 +50,17 @@ const SchoolsPage = () => {
 
       setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
       setVillages(vilDocs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setSchools(schDocs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setSchools(
+        schDocs.map((doc) => {
+          const data = doc.data() || {};
+          const pathVillageId = doc.ref.parent.parent?.id || '';
+          return {
+            id: doc.id,
+            ...data,
+            pathVillageId: pathVillageId || data.villageId || '',
+          };
+        })
+      );
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
@@ -87,8 +97,21 @@ const SchoolsPage = () => {
       };
 
       if (isEditing) {
-        const docRef = api.getSchoolDoc(isEditing.villageId, isEditing.id);
-        await api.updateData({ docRef, data: schoolData });
+        const pathVid = isEditing.pathVillageId || isEditing.villageId;
+        if (!pathVid) {
+          setError('تعذر تحديد مسار المدرسة في القاعدة. أعد تحميل الصفحة وحاول مرة أخرى.');
+          setLoading(false);
+          return;
+        }
+        if (selectedVilId === pathVid) {
+          const docRef = api.getSchoolDoc(pathVid, isEditing.id);
+          await api.updateData({ docRef, data: schoolData });
+        } else {
+          const oldRef = api.getSchoolDoc(pathVid, isEditing.id);
+          const newRef = api.getSchoolDoc(selectedVilId, isEditing.id);
+          await api.setData({ docRef: newRef, data: schoolData, merge: true });
+          await api.deleteData(oldRef);
+        }
       } else {
         const newSchId = api.getNewId('schools');
         const schRef = api.getSchoolDoc(selectedVilId, newSchId);
@@ -115,9 +138,9 @@ const SchoolsPage = () => {
   const handleEditClick = (sch) => {
     setIsEditing(sch);
     setIsAdding(true);
-    setSelectedVilId(sch.villageId);
-    // Find region of this village
-    const vil = villages.find(v => v.id === sch.villageId);
+    const effectiveVilId = sch.pathVillageId || sch.villageId || '';
+    setSelectedVilId(effectiveVilId);
+    const vil = villages.find((v) => v.id === effectiveVilId);
     if (vil) setSelectedRegId(vil.regionId);
     setSchoolName(sch.name);
     setSchoolLevel(sch.schoolLevel || 'children');
@@ -129,8 +152,9 @@ const SchoolsPage = () => {
       const api = FirestoreApi.Api;
       const schoolDoc = schools.find(s => s.id === id);
       if (!schoolDoc) return;
-      
-      const docRef = api.getSchoolDoc(schoolDoc.villageId, id);
+
+      const vid = schoolDoc.pathVillageId || schoolDoc.villageId;
+      const docRef = api.getSchoolDoc(vid, id);
       await api.deleteData(docRef);
       setSuccess('تم حذف المدرسة بنجاح.');
       setError('');
@@ -236,7 +260,7 @@ const SchoolsPage = () => {
               <div>
                 <h3 className="schools-card__title">{sch.name}</h3>
                 <div className="schools-card__meta">
-                  <span><MapPin size={14} /> القرية: {getVillageName(sch.villageId)}</span>
+                  <span><MapPin size={14} /> القرية: {getVillageName(sch.pathVillageId || sch.villageId)}</span>
                   <span>النوع: {schoolLevelLabel(sch.schoolLevel)}</span>
                   {sch.donorName && <span className="schools-card__donor"><Handshake size={14} /> المتبرع: {sch.donorName}</span>}
                 </div>
