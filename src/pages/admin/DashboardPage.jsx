@@ -37,7 +37,15 @@ const StatCard = ({ title, value, icon, color, loading }) => {
 const DashboardPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const {
+    can,
+    ready,
+    pageDataScope,
+    membershipGroupIds,
+    membershipMirrorGroupIds,
+    membershipLoading,
+    actorUser,
+  } = perm;
   const [stats, setStats] = useState({
     supervisors: 0,
     villages: 0,
@@ -77,7 +85,13 @@ const DashboardPage = () => {
       if (scope === DATA_SCOPE_MEMBERSHIP) {
         schoolsRows = filterSchoolsByScope(schoolsRows, membershipGroupIds, scope);
         regionsRows = filterRegionsByScope(regionsRows, membershipGroupIds, scope);
-        villagesRows = filterVillagesByScope(villagesRows, membershipGroupIds, schoolsRows, scope);
+        villagesRows = filterVillagesByScope(
+          villagesRows,
+          membershipGroupIds,
+          schoolsRows,
+          scope,
+          membershipMirrorGroupIds
+        );
       }
 
       const scopedSchoolIds = new Set(schoolsRows.map((s) => s.id));
@@ -157,7 +171,7 @@ const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [pageDataScope, membershipGroupIds, actorUser]);
+  }, [pageDataScope, membershipGroupIds, membershipMirrorGroupIds, actorUser]);
 
   useEffect(() => {
     if (!ready) return;

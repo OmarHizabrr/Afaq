@@ -27,7 +27,7 @@ import {
 const VillagesPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading } = perm;
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
   const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
@@ -167,7 +167,13 @@ const VillagesPage = () => {
       if (scope === DATA_SCOPE_MEMBERSHIP) {
         schoolsRows = filterSchoolsByScope(schoolsRows, membershipGroupIds, scope);
         regionsRows = filterRegionsByScope(regionsRows, membershipGroupIds, scope);
-        villagesRows = filterVillagesByScope(villagesRows, membershipGroupIds, schoolsRows, scope);
+        villagesRows = filterVillagesByScope(
+          villagesRows,
+          membershipGroupIds,
+          schoolsRows,
+          scope,
+          membershipMirrorGroupIds
+        );
       }
 
       setRegions(regionsRows);
@@ -215,7 +221,7 @@ const VillagesPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [pageDataScope, membershipGroupIds]);
+  }, [pageDataScope, membershipGroupIds, membershipMirrorGroupIds]);
 
   useEffect(() => {
     if (!ready) return;

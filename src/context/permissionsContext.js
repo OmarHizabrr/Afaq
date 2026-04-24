@@ -7,6 +7,7 @@ export const PermissionsContext = createContext({
   can: () => false,
   pageDataScope: () => 'all',
   membershipGroupIds: new Set(),
+  membershipMirrorGroupIds: new Set(),
   membershipLoading: false,
   actorUser: null,
 });

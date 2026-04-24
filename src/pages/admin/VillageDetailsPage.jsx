@@ -35,7 +35,8 @@ const VillageDetailsPage = () => {
     const [editingType, setEditingType] = useState('رجل');
     const [editingMuslimCategory, setEditingMuslimCategory] = useState(normalizeMuslimCategory());
     const [pendingDelete, setPendingDelete] = useState(null);
-    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
+    const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading } =
+      usePermissions();
 
     useEffect(() => {
         const fetchVillageDetails = async () => {
@@ -115,7 +116,9 @@ const VillageDetailsPage = () => {
 
     const vilScope = pageDataScope(PERMISSION_PAGE_IDS.villages);
     const villageAllowed =
-      membershipGroupIds.has(village.regionId) || schools.some((s) => membershipGroupIds.has(s.id));
+      membershipGroupIds.has(id) ||
+      schools.some((s) => membershipGroupIds.has(s.id)) ||
+      membershipMirrorGroupIds.has(village.regionId);
     if (
       ready &&
       !membershipLoading &&

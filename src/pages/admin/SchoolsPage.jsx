@@ -25,7 +25,7 @@ const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?
 const SchoolsPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading } = perm;
   const [schools, setSchools] = useState([]);
   const [regions, setRegions] = useState([]);
   const [villages, setVillages] = useState([]);
@@ -74,7 +74,13 @@ const SchoolsPage = () => {
       let villagesRows = vilDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
       if (scope === DATA_SCOPE_MEMBERSHIP) {
         regionsRows = filterRegionsByScope(regionsRows, membershipGroupIds, scope);
-        villagesRows = filterVillagesByScope(villagesRows, membershipGroupIds, schoolsRows, scope);
+        villagesRows = filterVillagesByScope(
+          villagesRows,
+          membershipGroupIds,
+          schoolsRows,
+          scope,
+          membershipMirrorGroupIds
+        );
       }
 
       setRegions(regionsRows);
@@ -86,7 +92,7 @@ const SchoolsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [pageDataScope, membershipGroupIds]);
+  }, [pageDataScope, membershipGroupIds, membershipMirrorGroupIds]);
 
   useEffect(() => {
     if (!ready) return;

@@ -21,6 +21,7 @@ export default function PermissionsProvider({ user, children }) {
   });
 
   const [membershipGroupIds, setMembershipGroupIds] = useState(() => new Set());
+  const [membershipMirrorGroupIds, setMembershipMirrorGroupIds] = useState(() => new Set());
   const [membershipLoading, setMembershipLoading] = useState(false);
 
   useEffect(() => {
@@ -59,6 +60,7 @@ export default function PermissionsProvider({ user, children }) {
   useEffect(() => {
     if (!user?.uid || user.role === 'admin' || !needsMembershipData) {
       setMembershipGroupIds(new Set());
+      setMembershipMirrorGroupIds(new Set());
       setMembershipLoading(false);
       return undefined;
     }
@@ -71,12 +73,14 @@ export default function PermissionsProvider({ user, children }) {
         const mirrorIds = await loadMembershipGroupIdsFromMirrors(FirestoreApi.Api, uid);
         const ids = await expandMembershipGroupIdsForDataScope(FirestoreApi.Api, mirrorIds);
         if (!cancelled) {
+          setMembershipMirrorGroupIds(mirrorIds);
           setMembershipGroupIds(ids);
           setMembershipLoading(false);
         }
       } catch {
         if (!cancelled) {
           setMembershipGroupIds(new Set());
+          setMembershipMirrorGroupIds(new Set());
           setMembershipLoading(false);
         }
       }
@@ -95,6 +99,7 @@ export default function PermissionsProvider({ user, children }) {
         can: () => false,
         pageDataScope: () => 'all',
         membershipGroupIds: new Set(),
+        membershipMirrorGroupIds: new Set(),
         membershipLoading: false,
         actorUser: null,
       };
@@ -109,6 +114,7 @@ export default function PermissionsProvider({ user, children }) {
         can: () => false,
         pageDataScope: () => 'all',
         membershipGroupIds: new Set(),
+        membershipMirrorGroupIds: new Set(),
         membershipLoading: false,
         actorUser: user,
       };
@@ -122,6 +128,7 @@ export default function PermissionsProvider({ user, children }) {
         can: () => false,
         pageDataScope: () => 'all',
         membershipGroupIds: new Set(),
+        membershipMirrorGroupIds: new Set(),
         membershipLoading: Boolean(needsMembershipData),
         actorUser: user,
       };
@@ -133,6 +140,7 @@ export default function PermissionsProvider({ user, children }) {
       hasPermissionProfile: Boolean(profileState.profile),
       actorUser: user,
       membershipGroupIds,
+      membershipMirrorGroupIds,
       membershipLoading,
       pageDataScope: (pageId) => resolvePageDataScope(user, pagesResolved, pageId),
       canAccessPage: (pageId) => {
@@ -145,7 +153,7 @@ export default function PermissionsProvider({ user, children }) {
         return pagesResolved?.[pageId]?.actions?.[actionId] === true;
       },
     };
-  }, [user, profileState, membershipGroupIds, membershipLoading, needsMembershipData]);
+  }, [user, profileState, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, needsMembershipData]);
 
   return <PermissionsContext.Provider value={value}>{children}</PermissionsContext.Provider>;
 }

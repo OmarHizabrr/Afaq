@@ -26,7 +26,7 @@ const db = getFirestore(app);
  * - لا توجد try/catch داخل الدوال (الأخطاء تذهب للمستدعي).
  * - التعليقات باللغة العربية.
  *
- * مسارات العضوية الثنائية (مدرسة أو منطقة = groupId):
+ * مسارات العضوية الثنائية (مدرسة أو منطقة أو قرية = groupId):
  *   members/{groupId}/members/{userId}  ↔  Mygroup/{userId}/Mygroup/{groupId}
  * استخدم getGroupMembersCollection / getGroupMemberDoc و getUserMembershipMirror* فقط.
  */
@@ -65,7 +65,7 @@ class FirestoreApi {
   }
 
   /**
-   * ربط ثنائي العضوية (مدرسة أو منطقة = groupId):
+   * ربط ثنائي العضوية (مدرسة أو منطقة أو قرية = groupId):
    * - members/{groupId}/members/{userId}
    * - Mygroup/{userId}/Mygroup/{groupId}
    * حذف المستخدم من members يجب أن يرافقه حذف مرآة Mygroup (أو عبر clearUserMembershipMirrors).
@@ -92,7 +92,7 @@ class FirestoreApi {
     );
   }
 
-  /** members/{groupId}/members — أعضاء المجموعة (مدرسة أو منطقة) */
+  /** members/{groupId}/members — أعضاء المجموعة (مدرسة أو منطقة أو قرية) */
   getGroupMembersCollection(groupId) {
     return this.getSubCollection('members', groupId, 'members');
   }

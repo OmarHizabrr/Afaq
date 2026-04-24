@@ -1,7 +1,7 @@
 /**
  * نطاق عرض البيانات المرتبط بأنواع الصلاحيات:
  * - `all`: كل السجلات (السلوك السابق).
- * - `membership`: فقط ما يرتبط بمجموعات المستخدم (Mygroup/* معرف المجموعة = مدرسة أو منطقة).
+ * - `membership`: فقط ما يرتبط بمجموعات المستخدم (Mygroup/* معرف المجموعة = مدرسة أو منطقة أو قرية).
  */
 
 export const DATA_SCOPE_ALL = 'all';
@@ -27,8 +27,8 @@ export async function loadMembershipGroupIdsFromMirrors(api, userId) {
 }
 
 /**
- * يضيف لكل مدرسة في المرآة معرف المنطقة الأم (من القرية أو الحقل)،
- * ليُعرض نفس السياق الجغرافي للمستخدم العضو في مدرسة فقط دون مرآة منطقة.
+ * يوسّع معرفات المرآة: لكل مدرسة يضيف منطقة الأم وقرية الأم؛
+ * لكل قرية في المرآة يضيف منطقة الأم — دون تغيير قائمة المرآة الأصلية (تُستخدم لتصفية القرى).
  */
 export async function expandMembershipGroupIdsForDataScope(api, mirrorGroupIds) {
   const expanded = new Set(mirrorGroupIds);
@@ -41,6 +41,7 @@ export async function expandMembershipGroupIdsForDataScope(api, mirrorGroupIds) 
   ]);
 
   const regionIdSet = new Set(regionDocs.map((d) => d.id));
+  const villageIdSet = new Set(villageDocs.map((d) => d.id));
   const villageToRegion = {};
   villageDocs.forEach((d) => {
     const data = d.data() || {};
@@ -48,23 +49,50 @@ export async function expandMembershipGroupIdsForDataScope(api, mirrorGroupIds) 
   });
 
   const schoolIdToRegionId = new Map();
+  const schoolIdToVillageId = new Map();
   schoolDocs.forEach((d) => {
     const data = d.data() || {};
     const vid = data.villageId || d.ref.parent.parent?.id || '';
     const rid = villageToRegion[vid] || data.regionId || '';
     if (rid) schoolIdToRegionId.set(d.id, rid);
+    if (vid) schoolIdToVillageId.set(d.id, vid);
   });
 
   for (const gid of mirrorGroupIds) {
+    if (villageIdSet.has(gid)) {
+      const rid = villageToRegion[gid] || '';
+      if (rid) expanded.add(rid);
+      continue;
+    }
     if (regionIdSet.has(gid)) continue;
     const rid = schoolIdToRegionId.get(gid);
     if (rid) expanded.add(rid);
+    const vid = schoolIdToVillageId.get(gid);
+    if (vid) expanded.add(vid);
   }
 
   return expanded;
 }
 
-/** مستخدمون يظهرون كأعضاء في إحدى مجموعات المعرّفات (مدرسة/منطقة). */
+/**
+ * قرى ضمن النطاق: مدارس مُصفّاة، أو قرية/منطقة وردت في مرآة العضوية (وليس فقط منطقة مُشتقة من مدرسة)،
+ * حتى لا تُعرض كل قرى المنطقة لمعلّم عضو في مدرسة واحدة.
+ */
+export function filterVillagesByScope(villages, groupIds, scopedSchools, scope, mirrorGroupIds = null) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP || !groupIds?.size) return villages;
+  const villageIdsFromSchools = new Set(
+    scopedSchools.map((s) => s.villageId || s.pathVillageId).filter(Boolean)
+  );
+  const mirror = mirrorGroupIds;
+  return villages.filter((v) => {
+    if (groupIds.has(v.id)) return true;
+    if (villageIdsFromSchools.has(v.id)) return true;
+    if (mirror && mirror.size > 0 && mirror.has(v.regionId)) return true;
+    return false;
+  });
+}
+
+/** مستخدمون يظهرون كأعضاء في إحدى مجموعات المعرّفات (مدرسة/منطقة/قرية). */
 export async function loadPeerUserIdsForGroups(api, groupIds) {
   const ids = new Set();
   if (!groupIds || groupIds.size === 0) return ids;
@@ -90,14 +118,6 @@ export function filterRegionsByScope(regions, groupIds, scope) {
   return regions.filter((r) => groupIds.has(r.id));
 }
 
-export function filterVillagesByScope(villages, groupIds, scopedSchools, scope) {
-  if (scope !== DATA_SCOPE_MEMBERSHIP || !groupIds?.size) return villages;
-  const villageIdsFromSchools = new Set(scopedSchools.map((s) => s.villageId).filter(Boolean));
-  return villages.filter(
-    (v) => groupIds.has(v.regionId) || villageIdsFromSchools.has(v.id)
-  );
-}
-
 export function filterGovernoratesByScope(governorates, scopedRegions, scope) {
   if (scope !== DATA_SCOPE_MEMBERSHIP) return governorates;
   const govIds = new Set(scopedRegions.map((r) => r.govId).filter(Boolean));
@@ -115,7 +135,12 @@ export function studentRowMatchesScope(row, groupIds, scope) {
   const primary = row.primarySchoolId || '';
   if (primary && groupIds.has(primary)) return true;
   const mems = row.memberships || [];
-  return mems.some((m) => m.schoolId && groupIds.has(m.schoolId));
+  return mems.some(
+    (m) =>
+      (m.schoolId && groupIds.has(m.schoolId)) ||
+      (m.villageId && groupIds.has(m.villageId)) ||
+      (m.regionId && groupIds.has(m.regionId))
+  );
 }
 
 export function reportMatchesScope(rpt, groupIds, actorId, scope) {
