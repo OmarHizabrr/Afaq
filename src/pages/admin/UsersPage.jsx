@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Edit2, X, Eye } from 'lucide-react';
+import { Shield, Edit2, X, Eye, UserPlus } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
@@ -15,9 +15,14 @@ const UsersPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [error, setError] = useState('');
 
   const [selectedPermissionProfileId, setSelectedPermissionProfileId] = useState('');
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPhone, setNewUserPhone] = useState('');
+  const [newUserPermissionProfileId, setNewUserPermissionProfileId] = useState('');
   const { can } = usePermissions();
 
   const fetchData = async () => {
@@ -50,6 +55,55 @@ const UsersPage = () => {
     setSelectedPermissionProfileId(user.permissionProfileId || '');
   };
 
+  const resetAddUserForm = () => {
+    setNewUserName('');
+    setNewUserEmail('');
+    setNewUserPhone('');
+    setNewUserPermissionProfileId('');
+  };
+
+  const handleCreateUser = async () => {
+    if (!newUserName.trim() || !newUserPhone.trim()) {
+      setError('يرجى إدخال الاسم ورقم الهاتف للمستخدم.');
+      return;
+    }
+    const emailNormalized = newUserEmail.trim().toLowerCase();
+    const emailExists = emailNormalized
+      ? users.some((u) => (u.email || '').toLowerCase() === emailNormalized)
+      : false;
+    if (emailNormalized && emailExists) {
+      setError('هذا البريد الإلكتروني مستخدم مسبقاً.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      const api = FirestoreApi.Api;
+      const userId = api.getNewId('users');
+      await api.setData({
+        docRef: api.getUserDoc(userId),
+        data: {
+          displayName: newUserName.trim(),
+          email: emailNormalized || '',
+          phoneNumber: newUserPhone.trim(),
+          permissionProfileId: newUserPermissionProfileId || null,
+          role: 'unassigned',
+          accountDisabled: false,
+          photoURL: '',
+        },
+      });
+      setIsAddUserOpen(false);
+      resetAddUserForm();
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء إضافة المستخدم الجديد.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSaveRole = async () => {
     if (!editingUser) return;
 
@@ -79,7 +133,22 @@ const UsersPage = () => {
 
   return (
     <div>
-      <PageHeader icon={Shield} title="إدارة المستخدمين والصلاحيات" subtitle="تعديل الرتبة فقط. الربط بالمجموعات يتم من داخل صفحة المجموعة." />
+      <PageHeader icon={Shield} title="إدارة المستخدمين والصلاحيات" subtitle="تعديل الرتبة فقط. الربط بالمجموعات يتم من داخل صفحة المجموعة.">
+        {(can(PERMISSION_PAGE_IDS.users, 'user_edit_role') || can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')) && (
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            style={{ width: 'auto' }}
+            onClick={() => {
+              setIsAddUserOpen(true);
+              setError('');
+            }}
+          >
+            <UserPlus size={18} />
+            <span>إضافة مستخدم</span>
+          </button>
+        )}
+      </PageHeader>
 
       {error && <div className="app-alert app-alert--error users-alert">{error}</div>}
 
@@ -183,6 +252,88 @@ const UsersPage = () => {
                 }
               >
                 {loading ? 'الرجاء الانتظار...' : 'حفظ التغييرات'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isAddUserOpen && (
+        <div className="modal-overlay" onClick={() => setIsAddUserOpen(false)}>
+          <div className="modal-card modal-card--sm" onClick={(e) => e.stopPropagation()}>
+            <div className="users-modal__head">
+              <h2 className="users-modal__title">إضافة مستخدم جديد</h2>
+              <button type="button" className="icon-btn" onClick={() => setIsAddUserOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="users-modal__field">
+              <label className="app-label">اسم المستخدم</label>
+              <input
+                className="app-input"
+                value={newUserName}
+                onChange={(e) => setNewUserName(e.target.value)}
+                placeholder="الاسم الكامل"
+              />
+            </div>
+
+            <div className="users-modal__field">
+              <label className="app-label">البريد الإلكتروني (اختياري)</label>
+              <input
+                className="app-input"
+                type="email"
+                value={newUserEmail}
+                onChange={(e) => setNewUserEmail(e.target.value)}
+                placeholder="example@email.com"
+              />
+            </div>
+
+            <div className="users-modal__field">
+              <label className="app-label">رقم الهاتف (إجباري)</label>
+              <input
+                className="app-input"
+                value={newUserPhone}
+                onChange={(e) => setNewUserPhone(e.target.value.replace(/\D/g, ''))}
+                inputMode="numeric"
+                maxLength={15}
+                placeholder="07xxxxxxxx"
+              />
+            </div>
+
+            <div className="users-modal__field">
+              <label className="app-label">نوع الصلاحيات</label>
+              <AppSelect
+                value={newUserPermissionProfileId}
+                onChange={(e) => setNewUserPermissionProfileId(e.target.value)}
+                className="app-select"
+              >
+                <option value="">بدون نوع صلاحيات (تظهر له صفحة طلب الصلاحيات)</option>
+                {permissionProfiles.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name || p.id}</option>
+                ))}
+              </AppSelect>
+            </div>
+
+            <div className="users-modal__actions">
+              <button
+                type="button"
+                className="google-btn"
+                style={{ width: 'auto' }}
+                onClick={() => {
+                  setIsAddUserOpen(false);
+                  resetAddUserForm();
+                }}
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                className="google-btn google-btn--filled users-modal__save-btn"
+                onClick={handleCreateUser}
+                disabled={loading}
+              >
+                {loading ? 'الرجاء الانتظار...' : 'إنشاء المستخدم'}
               </button>
             </div>
           </div>
