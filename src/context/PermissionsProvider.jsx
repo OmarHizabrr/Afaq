@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { onSnapshot } from 'firebase/firestore';
 import FirestoreApi from '../services/firestoreApi';
 import { PermissionsContext } from './permissionsContext';
-import { resolvePageDataScope, loadMembershipGroupIdsFromMirrors } from '../utils/permissionDataScope';
+import {
+  resolvePageDataScope,
+  loadMembershipGroupIdsFromMirrors,
+  expandMembershipGroupIdsForDataScope,
+} from '../utils/permissionDataScope';
 
 function pageVisible(pages, pageId) {
   if (!pages || typeof pages !== 'object') return false;
@@ -64,7 +68,8 @@ export default function PermissionsProvider({ user, children }) {
     setMembershipLoading(true);
     (async () => {
       try {
-        const ids = await loadMembershipGroupIdsFromMirrors(FirestoreApi.Api, uid);
+        const mirrorIds = await loadMembershipGroupIdsFromMirrors(FirestoreApi.Api, uid);
+        const ids = await expandMembershipGroupIdsForDataScope(FirestoreApi.Api, mirrorIds);
         if (!cancelled) {
           setMembershipGroupIds(ids);
           setMembershipLoading(false);

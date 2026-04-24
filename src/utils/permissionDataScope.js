@@ -26,6 +26,44 @@ export async function loadMembershipGroupIdsFromMirrors(api, userId) {
   return new Set(docs.map((d) => d.id).filter(Boolean));
 }
 
+/**
+ * يضيف لكل مدرسة في المرآة معرف المنطقة الأم (من القرية أو الحقل)،
+ * ليُعرض نفس السياق الجغرافي للمستخدم العضو في مدرسة فقط دون مرآة منطقة.
+ */
+export async function expandMembershipGroupIdsForDataScope(api, mirrorGroupIds) {
+  const expanded = new Set(mirrorGroupIds);
+  if (!mirrorGroupIds || mirrorGroupIds.size === 0) return expanded;
+
+  const [schoolDocs, villageDocs, regionDocs] = await Promise.all([
+    api.getCollectionGroupDocuments('schools'),
+    api.getCollectionGroupDocuments('villages'),
+    api.getCollectionGroupDocuments('regions'),
+  ]);
+
+  const regionIdSet = new Set(regionDocs.map((d) => d.id));
+  const villageToRegion = {};
+  villageDocs.forEach((d) => {
+    const data = d.data() || {};
+    villageToRegion[d.id] = data.regionId || '';
+  });
+
+  const schoolIdToRegionId = new Map();
+  schoolDocs.forEach((d) => {
+    const data = d.data() || {};
+    const vid = data.villageId || d.ref.parent.parent?.id || '';
+    const rid = villageToRegion[vid] || data.regionId || '';
+    if (rid) schoolIdToRegionId.set(d.id, rid);
+  });
+
+  for (const gid of mirrorGroupIds) {
+    if (regionIdSet.has(gid)) continue;
+    const rid = schoolIdToRegionId.get(gid);
+    if (rid) expanded.add(rid);
+  }
+
+  return expanded;
+}
+
 /** مستخدمون يظهرون كأعضاء في إحدى مجموعات المعرّفات (مدرسة/منطقة). */
 export async function loadPeerUserIdsForGroups(api, groupIds) {
   const ids = new Set();

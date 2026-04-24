@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import {
   FileText,
   User,
@@ -21,6 +21,7 @@ import PageHeader from '../../components/PageHeader';
 import MapLocationOpen from '../../components/MapLocationOpen';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
 import StarRatingInput from '../../components/StarRatingInput';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
 
@@ -46,7 +47,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   const [saving, setSaving] = useState(false);
   const [adminError, setAdminError] = useState('');
   const [editMode, setEditMode] = useState(false);
-  const { can } = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = usePermissions();
 
   const [visitEdit, setVisitEdit] = useState({});
   const [dailyEdit, setDailyEdit] = useState({});
@@ -233,6 +234,22 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         التقرير غير موجود
       </div>
     );
+  }
+
+  const reportScope = pageDataScope(PERMISSION_PAGE_IDS.reports);
+  const actorId = actorUser?.uid || actorUser?.id || '';
+  const reportForScope = {
+    ...report,
+    teacherId: report.teacherId || (report.type !== 'visit' ? report._ownerId : ''),
+    supervisorId: report.supervisorId || (report.type === 'visit' ? report._ownerId : report.supervisorId),
+  };
+  if (
+    ready &&
+    !membershipLoading &&
+    reportScope === DATA_SCOPE_MEMBERSHIP &&
+    !reportMatchesScope(reportForScope, membershipGroupIds, actorId, reportScope)
+  ) {
+    return <Navigate to="/reports" replace />;
   }
 
   const dateDisplay =
