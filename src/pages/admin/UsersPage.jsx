@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Edit2, X, Eye, UserPlus } from 'lucide-react';
+import { Shield, Edit2, X, Eye, UserPlus, Lock, EyeOff } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
@@ -22,6 +22,8 @@ const UsersPage = () => {
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPhone, setNewUserPhone] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [showNewUserPassword, setShowNewUserPassword] = useState(false);
   const [newUserPermissionProfileId, setNewUserPermissionProfileId] = useState('');
   const { can } = usePermissions();
 
@@ -59,12 +61,14 @@ const UsersPage = () => {
     setNewUserName('');
     setNewUserEmail('');
     setNewUserPhone('');
+    setNewUserPassword('');
+    setShowNewUserPassword(false);
     setNewUserPermissionProfileId('');
   };
 
   const handleCreateUser = async () => {
-    if (!newUserName.trim() || !newUserPhone.trim()) {
-      setError('يرجى إدخال الاسم ورقم الهاتف للمستخدم.');
+    if (!newUserName.trim() || !newUserPhone.trim() || !newUserPassword.trim()) {
+      setError('يرجى إدخال الاسم ورقم الهاتف وكلمة المرور للمستخدم.');
       return;
     }
     const emailNormalized = newUserEmail.trim().toLowerCase();
@@ -87,6 +91,7 @@ const UsersPage = () => {
           displayName: newUserName.trim(),
           email: emailNormalized || '',
           phoneNumber: newUserPhone.trim(),
+          password: newUserPassword.trim(),
           permissionProfileId: newUserPermissionProfileId || null,
           role: 'unassigned',
           accountDisabled: false,
@@ -299,6 +304,30 @@ const UsersPage = () => {
                 maxLength={15}
                 placeholder="07xxxxxxxx"
               />
+            </div>
+
+            <div className="users-modal__field">
+              <label className="app-label">كلمة المرور (إجباري)</label>
+              <div className="md-field settings-profile-form__password-field">
+                <Lock size={18} color="var(--text-secondary)" aria-hidden />
+                <input
+                  className="app-input"
+                  type={showNewUserPassword ? 'text' : 'password'}
+                  value={newUserPassword}
+                  onChange={(e) => setNewUserPassword(e.target.value)}
+                  placeholder="ادخل كلمة مرور المستخدم"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="icon-btn settings-profile-form__password-toggle"
+                  onClick={() => setShowNewUserPassword((v) => !v)}
+                  title={showNewUserPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                  aria-label={showNewUserPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                >
+                  {showNewUserPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <div className="users-modal__field">
