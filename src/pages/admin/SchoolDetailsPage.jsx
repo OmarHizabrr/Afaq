@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
+import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
@@ -172,6 +172,66 @@ const SchoolDetailsPage = () => {
       }
     };
 
+    const removeMemberFromSchool = async (memberUser) => {
+      if (!id || !memberUser?.id || assigning) return;
+      const label = memberUser.displayName || memberUser.id;
+      if (
+        !window.confirm(
+          `إزالة «${label}» من هذه المدرسة؟\n\nيُحذف ربط العضوية (members + مرآة Mygroup) وسجل الطالب في المدرسة إن وُجد، ويُحدَّث الملف عند الحاجة.`
+        )
+      ) {
+        return;
+      }
+      setAssigning(true);
+      setAssignError('');
+      try {
+        const api = FirestoreApi.Api;
+        const memberId = memberUser.id;
+        const profile = (await api.getData(api.getUserDoc(memberId))) || {};
+
+        await api.deleteData(api.getGroupMemberDoc(id, memberId));
+        await api.deleteData(api.getUserMembershipMirrorDoc(memberId, id));
+        try {
+          await api.deleteData(api.getSchoolStudentDoc(id, memberId));
+        } catch {
+          /* لا يوجد سجل في students/{schoolId}/students */
+        }
+
+        const uForList = { uid: memberId, id: memberId, ...profile };
+        if ((uForList.schoolId || '') === id) uForList.schoolId = '';
+        const nextSchools = await api.listUserSchoolIdsFromMirrors(uForList);
+        const nextPrimary = nextSchools[0] || '';
+
+        const patch = {};
+        if ((profile.schoolId || '') === id) patch.schoolId = nextPrimary || '';
+        if ((profile.primarySchoolId || '') === id) {
+          patch.primarySchoolId = nextPrimary || '';
+          if (nextPrimary) {
+            const allSch = await api.getCollectionGroupDocuments('schools');
+            const sch = allSch.find((s) => s.id === nextPrimary);
+            const d = sch?.data() || {};
+            patch.villageId = d.villageId || sch?.ref?.parent?.parent?.id || '';
+          } else {
+            patch.villageId = '';
+          }
+        }
+        if (Object.keys(patch).length > 0) {
+          await api.updateData({
+            docRef: api.getUserDoc(memberId),
+            data: patch,
+            merge: true,
+          });
+        }
+
+        await fetchSchoolDetails();
+      } catch (err) {
+        console.error(err);
+        setAssignError('تعذر إزالة العضو من المدرسة.');
+      } finally {
+        setAssigning(false);
+      }
+    };
+
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
 
@@ -252,6 +312,11 @@ const SchoolDetailsPage = () => {
                             )}
                         </div>
                     </div>
+                    {assignError && (
+                      <div className="app-alert app-alert--error school-details-panel__empty" style={{ marginBottom: '0.75rem' }}>
+                        {assignError}
+                      </div>
+                    )}
                     {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 ? <p className="school-details-panel__empty">لا يوجد نتائج للبحث.</p> : (
                         <div className="school-details-members-list">
                            {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).map(t => (
@@ -261,9 +326,16 @@ const SchoolDetailsPage = () => {
                                     <h4 className="school-details-member-item__name">{t.displayName}</h4>
                                     <p className="school-details-member-item__sub">{t.email}</p>
                                  </div>
+                                 <div style={{ display: 'flex', gap: 6 }}>
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
-                                   <button onClick={() => navigate(`/users/${t.id}`)} className="icon-btn"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/users/${t.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
                                  )}
+                                 {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
+                                   <button type="button" onClick={() => removeMemberFromSchool(t)} className="icon-btn" title="إزالة من المدرسة" disabled={assigning}>
+                                     <Trash2 size={16} color="var(--danger-color)" />
+                                   </button>
+                                 )}
+                                 </div>
                               </div>
                            ))}
                         </div>
@@ -301,9 +373,16 @@ const SchoolDetailsPage = () => {
                                     <h4 className="school-details-member-item__name">{s.displayName}</h4>
                                     <p className="school-details-member-item__sub">{s.phoneNumber || 'لا يوجد هاتف'}</p>
                                  </div>
+                                 <div style={{ display: 'flex', gap: 6 }}>
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
-                                   <button onClick={() => navigate(`/users/${s.id}`)} className="icon-btn"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/students/${s.id}`)} className="icon-btn" title="عرض ملف الطالب"><Info size={16}/></button>
                                  )}
+                                 {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
+                                   <button type="button" onClick={() => removeMemberFromSchool(s)} className="icon-btn" title="إزالة من المدرسة" disabled={assigning}>
+                                     <Trash2 size={16} color="var(--danger-color)" />
+                                   </button>
+                                 )}
+                                 </div>
                               </div>
                            ))}
                         </div>

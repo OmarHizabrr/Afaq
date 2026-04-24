@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { MapPin, School, Users, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
+import { MapPin, School, Users, ChevronRight, UserPlus, Info, Search, X, Check, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
@@ -125,6 +125,60 @@ const RegionDetailsPage = () => {
         }
     };
 
+    const removeSupervisorFromRegion = async (sup) => {
+        if (!sup?.id || !id || assigning) return;
+        const label = sup.displayName || sup.id;
+        if (!window.confirm(`إزالة «${label}» من أعضاء هذه المنطقة؟\n\nيُحذف ربط العضوية والمرآة، ويُحدَّث تعيين المشرف عند الحاجة.`)) {
+            return;
+        }
+        setAssigning(true);
+        setError('');
+        setAssignMsg('');
+        try {
+            const api = FirestoreApi.Api;
+            const memberId = sup.id;
+            await api.deleteData(api.getGroupMemberDoc(id, memberId));
+            await api.deleteData(api.getUserMembershipMirrorDoc(memberId, id));
+
+            const profile = (await api.getData(api.getUserDoc(memberId))) || {};
+            const remaining = await api.listUserRegionIdsFromMirrors({ uid: memberId, id: memberId, ...profile });
+
+            if (remaining.length > 0) {
+                await api.setData({
+                    docRef: api.getSupervisorAssignmentDoc(memberId),
+                    data: {
+                        userId: memberId,
+                        role: profile.role,
+                        regionId: remaining[0],
+                        schoolIds: [],
+                    },
+                    merge: true,
+                });
+            } else {
+                try {
+                    await api.deleteData(api.getSupervisorAssignmentDoc(memberId));
+                } catch {
+                    /* غير موجود */
+                }
+                if (profile.role === 'supervisor_local') {
+                    await api.updateData({
+                        docRef: api.getUserDoc(memberId),
+                        data: { role: 'unassigned', schoolId: '' },
+                        merge: true,
+                    });
+                }
+            }
+
+            await fetchRegionDetails();
+            setAssignMsg(`تمت إزالة «${label}» من المنطقة.`);
+        } catch (err) {
+            console.error(err);
+            setError('تعذر إزالة المشرف من المنطقة.');
+        } finally {
+            setAssigning(false);
+        }
+    };
+
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!region) return <div style={{ padding: '2rem', textAlign: 'center' }}>المنطقة غير موجودة</div>;
 
@@ -203,9 +257,16 @@ const RegionDetailsPage = () => {
                                     <img src={sup.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(sup.displayName || '')}`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
                                     <h4 style={{ margin: 0 }}>{sup.displayName}</h4>
                                  </div>
+                                 <div style={{ display: 'flex', gap: 6 }}>
                                  {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_view_profile') && (
-                                   <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
                                  )}
+                                 {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
+                                   <button type="button" onClick={() => removeSupervisorFromRegion(sup)} className="icon-btn" title="إزالة من المنطقة" disabled={assigning}>
+                                     <Trash2 size={16} color="var(--danger-color)" />
+                                   </button>
+                                 )}
+                                 </div>
                               </div>
                            ))}
                         </div>
