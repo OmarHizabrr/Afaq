@@ -313,18 +313,73 @@ class FirestoreApi {
   }
 
   /**
-   * معرّف المدرسة النشطة: من users.schoolId أو أول schoolId في مرايا Mygroup.
+   * قائمة معرّفات مدارس المستخدم من المرآة ومن users.schoolId:
+   * يُقرأ schoolId من الحقول، أو معرّف المستند إذا كان مطابقاً لمدرسة في القاعدة.
+   */
+  async listUserSchoolIdsFromMirrors(user) {
+    const uid = user?.uid ?? user?.id;
+    if (!uid) return [];
+    const schoolSnap = await this.getCollectionGroupDocuments('schools');
+    const validSchoolIds = new Set(schoolSnap.map((s) => s.id));
+    const docs = await this.getDocuments(this.getUserMembershipMirrorCollection(uid));
+    const ordered = [];
+    const seen = new Set();
+    const pushSid = (sid) => {
+      if (!sid || !validSchoolIds.has(sid) || seen.has(sid)) return;
+      seen.add(sid);
+      ordered.push(sid);
+    };
+
+    if (user?.schoolId) pushSid(user.schoolId);
+    for (const d of docs) {
+      const data = d.data() || {};
+      if (data.schoolId) pushSid(data.schoolId);
+    }
+    for (const d of docs) {
+      const data = d.data() || {};
+      if (data.schoolId) continue;
+      if (data.regionId || data.villageId) continue;
+      if (validSchoolIds.has(d.id)) pushSid(d.id);
+    }
+    return ordered;
+  }
+
+  /**
+   * قائمة معرّفات المناطق من مرايا Mygroup (منطقة = معرّف المستند أو حقل regionId).
+   */
+  async listUserRegionIdsFromMirrors(user) {
+    const uid = user?.uid ?? user?.id;
+    if (!uid) return [];
+    const regionSnap = await this.getCollectionGroupDocuments('regions');
+    const validRegionIds = new Set(regionSnap.map((r) => r.id));
+    const docs = await this.getDocuments(this.getUserMembershipMirrorCollection(uid));
+    const ordered = [];
+    const seen = new Set();
+    const pushRid = (rid) => {
+      if (!rid || !validRegionIds.has(rid) || seen.has(rid)) return;
+      seen.add(rid);
+      ordered.push(rid);
+    };
+
+    for (const d of docs) {
+      const data = d.data() || {};
+      if (data.regionId) pushRid(data.regionId);
+    }
+    for (const d of docs) {
+      const data = d.data() || {};
+      if (data.regionId) continue;
+      if (data.schoolId || data.villageId) continue;
+      if (validRegionIds.has(d.id)) pushRid(d.id);
+    }
+    return ordered;
+  }
+
+  /**
+   * معرّف المدرسة النشطة: من users.schoolId أو أول مدرسة مؤكدة في مرايا Mygroup.
    */
   async resolveUserSchoolId(user) {
-    const uid = user?.uid ?? user?.id;
-    if (!uid) return '';
-    if (user?.schoolId) return user.schoolId;
-    const docs = await this.getDocuments(this.getUserMembershipMirrorCollection(uid));
-    for (const d of docs) {
-      const sid = d.data()?.schoolId;
-      if (sid) return sid;
-    }
-    return '';
+    const ids = await this.listUserSchoolIdsFromMirrors(user);
+    return ids[0] || '';
   }
 
   /**

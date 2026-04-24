@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Save } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import AppSelect from '../../components/AppSelect';
+
+const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
 const ReportItem = ({ title, fieldPath, state, onChange }) => {
   return (
@@ -50,6 +53,8 @@ const ReportItem = ({ title, fieldPath, state, onChange }) => {
 
 const TeacherWeeklyReportPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
+  const [schoolOptions, setSchoolOptions] = useState([]);
+  const [activeSchoolId, setActiveSchoolId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -64,6 +69,37 @@ const TeacherWeeklyReportPage = ({ user }) => {
   };
 
   const [reportState, setReportState] = useState(initialReportState);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const api = FirestoreApi.Api;
+        const ids = await api.listUserSchoolIdsFromMirrors(user);
+        if (cancelled || !ids.length) {
+          if (!cancelled && !ids.length) setSchoolOptions([]);
+          return;
+        }
+        const allSchools = await api.getCollectionGroupDocuments('schools');
+        if (cancelled) return;
+        const options = ids.map((id) => {
+          const doc = allSchools.find((s) => s.id === id);
+          const name = (doc?.data()?.name || '').trim() || id;
+          return { id, name };
+        });
+        setSchoolOptions(options);
+        const key = teacherSchoolStorageKey(actorId);
+        let sid = (key && localStorage.getItem(key)) || '';
+        if (!sid || !ids.includes(sid)) sid = ids[0];
+        setActiveSchoolId(sid);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, actorId]);
 
   const handleStateChange = (field, key, value) => {
     setReportState(prev => ({
@@ -83,7 +119,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
       setSuccess('');
       
       const api = FirestoreApi.Api;
-      const schoolId = await api.resolveUserSchoolId(user);
+      const schoolId = activeSchoolId || (await api.resolveUserSchoolId(user));
       if (!schoolId) {
         setError('حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.');
         setLoading(false);
@@ -126,6 +162,28 @@ const TeacherWeeklyReportPage = ({ user }) => {
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
       {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}
+
+      {schoolOptions.length > 1 && activeSchoolId && (
+        <div className="surface-card" style={{ padding: '1rem 1.25rem', marginBottom: '1rem' }}>
+          <label className="app-label">المدرسة المرتبطة بالتقرير</label>
+          <AppSelect
+            className="app-select"
+            value={activeSchoolId}
+            onChange={(e) => {
+              const sid = e.target.value;
+              setActiveSchoolId(sid);
+              const key = teacherSchoolStorageKey(actorId);
+              if (key && sid) localStorage.setItem(key, sid);
+            }}
+          >
+            {schoolOptions.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name}
+              </option>
+            ))}
+          </AppSelect>
+        </div>
+      )}
 
       <ReportItem title="خطبة الجمعة" fieldPath="fridaySermon" state={reportState} onChange={handleStateChange} />
       <ReportItem title="دعوة غير المسلمين" fieldPath="dawah" state={reportState} onChange={handleStateChange} />

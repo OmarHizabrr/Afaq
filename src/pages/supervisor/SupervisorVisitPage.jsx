@@ -44,26 +44,35 @@ const SupervisorVisitPage = ({ user }) => {
           return;
         }
         
-        // 1. Get Bilateral Assignments (Regions)
-        const assignedRegionsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
-        const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
+        const assignedRegionIds = await api.listUserRegionIdsFromMirrors(user);
+        const assignedRegionSet = new Set(assignedRegionIds);
 
-        if (assignedRegionIds.length === 0 && user.role !== 'admin' && user.role !== 'supervisor_arab') {
+        if (assignedRegionSet.size === 0 && user.role !== 'admin' && user.role !== 'supervisor_arab') {
           setError('لا توجد لك مناطق إشرافية مسندة حالياً. راجع الإدارة.');
           setLoading(false);
           return;
         }
 
-        // 2. Fetch Schools and Curriculum
-        const [schDocs, curDocs] = await Promise.all([
+        const [schDocs, curDocs, villageDocs] = await Promise.all([
           api.getCollectionGroupDocuments('schools'),
-          api.getDocuments(api.getCurriculumCollection())
+          api.getDocuments(api.getCurriculumCollection()),
+          api.getCollectionGroupDocuments('villages'),
         ]);
 
-        let schoolsData = schDocs.map(d => ({ id: d.id, ...d.data() }));
-        
-        // Final Filter: Only show schools that belong to the supervisor's assigned regions
-        // Note: For simplicity, if regionId is not on school, we show all for now or implement village-region mapping.
+        const villageToRegion = Object.fromEntries(
+          villageDocs.map((d) => [d.id, d.data()?.regionId || ''])
+        );
+
+        let schoolsData = schDocs.map((d) => {
+          const data = d.data() || {};
+          const vid = data.villageId || d.ref.parent.parent?.id || '';
+          const regionIdResolved = data.regionId || villageToRegion[vid] || '';
+          return { id: d.id, ...data, regionIdResolved, villageId: vid };
+        });
+
+        if (user.role !== 'admin' && user.role !== 'supervisor_arab') {
+          schoolsData = schoolsData.filter((s) => assignedRegionSet.has(s.regionIdResolved));
+        }
         setAssignedSchools(schoolsData);
         setCurriculumList(curDocs.map(d => ({ id: d.id, ...d.data() })));
         
@@ -84,7 +93,7 @@ const SupervisorVisitPage = ({ user }) => {
     };
 
     fetchInitialData();
-  }, [actorId, user?.role]);
+  }, [actorId, user]);
 
   // When school changes, fetch its students
   useEffect(() => {

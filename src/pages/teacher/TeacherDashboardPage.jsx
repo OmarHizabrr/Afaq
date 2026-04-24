@@ -53,12 +53,8 @@ const TeacherDashboardPage = ({ user }) => {
           return;
         }
 
-        // 1. Fetch Assigned Schools from Mygroup mirror
-        const assignedSchoolsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
-        const assignedSchoolIds = assignedSchoolsDocs.map(d => d.data().schoolId).filter(id => !!id);
-        
-        // If teacher has schools, pick the first one as active or use the one from user.schoolId if still set
-        const activeSchoolId = assignedSchoolIds.length > 0 ? assignedSchoolIds[0] : (user.schoolId || '');
+        const assignedSchoolIds = await api.listUserSchoolIdsFromMirrors(user);
+        const activeSchoolId = assignedSchoolIds[0] || user.schoolId || '';
 
         // 2. Fetch Students count for the active school
         if (activeSchoolId) {

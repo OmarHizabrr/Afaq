@@ -64,9 +64,7 @@ const StudentDashboardPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         
-        // 1) Support multiple schools from memberships
-        const assignedSchoolsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
-        const schoolIds = assignedSchoolsDocs.map((d) => d.data()?.schoolId).filter(Boolean);
+        const schoolIds = await api.listUserSchoolIdsFromMirrors(user);
         if (schoolIds.length > 0) {
           const allSchools = await api.getCollectionGroupDocuments('schools');
           const names = allSchools
@@ -115,7 +113,7 @@ const StudentDashboardPage = ({ user }) => {
     };
 
     fetchStudentData();
-  }, [actorId]);
+  }, [actorId, user]);
 
   if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
 

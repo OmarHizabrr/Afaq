@@ -49,25 +49,34 @@ const SupervisorDashboardPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         
-        // 1. تعيينات المناطق من المرآة: Mygroup/{uid}/Mygroup/{regionId}
-        const assignedRegionsDocs = await api.getDocuments(api.getUserMembershipMirrorCollection(actorId));
-        const assignedRegionIds = assignedRegionsDocs.map(d => d.data().regionId).filter(id => !!id);
-        
-        // 2. Fetch total visits by this supervisor
+        const assignedRegionIds = await api.listUserRegionIdsFromMirrors(user);
+        const assignedRegionSet = new Set(assignedRegionIds);
+
         const refVisits = api.getSupervisorReportsCollection(actorId);
         const visitDocs = await api.getDocuments(refVisits);
-        
-        // Count this month
+
         const now = new Date();
         const thisMonth = visitDocs.filter(d => {
            const logDate = new Date(d.data().visitDate || d.data().timestamp);
            return logDate.getMonth() === now.getMonth() && logDate.getFullYear() === now.getFullYear();
         });
 
-        // 3. Count schools in assigned regions (using collectionGroup for schools)
-        const allSchools = await api.getCollectionGroupDocuments('schools');
-        // This is a simplified filter - in a real scenario we'd match village -> region
-        const relevantSchools = allSchools.length; // Placeholder for exact hierarchy filter
+        const [allSchools, villageDocs] = await Promise.all([
+          api.getCollectionGroupDocuments('schools'),
+          api.getCollectionGroupDocuments('villages'),
+        ]);
+        const villageToRegion = Object.fromEntries(
+          villageDocs.map((d) => [d.id, d.data()?.regionId || ''])
+        );
+        let relevantSchools = allSchools.length;
+        if (user.role !== 'admin' && user.role !== 'supervisor_arab') {
+          relevantSchools = allSchools.filter((d) => {
+            const data = d.data() || {};
+            const vid = data.villageId || d.ref.parent.parent?.id || '';
+            const rid = data.regionId || villageToRegion[vid] || '';
+            return assignedRegionSet.has(rid);
+          }).length;
+        }
 
         setStats({
           regionsCount: assignedRegionIds.length,
@@ -90,7 +99,7 @@ const SupervisorDashboardPage = ({ user }) => {
     };
 
     fetchSupervisorStats();
-  }, [actorId]);
+  }, [actorId, user]);
 
   return (
     <div>

@@ -5,6 +5,9 @@ import FirestoreApi from "../../services/firestoreApi";
 import PageHeader from "../../components/PageHeader";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import FormModal from "../../components/FormModal";
+import AppSelect from "../../components/AppSelect";
+
+const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "");
 
 const TeacherStudentsPage = ({ user }) => {
   const navigate = useNavigate();
@@ -20,25 +23,18 @@ const TeacherStudentsPage = ({ user }) => {
   const [studentName, setStudentName] = useState("");
   const [studentAge, setStudentAge] = useState("");
   const [activeSchoolId, setActiveSchoolId] = useState("");
+  const [schoolOptions, setSchoolOptions] = useState([]);
   const [schoolReady, setSchoolReady] = useState(false);
 
-  const loadSchoolAndStudents = useCallback(async () => {
+  const reloadStudents = useCallback(async () => {
+    if (!activeSchoolId) return;
     setLoading(true);
-    setSchoolReady(false);
     try {
       const api = FirestoreApi.Api;
-      const sid = await api.resolveUserSchoolId(user);
-      setActiveSchoolId(sid);
-      setSchoolReady(true);
-      if (!sid) {
-        setError("حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.");
-        setStudents([]);
-        return;
-      }
-      setError("");
-      const ref = api.getSchoolStudentsCollection(sid);
+      const ref = api.getSchoolStudentsCollection(activeSchoolId);
       const docs = await api.getDocuments(ref);
       setStudents(docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      setError("");
     } catch (err) {
       console.error(err);
       setError("حدث خطأ أثناء جلب الدارسين");
@@ -46,11 +42,59 @@ const TeacherStudentsPage = ({ user }) => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [activeSchoolId]);
 
   useEffect(() => {
-    loadSchoolAndStudents();
-  }, [loadSchoolAndStudents]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const api = FirestoreApi.Api;
+        const ids = await api.listUserSchoolIdsFromMirrors(user);
+        if (cancelled) return;
+        if (!ids.length) {
+          setSchoolOptions([]);
+          setActiveSchoolId("");
+          setError("حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.");
+          setStudents([]);
+          setSchoolReady(true);
+          return;
+        }
+        const allSchools = await api.getCollectionGroupDocuments("schools");
+        if (cancelled) return;
+        const options = ids.map((id) => {
+          const doc = allSchools.find((s) => s.id === id);
+          const name = (doc?.data()?.name || "").trim() || id;
+          return { id, name };
+        });
+        setSchoolOptions(options);
+        const key = teacherSchoolStorageKey(actorId);
+        let sid = (key && localStorage.getItem(key)) || "";
+        if (!sid || !ids.includes(sid)) sid = ids[0];
+        setActiveSchoolId(sid);
+        setError("");
+      } catch (err) {
+        console.error(err);
+        setError("حدث خطأ أثناء تحميل بيانات المدرسة");
+      } finally {
+        if (!cancelled) setSchoolReady(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, actorId]);
+
+  useEffect(() => {
+    if (!activeSchoolId || !schoolReady) return;
+    reloadStudents();
+  }, [activeSchoolId, schoolReady, reloadStudents]);
+
+  const handleActiveSchoolChange = (e) => {
+    const sid = e.target.value;
+    setActiveSchoolId(sid);
+    const key = teacherSchoolStorageKey(actorId);
+    if (key && sid) localStorage.setItem(key, sid);
+  };
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -122,7 +166,7 @@ const TeacherStudentsPage = ({ user }) => {
         isEditing ? "تم تحديث بيانات الدارس بنجاح." : "تمت إضافة الدارس بنجاح.",
       );
       setError("");
-      loadSchoolAndStudents();
+      reloadStudents();
     } catch (err) {
       console.error(err);
       setError("حدث خطأ أثناء الحفظ");
@@ -154,7 +198,7 @@ const TeacherStudentsPage = ({ user }) => {
 
       setSuccess("تم حذف الدارس بنجاح.");
       setError("");
-      loadSchoolAndStudents();
+      reloadStudents();
     } catch (err) {
       console.error(err);
       setError("لا يمكن الحذف في الوقت الحالي.");
@@ -223,6 +267,23 @@ const TeacherStudentsPage = ({ user }) => {
           style={{ marginBottom: "1rem" }}
         >
           {success}
+        </div>
+      )}
+
+      {schoolOptions.length > 1 && activeSchoolId && (
+        <div className="surface-card" style={{ padding: "1rem 1.25rem", marginBottom: "1rem" }}>
+          <label className="app-label">المدرسة</label>
+          <AppSelect
+            className="app-select"
+            value={activeSchoolId}
+            onChange={handleActiveSchoolChange}
+          >
+            {schoolOptions.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name}
+              </option>
+            ))}
+          </AppSelect>
         </div>
       )}
 

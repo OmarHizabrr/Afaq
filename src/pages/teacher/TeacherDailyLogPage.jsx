@@ -4,10 +4,13 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 
+const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
+
 const TeacherDailyLogPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
   const [students, setStudents] = useState([]);
   const [curriculumList, setCurriculumList] = useState([]); // List of subjects
+  const [schoolOptions, setSchoolOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -23,49 +26,91 @@ const TeacherDailyLogPage = ({ user }) => {
   const [trackingData, setTrackingData] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError('');
       try {
         const api = FirestoreApi.Api;
-        const schoolId = await api.resolveUserSchoolId(user);
-        setActiveSchoolId(schoolId);
-        if (!schoolId) {
-          setError('تعذر جلب البيانات. الحساب غير مرتبط بمدرسة (تحقق من الملف أو مرآة Mygroup).');
-          setLoading(false);
+        const ids = await api.listUserSchoolIdsFromMirrors(user);
+        if (cancelled) return;
+        if (!ids.length) {
+          setError('تعذر جلب البيانات. الحساب غير مرتبط بمدرسة (تحقق من الإسناد في المدرسة أو مرآة Mygroup).');
+          setSchoolOptions([]);
+          setActiveSchoolId('');
           return;
         }
-
-        // Fetch Students for this school subcollection
-        const refStu = api.getSchoolStudentsCollection(schoolId);
-        const docsStu = await api.getDocuments(refStu);
-        const stData = docsStu.map(d => ({ id: d.id, ...d.data() }));
-        
-        // Fetch Curriculum
-        const refCur = api.getCurriculumCollection();
-        const docsCur = await api.getDocuments(refCur);
-        const curData = docsCur.map(d => ({ id: d.id, ...d.data() }));
-
-        setStudents(stData);
-        setCurriculumList(curData);
-
-        // Initialize tracking data assuming everyone is preset
-        setTrackingData(stData.map(s => ({
-          studentId: s.id,
-          name: s.studentName,
-          isPresent: true,
-          memorization: '',
-          review: ''
-        })));
-
+        const [allSchools, docsCur] = await Promise.all([
+          api.getCollectionGroupDocuments('schools'),
+          api.getDocuments(api.getCurriculumCollection()),
+        ]);
+        if (cancelled) return;
+        const options = ids.map((id) => {
+          const doc = allSchools.find((s) => s.id === id);
+          const name = (doc?.data()?.name || '').trim() || id;
+          return { id, name };
+        });
+        setSchoolOptions(options);
+        setCurriculumList(docsCur.map((d) => ({ id: d.id, ...d.data() })));
+        const key = teacherSchoolStorageKey(actorId);
+        let sid = (key && localStorage.getItem(key)) || '';
+        if (!sid || !ids.includes(sid)) sid = ids[0];
+        setActiveSchoolId(sid);
       } catch (err) {
         console.error(err);
         setError('حدث خطأ أثناء الاتصال بقاعدة البيانات');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
+  }, [user, actorId]);
 
-    fetchData();
-  }, [user]);
+  useEffect(() => {
+    if (!activeSchoolId) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const api = FirestoreApi.Api;
+        const refStu = api.getSchoolStudentsCollection(activeSchoolId);
+        const docsStu = await api.getDocuments(refStu);
+        if (cancelled) return;
+        const stData = docsStu.map((d) => ({ id: d.id, ...d.data() }));
+        setStudents(stData);
+        setTrackingData(
+          stData.map((s) => ({
+            studentId: s.id,
+            name: s.studentName,
+            isPresent: true,
+            memorization: '',
+            review: '',
+          }))
+        );
+      } catch (err) {
+        console.error(err);
+        setError('حدث خطأ أثناء جلب طلاب المدرسة');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSchoolId]);
+
+  const handleActiveSchoolChange = (e) => {
+    const sid = e.target.value;
+    setActiveSchoolId(sid);
+    const key = teacherSchoolStorageKey(actorId);
+    if (key && sid) localStorage.setItem(key, sid);
+    setSelectedSubjectId('');
+    setSelectedWeek('');
+    setSuccess('');
+  };
 
   const handleTrackingChange = (studentId, field, value) => {
     setTrackingData(prev => prev.map(item => 
@@ -185,6 +230,21 @@ const TeacherDailyLogPage = ({ user }) => {
 
       {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
       {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}
+
+      {schoolOptions.length > 1 && activeSchoolId && (
+        <div className="surface-card" style={{ padding: '1rem 1.25rem', marginBottom: '1rem' }}>
+          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            المدرسة التي تُسجّل التحضير لها
+          </label>
+          <AppSelect value={activeSchoolId} onChange={handleActiveSchoolChange} style={inputStyle}>
+            {schoolOptions.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name}
+              </option>
+            ))}
+          </AppSelect>
+        </div>
+      )}
 
       {/* Curriculum Selection Card */}
       <div className="surface-card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
