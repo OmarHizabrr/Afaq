@@ -8,6 +8,7 @@ import {
   savePermissionProfile,
   deletePermissionProfile,
 } from '../../services/permissionProfilesService';
+import { DATA_SCOPE_ALL, DATA_SCOPE_MEMBERSHIP, normalizeDataScope } from '../../utils/permissionDataScope';
 
 export default function AdminUserTypesPage({ user }) {
   const [list, setList] = useState([]);
@@ -48,18 +49,34 @@ export default function AdminUserTypesPage({ user }) {
         delete next[pageId];
         return next;
       }
-      next[pageId] = { actions: { ...(next[pageId]?.actions || {}) } };
+      next[pageId] = {
+        dataScope: normalizeDataScope(prev[pageId]?.dataScope) || DATA_SCOPE_ALL,
+        actions: { ...(prev[pageId]?.actions || {}) },
+      };
       return next;
+    });
+  };
+
+  const setPageDataScope = (pageId, scope) => {
+    setPages((prev) => {
+      if (!prev[pageId]) return prev;
+      return {
+        ...prev,
+        [pageId]: {
+          ...prev[pageId],
+          dataScope: normalizeDataScope(scope),
+        },
+      };
     });
   };
 
   const setActionAllowed = (pageId, actionId, allowed) => {
     setPages((prev) => {
-      const cur = prev[pageId] || { actions: {} };
+      const cur = prev[pageId] || { actions: {}, dataScope: DATA_SCOPE_ALL };
       return {
         ...prev,
         [pageId]: {
-          ...cur,
+          dataScope: normalizeDataScope(cur.dataScope),
           actions: {
             ...(cur.actions || {}),
             [actionId]: allowed,
@@ -184,6 +201,31 @@ export default function AdminUserTypesPage({ user }) {
                               {a.label}
                             </label>
                           ))}
+                        </div>
+                      )}
+                      {pageAllowed && pg.supportsDataScope && (
+                        <div className="admin-user-types-page-card__scope" style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
+                          <span className="app-label" style={{ display: 'block', marginBottom: 6 }}>
+                            نطاق عرض البيانات في هذه الصفحة
+                          </span>
+                          <label className="admin-user-types-page-card__action-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <input
+                              type="radio"
+                              name={`data-scope-${pg.id}`}
+                              checked={normalizeDataScope(pages?.[pg.id]?.dataScope) === DATA_SCOPE_ALL}
+                              onChange={() => setPageDataScope(pg.id, DATA_SCOPE_ALL)}
+                            />
+                            كل السجلات (عرض شامل)
+                          </label>
+                          <label className="admin-user-types-page-card__action-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <input
+                              type="radio"
+                              name={`data-scope-${pg.id}`}
+                              checked={normalizeDataScope(pages?.[pg.id]?.dataScope) === DATA_SCOPE_MEMBERSHIP}
+                              onChange={() => setPageDataScope(pg.id, DATA_SCOPE_MEMBERSHIP)}
+                            />
+                            ما يرتبط بي فقط (مدارس/مناطق/مجموعات أنا عضو فيها)
+                          </label>
                         </div>
                       )}
                     </div>

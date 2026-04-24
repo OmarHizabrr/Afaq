@@ -18,6 +18,7 @@ import PageHeader from '../../components/PageHeader';
 import MapLocationOpen from '../../components/MapLocationOpen';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
 import { formatVisitRatingLabel } from '../../utils/visitRating';
 
 const TAB_LABELS = {
@@ -73,7 +74,8 @@ function getReportTimeMs(r) {
 
 const AdminReportsPage = () => {
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const perm = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
   const [activeTab, setActiveTab] = useState('daily');
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -141,12 +143,16 @@ const AdminReportsPage = () => {
   };
 
   useEffect(() => {
+    if (!ready) return;
+    if (pageDataScope(PERMISSION_PAGE_IDS.reports) === DATA_SCOPE_MEMBERSHIP && membershipLoading) return;
     fetchReports(activeTab);
-  }, [activeTab]);
+  }, [activeTab, ready, membershipLoading, pageDataScope]);
 
   const filteredReports = useMemo(() => {
     const qName = searchTerm.trim();
     const qSchool = filterSchool.trim();
+    const scope = pageDataScope(PERMISSION_PAGE_IDS.reports);
+    const actorId = actorUser?.uid || actorUser?.id || '';
 
     const inRange = (t) => {
       if (datePreset === 'all') return true;
@@ -159,13 +165,33 @@ const AdminReportsPage = () => {
     };
 
     return reports.filter((r) => {
+      if (ready && scope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds.size > 0) {
+        const enriched = {
+          ...r,
+          teacherId: r.teacherId || (activeTab !== 'visits' ? r._ownerId : ''),
+          supervisorId: r.supervisorId || (activeTab === 'visits' ? r._ownerId : r.supervisorId),
+        };
+        if (!reportMatchesScope(enriched, membershipGroupIds, actorId, scope)) return false;
+      }
       const nameHay = r.teacherName || r.supervisorName || '';
       const schoolHay = r.schoolName || '';
       if (qName && !nameHay.includes(qName)) return false;
       if (qSchool && !schoolHay.includes(qSchool)) return false;
       return inRange(getReportTimeMs(r));
     });
-  }, [reports, searchTerm, filterSchool, dateFrom, dateTo, datePreset]);
+  }, [
+    reports,
+    searchTerm,
+    filterSchool,
+    dateFrom,
+    dateTo,
+    datePreset,
+    ready,
+    activeTab,
+    pageDataScope,
+    membershipGroupIds,
+    actorUser,
+  ]);
 
   const deleteReportDocRef = (rpt) => {
     const api = FirestoreApi.Api;
@@ -218,6 +244,12 @@ const AdminReportsPage = () => {
         title="مراجعة التقارير الميدانية"
         subtitle="متابعة أداء المعلمين والمشرفين من لوحة واحدة"
       />
+
+      {ready && pageDataScope(PERMISSION_PAGE_IDS.reports) === DATA_SCOPE_MEMBERSHIP && (
+        <div className="app-alert app-alert--info no-print" style={{ marginBottom: '1rem' }}>
+          عرض محدود: التقارير الظاهرة مرتبطة بمدارسك/مناطقك أو بأنشطتك كمعلم أو مشرف.
+        </div>
+      )}
 
       <div className="admin-reports-print-header print-only">
         <h1>مراجعة التقارير — {TAB_LABELS[activeTab]}</h1>

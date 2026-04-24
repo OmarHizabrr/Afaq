@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { MapPin, School, Users, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 
 const ROLE_LABELS = {
     admin: 'مدير النظام',
@@ -29,7 +30,7 @@ const RegionDetailsPage = () => {
     const [assigning, setAssigning] = useState(false);
     const [assignMsg, setAssignMsg] = useState('');
     const [error, setError] = useState('');
-    const { can } = usePermissions();
+    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
 
     const fetchRegionDetails = async () => {
         if (!id) return;
@@ -126,6 +127,17 @@ const RegionDetailsPage = () => {
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!region) return <div style={{ padding: '2rem', textAlign: 'center' }}>المنطقة غير موجودة</div>;
+
+    const regionScope = pageDataScope(PERMISSION_PAGE_IDS.regions);
+    if (
+      ready &&
+      !membershipLoading &&
+      regionScope === DATA_SCOPE_MEMBERSHIP &&
+      id &&
+      !membershipGroupIds.has(id)
+    ) {
+      return <Navigate to="/regions" replace />;
+    }
 
     const supervisorIds = new Set(supervisors.map(s => s.id));
 

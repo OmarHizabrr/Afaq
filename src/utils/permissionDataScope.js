@@ -1,0 +1,89 @@
+/**
+ * نطاق عرض البيانات المرتبط بأنواع الصلاحيات:
+ * - `all`: كل السجلات (السلوك السابق).
+ * - `membership`: فقط ما يرتبط بمجموعات المستخدم (Mygroup/* معرف المجموعة = مدرسة أو منطقة).
+ */
+
+export const DATA_SCOPE_ALL = 'all';
+export const DATA_SCOPE_MEMBERSHIP = 'membership';
+
+export function normalizeDataScope(value) {
+  return value === DATA_SCOPE_MEMBERSHIP ? DATA_SCOPE_MEMBERSHIP : DATA_SCOPE_ALL;
+}
+
+export function resolvePageDataScope(user, pages, pageId) {
+  if (!pageId) return DATA_SCOPE_ALL;
+  if (user?.role === 'admin') return DATA_SCOPE_ALL;
+  const cfg = pages?.[pageId];
+  if (!cfg || typeof cfg !== 'object') return DATA_SCOPE_ALL;
+  return normalizeDataScope(cfg.dataScope);
+}
+
+/** معرفات المجموعات من مرآة عضوية المستخدم (معرّف المستند = معرّف المجموعة). */
+export async function loadMembershipGroupIdsFromMirrors(api, userId) {
+  if (!userId) return new Set();
+  const docs = await api.getDocuments(api.getUserMembershipMirrorCollection(userId));
+  return new Set(docs.map((d) => d.id).filter(Boolean));
+}
+
+/** مستخدمون يظهرون كأعضاء في إحدى مجموعات المعرّفات (مدرسة/منطقة). */
+export async function loadPeerUserIdsForGroups(api, groupIds) {
+  const ids = new Set();
+  if (!groupIds || groupIds.size === 0) return ids;
+  await Promise.all(
+    [...groupIds].map(async (gid) => {
+      const docs = await api.getDocuments(api.getGroupMembersCollection(gid));
+      docs.forEach((d) => {
+        const uid = d.data()?.userId || d.id;
+        if (uid) ids.add(uid);
+      });
+    })
+  );
+  return ids;
+}
+
+export function filterSchoolsByScope(schools, groupIds, scope) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP || !groupIds?.size) return schools;
+  return schools.filter((s) => groupIds.has(s.id));
+}
+
+export function filterRegionsByScope(regions, groupIds, scope) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP || !groupIds?.size) return regions;
+  return regions.filter((r) => groupIds.has(r.id));
+}
+
+export function filterVillagesByScope(villages, groupIds, scopedSchools, scope) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP || !groupIds?.size) return villages;
+  const villageIdsFromSchools = new Set(scopedSchools.map((s) => s.villageId).filter(Boolean));
+  return villages.filter(
+    (v) => groupIds.has(v.regionId) || villageIdsFromSchools.has(v.id)
+  );
+}
+
+export function filterGovernoratesByScope(governorates, scopedRegions, scope) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP) return governorates;
+  const govIds = new Set(scopedRegions.map((r) => r.govId).filter(Boolean));
+  if (govIds.size === 0) return [];
+  return governorates.filter((g) => govIds.has(g.id));
+}
+
+export function filterUsersByScope(users, peerUserIds, actorId, scope) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP || !peerUserIds?.size) return users;
+  return users.filter((u) => u.id === actorId || peerUserIds.has(u.id));
+}
+
+export function studentRowMatchesScope(row, groupIds, scope) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP || !groupIds?.size) return true;
+  const primary = row.primarySchoolId || '';
+  if (primary && groupIds.has(primary)) return true;
+  const mems = row.memberships || [];
+  return mems.some((m) => m.schoolId && groupIds.has(m.schoolId));
+}
+
+export function reportMatchesScope(rpt, groupIds, actorId, scope) {
+  if (scope !== DATA_SCOPE_MEMBERSHIP || !groupIds?.size) return true;
+  if (rpt.supervisorId === actorId || rpt.teacherId === actorId) return true;
+  const sid = rpt.schoolId || '';
+  if (sid && groupIds.has(sid)) return true;
+  return false;
+}

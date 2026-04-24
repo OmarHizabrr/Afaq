@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { School, ChevronRight, Info, PieChart, MapPin, Edit2, Trash2, Plus, Save, X, User, Users, Baby, Hash } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
@@ -7,6 +7,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 import {
   MUSLIM_CATEGORY_BORN,
   normalizeMuslimCategory,
@@ -34,7 +35,7 @@ const VillageDetailsPage = () => {
     const [editingType, setEditingType] = useState('رجل');
     const [editingMuslimCategory, setEditingMuslimCategory] = useState(normalizeMuslimCategory());
     const [pendingDelete, setPendingDelete] = useState(null);
-    const { can } = usePermissions();
+    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
 
     useEffect(() => {
         const fetchVillageDetails = async () => {
@@ -111,6 +112,19 @@ const VillageDetailsPage = () => {
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!village) return <div className="empty-state">القرية غير موجودة</div>;
+
+    const vilScope = pageDataScope(PERMISSION_PAGE_IDS.villages);
+    const villageAllowed =
+      membershipGroupIds.has(village.regionId) || schools.some((s) => membershipGroupIds.has(s.id));
+    if (
+      ready &&
+      !membershipLoading &&
+      vilScope === DATA_SCOPE_MEMBERSHIP &&
+      id &&
+      !villageAllowed
+    ) {
+      return <Navigate to="/villages" replace />;
+    }
 
     const StatBox = ({ label, value, color }) => (
         <div className="surface-card village-details-statbox">

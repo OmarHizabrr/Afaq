@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, School, Eye, MapPin, Handshake } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -8,6 +8,12 @@ import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import {
+  DATA_SCOPE_MEMBERSHIP,
+  filterRegionsByScope,
+  filterSchoolsByScope,
+  filterVillagesByScope,
+} from '../../utils/permissionDataScope';
 
 const SCHOOL_LEVEL_OPTIONS = [
   { value: 'adults', label: 'كبار' },
@@ -18,7 +24,8 @@ const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?
 
 const SchoolsPage = () => {
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const perm = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = perm;
   const [schools, setSchools] = useState([]);
   const [regions, setRegions] = useState([]);
   const [villages, setVillages] = useState([]);
@@ -37,41 +44,55 @@ const SchoolsPage = () => {
   const [schoolLevel, setSchoolLevel] = useState('children');
   const [donorName, setDonorName] = useState('');
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
-      
+      const scope = pageDataScope(PERMISSION_PAGE_IDS.schools);
+
       const [regDocs, vilDocs, schDocs] = await Promise.all([
         api.getCollectionGroupDocuments('regions'),
         api.getCollectionGroupDocuments('villages'),
-        api.getCollectionGroupDocuments('schools')
+        api.getCollectionGroupDocuments('schools'),
       ]);
 
-      setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setVillages(vilDocs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setSchools(
-        schDocs.map((doc) => {
-          const data = doc.data() || {};
-          const pathVillageId = doc.ref.parent.parent?.id || '';
-          return {
-            id: doc.id,
-            ...data,
-            pathVillageId: pathVillageId || data.villageId || '',
-          };
-        })
-      );
+      let schoolsRows = schDocs.map((doc) => {
+        const data = doc.data() || {};
+        const pathVillageId = doc.ref.parent.parent?.id || '';
+        return {
+          id: doc.id,
+          ...data,
+          pathVillageId: pathVillageId || data.villageId || '',
+        };
+      });
+
+      if (scope === DATA_SCOPE_MEMBERSHIP) {
+        schoolsRows = filterSchoolsByScope(schoolsRows, membershipGroupIds, scope);
+      }
+
+      let regionsRows = regDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      let villagesRows = vilDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      if (scope === DATA_SCOPE_MEMBERSHIP) {
+        regionsRows = filterRegionsByScope(regionsRows, membershipGroupIds, scope);
+        villagesRows = filterVillagesByScope(villagesRows, membershipGroupIds, schoolsRows, scope);
+      }
+
+      setRegions(regionsRows);
+      setVillages(villagesRows);
+      setSchools(schoolsRows);
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageDataScope, membershipGroupIds]);
 
   useEffect(() => {
+    if (!ready) return;
+    if (pageDataScope(PERMISSION_PAGE_IDS.schools) === DATA_SCOPE_MEMBERSHIP && membershipLoading) return;
     fetchData();
-  }, []);
+  }, [ready, membershipLoading, fetchData, pageDataScope]);
 
   // Filter villages based on selected region
   const filteredVillages = selectedRegId 
@@ -193,6 +214,11 @@ const SchoolsPage = () => {
         )}
       </PageHeader>
 
+      {ready && pageDataScope(PERMISSION_PAGE_IDS.schools) === DATA_SCOPE_MEMBERSHIP && (
+        <div className="app-alert app-alert--info schools-alert" style={{ marginBottom: '0.75rem' }}>
+          عرض محدود: تظهر المدارس والقرى والمناطق المرتبطة بمجموعاتك فقط (عضوية مدرسة أو منطقة).
+        </div>
+      )}
       {error && <div className="app-alert app-alert--error schools-alert">{error}</div>}
       {success && <div className="app-alert app-alert--success schools-alert">{success}</div>}
 

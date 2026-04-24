@@ -5,5 +5,9 @@ export const PermissionsContext = createContext({
   hasPermissionProfile: false,
   canAccessPage: () => false,
   can: () => false,
+  pageDataScope: () => 'all',
+  membershipGroupIds: new Set(),
+  membershipLoading: false,
+  actorUser: null,
 });
 

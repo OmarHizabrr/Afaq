@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 
 const GovernorateDetailsPage = () => {
     const { id } = useParams();
@@ -13,7 +14,7 @@ const GovernorateDetailsPage = () => {
     const [regions, setRegions] = useState([]);
     const [villages, setVillages] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { can } = usePermissions();
+    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
 
     useEffect(() => {
         const fetchGovDetails = async () => {
@@ -46,6 +47,42 @@ const GovernorateDetailsPage = () => {
 
         fetchGovDetails();
     }, [id]);
+
+    useEffect(() => {
+        if (loading || !gov || !id) return;
+        if (!ready || membershipLoading) return;
+        const scope = pageDataScope(PERMISSION_PAGE_IDS.governorates);
+        if (scope !== DATA_SCOPE_MEMBERSHIP || membershipGroupIds.size === 0) return;
+        if (regions.some((r) => membershipGroupIds.has(r.id))) return;
+        let cancelled = false;
+        (async () => {
+            const api = FirestoreApi.Api;
+            const schoolDocs = await api.getCollectionGroupDocuments('schools');
+            if (cancelled) return;
+            const villageIds = new Set(villages.map((v) => v.id));
+            const schoolOk = schoolDocs.some((d) => {
+                if (!membershipGroupIds.has(d.id)) return false;
+                const data = d.data() || {};
+                const vid = data.villageId || d.ref.parent.parent?.id || '';
+                return villageIds.has(vid);
+            });
+            if (!schoolOk) navigate('/governorates', { replace: true });
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        loading,
+        gov,
+        regions,
+        villages,
+        id,
+        ready,
+        membershipLoading,
+        pageDataScope,
+        membershipGroupIds,
+        navigate,
+    ]);
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!gov) return <div className="empty-state">المحافظة غير موجودة</div>;

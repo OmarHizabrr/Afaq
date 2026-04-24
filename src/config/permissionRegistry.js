@@ -21,11 +21,13 @@ export const PERMISSION_PAGES = [
     path: '/',
     label: 'الرئيسية',
     actions: [],
+    supportsDataScope: true,
   },
   {
     id: PERMISSION_PAGE_IDS.governorates,
     path: '/governorates',
     label: 'المحافظات',
+    supportsDataScope: true,
     actions: [
       { id: 'governorate_add', label: 'إضافة محافظة' },
       { id: 'governorate_edit', label: 'تعديل محافظة' },
@@ -39,6 +41,7 @@ export const PERMISSION_PAGES = [
     id: PERMISSION_PAGE_IDS.regions,
     path: '/regions',
     label: 'المناطق',
+    supportsDataScope: true,
     actions: [
       { id: 'region_add', label: 'إضافة منطقة' },
       { id: 'region_edit', label: 'تعديل منطقة' },
@@ -53,6 +56,7 @@ export const PERMISSION_PAGES = [
     id: PERMISSION_PAGE_IDS.villages,
     path: '/villages',
     label: 'القرى',
+    supportsDataScope: true,
     actions: [
       { id: 'village_add', label: 'إضافة قرية' },
       { id: 'village_edit', label: 'تعديل قرية' },
@@ -68,6 +72,7 @@ export const PERMISSION_PAGES = [
     id: PERMISSION_PAGE_IDS.schools,
     path: '/schools',
     label: 'المدارس',
+    supportsDataScope: true,
     actions: [
       { id: 'school_add', label: 'إضافة مدرسة' },
       { id: 'school_edit', label: 'تعديل مدرسة' },
@@ -92,6 +97,7 @@ export const PERMISSION_PAGES = [
     id: PERMISSION_PAGE_IDS.reports,
     path: '/reports',
     label: 'التقارير',
+    supportsDataScope: true,
     actions: [
       { id: 'report_view', label: 'عرض تقرير' },
       { id: 'report_edit', label: 'تعديل تقرير' },
@@ -102,6 +108,7 @@ export const PERMISSION_PAGES = [
     id: PERMISSION_PAGE_IDS.users,
     path: '/users',
     label: 'المستخدمون',
+    supportsDataScope: true,
     actions: [
       { id: 'user_view_profile', label: 'عرض ملف المستخدم' },
       { id: 'user_edit_role', label: 'تحديد نوع الصلاحيات' },
@@ -114,6 +121,7 @@ export const PERMISSION_PAGES = [
     id: PERMISSION_PAGE_IDS.students_management,
     path: '/students-management',
     label: 'الطلاب',
+    supportsDataScope: true,
     actions: [
       { id: 'student_management_view_profile', label: 'عرض ملف الطالب' },
       { id: 'student_management_add', label: 'إضافة طالب' },
@@ -144,6 +152,11 @@ export const PERMISSION_PAGES = [
 ];
 
 const mapByPath = new Map(PERMISSION_PAGES.map((p) => [p.path, p.id]));
+
+/** هل تدعم الصفحة خيار «كل البيانات» مقابل «ما يرتبط بي فقط»؟ */
+export function pageSupportsDataScope(pageId) {
+  return Boolean(PERMISSION_PAGES.find((p) => p.id === pageId && p.supportsDataScope));
+}
 
 export function getPermissionPageIdFromPath(pathname) {
   if (!pathname || typeof pathname !== 'string') return null;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -8,6 +8,12 @@ import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import {
+  DATA_SCOPE_MEMBERSHIP,
+  filterRegionsByScope,
+  filterSchoolsByScope,
+  filterVillagesByScope,
+} from '../../utils/permissionDataScope';
 import {
   MUSLIM_CATEGORY_BORN,
   normalizeMuslimCategory,
@@ -20,7 +26,8 @@ import {
 
 const VillagesPage = () => {
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const perm = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = perm;
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
   const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
@@ -132,7 +139,7 @@ const VillagesPage = () => {
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
@@ -145,15 +152,34 @@ const VillagesPage = () => {
         api.getCollectionGroupDocuments('schools'),
       ]);
 
-      setRegions(regDocs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setVillages(vilDocs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const scope = pageDataScope(PERMISSION_PAGE_IDS.villages);
+      let schoolsRows = schoolDocs.map((doc) => {
+        const data = doc.data() || {};
+        const pathVillageId = doc.ref.parent.parent?.id || '';
+        return {
+          id: doc.id,
+          ...data,
+          pathVillageId: pathVillageId || data.villageId || '',
+        };
+      });
+      let regionsRows = regDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      let villagesRows = vilDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      if (scope === DATA_SCOPE_MEMBERSHIP) {
+        schoolsRows = filterSchoolsByScope(schoolsRows, membershipGroupIds, scope);
+        regionsRows = filterRegionsByScope(regionsRows, membershipGroupIds, scope);
+        villagesRows = filterVillagesByScope(villagesRows, membershipGroupIds, schoolsRows, scope);
+      }
+
+      setRegions(regionsRows);
+      setVillages(villagesRows);
+      const allowedVillageIds = new Set(villagesRows.map((v) => v.id));
 
       const byVil = {};
-      schoolDocs.forEach((doc) => {
-        const vid = doc.data()?.villageId;
+      schoolsRows.forEach((row) => {
+        const vid = row.villageId || row.pathVillageId;
         if (!vid) return;
         if (!byVil[vid]) byVil[vid] = [];
-        byVil[vid].push({ id: doc.id, name: (doc.data()?.name || '').trim() || doc.id });
+        byVil[vid].push({ id: row.id, name: (row.name || '').trim() || row.id });
       });
       Object.keys(byVil).forEach((k) => {
         byVil[k].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
@@ -164,7 +190,7 @@ const VillagesPage = () => {
       newMuslimsDocs.forEach((doc) => {
         const data = doc.data();
         const villageId = data.villageId;
-        if (!villageId) return;
+        if (!villageId || !allowedVillageIds.has(villageId)) return;
         if (!grouped[villageId]) grouped[villageId] = [];
         const enrolledSchoolIds =
           Array.isArray(data.enrolledSchoolIds) && data.enrolledSchoolIds.length > 0
@@ -189,11 +215,13 @@ const VillagesPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageDataScope, membershipGroupIds]);
 
   useEffect(() => {
+    if (!ready) return;
+    if (pageDataScope(PERMISSION_PAGE_IDS.villages) === DATA_SCOPE_MEMBERSHIP && membershipLoading) return;
     fetchData();
-  }, []);
+  }, [ready, membershipLoading, fetchData, pageDataScope]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -540,6 +568,11 @@ const VillagesPage = () => {
         )}
       </PageHeader>
 
+      {ready && pageDataScope(PERMISSION_PAGE_IDS.villages) === DATA_SCOPE_MEMBERSHIP && (
+        <div className="app-alert app-alert--info villages-alert">
+          عرض محدود: القرى والمناطق والمهتدين الظاهرون مرتبطون بمجموعاتك (عضوية مدرسة أو منطقة).
+        </div>
+      )}
       {error && <div className="app-alert app-alert--error villages-alert">{error}</div>}
       {success && <div className="app-alert app-alert--success villages-alert">{success}</div>}
 

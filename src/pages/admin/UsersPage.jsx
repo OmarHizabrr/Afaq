@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Edit2, X, Eye, UserPlus, Lock, EyeOff } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -7,6 +7,11 @@ import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import {
+  DATA_SCOPE_MEMBERSHIP,
+  filterUsersByScope,
+  loadPeerUserIdsForGroups,
+} from '../../utils/permissionDataScope';
 
 const USER_ROLE_LABELS = {
   admin: 'مدير النظام',
@@ -34,26 +39,36 @@ const UsersPage = () => {
   const [newUserPassword, setNewUserPassword] = useState('');
   const [showNewUserPassword, setShowNewUserPassword] = useState(false);
   const [newUserPermissionProfileId, setNewUserPermissionProfileId] = useState('');
-  const { can } = usePermissions();
+  const perm = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
 
       const userDocs = await api.getDocuments(api.getUsersCollection());
-      setUsers(userDocs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      let usersList = userDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const scope = pageDataScope(PERMISSION_PAGE_IDS.users);
+      if (scope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds.size > 0) {
+        const peerIds = await loadPeerUserIdsForGroups(api, membershipGroupIds);
+        const actorId = actorUser?.uid || actorUser?.id || '';
+        usersList = filterUsersByScope(usersList, peerIds, actorId, scope);
+      }
+      setUsers(usersList);
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageDataScope, membershipGroupIds, actorUser]);
 
   useEffect(() => {
+    if (!ready) return;
+    if (pageDataScope(PERMISSION_PAGE_IDS.users) === DATA_SCOPE_MEMBERSHIP && membershipLoading) return;
     fetchData();
-  }, []);
+  }, [ready, membershipLoading, fetchData, pageDataScope]);
 
   useEffect(() => {
     const unsub = subscribePermissionProfiles(setPermissionProfiles, () => {});
@@ -152,6 +167,11 @@ const UsersPage = () => {
         title="إدارة المستخدمين والصلاحيات"
         subtitle="عرض جميع الحسابات بما فيها الطلاب ومدير النظام. تعديل نوع الصلاحيات من هنا؛ الربط بالمدارس والمناطق من صفحات تلك المجموعات."
       >
+        {ready && pageDataScope(PERMISSION_PAGE_IDS.users) === DATA_SCOPE_MEMBERSHIP && (
+          <div className="app-alert app-alert--info users-alert" style={{ gridColumn: '1 / -1', marginBottom: 0 }}>
+            عرض محدود: تظهر حسابات الأعضاء في مجموعاتك معك فقط (بالإضافة إلى حسابك).
+          </div>
+        )}
         {(can(PERMISSION_PAGE_IDS.users, 'user_edit_role') || can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')) && (
           <button
             type="button"

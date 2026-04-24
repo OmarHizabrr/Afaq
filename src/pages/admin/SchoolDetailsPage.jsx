@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 
 const schoolLevelSubtitle = (sl) =>
   sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
@@ -37,7 +38,7 @@ const SchoolDetailsPage = () => {
     const [assigning, setAssigning] = useState(false);
     const [assignError, setAssignError] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
-    const { can } = usePermissions();
+    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
 
     const fetchSchoolDetails = useCallback(async () => {
         if (!id) return;
@@ -173,6 +174,17 @@ const SchoolDetailsPage = () => {
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
+
+    const schoolScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
+    if (
+      ready &&
+      !membershipLoading &&
+      schoolScope === DATA_SCOPE_MEMBERSHIP &&
+      id &&
+      !membershipGroupIds.has(id)
+    ) {
+      return <Navigate to="/schools" replace />;
+    }
 
     const filteredUsers = allUsers.filter((u) => {
         const q = searchTerm.trim().toLowerCase();

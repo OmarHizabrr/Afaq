@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP, loadPeerUserIdsForGroups } from '../../utils/permissionDataScope';
 
 const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const { id: routeUserId } = useParams();
@@ -16,7 +17,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const [loading, setLoading] = useState(true);
     const [adminWorking, setAdminWorking] = useState(false);
     const [adminError, setAdminError] = useState('');
-    const { can } = usePermissions();
+    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = usePermissions();
 
     const viewerId = viewerUser?.uid || viewerUser?.id || '';
     const canAdminManage =
@@ -88,6 +89,36 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
 
         fetchUserProfile();
     }, [targetId, routeUserId, selfUser, navigate]);
+
+    useEffect(() => {
+        if (!profile || loading) return;
+        const actorId = actorUser?.uid || actorUser?.id || '';
+        if (!actorId || profile.id === actorId) return;
+        if (!ready || membershipLoading) return;
+        const scope = pageDataScope(PERMISSION_PAGE_IDS.users);
+        if (scope !== DATA_SCOPE_MEMBERSHIP || membershipGroupIds.size === 0) return;
+        let cancelled = false;
+        (async () => {
+            const api = FirestoreApi.Api;
+            const peerIds = await loadPeerUserIdsForGroups(api, membershipGroupIds);
+            if (cancelled) return;
+            if (profile.id !== actorId && !peerIds.has(profile.id)) {
+                navigate('/users', { replace: true });
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        profile,
+        loading,
+        ready,
+        membershipLoading,
+        pageDataScope,
+        membershipGroupIds,
+        actorUser,
+        navigate,
+    ]);
 
     const handleToggleAccountDisabled = async () => {
         if (!canAdminManage || !targetId) return;

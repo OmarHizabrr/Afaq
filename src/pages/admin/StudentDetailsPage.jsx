@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import { ChevronRight, User, Phone, Mail, School, MapPin, Activity, Save } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { DATA_SCOPE_MEMBERSHIP, studentRowMatchesScope } from '../../utils/permissionDataScope';
 
 const StudentDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -104,6 +105,17 @@ const StudentDetailsPage = () => {
 
   if (loading) return <div className="loading-spinner" style={{ margin: '3rem auto' }}></div>;
   if (!student) return <div className="empty-state">ملف الطالب غير موجود.</div>;
+
+  const stScope = pageDataScope(PERMISSION_PAGE_IDS.students_management);
+  const scopeRow = { ...student, memberships };
+  if (
+    ready &&
+    !membershipLoading &&
+    stScope === DATA_SCOPE_MEMBERSHIP &&
+    !studentRowMatchesScope(scopeRow, membershipGroupIds, stScope)
+  ) {
+    return <Navigate to="/students-management" replace />;
+  }
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, Search, Activity, Eye, EyeOff, Plus, Edit2, Lock } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -7,10 +7,18 @@ import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import FormModal from '../../components/FormModal';
+import {
+  DATA_SCOPE_MEMBERSHIP,
+  filterRegionsByScope,
+  filterSchoolsByScope,
+  reportMatchesScope,
+  studentRowMatchesScope,
+} from '../../utils/permissionDataScope';
 
 const StudentManagementPage = () => {
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const perm = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [students, setStudents] = useState([]);
@@ -38,7 +46,7 @@ const StudentManagementPage = () => {
     [schoolsCatalog]
   );
 
-  const fetchStudentsData = async () => {
+  const fetchStudentsData = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -51,10 +59,16 @@ const StudentManagementPage = () => {
         api.getCollectionGroupDocuments('reports'),
       ]);
 
+      const scope = pageDataScope(PERMISSION_PAGE_IDS.students_management);
+      const actorId = actorUser?.uid || actorUser?.id || '';
+
       const regionsMap = Object.fromEntries(regionDocs.map((d) => [d.id, d.data()?.name || d.id]));
-      const regionsSorted = regionDocs
+      let regionsSorted = regionDocs
         .map((d) => ({ id: d.id, name: d.data()?.name || d.id }))
         .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+      if (scope === DATA_SCOPE_MEMBERSHIP) {
+        regionsSorted = filterRegionsByScope(regionsSorted, membershipGroupIds, scope);
+      }
       setRegionsCatalog(regionsSorted);
 
       const villageToRegion = Object.fromEntries(
@@ -79,15 +93,41 @@ const StudentManagementPage = () => {
       });
 
       const schoolsMap = Object.fromEntries(Object.entries(schoolById).map(([id, s]) => [id, s.name]));
-      setSchoolsCatalog(
-        schoolDocs.map((d) => ({
+
+      let schoolsRows = schoolDocs.map((d) => {
+        const data = d.data() || {};
+        const pathVillageId = d.ref.parent.parent?.id || '';
+        return {
           id: d.id,
-          name: schoolById[d.id]?.name || d.id,
-          villageId: d.data()?.villageId || '',
-          regionId: schoolById[d.id]?.regionId || '',
+          ...data,
+          pathVillageId: pathVillageId || data.villageId || '',
+        };
+      });
+      if (scope === DATA_SCOPE_MEMBERSHIP) {
+        schoolsRows = filterSchoolsByScope(schoolsRows, membershipGroupIds, scope);
+      }
+
+      setSchoolsCatalog(
+        schoolsRows.map((row) => ({
+          id: row.id,
+          name: schoolById[row.id]?.name || row.id,
+          villageId: row.villageId || row.pathVillageId || '',
+          regionId: schoolById[row.id]?.regionId || '',
         }))
       );
-      const reports = reportDocs.map((d) => d.data() || {});
+
+      const reports = reportDocs.map((d) => {
+        const data = d.data() || {};
+        return {
+          id: d.id,
+          ...data,
+          supervisorId: data.supervisorId || d.ref.parent.parent?.id || '',
+        };
+      });
+      const scopedReports =
+        scope === DATA_SCOPE_MEMBERSHIP
+          ? reports.filter((r) => reportMatchesScope(r, membershipGroupIds, actorId, scope))
+          : reports;
 
       const studentUsers = userDocs
         .map((d) => ({ id: d.id, ...d.data() }))
@@ -120,7 +160,7 @@ const StudentManagementPage = () => {
         }
         const regionNames = Array.from(regionNamesSet);
 
-        const studentActivity = reports.filter((r) =>
+        const studentActivity = scopedReports.filter((r) =>
           Array.isArray(r.studentsTracking) && r.studentsTracking.some((s) => s.studentId === student.id)
         );
         const latest = studentActivity
@@ -146,18 +186,25 @@ const StudentManagementPage = () => {
         });
       }
 
-      setStudents(rows);
+      const filteredRows =
+        scope === DATA_SCOPE_MEMBERSHIP
+          ? rows.filter((row) => studentRowMatchesScope(row, membershipGroupIds, scope))
+          : rows;
+      setStudents(filteredRows);
     } catch (err) {
       console.error(err);
       setError('تعذر تحميل بيانات إدارة الطلاب.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageDataScope, membershipGroupIds, actorUser]);
 
   useEffect(() => {
+    if (!ready) return;
+    if (pageDataScope(PERMISSION_PAGE_IDS.students_management) === DATA_SCOPE_MEMBERSHIP && membershipLoading)
+      return;
     fetchStudentsData();
-  }, []);
+  }, [ready, membershipLoading, fetchStudentsData, pageDataScope]);
 
   const resetForm = () => {
     setFormName('');
@@ -343,6 +390,11 @@ const StudentManagementPage = () => {
         )}
       </PageHeader>
 
+      {ready && pageDataScope(PERMISSION_PAGE_IDS.students_management) === DATA_SCOPE_MEMBERSHIP && (
+        <div className="app-alert app-alert--info student-management-alert">
+          عرض محدود: الطلاب والمدارس والمناطق الظاهرة مرتبطة بمجموعاتك فقط.
+        </div>
+      )}
       {error && <div className="app-alert app-alert--error student-management-alert">{error}</div>}
 
       <div className="surface-card student-management-filters">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, MapPin, Map, Eye } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -8,10 +8,16 @@ import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import {
+  DATA_SCOPE_MEMBERSHIP,
+  filterGovernoratesByScope,
+  filterRegionsByScope,
+} from '../../utils/permissionDataScope';
 
 const RegionsPage = () => {
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const perm = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = perm;
   const [regions, setRegions] = useState([]);
   const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,33 +31,41 @@ const RegionsPage = () => {
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
-      
-      // Fetch Governorates for the dropdown
+      const scope = pageDataScope(PERMISSION_PAGE_IDS.regions);
+
       const govRef = api.getGovernoratesCollection();
-      const govDocs = await api.getDocuments(govRef);
-      const govData = govDocs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const [govDocs, regDocs] = await Promise.all([
+        api.getDocuments(govRef),
+        api.getCollectionGroupDocuments('regions'),
+      ]);
+
+      let regData = regDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      let govData = govDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+      if (scope === DATA_SCOPE_MEMBERSHIP) {
+        regData = filterRegionsByScope(regData, membershipGroupIds, scope);
+        govData = filterGovernoratesByScope(govData, regData, scope);
+      }
+
       setGovernorates(govData);
-
-      // Fetch Regions via Collection Group
-      const regDocs = await api.getCollectionGroupDocuments('regions');
-      const regData = regDocs.map(doc => ({ id: doc.id, ...doc.data() }));
       setRegions(regData);
-
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageDataScope, membershipGroupIds]);
 
   useEffect(() => {
+    if (!ready) return;
+    if (pageDataScope(PERMISSION_PAGE_IDS.regions) === DATA_SCOPE_MEMBERSHIP && membershipLoading) return;
     fetchData();
-  }, []);
+  }, [ready, membershipLoading, fetchData, pageDataScope]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -155,6 +169,11 @@ const RegionsPage = () => {
         )}
       </PageHeader>
 
+      {ready && pageDataScope(PERMISSION_PAGE_IDS.regions) === DATA_SCOPE_MEMBERSHIP && (
+        <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+          عرض محدود: المناطق والمحافظات الظاهرة مرتبطة بمجموعاتك (عضوية منطقة أو ما يترتب عليها).
+        </div>
+      )}
       {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
       {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
