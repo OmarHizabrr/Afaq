@@ -8,6 +8,7 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 
 const ROLE_LABELS = {
+    system_admin: 'مدير نظام (وصول كامل)',
     admin: 'مدير النظام',
     supervisor_arab: 'مشرف عام (عربي)',
     supervisor_local: 'مشرف منطقة (محلي)',

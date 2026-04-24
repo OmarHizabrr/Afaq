@@ -1,3 +1,5 @@
+import { isSystemAdmin } from './systemRoles';
+
 /**
  * نطاق عرض البيانات المرتبط بأنواع الصلاحيات:
  * - `all`: كل السجلات (السلوك السابق).
@@ -13,7 +15,7 @@ export function normalizeDataScope(value) {
 
 export function resolvePageDataScope(user, pages, pageId) {
   if (!pageId) return DATA_SCOPE_ALL;
-  if (user?.role === 'admin') return DATA_SCOPE_ALL;
+  if (user?.role === 'admin' || isSystemAdmin(user)) return DATA_SCOPE_ALL;
   const cfg = pages?.[pageId];
   if (!cfg || typeof cfg !== 'object') return DATA_SCOPE_ALL;
   return normalizeDataScope(cfg.dataScope);

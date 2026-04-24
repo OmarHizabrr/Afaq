@@ -21,7 +21,11 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
 
     const viewerId = viewerUser?.uid || viewerUser?.id || '';
     const canAdminManage =
-      viewerUser?.role === 'admin' && !selfUser && Boolean(targetId) && Boolean(viewerId) && viewerId !== targetId;
+      (viewerUser?.role === 'admin' || viewerUser?.role === 'system_admin') &&
+      !selfUser &&
+      Boolean(targetId) &&
+      Boolean(viewerId) &&
+      viewerId !== targetId;
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -171,6 +175,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     if (!profile) return <div className="empty-state user-details-empty">المستخدم غير موجود</div>;
 
     const ROLE_LABELS = {
+        system_admin: 'مدير نظام (وصول كامل)',
         admin: 'مدير النظام',
         supervisor_arab: 'مشرف عام (عربي)',
         supervisor_local: 'مشرف منطقة (محلي)',

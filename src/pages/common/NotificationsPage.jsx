@@ -1,15 +1,18 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bell, Info, AlertTriangle, CheckCircle, Calendar, Send, MessageCircle, Users } from 'lucide-react';
+import { Bell, Calendar, Send, MessageCircle, Users } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import FormModal from '../../components/FormModal';
 import MessengerPanel from '../../components/MessengerPanel';
 import RecipientUserCard from '../../components/RecipientUserCard';
 import AppSelect from '../../components/AppSelect';
+import BusyButton from '../../components/BusyButton';
+import UnifiedMessageCard from '../../components/UnifiedMessageCard';
 import { getUserProfilePath } from '../../utils/profileLinks';
 
 const ROLE_LABELS = {
+  system_admin: 'مدير نظام (وصول كامل)',
   admin: 'مدير النظام',
   supervisor_arab: 'مشرف عام',
   supervisor_local: 'مشرف منطقة',
@@ -39,6 +42,9 @@ const NotificationsPage = ({ user }) => {
   const [newChatTitle, setNewChatTitle] = useState('');
   const [newChatUsers, setNewChatUsers] = useState([]);
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [markAllBusy, setMarkAllBusy] = useState(false);
+  const markAllRunningRef = useRef(false);
+  const [createChatBusy, setCreateChatBusy] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [isNarrow, setIsNarrow] = useState(false);
   const [chatMobileMode, setChatMobileMode] = useState('list');
@@ -125,24 +131,21 @@ const NotificationsPage = ({ user }) => {
 
   const recipientsMap = useMemo(() => Object.fromEntries(recipients.map((r) => [r.id, r])), [recipients]);
 
-  const getIcon = (t) => {
-    switch (t) {
-      case 'warning':
-        return <AlertTriangle size={20} color="#f59e0b" />;
-      case 'success':
-        return <CheckCircle size={20} color="var(--success-color)" />;
-      default:
-        return <Info size={20} color="var(--md-primary)" />;
-    }
-  };
-
-  const markAllRead = useCallback(() => {
+  const markAllRead = useCallback(async () => {
+    if (markAllRunningRef.current || notifications.length === 0) return;
     const api = FirestoreApi.Api;
-    notifications.forEach((n) => {
-      if (!n.isRead) {
-        api.updateData({ docRef: api.getNotificationDoc(n.id), data: { isRead: true } });
-      }
-    });
+    const unread = notifications.filter((n) => !n.isRead);
+    if (unread.length === 0) return;
+    markAllRunningRef.current = true;
+    setMarkAllBusy(true);
+    try {
+      await Promise.all(
+        unread.map((n) => api.updateData({ docRef: api.getNotificationDoc(n.id), data: { isRead: true } }))
+      );
+    } finally {
+      markAllRunningRef.current = false;
+      setMarkAllBusy(false);
+    }
   }, [notifications]);
 
   const markOneRead = useCallback((n) => {
@@ -207,48 +210,55 @@ const NotificationsPage = ({ user }) => {
 
   const createConversation = async (e) => {
     e.preventDefault();
-    if (newChatUsers.length === 0 || !actorId) return;
-    const api = FirestoreApi.Api;
-    const participants = [actorId, ...newChatUsers.filter((id) => id !== actorId)];
-    const uniqueParticipants = Array.from(new Set(participants));
-    let conversationId = '';
+    if (newChatUsers.length === 0 || !actorId || createChatBusy) return;
+    setCreateChatBusy(true);
+    try {
+      const api = FirestoreApi.Api;
+      const participants = [actorId, ...newChatUsers.filter((id) => id !== actorId)];
+      const uniqueParticipants = Array.from(new Set(participants));
+      let conversationId = '';
 
-    if (uniqueParticipants.length === 2) {
-      const q = api.getConversationsInboxQuery(actorId);
-      const snap = await api.getDocuments(q);
-      const existing = snap
-        .map((d) => ({ id: d.id, ...d.data() }))
-        .find(
-          (c) =>
-            Array.isArray(c.participants) &&
-            c.participants.length === 2 &&
-            uniqueParticipants.every((id) => c.participants.includes(id))
-        );
-      if (existing) conversationId = existing.id;
-    }
+      if (uniqueParticipants.length === 2) {
+        const q = api.getConversationsInboxQuery(actorId);
+        const snap = await api.getDocuments(q);
+        const existing = snap
+          .map((d) => ({ id: d.id, ...d.data() }))
+          .find(
+            (c) =>
+              Array.isArray(c.participants) &&
+              c.participants.length === 2 &&
+              uniqueParticipants.every((id) => c.participants.includes(id))
+          );
+        if (existing) conversationId = existing.id;
+      }
 
-    if (!conversationId) {
-      conversationId = api.getNewId('conversations');
-      await api.setData({
-        docRef: api.getConversationDoc(conversationId),
-        data: {
-          participants: uniqueParticipants,
-          isGroup: uniqueParticipants.length > 2,
-          title: uniqueParticipants.length > 2 ? newChatTitle.trim() || 'مجموعة جديدة' : '',
-          createdBy: actorId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      });
-    }
+      if (!conversationId) {
+        conversationId = api.getNewId('conversations');
+        await api.setData({
+          docRef: api.getConversationDoc(conversationId),
+          data: {
+            participants: uniqueParticipants,
+            isGroup: uniqueParticipants.length > 2,
+            title: uniqueParticipants.length > 2 ? newChatTitle.trim() || 'مجموعة جديدة' : '',
+            createdBy: actorId,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        });
+      }
 
-    setIsNewChatOpen(false);
-    setNewChatUsers([]);
-    setNewChatTitle('');
-    setActiveTab('chats');
-    const convDoc = await api.getData(api.getConversationDoc(conversationId));
-    if (convDoc) {
-      openConversation({ id: conversationId, ...convDoc });
+      setIsNewChatOpen(false);
+      setNewChatUsers([]);
+      setNewChatTitle('');
+      setActiveTab('chats');
+      const convDoc = await api.getData(api.getConversationDoc(conversationId));
+      if (convDoc) {
+        openConversation({ id: conversationId, ...convDoc });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCreateChatBusy(false);
     }
   };
 
@@ -338,9 +348,9 @@ const NotificationsPage = ({ user }) => {
           </button>
         )}
         {notifications.some((n) => !n.isRead) && (
-          <button type="button" onClick={markAllRead} className="btn-md btn-md--outline">
+          <BusyButton type="button" busy={markAllBusy} onClick={markAllRead} className="btn-md btn-md--outline">
             تعليم الكل كمقروء
-          </button>
+          </BusyButton>
         )}
       </PageHeader>
 
@@ -361,66 +371,40 @@ const NotificationsPage = ({ user }) => {
                 onKeyDown={(e) => e.key === 'Enter' && markOneRead(n)}
                 className={`notif-card ${n.isRead ? 'notif-card--read' : 'notif-card--unread'}`}
               >
-                <div className="notif-card__icon" aria-hidden>
-                  {getIcon(n.type)}
-                </div>
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      marginBottom: '8px',
-                      gap: '12px',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    <h3
-                      style={{
-                        margin: 0,
-                        fontSize: '1.1rem',
-                        fontWeight: 700,
-                        color: n.isRead ? 'var(--text-primary)' : 'var(--md-primary)',
-                      }}
-                    >
-                      {n.title}
-                    </h3>
-                    <span
-                      style={{
-                        fontSize: '0.8rem',
-                        color: 'var(--text-secondary)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Calendar size={14} /> {n.createdAt ? new Date(n.createdAt).toLocaleString('ar-EG') : '-'}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                    <img
-                      src={n.fromUserPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(n.fromUserName || 'User')}`}
-                      alt=""
-                      style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border-color)' }}
-                    />
-                    <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{n.fromUserName || 'مرسل غير معروف'}</span>
-                    <span
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--text-secondary)',
-                        background: 'var(--bg-color)',
-                        padding: '2px 8px',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border-color)',
-                      }}
-                    >
-                      {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || 'بدون دور'}
-                    </span>
-                  </div>
-                  <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.95rem' }}>{n.body}</p>
-                  <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                <UnifiedMessageCard
+                  className="unified-msg-card--notif-inline"
+                  type={['warning', 'success', 'error'].includes(n.type) ? n.type : 'info'}
+                  unread={!n.isRead}
+                  title={n.title}
+                  meta={
+                    <>
+                      <img
+                        src={n.fromUserPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(n.fromUserName || 'User')}`}
+                        alt=""
+                        style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border-color)' }}
+                      />
+                      <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{n.fromUserName || 'مرسل غير معروف'}</span>
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          color: 'var(--text-secondary)',
+                          background: 'var(--bg-color)',
+                          padding: '2px 8px',
+                          borderRadius: '999px',
+                          border: '1px solid var(--border-color)',
+                        }}
+                      >
+                        {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || 'بدون دور'}
+                      </span>
+                    </>
+                  }
+                  body={n.body}
+                  timestamp={
+                    <>
+                      <Calendar size={14} style={{ flexShrink: 0 }} /> {n.createdAt ? new Date(n.createdAt).toLocaleString('ar-EG') : '-'}
+                    </>
+                  }
+                  footer={
                     <button
                       type="button"
                       className="btn-md btn-md--outline"
@@ -433,8 +417,8 @@ const NotificationsPage = ({ user }) => {
                     >
                       رد
                     </button>
-                  </div>
-                </div>
+                  }
+                />
 
                 {!n.isRead && <div className="notif-card__unread-dot" aria-hidden />}
               </div>
@@ -518,9 +502,14 @@ const NotificationsPage = ({ user }) => {
             <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsComposeOpen(false)}>
               إلغاء
             </button>
-            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }} disabled={sending}>
-              {sending ? 'جاري الإرسال...' : 'إرسال'}
-            </button>
+            <BusyButton
+              type="submit"
+              busy={sending}
+              className="google-btn google-btn--filled"
+              style={{ width: 'auto', marginTop: 0 }}
+            >
+              إرسال
+            </BusyButton>
           </div>
         </form>
       </FormModal>
@@ -569,9 +558,14 @@ const NotificationsPage = ({ user }) => {
             <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsNewChatOpen(false)}>
               إلغاء
             </button>
-            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <BusyButton
+              type="submit"
+              busy={createChatBusy}
+              className="google-btn google-btn--filled"
+              style={{ width: 'auto', marginTop: 0 }}
+            >
               بدء المحادثة
-            </button>
+            </BusyButton>
           </div>
         </form>
       </FormModal>

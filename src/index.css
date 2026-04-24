@@ -4959,3 +4959,166 @@ html:not(.light-mode) .nav-link.active {
     transition: none;
   }
 }
+
+/* —— رسائل موحّدة (إشعارات + محادثات) —— */
+.unified-msg-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+
+.unified-msg-card--compact {
+  gap: 8px;
+}
+
+.unified-msg-card__icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+.unified-msg-card--compact .unified-msg-card__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+
+.unified-msg-card--unread .unified-msg-card__icon {
+  border-color: rgba(26, 115, 232, 0.35);
+  background: rgba(26, 115, 232, 0.06);
+}
+
+.unified-msg-card__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.unified-msg-card__title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.unified-msg-card__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+  flex: 1;
+  min-width: 0;
+}
+
+.unified-msg-card--unread .unified-msg-card__title {
+  color: var(--md-primary);
+}
+
+.unified-msg-card__time--header {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.unified-msg-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.unified-msg-card__text {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.unified-msg-card__foot {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.unified-msg-card__time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.unified-msg-card--neutral .unified-msg-card__text {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.unified-msg-card--neutral.unified-msg-card--compact .unified-msg-card__text {
+  font-size: 0.92rem;
+}
+
+.unified-msg-card--neutral.unified-msg-card--compact .unified-msg-card__icon {
+  display: none;
+}
+
+.unified-msg-card--messenger-bubble {
+  width: 100%;
+}
+
+.unified-msg-card--messenger-bubble .unified-msg-card__foot {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.unified-msg-card--messenger-bubble .messenger-msg__foot--in-unified {
+  margin-top: 0;
+  width: 100%;
+}
+
+.notif-card > .unified-msg-card {
+  flex: 1;
+  min-width: 0;
+}
+
+.unified-msg-card--notif-inline .unified-msg-card__foot {
+  justify-content: flex-end;
+}
+
+.busy-btn__inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.busy-btn__spin {
+  flex-shrink: 0;
+  animation: busy-btn-spin 0.75s linear infinite;
+}
+
+@keyframes busy-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .busy-btn__spin {
+    animation: none;
+  }
+}

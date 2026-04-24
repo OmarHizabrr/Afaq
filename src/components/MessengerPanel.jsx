@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Reply, Pencil, Check, X, Send, ChevronRight } from 'lucide-react';
+import { Reply, Pencil, Check, X, Send, ChevronRight, Loader2 } from 'lucide-react';
+import UnifiedMessageCard from './UnifiedMessageCard';
 
 const ROLE_LABELS = {
+  system_admin: 'مدير نظام',
   admin: 'مدير',
   supervisor_arab: 'مشرف عام',
   supervisor_local: 'مشرف منطقة',
@@ -236,15 +238,6 @@ const MessengerPanel = ({
                   <div className="messenger-msg__bubble-wrap">
                     <div className={`messenger-msg ${mine ? 'messenger-msg--mine' : ''}`}>
                       <div className="messenger-msg__bubble">
-                        {!mine && (
-                          <div className="messenger-msg__meta">
-                            {m.senderName}{' '}
-                            <span className="messenger-msg__role">{ROLE_LABELS[m.senderRole] || m.senderRole || ''}</span>
-                          </div>
-                        )}
-                        {mine && (
-                          <div className="messenger-msg__meta messenger-msg__meta--mine">أنت</div>
-                        )}
                         {m.replyToText && (
                           <div className="messenger-msg__reply-ref">
                             <Reply size={12} />
@@ -254,45 +247,64 @@ const MessengerPanel = ({
                             </span>
                           </div>
                         )}
-                        {editingId === m.id ? (
-                          <div className="messenger-msg__edit">
-                            <textarea
-                              className="app-textarea"
-                              rows={2}
-                              value={editingText}
-                              onChange={(e) => setEditingText(e.target.value)}
-                            />
-                            <div className="messenger-msg__edit-actions">
-                              <button type="button" className="icon-btn" onClick={saveEdit} title="حفظ">
-                                <Check size={18} />
-                              </button>
-                              <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء">
-                                <X size={18} />
-                              </button>
+                        <UnifiedMessageCard
+                          type="neutral"
+                          compact
+                          className="unified-msg-card--messenger-bubble"
+                          meta={
+                            !mine ? (
+                              <div className="messenger-msg__meta">
+                                {m.senderName}{' '}
+                                <span className="messenger-msg__role">{ROLE_LABELS[m.senderRole] || m.senderRole || ''}</span>
+                              </div>
+                            ) : (
+                              <div className="messenger-msg__meta messenger-msg__meta--mine">أنت</div>
+                            )
+                          }
+                          body={
+                            editingId === m.id ? (
+                              <div className="messenger-msg__edit">
+                                <textarea
+                                  className="app-textarea"
+                                  rows={2}
+                                  value={editingText}
+                                  onChange={(e) => setEditingText(e.target.value)}
+                                />
+                                <div className="messenger-msg__edit-actions">
+                                  <button type="button" className="icon-btn" onClick={saveEdit} title="حفظ">
+                                    <Check size={18} />
+                                  </button>
+                                  <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء">
+                                    <X size={18} />
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              m.text
+                            )
+                          }
+                          footer={
+                            <div className="messenger-msg__foot messenger-msg__foot--in-unified">
+                              <span>{formatTime(m.createdAt)}</span>
+                              {m.editedAt && <span className="messenger-msg__edited">تم التعديل</span>}
+                              <div className="messenger-msg__actions">
+                                <button
+                                  type="button"
+                                  className="messenger-msg__icon-btn"
+                                  title="رد (أو اسحب لليسار)"
+                                  onClick={() => pickReply(m)}
+                                >
+                                  <Reply size={14} />
+                                </button>
+                                {mine && editingId !== m.id && (
+                                  <button type="button" className="messenger-msg__icon-btn" title="تعديل" onClick={() => startEdit(m)}>
+                                    <Pencil size={14} />
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="messenger-msg__text">{m.text}</div>
-                        )}
-                        <div className="messenger-msg__foot">
-                          <span>{formatTime(m.createdAt)}</span>
-                          {m.editedAt && <span className="messenger-msg__edited">تم التعديل</span>}
-                          <div className="messenger-msg__actions">
-                            <button
-                              type="button"
-                              className="messenger-msg__icon-btn"
-                              title="رد (أو اسحب لليسار)"
-                              onClick={() => pickReply(m)}
-                            >
-                              <Reply size={14} />
-                            </button>
-                            {mine && editingId !== m.id && (
-                              <button type="button" className="messenger-msg__icon-btn" title="تعديل" onClick={() => startEdit(m)}>
-                                <Pencil size={14} />
-                              </button>
-                            )}
-                          </div>
-                        </div>
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -330,8 +342,14 @@ const MessengerPanel = ({
               onChange={(e) => setMessageText(e.target.value)}
               dir="auto"
             />
-            <button type="submit" className="messenger-composer__send btn-md btn-md--primary" disabled={sendingMessage}>
-              <Send size={18} />
+            <button
+              type="submit"
+              className="messenger-composer__send btn-md btn-md--primary"
+              disabled={sendingMessage}
+              aria-busy={sendingMessage}
+              title={sendingMessage ? 'جاري الإرسال…' : 'إرسال'}
+            >
+              {sendingMessage ? <Loader2 className="busy-btn__spin" size={18} aria-hidden /> : <Send size={18} />}
             </button>
           </form>
         </>

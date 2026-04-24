@@ -4,6 +4,7 @@ import { Shield, Edit2, X, Eye, UserPlus, Lock, EyeOff } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
+import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
@@ -12,8 +13,10 @@ import {
   filterUsersByScope,
   loadPeerUserIdsForGroups,
 } from '../../utils/permissionDataScope';
+import { SYSTEM_ADMIN_ROLE } from '../../utils/systemRoles';
 
 const USER_ROLE_LABELS = {
+  [SYSTEM_ADMIN_ROLE]: 'مدير نظام (وصول كامل)',
   admin: 'مدير النظام',
   supervisor_arab: 'مشرف عام',
   supervisor_local: 'مشرف منطقة',
@@ -39,11 +42,18 @@ const UsersPage = () => {
   const [newUserPassword, setNewUserPassword] = useState('');
   const [showNewUserPassword, setShowNewUserPassword] = useState(false);
   const [newUserPermissionProfileId, setNewUserPermissionProfileId] = useState('');
+  const [newUserRole, setNewUserRole] = useState('unassigned');
+  const [selectedRole, setSelectedRole] = useState('unassigned');
+  const [modalBusy, setModalBusy] = useState(false);
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const canAssignSystemAdmin =
+    actorUser?.role === SYSTEM_ADMIN_ROLE || actorUser?.role === 'admin';
+
+  const fetchData = useCallback(async (opts = {}) => {
+    const quiet = Boolean(opts.quiet);
+    if (!quiet) setLoading(true);
     try {
       const api = FirestoreApi.Api;
 
@@ -60,7 +70,7 @@ const UsersPage = () => {
       console.error(err);
       setError('حدث خطأ أثناء جلب البيانات');
     } finally {
-      setLoading(false);
+      if (!quiet) setLoading(false);
     }
   }, [pageDataScope, membershipGroupIds, actorUser]);
 
@@ -79,6 +89,7 @@ const UsersPage = () => {
     setEditingUser(user);
     setError('');
     setSelectedPermissionProfileId(user.permissionProfileId || '');
+    setSelectedRole(user.role || 'unassigned');
   };
 
   const resetAddUserForm = () => {
@@ -88,6 +99,7 @@ const UsersPage = () => {
     setNewUserPassword('');
     setShowNewUserPassword(false);
     setNewUserPermissionProfileId('');
+    setNewUserRole('unassigned');
   };
 
   const handleCreateUser = async () => {
@@ -105,10 +117,14 @@ const UsersPage = () => {
     }
 
     try {
-      setLoading(true);
+      setModalBusy(true);
       setError('');
       const api = FirestoreApi.Api;
       const userId = api.getNewId('users');
+      const role =
+        newUserRole === SYSTEM_ADMIN_ROLE && canAssignSystemAdmin ? SYSTEM_ADMIN_ROLE : newUserRole || 'unassigned';
+      const permissionProfileId =
+        role === SYSTEM_ADMIN_ROLE ? null : newUserPermissionProfileId || null;
       await api.setData({
         docRef: api.getUserDoc(userId),
         data: {
@@ -116,20 +132,20 @@ const UsersPage = () => {
           email: emailNormalized || '',
           phoneNumber: newUserPhone.trim(),
           password: newUserPassword.trim(),
-          permissionProfileId: newUserPermissionProfileId || null,
-          role: 'unassigned',
+          permissionProfileId,
+          role,
           accountDisabled: false,
           photoURL: '',
         },
       });
       setIsAddUserOpen(false);
       resetAddUserForm();
-      await fetchData();
+      await fetchData({ quiet: true });
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء إضافة المستخدم الجديد.');
     } finally {
-      setLoading(false);
+      setModalBusy(false);
     }
   };
 
@@ -137,26 +153,37 @@ const UsersPage = () => {
     if (!editingUser) return;
 
     try {
-      setLoading(true);
+      setModalBusy(true);
       const api = FirestoreApi.Api;
 
-      const userDataPatch = {
-        permissionProfileId: selectedPermissionProfileId || null,
-      };
+      const roleEditable = can(PERMISSION_PAGE_IDS.users, 'user_edit_role');
+      const profileEditable = can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile');
+      const userDataPatch = {};
+
+      let nextRole = editingUser.role;
+      if (roleEditable) {
+        nextRole =
+          selectedRole === SYSTEM_ADMIN_ROLE && !canAssignSystemAdmin ? editingUser.role : selectedRole;
+        userDataPatch.role = nextRole;
+      }
+      if (profileEditable) {
+        userDataPatch.permissionProfileId =
+          nextRole === SYSTEM_ADMIN_ROLE ? null : selectedPermissionProfileId || null;
+      }
 
       await api.updateData({
         docRef: api.getUserDoc(editingUser.id),
-        data: userDataPatch
+        data: userDataPatch,
       });
 
       setEditingUser(null);
       setError('');
-      fetchData();
+      await fetchData({ quiet: true });
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء تحديث الصلاحية');
     } finally {
-      setLoading(false);
+      setModalBusy(false);
     }
   };
 
@@ -261,6 +288,30 @@ const UsersPage = () => {
               </button>
             </div>
 
+            {can(PERMISSION_PAGE_IDS.users, 'user_edit_role') && (
+              <div className="users-modal__field">
+                <label className="app-label">الدور في النظام</label>
+                <AppSelect
+                  value={selectedRole}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setSelectedRole(v);
+                    if (v === SYSTEM_ADMIN_ROLE) setSelectedPermissionProfileId('');
+                  }}
+                  className="app-select"
+                >
+                  <option value="unassigned">{USER_ROLE_LABELS.unassigned}</option>
+                  <option value="student">{USER_ROLE_LABELS.student}</option>
+                  <option value="teacher">{USER_ROLE_LABELS.teacher}</option>
+                  <option value="supervisor_local">{USER_ROLE_LABELS.supervisor_local}</option>
+                  <option value="supervisor_arab">{USER_ROLE_LABELS.supervisor_arab}</option>
+                  <option value="admin">{USER_ROLE_LABELS.admin}</option>
+                  {canAssignSystemAdmin && (
+                    <option value={SYSTEM_ADMIN_ROLE}>{USER_ROLE_LABELS[SYSTEM_ADMIN_ROLE]}</option>
+                  )}
+                </AppSelect>
+              </div>
+            )}
             <div className="users-modal__field">
               <label className="app-label">
                 نوع الصلاحيات
@@ -269,31 +320,36 @@ const UsersPage = () => {
                 value={selectedPermissionProfileId}
                 onChange={e => setSelectedPermissionProfileId(e.target.value)}
                 className="app-select"
-                disabled={!can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')}
+                disabled={
+                  !can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile') ||
+                  selectedRole === SYSTEM_ADMIN_ROLE
+                }
               >
-                <option value="">وصول كامل (بدون نوع مخصص)</option>
+                <option value="">بدون نوع صلاحيات (يُحدَّد حسب الدور أعلاه)</option>
                 {permissionProfiles.map((p) => (
                   <option key={p.id} value={p.id}>{p.name || p.id}</option>
                 ))}
               </AppSelect>
             </div>
             <div className="app-alert app-alert--info users-modal__helper-alert">
-              إذا تُرك الحقل فارغاً فلن يرى المستخدم أي صفحات، وسيظهر له تنبيه طلب الصلاحيات بعد تسجيل الدخول.
+              {selectedRole === SYSTEM_ADMIN_ROLE
+                ? 'مدير النظام (وصول كامل) يرى كل الصفحات وكل الإجراءات دون ربط بنوع صلاحيات.'
+                : 'إذا تُرك نوع الصلاحيات فارغاً وليس المستخدم مدير نظام، فلن تُعرض له الصفحات حتى يُعيَّن له نوع صلاحيات.'}
             </div>
 
             <div className="users-modal__actions">
-              <button
+              <BusyButton
                 type="button"
+                busy={modalBusy}
                 className="google-btn google-btn--filled users-modal__save-btn"
                 onClick={handleSaveRole}
                 disabled={
-                  loading ||
-                  (!can(PERMISSION_PAGE_IDS.users, 'user_edit_role') &&
-                    !can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile'))
+                  !can(PERMISSION_PAGE_IDS.users, 'user_edit_role') &&
+                  !can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')
                 }
               >
-                {loading ? 'الرجاء الانتظار...' : 'حفظ التغييرات'}
-              </button>
+                حفظ التغييرات
+              </BusyButton>
             </div>
           </div>
         </div>
@@ -367,13 +423,36 @@ const UsersPage = () => {
             </div>
 
             <div className="users-modal__field">
+              <label className="app-label">الدور في النظام</label>
+              <AppSelect
+                value={newUserRole}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setNewUserRole(v);
+                  if (v === SYSTEM_ADMIN_ROLE) setNewUserPermissionProfileId('');
+                }}
+                className="app-select"
+              >
+                <option value="unassigned">{USER_ROLE_LABELS.unassigned}</option>
+                <option value="student">{USER_ROLE_LABELS.student}</option>
+                <option value="teacher">{USER_ROLE_LABELS.teacher}</option>
+                <option value="supervisor_local">{USER_ROLE_LABELS.supervisor_local}</option>
+                <option value="supervisor_arab">{USER_ROLE_LABELS.supervisor_arab}</option>
+                <option value="admin">{USER_ROLE_LABELS.admin}</option>
+                {canAssignSystemAdmin && (
+                  <option value={SYSTEM_ADMIN_ROLE}>{USER_ROLE_LABELS[SYSTEM_ADMIN_ROLE]}</option>
+                )}
+              </AppSelect>
+            </div>
+            <div className="users-modal__field">
               <label className="app-label">نوع الصلاحيات</label>
               <AppSelect
                 value={newUserPermissionProfileId}
                 onChange={(e) => setNewUserPermissionProfileId(e.target.value)}
                 className="app-select"
+                disabled={newUserRole === SYSTEM_ADMIN_ROLE}
               >
-                <option value="">بدون نوع صلاحيات (تظهر له صفحة طلب الصلاحيات)</option>
+                <option value="">بدون نوع صلاحيات (تظهر له صفحة طلب الصلاحيات إن لم يكن مدير نظام)</option>
                 {permissionProfiles.map((p) => (
                   <option key={p.id} value={p.id}>{p.name || p.id}</option>
                 ))}
@@ -392,14 +471,14 @@ const UsersPage = () => {
               >
                 إلغاء
               </button>
-              <button
+              <BusyButton
                 type="button"
+                busy={modalBusy}
                 className="google-btn google-btn--filled users-modal__save-btn"
                 onClick={handleCreateUser}
-                disabled={loading}
               >
-                {loading ? 'الرجاء الانتظار...' : 'إنشاء المستخدم'}
-              </button>
+                إنشاء المستخدم
+              </BusyButton>
             </div>
           </div>
         </div>

@@ -69,7 +69,7 @@ const SupervisorDashboardPage = ({ user }) => {
           villageDocs.map((d) => [d.id, d.data()?.regionId || ''])
         );
         let relevantSchools = allSchools.length;
-        if (user.role !== 'admin' && user.role !== 'supervisor_arab') {
+        if (user.role !== 'admin' && user.role !== 'system_admin' && user.role !== 'supervisor_arab') {
           relevantSchools = allSchools.filter((d) => {
             const data = d.data() || {};
             const vid = data.villageId || d.ref.parent.parent?.id || '';

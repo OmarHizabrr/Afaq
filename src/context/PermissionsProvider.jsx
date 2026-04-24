@@ -4,9 +4,11 @@ import FirestoreApi from '../services/firestoreApi';
 import { PermissionsContext } from './permissionsContext';
 import {
   resolvePageDataScope,
+  DATA_SCOPE_ALL,
   loadMembershipGroupIdsFromMirrors,
   expandMembershipGroupIdsForDataScope,
 } from '../utils/permissionDataScope';
+import { isSystemAdmin, skipsMembershipDataScopeLoading } from '../utils/systemRoles';
 
 function pageVisible(pages, pageId) {
   if (!pages || typeof pages !== 'object') return false;
@@ -25,6 +27,7 @@ export default function PermissionsProvider({ user, children }) {
   const [membershipLoading, setMembershipLoading] = useState(false);
 
   useEffect(() => {
+    if (isSystemAdmin(user)) return undefined;
     const pid = String(user?.permissionProfileId || '').trim();
     if (!user?.uid || !pid) return undefined;
 
@@ -52,13 +55,13 @@ export default function PermissionsProvider({ user, children }) {
   const pages = profileState.profile?.pages || {};
 
   const needsMembershipData = useMemo(() => {
-    if (!user || user.role === 'admin') return false;
+    if (!user || skipsMembershipDataScopeLoading(user)) return false;
     if (!profileState.profile) return false;
     return Object.values(pages).some((cfg) => cfg && cfg.dataScope === 'membership');
   }, [user, profileState.profile, pages]);
 
   useEffect(() => {
-    if (!user?.uid || user.role === 'admin' || !needsMembershipData) {
+    if (!user?.uid || skipsMembershipDataScopeLoading(user) || !needsMembershipData) {
       setMembershipGroupIds(new Set());
       setMembershipMirrorGroupIds(new Set());
       setMembershipLoading(false);
@@ -102,6 +105,20 @@ export default function PermissionsProvider({ user, children }) {
         membershipMirrorGroupIds: new Set(),
         membershipLoading: false,
         actorUser: null,
+      };
+    }
+
+    if (isSystemAdmin(user)) {
+      return {
+        ready: true,
+        hasPermissionProfile: true,
+        canAccessPage: () => true,
+        can: () => true,
+        pageDataScope: () => DATA_SCOPE_ALL,
+        membershipGroupIds: new Set(),
+        membershipMirrorGroupIds: new Set(),
+        membershipLoading: false,
+        actorUser: user,
       };
     }
 

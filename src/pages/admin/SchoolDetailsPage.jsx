@@ -11,6 +11,7 @@ const schoolLevelSubtitle = (sl) =>
   sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
 
 const USER_ROLE_LABELS = {
+  system_admin: 'مدير نظام (وصول كامل)',
   admin: 'مدير النظام',
   supervisor_arab: 'مشرف عام',
   supervisor_local: 'مشرف منطقة',

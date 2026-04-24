@@ -47,7 +47,7 @@ const SupervisorVisitPage = ({ user }) => {
         const assignedRegionIds = await api.listUserRegionIdsFromMirrors(user);
         const assignedRegionSet = new Set(assignedRegionIds);
 
-        if (assignedRegionSet.size === 0 && user.role !== 'admin' && user.role !== 'supervisor_arab') {
+        if (assignedRegionSet.size === 0 && user.role !== 'admin' && user.role !== 'system_admin' && user.role !== 'supervisor_arab') {
           setError('لا توجد لك مناطق إشرافية مسندة حالياً. راجع الإدارة.');
           setLoading(false);
           return;
@@ -70,7 +70,7 @@ const SupervisorVisitPage = ({ user }) => {
           return { id: d.id, ...data, regionIdResolved, villageId: vid };
         });
 
-        if (user.role !== 'admin' && user.role !== 'supervisor_arab') {
+        if (user.role !== 'admin' && user.role !== 'system_admin' && user.role !== 'supervisor_arab') {
           schoolsData = schoolsData.filter((s) => assignedRegionSet.has(s.regionIdResolved));
         }
         setAssignedSchools(schoolsData);

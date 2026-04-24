@@ -53,7 +53,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   const [dailyEdit, setDailyEdit] = useState({});
   const [weeklyEdit, setWeeklyEdit] = useState({ reportDataJson: '{}' });
 
-  const isAdmin = viewerUser?.role === 'admin';
+  const isAdmin = viewerUser?.role === 'admin' || viewerUser?.role === 'system_admin';
   const canEditReport = can(PERMISSION_PAGE_IDS.reports, 'report_edit');
   const canDeleteReport = can(PERMISSION_PAGE_IDS.reports, 'report_delete');
 
