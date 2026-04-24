@@ -692,13 +692,15 @@ html:not(.light-mode) .nav-link.active {
 }
 
 .topbar {
-  height: var(--topbar-height);
+  min-height: var(--topbar-height);
   background: var(--panel-color);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px 0 16px;
+  padding-top: max(0px, env(safe-area-inset-top, 0px));
+  box-sizing: border-box;
   flex-shrink: 0;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
@@ -708,6 +710,9 @@ html:not(.light-mode) .nav-link.active {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 24px;
+  padding-inline-start: max(24px, env(safe-area-inset-start, 0px));
+  padding-inline-end: max(24px, env(safe-area-inset-end, 0px));
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
 }
@@ -981,6 +986,14 @@ html:not(.light-mode) .nav-link.active {
   flex: 1;
 }
 
+/* نموذج عمودي (مثلاً نافذة الطلاب) */
+.app-form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
 .app-label {
   font-size: 0.85rem;
   color: var(--text-secondary);
@@ -1132,16 +1145,16 @@ html:not(.light-mode) .nav-link.active {
 /* —— List grids & empty states —— */
 .entity-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1rem;
 }
 
 .entity-grid--md {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
 }
 
 .entity-grid--lg {
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
 }
 
 .surface-card--entity {
@@ -1221,6 +1234,11 @@ html:not(.light-mode) .nav-link.active {
 .modal-card--sm {
   max-width: 500px;
   width: 90%;
+}
+
+.modal-card--lg {
+  max-width: min(960px, 100%);
+  width: 100%;
 }
 
 .modal-scroll-box {
@@ -3623,6 +3641,142 @@ html:not(.light-mode) .nav-link.active {
 
   .student-management-filters__select {
     min-width: 100%;
+    width: 100%;
+  }
+
+  .student-management-filters {
+    padding: 0.85rem;
+  }
+
+  .student-management-filters .app-form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-management-filters__search-wrap {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .student-management-table-wrap {
+    border-radius: 10px;
+    margin-inline: 0;
+  }
+
+  .student-management-table {
+    min-width: 720px;
+    font-size: 0.8125rem;
+  }
+
+  .student-management-student-cell__avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .page-content {
+    padding: 14px 12px;
+    padding-inline-start: max(12px, env(safe-area-inset-start, 0px));
+    padding-inline-end: max(12px, env(safe-area-inset-end, 0px));
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .page-header-block__title {
+    font-size: 1.2rem;
+  }
+
+  .page-header-block__actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .page-header-block__actions .google-btn--toolbar {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .entity-grid,
+  .entity-grid--md,
+  .entity-grid--lg {
+    grid-template-columns: 1fr;
+  }
+
+  .surface-card--village {
+    padding-inline: 1rem;
+    padding-block: 1.1rem;
+  }
+
+  .villages-form {
+    max-width: 100%;
+  }
+
+  .villages-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .villages-form__new-muslim-type {
+    width: 100%;
+    max-width: none;
+  }
+
+  .villages-form__new-muslim-btn {
+    width: 100%;
+  }
+
+  .villages-form__head-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .villages-card__actions {
+    top: 0.85rem;
+    left: 0.85rem;
+  }
+
+  .villages-card__actions .icon-btn {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* نوافذ النماذج الطويلة: لوحة سفلية سهلة الإمساك على الهاتف */
+  .modal-overlay--drawer {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .modal-overlay--drawer .modal-card {
+    width: 100%;
+    max-width: 100%;
+    max-height: min(92vh, 100dvh);
+    margin: 0;
+    padding: 1.15rem 1rem 1.25rem;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .modal-overlay--drawer .modal-card--sm,
+  .modal-overlay--drawer .modal-card--lg {
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .modal-overlay:not(.modal-overlay--drawer) {
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-end)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-start));
+  }
+
+  .modal-overlay:not(.modal-overlay--drawer) .modal-card {
+    max-height: min(88vh, 100dvh);
+  }
+
+  .app-field {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .md-table {
+    min-width: 520px;
   }
 
   .curriculum-editor {
