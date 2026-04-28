@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
+import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import {
@@ -716,9 +717,13 @@ const VillagesPage = () => {
             <button type="button" onClick={() => setIsAdding(false)} className="google-btn villages-form__action-btn">
               إلغاء
             </button>
-            <button type="submit" disabled={loading} className="google-btn google-btn--filled villages-form__action-btn villages-form__action-btn--primary">
-              {loading ? 'جاري الحفظ...' : isEditing ? 'تحديث القرية' : 'حفظ القرية'}
-            </button>
+            <BusyButton
+              type="submit"
+              busy={loading}
+              className="google-btn google-btn--filled villages-form__action-btn villages-form__action-btn--primary"
+            >
+              {isEditing ? 'تحديث القرية' : 'حفظ القرية'}
+            </BusyButton>
           </div>
           </form>
       </FormModal>

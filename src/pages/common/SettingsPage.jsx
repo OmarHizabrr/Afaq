@@ -3,6 +3,7 @@ import { Settings, Save, User, Moon, Sun, Monitor, Phone, KeyRound, Eye, EyeOff 
 import AuthService from '../../services/authService';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import BusyButton from '../../components/BusyButton';
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
@@ -182,9 +183,13 @@ const SettingsPage = () => {
         </div>
 
         <div className="settings-profile-form__actions">
-          <button type="submit" disabled={loading} className="google-btn google-btn--filled google-btn--toolbar settings-profile-form__save-btn">
-            {loading ? 'جاري الحفظ...' : 'حفظ التعديلات'}
-          </button>
+          <BusyButton
+            type="submit"
+            busy={loading}
+            className="google-btn google-btn--filled google-btn--toolbar settings-profile-form__save-btn"
+          >
+            حفظ التعديلات
+          </BusyButton>
         </div>
       </form>
     </div>
