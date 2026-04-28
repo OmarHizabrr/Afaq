@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import AppSelect from '../../components/AppSelect';
+import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
@@ -356,9 +357,9 @@ const VillageDetailsPage = () => {
                                   <option value="born">مسلم قديم</option>
                                 </AppSelect>
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
-                                  <button type="button" className="icon-btn" onClick={handleAddNewMuslim} disabled={saving} title="إضافة">
+                                  <BusyButton type="button" className="icon-btn" onClick={handleAddNewMuslim} busy={saving} title="إضافة">
                                     <Plus size={16} />
-                                  </button>
+                                  </BusyButton>
                                 )}
                               </div>
                               {newMuslims.length === 0 ? (
@@ -396,7 +397,9 @@ const VillageDetailsPage = () => {
                                           </div>
                                           <div className="village-details-new-muslims__item-actions">
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
-                                              <button type="button" className="icon-btn" onClick={handleSaveEdit} disabled={saving} title="حفظ"><Save size={14} /></button>
+                                              <BusyButton type="button" className="icon-btn" onClick={handleSaveEdit} busy={saving} title="حفظ">
+                                                <Save size={14} />
+                                              </BusyButton>
                                             )}
                                             <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء"><X size={14} /></button>
                                           </div>

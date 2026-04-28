@@ -3,6 +3,7 @@ import { FileText } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import useSiteContent from '../../context/useSiteContent';
 import { saveStrings } from '../../services/siteConfigService';
+import BusyButton from '../../components/BusyButton';
 
 const COPY_KEYS = [
   { key: 'layout.nav_dashboard', label: 'عنوان: الرئيسية' },
@@ -57,15 +58,15 @@ export default function AdminSiteCopyPage({ user }) {
               onChange={(e) => setDrafts((prev) => ({ ...prev, [item.key]: e.target.value }))}
               className="app-textarea"
             />
-            <button
+            <BusyButton
               type="button"
               className="google-btn google-btn--filled admin-site-copy-item__save-btn"
               onClick={() => saveOne(item.key)}
+              busy={savingKey === item.key}
               disabled={savingKey !== '' && savingKey !== item.key}
             >
-              {savingKey === item.key && <span className="btn-loading-spinner" aria-hidden />}
-              <span>{savingKey === item.key ? 'جاري حفظ النص...' : 'حفظ النص'}</span>
-            </button>
+              حفظ النص
+            </BusyButton>
           </div>
         ))}
       </div>

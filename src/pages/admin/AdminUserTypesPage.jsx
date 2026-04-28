@@ -9,6 +9,7 @@ import {
   deletePermissionProfile,
 } from '../../services/permissionProfilesService';
 import { DATA_SCOPE_ALL, DATA_SCOPE_MEMBERSHIP, normalizeDataScope } from '../../utils/permissionDataScope';
+import BusyButton from '../../components/BusyButton';
 
 export default function AdminUserTypesPage({ user }) {
   const [list, setList] = useState([]);
@@ -165,10 +166,9 @@ export default function AdminUserTypesPage({ user }) {
                 />
               </label>
               <div className="admin-user-types-content__actions">
-                <button type="button" className="google-btn google-btn--filled" onClick={save} disabled={saving}>
-                  {saving && <span className="btn-loading-spinner" aria-hidden />}
-                  <span>{saving ? 'جاري حفظ النوع...' : 'حفظ النوع'}</span>
-                </button>
+                <BusyButton type="button" className="google-btn google-btn--filled" onClick={save} busy={saving}>
+                  حفظ النوع
+                </BusyButton>
                 {selected && (
                   <button type="button" className="icon-btn" onClick={remove} title="حذف النوع">
                     <Trash2 size={18} color="var(--danger-color)" />

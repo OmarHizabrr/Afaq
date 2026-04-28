@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, studentRowMatchesScope } from '../../utils/permissionDataScope';
+import BusyButton from '../../components/BusyButton';
 
 const StudentDetailsPage = () => {
   const { id } = useParams();
@@ -158,9 +159,12 @@ const StudentDetailsPage = () => {
                   <label className="app-label">البريد</label>
                   <input className="app-input" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
                 </div>
-                <button type="button" className="google-btn google-btn--filled" onClick={handleSave} disabled={saving}>
-                  <Save size={16} /> {saving ? 'جارٍ الحفظ...' : 'حفظ التعديلات'}
-                </button>
+                <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSave} busy={saving}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <Save size={16} />
+                    حفظ التعديلات
+                  </span>
+                </BusyButton>
               </div>
             )}
 

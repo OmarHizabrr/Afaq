@@ -4,6 +4,7 @@ import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import useSiteContent from '../../context/useSiteContent';
 import { saveBranding, saveContacts } from '../../services/siteConfigService';
+import BusyButton from '../../components/BusyButton';
 
 export default function AdminBrandingPage({ user }) {
   const { branding, contacts, contactsMessage } = useSiteContent();
@@ -164,10 +165,9 @@ export default function AdminBrandingPage({ user }) {
           </div>
         </div>
 
-        <button type="button" className="google-btn google-btn--filled admin-settings-save-btn" onClick={onSave} disabled={saving}>
-          {saving && <span className="btn-loading-spinner" aria-hidden />}
-          <span>{saving ? 'جاري حفظ الهوية...' : 'حفظ الهوية'}</span>
-        </button>
+        <BusyButton type="button" className="google-btn google-btn--filled admin-settings-save-btn" onClick={onSave} busy={saving}>
+          حفظ الهوية
+        </BusyButton>
       </div>
     </div>
   );
