@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthService, { ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE } from '../services/authService';
 import { Phone, Lock, LogIn, Eye, EyeOff } from 'lucide-react';
+import BusyButton from '../components/BusyButton';
 
 const GoogleIcon = () => (
   <svg className="google-icon" viewBox="0 0 48 48">
@@ -129,13 +130,12 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <button 
-              type="submit"
-              className="google-btn google-btn--filled" 
-              disabled={loadingCustom}
-            >
-              {loadingCustom ? <div className="loading-spinner"></div> : <><LogIn size={20} /> تسجيل الدخول</>}
-            </button>
+            <BusyButton type="submit" className="google-btn google-btn--filled" busy={loadingCustom}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <LogIn size={20} />
+                تسجيل الدخول
+              </span>
+            </BusyButton>
           </form>
 
           <div className="md-divider-label">
@@ -144,20 +144,12 @@ const LoginPage = () => {
             <hr />
           </div>
 
-          <button 
-            className="google-btn" 
-            onClick={handleGoogleLogin}
-            disabled={loadingGoogle}
-          >
-            {loadingGoogle ? (
-              <div className="loading-spinner"></div>
-            ) : (
-              <>
-                <GoogleIcon />
-                <span>المتابعة باستخدام Google</span>
-              </>
-            )}
-          </button>
+          <BusyButton type="button" className="google-btn" onClick={handleGoogleLogin} busy={loadingGoogle}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              <GoogleIcon />
+              <span>المتابعة باستخدام Google</span>
+            </span>
+          </BusyButton>
 
           <p className="app-alert app-alert--info login-form__hint">
             يتم تفعيل الصلاحيات فقط بعد تحديد نوع الصلاحيات من المدير.
