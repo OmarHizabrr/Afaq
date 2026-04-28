@@ -108,6 +108,7 @@ export default function AdminUserTypesPage({ user }) {
   const remove = async () => {
     if (!selectedId) return;
     setStatus({ type: '', text: '' });
+    setSaving(true);
     try {
       await deletePermissionProfile(selectedId);
       setSelectedId('');
@@ -115,6 +116,8 @@ export default function AdminUserTypesPage({ user }) {
     } catch (err) {
       console.error(err);
       setStatus({ type: 'error', text: 'تعذر حذف نوع المستخدم.' });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -170,9 +173,9 @@ export default function AdminUserTypesPage({ user }) {
                   حفظ النوع
                 </BusyButton>
                 {selected && (
-                  <button type="button" className="icon-btn" onClick={remove} title="حذف النوع">
+                  <BusyButton type="button" className="icon-btn" onClick={remove} title="حذف النوع" busy={saving}>
                     <Trash2 size={18} color="var(--danger-color)" />
-                  </button>
+                  </BusyButton>
                 )}
               </div>
 

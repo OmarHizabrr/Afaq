@@ -287,26 +287,25 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             {!editMode ? (
               <>
                 {canEditReport && (
-                  <button
-                    type="button"
-                    className="google-btn google-btn--toolbar"
-                    disabled={saving}
-                    onClick={beginEdit}
-                  >
-                    <Pencil size={18} style={{ marginLeft: 6 }} aria-hidden />
-                    تعديل
-                  </button>
+                  <BusyButton type="button" className="google-btn google-btn--toolbar" busy={saving} onClick={beginEdit}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <Pencil size={18} style={{ marginLeft: 6 }} aria-hidden />
+                      تعديل
+                    </span>
+                  </BusyButton>
                 )}
                 {canDeleteReport && (
-                  <button
+                  <BusyButton
                     type="button"
                     className="google-btn google-btn--toolbar report-admin-toolbar__danger-btn"
-                    disabled={saving}
+                    busy={saving}
                     onClick={handleAdminDelete}
                   >
-                    <Trash2 size={18} style={{ marginLeft: 6 }} aria-hidden />
-                    حذف
-                  </button>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <Trash2 size={18} style={{ marginLeft: 6 }} aria-hidden />
+                      حذف
+                    </span>
+                  </BusyButton>
                 )}
               </>
             ) : (
@@ -322,15 +321,12 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                     حفظ
                   </span>
                 </BusyButton>
-                <button
-                  type="button"
-                  className="google-btn google-btn--toolbar"
-                  disabled={saving}
-                  onClick={cancelEdit}
-                >
-                  <X size={18} style={{ marginLeft: 6 }} aria-hidden />
-                  إلغاء
-                </button>
+                <BusyButton type="button" className="google-btn google-btn--toolbar" busy={saving} onClick={cancelEdit}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <X size={18} style={{ marginLeft: 6 }} aria-hidden />
+                    إلغاء
+                  </span>
+                </BusyButton>
               </>
             )}
           </div>
