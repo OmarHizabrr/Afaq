@@ -6,6 +6,7 @@ import PageHeader from "../../components/PageHeader";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import FormModal from "../../components/FormModal";
 import AppSelect from "../../components/AppSelect";
+import BusyButton from "../../components/BusyButton";
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "");
 
@@ -329,8 +330,9 @@ const TeacherStudentsPage = ({ user }) => {
             >
               إلغاء
             </button>
-            <button
+            <BusyButton
               type="submit"
+              busy={loading}
               className="google-btn google-btn--filled"
               style={{
                 width: "auto",
@@ -340,7 +342,7 @@ const TeacherStudentsPage = ({ user }) => {
               }}
             >
               {isEditing ? "تحديث" : "حفظ"}
-            </button>
+            </BusyButton>
           </div>
         </form>
       </FormModal>

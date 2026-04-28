@@ -7,6 +7,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import BusyButton from '../../components/BusyButton';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterGovernoratesByScope,
@@ -165,9 +166,9 @@ const GovernoratesPage = () => {
             <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); }}>
               إلغاء
             </button>
-            <button type="submit" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
               {isEditing ? 'تحديث' : 'حفظ'}
-            </button>
+            </BusyButton>
           </div>
         </form>
       </FormModal>
