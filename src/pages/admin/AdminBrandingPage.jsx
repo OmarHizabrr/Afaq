@@ -84,7 +84,7 @@ export default function AdminBrandingPage({ user }) {
         <div className="admin-branding-contacts">
           <div className="admin-branding-contacts__head">
             <strong>وسائل تواصل الإدارة</strong>
-            <button
+            <BusyButton
               type="button"
               className="icon-btn"
               onClick={() =>
@@ -94,9 +94,10 @@ export default function AdminBrandingPage({ user }) {
                 ])
               }
               title="إضافة وسيلة تواصل"
+              busy={saving}
             >
               <Plus size={18} />
-            </button>
+            </BusyButton>
           </div>
           <div className="admin-branding-contacts__list">
             <label className="app-field app-field--grow">
@@ -149,14 +150,15 @@ export default function AdminBrandingPage({ user }) {
                     )
                   }
                 />
-                <button
+                <BusyButton
                   type="button"
                   className="icon-btn"
                   title="حذف"
                   onClick={() => setContactsDraft((prev) => prev.filter((_, i) => i !== idx))}
+                  busy={saving}
                 >
                   <Trash2 size={17} color="var(--danger-color)" />
-                </button>
+                </BusyButton>
               </div>
             ))}
             {contactsDraft.length === 0 && (

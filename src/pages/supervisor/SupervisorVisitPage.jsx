@@ -13,6 +13,7 @@ const SupervisorVisitPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -148,15 +149,18 @@ const SupervisorVisitPage = ({ user }) => {
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
+      setLocating(true);
       navigator.geolocation.getCurrentPosition(
         pos => {
           setGpsLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
           setSuccess('تم التقاط الموقع الجغرافي بنجاح.');
           setError('');
+          setLocating(false);
         },
         () => {
           setError('يرجى تفعيل GPS ومنح صلاحية الموقع للمتصفح.');
           setSuccess('');
+          setLocating(false);
         }
       );
     }
@@ -418,9 +422,9 @@ const SupervisorVisitPage = ({ user }) => {
                 ) : (
                   <div>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لم يتم جلب موقع الجوال بعد.</p>
-                    <button type="button" onClick={handleGetLocation} className="icon-btn" style={{ background: 'var(--md-primary)', color: 'var(--md-on-primary)', width: 'auto', padding: '8px 16px', borderRadius: '8px' }}>
+                    <BusyButton type="button" onClick={handleGetLocation} busy={locating} className="icon-btn" style={{ background: 'var(--md-primary)', color: 'var(--md-on-primary)', width: 'auto', padding: '8px 16px', borderRadius: '8px' }}>
                       التقاط الـ GPS الآن
-                    </button>
+                    </BusyButton>
                   </div>
                 )}
               </div>
