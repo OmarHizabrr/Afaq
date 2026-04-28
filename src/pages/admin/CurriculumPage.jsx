@@ -7,6 +7,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import BusyButton from '../../components/BusyButton';
 
 const CurriculumPage = () => {
   const navigate = useNavigate();
@@ -317,13 +318,17 @@ const CurriculumPage = () => {
                     <div className="curriculum-editor__head">
                       <h4 className="curriculum-editor__subtitle">توزيع الدروس الأسبوعية</h4>
                       {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
-                        <button 
-                          className="google-btn curriculum-editor__save-btn" 
+                        <BusyButton
+                          type="button"
+                          className="google-btn curriculum-editor__save-btn"
                           onClick={handleSaveCurriculum}
-                          disabled={loading}
+                          busy={loading}
                         >
-                          <Save size={18} /> حفظ التوزيع
-                        </button>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                            <Save size={18} aria-hidden />
+                            حفظ التوزيع
+                          </span>
+                        </BusyButton>
                       )}
                     </div>
 
@@ -346,13 +351,14 @@ const CurriculumPage = () => {
                     
                     {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
                       <div className="curriculum-editor__footer">
-                        <button 
-                          className="google-btn curriculum-editor__save-btn curriculum-editor__save-btn--final" 
+                        <BusyButton
+                          type="button"
+                          className="google-btn curriculum-editor__save-btn curriculum-editor__save-btn--final"
                           onClick={handleSaveCurriculum}
-                          disabled={loading}
+                          busy={loading}
                         >
-                           حفظ التوزيع النهائي للمادة
-                        </button>
+                          حفظ التوزيع النهائي للمادة
+                        </BusyButton>
                       </div>
                     )}
                   </div>

@@ -23,6 +23,7 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
 import StarRatingInput from '../../components/StarRatingInput';
+import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
@@ -310,15 +311,17 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               </>
             ) : (
               <>
-                <button
+                <BusyButton
                   type="button"
                   className="google-btn google-btn--toolbar google-btn--filled"
-                  disabled={saving}
+                  busy={saving}
                   onClick={handleAdminSave}
                 >
-                  <Save size={18} style={{ marginLeft: 6 }} aria-hidden />
-                  {saving ? 'جاري الحفظ...' : 'حفظ'}
-                </button>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <Save size={18} style={{ marginLeft: 6 }} aria-hidden />
+                    حفظ
+                  </span>
+                </BusyButton>
                 <button
                   type="button"
                   className="google-btn google-btn--toolbar"

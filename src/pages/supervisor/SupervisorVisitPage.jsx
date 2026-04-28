@@ -6,6 +6,7 @@ import { uploadMedia } from '../../services/storageApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import StarRatingInput from '../../components/StarRatingInput';
+import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave } from '../../utils/visitRating';
 
 const SupervisorVisitPage = ({ user }) => {
@@ -442,14 +443,16 @@ const SupervisorVisitPage = ({ user }) => {
             </div>
           </div>
 
-          <button 
-            className="google-btn" 
-            onClick={handleSubmitReport} 
-            disabled={saving || !gpsLocation}
+          <BusyButton
+            type="button"
+            className="google-btn"
+            onClick={handleSubmitReport}
+            busy={saving}
+            disabled={!gpsLocation}
             style={{ width: '100%', justifyContent: 'center', background: gpsLocation ? 'var(--md-primary)' : 'var(--border-color)', color: gpsLocation ? 'var(--md-on-primary)' : 'var(--text-secondary)', padding: '16px', fontSize: '1.1rem' }}
           >
-            {saving ? 'جاري رفع التقرير وتوثيق الـ GPS...' : !gpsLocation ? 'يرجى التقاط الموقع أولاً لرفع التقرير' : 'حفظ التقرير الميداني بشكل نهائي'}
-          </button>
+            {gpsLocation ? 'حفظ التقرير الميداني بشكل نهائي' : 'يرجى التقاط الموقع أولاً لرفع التقرير'}
+          </BusyButton>
         </>
       )}
     </div>

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
@@ -332,9 +333,9 @@ const SchoolDetailsPage = () => {
                                    <button type="button" onClick={() => navigate(`/users/${t.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
                                  )}
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                                   <button type="button" onClick={() => removeMemberFromSchool(t)} className="icon-btn" title="إزالة من المدرسة" disabled={assigning}>
+                                  <BusyButton type="button" onClick={() => removeMemberFromSchool(t)} className="icon-btn" title="إزالة من المدرسة" busy={assigning}>
                                      <Trash2 size={16} color="var(--danger-color)" />
-                                   </button>
+                                  </BusyButton>
                                  )}
                                  </div>
                               </div>
@@ -379,9 +380,9 @@ const SchoolDetailsPage = () => {
                                    <button type="button" onClick={() => navigate(`/students/${s.id}`)} className="icon-btn" title="عرض ملف الطالب"><Info size={16}/></button>
                                  )}
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                                   <button type="button" onClick={() => removeMemberFromSchool(s)} className="icon-btn" title="إزالة من المدرسة" disabled={assigning}>
+                                  <BusyButton type="button" onClick={() => removeMemberFromSchool(s)} className="icon-btn" title="إزالة من المدرسة" busy={assigning}>
                                      <Trash2 size={16} color="var(--danger-color)" />
-                                   </button>
+                                  </BusyButton>
                                  )}
                                  </div>
                               </div>
@@ -417,15 +418,16 @@ const SchoolDetailsPage = () => {
                           </div>
                         )}
                         <div className="school-details-assign-modal__toolbar">
-                          <button
+                          <BusyButton
                             type="button"
                             className="google-btn google-btn--filled"
                             style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }}
-                            disabled={assigning || selectedIds.length === 0}
+                            disabled={selectedIds.length === 0}
+                            busy={assigning}
                             onClick={handleAssignSelected}
                           >
                             تعيين المحددين
-                          </button>
+                          </BusyButton>
                           <button
                             type="button"
                             className="google-btn"
@@ -458,13 +460,16 @@ const SchoolDetailsPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button 
+                                    <BusyButton
+                                      type="button"
                                       onClick={() => handleAssignUser(u)}
-                                      disabled={assigning}
+                                      busy={assigning}
                                       className="google-btn google-btn--filled school-details-assign-modal__assign-btn"
                                     >
-                                        <Check size={14} /> تعيين
-                                    </button>
+                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                        <Check size={14} aria-hidden /> تعيين
+                                      </span>
+                                    </BusyButton>
                                 </div>
                             ))}
                         </div>

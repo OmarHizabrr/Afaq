@@ -3,6 +3,7 @@ import { FileText, Save } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
+import BusyButton from '../../components/BusyButton';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
@@ -193,14 +194,18 @@ const TeacherWeeklyReportPage = ({ user }) => {
       <ReportItem title="أعمال وأنشطة أخرى" fieldPath="others" state={reportState} onChange={handleStateChange} />
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2rem' }}>
-        <button 
-          className="google-btn" 
-          onClick={handleSaveReport} 
-          disabled={loading}
+        <BusyButton
+          type="button"
+          className="google-btn"
+          onClick={handleSaveReport}
+          busy={loading}
           style={{ width: '100%', maxWidth: '300px', background: 'var(--success-color)', color: '#fff', padding: '16px' }}
         >
-          {loading ? 'جاري الرفع...' : <><Save size={20} style={{ marginLeft: '8px' }}/> رفع التقرير النهائي</>}
-        </button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Save size={20} style={{ marginLeft: 8 }} />
+            رفع التقرير النهائي
+          </span>
+        </BusyButton>
       </div>
 
     </div>

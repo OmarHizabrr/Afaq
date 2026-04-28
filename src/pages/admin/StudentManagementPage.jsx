@@ -7,6 +7,7 @@ import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import FormModal from '../../components/FormModal';
+import BusyButton from '../../components/BusyButton';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterRegionsByScope,
@@ -584,9 +585,9 @@ const StudentManagementPage = () => {
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
             <button type="button" className="google-btn" onClick={() => { setIsAddOpen(false); resetForm(); }}>إلغاء</button>
-            <button type="button" className="google-btn google-btn--filled" onClick={handleSaveStudent} disabled={saving}>
-              {saving ? 'جارٍ الحفظ...' : 'حفظ'}
-            </button>
+            <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSaveStudent} busy={saving}>
+              حفظ
+            </BusyButton>
           </div>
         </div>
       </FormModal>

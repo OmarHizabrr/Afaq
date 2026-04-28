@@ -3,6 +3,7 @@ import { Calendar, Save, CheckCircle, XCircle, Users } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
+import BusyButton from '../../components/BusyButton';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
@@ -359,14 +360,18 @@ const TeacherDailyLogPage = ({ user }) => {
           </div>
           
           <div className="md-table-panel__footer">
-             <button 
-                className="google-btn" 
-                onClick={handleSaveLog} 
-                disabled={saving}
+             <BusyButton
+                type="button"
+                className="google-btn"
+                onClick={handleSaveLog}
+                busy={saving}
                 style={{ marginTop: 0, width: 'auto', background: 'var(--success-color)', color: '#fff', padding: '12px 32px' }}
               >
-                {saving ? 'جاري الحفظ...' : <><Save size={18} style={{ marginLeft: '8px' }}/> حفظ التحضير اليومي</>}
-              </button>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <Save size={18} style={{ marginLeft: 8 }} />
+                  حفظ التحضير اليومي
+                </span>
+              </BusyButton>
           </div>
         </div>
       )}

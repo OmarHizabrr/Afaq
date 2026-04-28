@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { MapPin, School, Users, ChevronRight, UserPlus, Info, Search, X, Check, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
@@ -33,7 +34,7 @@ const RegionDetailsPage = () => {
     const [error, setError] = useState('');
     const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
 
-    const fetchRegionDetails = async () => {
+    const fetchRegionDetails = useCallback(async () => {
         if (!id) return;
         try {
             const api = FirestoreApi.Api;
@@ -69,11 +70,11 @@ const RegionDetailsPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
     useEffect(() => {
         fetchRegionDetails();
-    }, [id]);
+    }, [fetchRegionDetails]);
 
     const handleAssignSupervisor = async (userToAssign) => {
         if (!userToAssign || assigning || !id) return;
@@ -263,9 +264,9 @@ const RegionDetailsPage = () => {
                                    <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
                                  )}
                                  {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
-                                   <button type="button" onClick={() => removeSupervisorFromRegion(sup)} className="icon-btn" title="إزالة من المنطقة" disabled={assigning}>
+                                   <BusyButton type="button" onClick={() => removeSupervisorFromRegion(sup)} className="icon-btn" title="إزالة من المنطقة" busy={assigning}>
                                      <Trash2 size={16} color="var(--danger-color)" />
-                                   </button>
+                                   </BusyButton>
                                  )}
                                  </div>
                               </div>
@@ -314,15 +315,17 @@ const RegionDetailsPage = () => {
                                             <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{ROLE_LABELS[u.role] || u.role || '—'}</div>
                                         </div>
                                     </div>
-                                    <button
+                                    <BusyButton
                                       type="button"
                                       onClick={() => handleAssignSupervisor(u)}
-                                      disabled={assigning}
+                                      busy={assigning}
                                       className="google-btn google-btn--filled"
                                       style={{ padding: '6px 12px', minHeight: '36px', fontSize: '0.8rem', width: 'auto', flexShrink: 0, gap: '6px' }}
                                     >
+                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                                         <Check size={14} aria-hidden /> تعيين
-                                    </button>
+                                      </span>
+                                    </BusyButton>
                                 </div>
                               ))
                             )}
