@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
+import BusyButton from './BusyButton';
 
 const ConfirmDialog = ({
   open,
@@ -23,21 +24,21 @@ const ConfirmDialog = ({
         <h3 className="confirm-dialog__title">{title}</h3>
         <p className="confirm-dialog__message">{message}</p>
         <div className="confirm-dialog__actions">
-          <button type="button" className="btn-md btn-md--outline" onClick={onCancel} disabled={loading}>
+          <BusyButton type="button" className="btn-md btn-md--outline" onClick={onCancel} busy={loading}>
             {cancelLabel}
-          </button>
-          <button
+          </BusyButton>
+          <BusyButton
             type="button"
             className="btn-md"
             onClick={onConfirm}
-            disabled={loading}
+            busy={loading}
             style={{
               background: danger ? 'var(--danger-color)' : 'var(--md-primary)',
               color: '#fff',
             }}
           >
-            {loading ? 'جاري التنفيذ...' : confirmLabel}
-          </button>
+            {confirmLabel}
+          </BusyButton>
         </div>
       </div>
     </div>

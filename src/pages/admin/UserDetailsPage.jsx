@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, loadPeerUserIdsForGroups } from '../../utils/permissionDataScope';
+import BusyButton from '../../components/BusyButton';
 
 const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const { id: routeUserId } = useParams();
@@ -229,26 +230,30 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                 )}
                                 <div className="user-details-admin-card__actions">
                                     {can(PERMISSION_PAGE_IDS.users, 'user_admin_disable') && (
-                                      <button
+                                      <BusyButton
                                           type="button"
                                           className={`google-btn user-details-admin-card__btn ${profile.accountDisabled ? 'user-details-admin-card__btn--enable' : 'user-details-admin-card__btn--disable'}`}
-                                          disabled={adminWorking}
+                                          busy={adminWorking}
                                           onClick={handleToggleAccountDisabled}
                                       >
-                                          <Ban size={18} style={{ marginLeft: 8 }} aria-hidden />
-                                          {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
-                                      </button>
+                                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                            <Ban size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                            {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
+                                          </span>
+                                      </BusyButton>
                                     )}
                                     {can(PERMISSION_PAGE_IDS.users, 'user_admin_delete') && (
-                                      <button
+                                      <BusyButton
                                           type="button"
                                           className="google-btn user-details-admin-card__btn user-details-admin-card__btn--delete"
-                                          disabled={adminWorking}
+                                          busy={adminWorking}
                                           onClick={handleAdminDeleteUser}
                                       >
-                                          <Trash2 size={18} style={{ marginLeft: 8 }} aria-hidden />
-                                          حذف المستخدم نهائياً من النظام
-                                      </button>
+                                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                            <Trash2 size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                            حذف المستخدم نهائياً من النظام
+                                          </span>
+                                      </BusyButton>
                                     )}
                                 </div>
                             </div>
