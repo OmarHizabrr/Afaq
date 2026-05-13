@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, Mail, Phone, Shield, Calendar, BookOpen, ChevronRight, Activity, TrendingUp, Info, Ban, Trash2 } from 'lucide-react';
+import { User, Mail, Phone, Shield, Calendar, BookOpen, ChevronRight, Activity, TrendingUp, Info, Ban, Trash2, Edit2, Save, X } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
@@ -18,6 +18,21 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const [loading, setLoading] = useState(true);
     const [adminWorking, setAdminWorking] = useState(false);
     const [adminError, setAdminError] = useState('');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editBusy, setEditBusy] = useState(false);
+    const [editError, setEditError] = useState('');
+    const [editSuccess, setEditSuccess] = useState('');
+    const [editForm, setEditForm] = useState({
+      displayName: '',
+      email: '',
+      phoneNumber: '',
+      photoURL: '',
+      gender: '',
+      birthDate: '',
+      address: '',
+      country: '',
+      notes: '',
+    });
     const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = usePermissions();
 
     const viewerId = viewerUser?.uid || viewerUser?.id || '';
@@ -27,6 +42,13 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
       Boolean(targetId) &&
       Boolean(viewerId) &&
       viewerId !== targetId;
+    const canEditUserProfile = canAdminManage || (Boolean(selfUser) && targetId === (selfUser?.uid || selfUser?.id || ''));
+
+    useEffect(() => {
+        if (!editSuccess) return;
+        const t = setTimeout(() => setEditSuccess(''), 3500);
+        return () => clearTimeout(t);
+    }, [editSuccess]);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -172,6 +194,70 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
         }
     };
 
+    const openEditUserModal = () => {
+        if (!profile) return;
+        setEditForm({
+          displayName: profile.displayName || '',
+          email: profile.email || '',
+          phoneNumber: profile.phoneNumber || '',
+          photoURL: profile.photoURL || '',
+          gender: profile.gender || '',
+          birthDate: profile.birthDate || '',
+          address: profile.address || '',
+          country: profile.country || '',
+          notes: profile.notes || '',
+        });
+        setEditError('');
+        setEditSuccess('');
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveUserProfile = async () => {
+        if (!canEditUserProfile || !targetId || !profile) return;
+        try {
+            setEditBusy(true);
+            setEditError('');
+            const api = FirestoreApi.Api;
+            const nextEmail = (editForm.email || '').trim().toLowerCase();
+            if (nextEmail) {
+                const usersDocs = await api.getDocuments(api.getUsersCollection());
+                const exists = usersDocs.some((u) => {
+                    if (u.id === targetId) return false;
+                    return String(u.data()?.email || '').trim().toLowerCase() === nextEmail;
+                });
+                if (exists) {
+                    setEditError('هذا البريد الإلكتروني مستخدم مسبقاً.');
+                    setEditBusy(false);
+                    return;
+                }
+            }
+            const patch = {
+              displayName: (editForm.displayName || '').trim() || profile.displayName || '',
+              email: nextEmail,
+              phoneNumber: (editForm.phoneNumber || '').trim(),
+              photoURL: (editForm.photoURL || '').trim(),
+              gender: (editForm.gender || '').trim(),
+              birthDate: (editForm.birthDate || '').trim(),
+              address: (editForm.address || '').trim(),
+              country: (editForm.country || '').trim(),
+              notes: (editForm.notes || '').trim(),
+            };
+            await api.updateData({
+                docRef: api.getUserDoc(targetId),
+                data: patch,
+                userData: viewerUser || undefined,
+            });
+            setProfile((p) => ({ ...p, ...patch }));
+            setEditSuccess('تم تحديث بيانات المستخدم بنجاح.');
+            setIsEditModalOpen(false);
+        } catch (err) {
+            console.error(err);
+            setEditError('تعذر حفظ البيانات. تحقق من الصلاحيات.');
+        } finally {
+            setEditBusy(false);
+        }
+    };
+
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
     if (!profile) return <div className="empty-state user-details-empty">المستخدم غير موجود</div>;
 
@@ -186,6 +272,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     };
 
     return (
+      <>
         <div className="user-details-page">
             <PageHeader
               topRow={
@@ -197,7 +284,23 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 </div>
               }
               title={<>عرض ملف: <span style={{ color: 'var(--md-primary)' }}>{profile.displayName}</span></>}
-            />
+            >
+              {canEditUserProfile && (
+                <button type="button" className="google-btn google-btn--toolbar" onClick={openEditUserModal}>
+                  <Edit2 size={18} />
+                  <span>تعديل بيانات المستخدم</span>
+                </button>
+              )}
+            </PageHeader>
+
+            {editSuccess && (
+              <div className="app-alert app-alert--success" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                <span>{editSuccess}</span>
+                <button type="button" className="icon-btn" title="إغلاق" onClick={() => setEditSuccess('')} style={{ width: 28, height: 28 }}>
+                  <X size={14} />
+                </button>
+              </div>
+            )}
 
             <div className="user-details-layout">
                 {/* Profile Card */}
@@ -269,7 +372,54 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                             <div className="user-details-profile-card__meta-row">
                                 <Shield size={16} /> المعرف: {profile.id.substring(0, 8)}...
                             </div>
+                            {profile.country && (
+                              <div className="user-details-profile-card__meta-row">
+                                <Info size={16} /> الدولة: {profile.country}
+                              </div>
+                            )}
+                            {profile.gender && (
+                              <div className="user-details-profile-card__meta-row">
+                                <User size={16} /> الجنس: {profile.gender}
+                              </div>
+                            )}
+                            {profile.birthDate && (
+                              <div className="user-details-profile-card__meta-row">
+                                <Calendar size={16} /> تاريخ الميلاد: {profile.birthDate}
+                              </div>
+                            )}
+                            {profile.address && (
+                              <div className="user-details-profile-card__meta-row">
+                                <Info size={16} /> العنوان: {profile.address}
+                              </div>
+                            )}
                         </div>
+                        {profile.notes && (
+                          <div
+                            style={{
+                              marginTop: 10,
+                              padding: '10px 12px',
+                              borderRadius: 10,
+                              border: '1px solid var(--border-color)',
+                              background: 'color-mix(in srgb, var(--bg-color) 88%, var(--panel-color))',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontWeight: 700 }}>
+                              <Info size={15} /> ملاحظات
+                            </div>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: '0.9rem',
+                                lineHeight: 1.7,
+                                color: 'var(--text-primary)',
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-word',
+                              }}
+                            >
+                              {profile.notes}
+                            </p>
+                          </div>
+                        )}
                     </div>
                     <div className="surface-card user-details-memberships-card">
                         <h3 className="user-details-memberships-card__title">
@@ -347,6 +497,124 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 </div>
             </div>
         </div>
+
+        {isEditModalOpen && canEditUserProfile && (
+          <div className="modal-overlay" onClick={() => !editBusy && setIsEditModalOpen(false)}>
+            <div className="modal-card modal-card--sm" onClick={(e) => e.stopPropagation()}>
+              <div className="users-modal__head">
+                <h2 className="users-modal__title">تعديل بيانات المستخدم</h2>
+                <button type="button" className="icon-btn" onClick={() => setIsEditModalOpen(false)} disabled={editBusy}>
+                  <X size={20} />
+                </button>
+              </div>
+
+              {editError && (
+                <div className="app-alert app-alert--error users-alert">{editError}</div>
+              )}
+
+              <div className="users-modal__field">
+                <label className="app-label">الاسم الكامل (اختياري)</label>
+                <input
+                  className="app-input"
+                  value={editForm.displayName}
+                  onChange={(e) => setEditForm((p) => ({ ...p, displayName: e.target.value }))}
+                  placeholder="اسم المستخدم"
+                />
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">البريد الإلكتروني (اختياري)</label>
+                <input
+                  className="app-input"
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))}
+                  placeholder="example@email.com"
+                />
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">رقم الهاتف (اختياري)</label>
+                <input
+                  className="app-input"
+                  inputMode="numeric"
+                  maxLength={15}
+                  value={editForm.phoneNumber}
+                  onChange={(e) => setEditForm((p) => ({ ...p, phoneNumber: e.target.value.replace(/\D/g, '') }))}
+                  placeholder="07xxxxxxxx"
+                />
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">رابط الصورة (اختياري)</label>
+                <input
+                  className="app-input"
+                  value={editForm.photoURL}
+                  onChange={(e) => setEditForm((p) => ({ ...p, photoURL: e.target.value }))}
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">الجنس (اختياري)</label>
+                <select
+                  className="app-input"
+                  value={editForm.gender}
+                  onChange={(e) => setEditForm((p) => ({ ...p, gender: e.target.value }))}
+                >
+                  <option value="">غير محدد</option>
+                  <option value="ذكر">ذكر</option>
+                  <option value="أنثى">أنثى</option>
+                </select>
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">تاريخ الميلاد (اختياري)</label>
+                <input
+                  className="app-input"
+                  type="date"
+                  value={editForm.birthDate}
+                  onChange={(e) => setEditForm((p) => ({ ...p, birthDate: e.target.value }))}
+                />
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">الدولة (اختياري)</label>
+                <input
+                  className="app-input"
+                  value={editForm.country}
+                  onChange={(e) => setEditForm((p) => ({ ...p, country: e.target.value }))}
+                  placeholder="مثال: MALAWI"
+                />
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">العنوان (اختياري)</label>
+                <input
+                  className="app-input"
+                  value={editForm.address}
+                  onChange={(e) => setEditForm((p) => ({ ...p, address: e.target.value }))}
+                  placeholder="العنوان أو المنطقة"
+                />
+              </div>
+              <div className="users-modal__field">
+                <label className="app-label">ملاحظات (اختياري)</label>
+                <textarea
+                  className="app-input"
+                  style={{ minHeight: '80px' }}
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm((p) => ({ ...p, notes: e.target.value }))}
+                  placeholder="أي ملاحظات إضافية"
+                />
+              </div>
+
+              <div className="users-modal__actions">
+                <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={() => setIsEditModalOpen(false)} disabled={editBusy}>
+                  إلغاء
+                </button>
+                <BusyButton type="button" busy={editBusy} className="google-btn google-btn--filled users-modal__save-btn" onClick={handleSaveUserProfile}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <Save size={14} aria-hidden /> حفظ التعديلات
+                  </span>
+                </BusyButton>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
 };
 

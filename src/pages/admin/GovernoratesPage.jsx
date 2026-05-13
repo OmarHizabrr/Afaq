@@ -26,6 +26,8 @@ const GovernoratesPage = () => {
   const [govCountry, setGovCountry] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [showScopeNotice, setShowScopeNotice] = useState(true);
   const [pendingDelete, setPendingDelete] = useState(null);
 
   const fetchGovernorates = useCallback(async () => {
@@ -44,6 +46,7 @@ const GovernoratesPage = () => {
         regData = filterRegionsByScope(regData, membershipGroupIds, scope);
         data = filterGovernoratesByScope(data, regData, scope);
       }
+      data.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
       setGovernorates(data);
     } catch (err) {
       console.error(err);
@@ -71,11 +74,18 @@ const GovernoratesPage = () => {
     return () => clearTimeout(t);
   }, [error]);
 
+  useEffect(() => {
+    if (!ready) return;
+    const scope = pageDataScope(PERMISSION_PAGE_IDS.governorates);
+    setShowScopeNotice(scope === DATA_SCOPE_MEMBERSHIP);
+  }, [ready, pageDataScope]);
+
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!govName.trim()) return;
+    if (!govName.trim() || saving) return;
 
     try {
+      setSaving(true);
       const api = FirestoreApi.Api;
       const docId = api.getNewId('governorates');
       const docRef = api.getGovernorateDoc(docId);
@@ -94,14 +104,17 @@ const GovernoratesPage = () => {
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء الإضافة');
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleEdit = async (e) => {
     e.preventDefault();
-    if (!govName.trim() || !isEditing) return;
+    if (!govName.trim() || !isEditing || saving) return;
 
     try {
+      setSaving(true);
       const api = FirestoreApi.Api;
       const docRef = api.getGovernorateDoc(isEditing.id);
       
@@ -119,6 +132,8 @@ const GovernoratesPage = () => {
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء التحديث');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -154,9 +169,12 @@ const GovernoratesPage = () => {
         )}
       </PageHeader>
 
-      {ready && pageDataScope(PERMISSION_PAGE_IDS.governorates) === DATA_SCOPE_MEMBERSHIP && (
-        <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
-          عرض محدود: المحافظات الظاهرة مرتبطة بمناطق مجموعاتك (عضوية منطقة أو ما يترتب عليها).
+      {showScopeNotice && ready && pageDataScope(PERMISSION_PAGE_IDS.governorates) === DATA_SCOPE_MEMBERSHIP && (
+        <div className="app-alert app-alert--info" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <span>عرض محدود: المحافظات الظاهرة مرتبطة بمناطق مجموعاتك (عضوية منطقة أو ما يترتب عليها).</span>
+          <button type="button" className="icon-btn" title="إغلاق" onClick={() => setShowScopeNotice(false)} style={{ width: 28, height: 28 }}>
+            <X size={14} />
+          </button>
         </div>
       )}
       {error && (
@@ -206,7 +224,7 @@ const GovernoratesPage = () => {
                 <X size={14} aria-hidden /> إلغاء
               </span>
             </button>
-            <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Save size={14} aria-hidden /> {isEditing ? 'تحديث' : 'حفظ'}
               </span>
