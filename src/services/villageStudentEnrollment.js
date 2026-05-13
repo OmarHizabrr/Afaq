@@ -88,7 +88,7 @@ export async function enrollVillagePersonAsStudent(api, {
     await api.setData({ docRef: api.getSchoolStudentDoc(schoolId, personId), data: studentData });
     await api.setData({
       docRef: api.getGroupMemberDoc(schoolId, personId),
-      data: { ...studentData, id: personId, type: 'student' },
+      data: { ...studentData, id: personId, userId: personId, type: 'student' },
     });
     await api.setData({
       docRef: api.getUserMembershipMirrorDoc(personId, schoolId),

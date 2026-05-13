@@ -84,7 +84,8 @@ const SchoolDetailsPage = () => {
             const detailedStudents = [];
 
             memberData.forEach(m => {
-                const profile = userMap[m.userId];
+                const memberUserId = m.userId || m.id;
+                const profile = userMap[memberUserId];
                 if (profile) {
                     if (profile.role === 'student' || m.type === 'student') detailedStudents.push(profile);
                     else detailedStaff.push(profile);
