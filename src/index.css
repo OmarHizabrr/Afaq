@@ -824,22 +824,27 @@ html:not(.light-mode) .nav-link.active {
 }
 
 .icon-btn {
-  background: transparent;
-  border: none;
+  background: color-mix(in srgb, var(--panel-color) 88%, var(--bg-color));
+  border: 1px solid var(--border-color);
   color: var(--text-secondary);
   cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--motion-fast), color var(--motion-fast);
+  transition: background var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast),
+    transform var(--motion-fast), box-shadow var(--motion-fast);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
 
 .icon-btn:hover {
-  background: var(--accent-muted);
+  background: color-mix(in srgb, var(--md-primary) 12%, var(--panel-color));
   color: var(--md-primary);
+  border-color: color-mix(in srgb, var(--md-primary) 45%, var(--border-color));
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
 }
 
 .icon-btn:focus-visible {
@@ -1163,11 +1168,21 @@ html:not(.light-mode) .nav-link.active {
   align-items: center;
   gap: 12px;
   padding: 1.25rem;
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast), border-color var(--motion-fast);
 }
 
 .surface-card--village {
   position: relative;
   padding: 1.25rem;
+  border-radius: 18px;
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast), border-color var(--motion-fast);
+}
+
+.surface-card--entity:hover,
+.surface-card--village:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--md-primary) 35%, var(--border-color));
 }
 
 .empty-state {
@@ -1583,6 +1598,69 @@ html:not(.light-mode) .nav-link.active {
   margin: 0;
 }
 
+/* —— Region details page —— */
+.region-details-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.region-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.region-details-panel {
+  padding: 1.5rem;
+  border-radius: 24px;
+}
+
+.region-details-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.region-details-panel__title {
+  margin: 0;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.region-details-panel__empty {
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.region-details-list {
+  display: grid;
+  gap: 10px;
+}
+
+.region-details-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: var(--bg-color);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.region-details-item__member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.region-details-item__name {
+  margin: 0;
+}
+
 /* —— Villages admin pages —— */
 .villages-alert {
   margin-bottom: 1rem;
@@ -1698,10 +1776,15 @@ html:not(.light-mode) .nav-link.active {
 
 .villages-card__actions {
   position: absolute;
-  top: 1.25rem;
-  left: 1.25rem;
+  top: 0.95rem;
+  left: 0.95rem;
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel-color) 88%, transparent);
+  backdrop-filter: blur(4px);
+  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
 }
 
 .villages-card__title {
@@ -1721,9 +1804,10 @@ html:not(.light-mode) .nav-link.active {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   font-size: 0.8rem;
-  background: var(--bg-color);
-  padding: 10px;
-  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg-color) 86%, var(--panel-color));
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
 }
 
 .villages-card__stats-danger {
@@ -2161,9 +2245,16 @@ html:not(.light-mode) .nav-link.active {
   gap: 12px;
   align-items: center;
   padding: 12px;
-  background: var(--bg-color);
-  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-color) 90%, var(--panel-color));
+  border-radius: 14px;
   border: 1px solid var(--border-color);
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast), border-color var(--motion-fast);
+}
+
+.school-details-member-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+  border-color: color-mix(in srgb, var(--md-primary) 35%, var(--border-color));
 }
 
 .school-details-member-item__avatar {
@@ -3669,6 +3760,15 @@ html:not(.light-mode) .nav-link.active {
   }
 
   .governorate-details-panel {
+    padding: 1rem;
+  }
+
+  .region-details-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .region-details-panel {
     padding: 1rem;
   }
 

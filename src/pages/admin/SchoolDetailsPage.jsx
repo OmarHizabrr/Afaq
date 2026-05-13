@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2, Plus, Printer, Edit2 } from 'lucide-react';
+import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2, Plus, Printer, Edit2, RotateCcw, Save } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import BusyButton from '../../components/BusyButton';
@@ -33,6 +33,7 @@ const ASSIGN_ROLE_FILTER_ORDER = [
 
 const userRoleLabel = (role) => USER_ROLE_LABELS[role] || role || 'مستخدم';
 const DAY_OPTIONS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const QUALITY_OPTIONS = ['ممتاز', 'جيد جدا', 'جيد', 'مقبول', 'ضعيف'];
 
 const formatDateInput = (d = new Date()) => {
   const yyyy = d.getFullYear();
@@ -80,11 +81,18 @@ const SchoolDetailsPage = () => {
     const [reportError, setReportError] = useState('');
     const [reportSuccess, setReportSuccess] = useState('');
     const [schoolReports, setSchoolReports] = useState([]);
+    const [curriculumList, setCurriculumList] = useState([]);
     const [reportWorkingId, setReportWorkingId] = useState('');
     const [reportQuery, setReportQuery] = useState('');
     const [reportDateFrom, setReportDateFrom] = useState('');
     const [reportDateTo, setReportDateTo] = useState('');
     const [editingReportMeta, setEditingReportMeta] = useState(null);
+    const [geoDefaults, setGeoDefaults] = useState({
+      villageName: '',
+      regionName: '',
+      governorateName: '',
+      country: '',
+    });
     const [reportForm, setReportForm] = useState({
       reportTitle: 'تقرير إشراف على المدارس',
       teacherIds: [],
@@ -117,6 +125,7 @@ const SchoolDetailsPage = () => {
       notes: '',
       absentStudentIds: [],
       starAwards: [],
+      curriculumBySubjectId: {},
     });
 
     const fetchSchoolDetails = useCallback(async () => {
@@ -131,7 +140,23 @@ const SchoolDetailsPage = () => {
                 console.error('School not found');
                 return;
             }
-            setSchool({ id: schDoc.id, ...schDoc.data() });
+            const schoolData = { id: schDoc.id, ...schDoc.data() };
+            setSchool(schoolData);
+
+            const allVillages = await api.getCollectionGroupDocuments('villages');
+            const allRegions = await api.getCollectionGroupDocuments('regions');
+            const allGovernorates = await api.getDocuments(api.getGovernoratesCollection());
+            const villageDoc = allVillages.find((v) => v.id === schoolData.villageId);
+            const resolvedRegionId = schoolData.regionId || villageDoc?.data()?.regionId || '';
+            const regionDoc = allRegions.find((r) => r.id === resolvedRegionId);
+            const govId = regionDoc?.data()?.govId || '';
+            const govDoc = allGovernorates.find((g) => g.id === govId);
+            setGeoDefaults({
+              villageName: villageDoc?.data()?.villageName || schoolData.villageName || '',
+              regionName: regionDoc?.data()?.name || '',
+              governorateName: govDoc?.data()?.name || schoolData.governorate || '',
+              country: govDoc?.data()?.country || schoolData.country || '',
+            });
 
             // 2. Fetch Members (Teachers / Students)
             const membersRef = api.getGroupMembersCollection(id);
@@ -142,6 +167,8 @@ const SchoolDetailsPage = () => {
             const usersDocs = await api.getDocuments(api.getUsersCollection());
             const users = usersDocs.map(u => ({ id: u.id, ...u.data() }));
             setAllUsers(users);
+            const curriculumDocs = await api.getDocuments(api.getCurriculumCollection());
+            setCurriculumList(curriculumDocs.map((d) => ({ id: d.id, ...d.data() })));
 
             const userMap = {};
             users.forEach(u => userMap[u.id] = u);
@@ -359,16 +386,20 @@ const SchoolDetailsPage = () => {
         name: s.displayName || '',
         stars: Math.max(1, 5 - idx),
       }));
+      const curriculumBySubjectId = {};
+      curriculumList.forEach((subj) => {
+        curriculumBySubjectId[subj.id] = '';
+      });
       setReportForm({
         reportTitle: 'تقرير إشراف على المدارس',
         teacherIds: defaultTeacherIds,
         teacherPhoneMap,
-        village: school.villageName || school.village || '',
+        village: geoDefaults.villageName || school.villageName || school.village || '',
         groupName: school.name || '',
         day: DAY_OPTIONS[now.getDay()],
         date: formatDateInput(now),
-        governorate: school.governorate || '',
-        country: school.country || '',
+        governorate: geoDefaults.governorateName || school.governorate || '',
+        country: geoDefaults.country || school.country || '',
         arrivalTime: formatTimeInput(now),
         departureTime: '',
         totalStudents: students.length,
@@ -391,12 +422,13 @@ const SchoolDetailsPage = () => {
         notes: '',
         absentStudentIds: [],
         starAwards: defaultStars,
+        curriculumBySubjectId,
       });
       setReportError('');
       setReportSuccess('');
       setEditingReportMeta(null);
       setIsReportModalOpen(true);
-    }, [staff, students, school, actorUser]);
+    }, [staff, students, school, actorUser, geoDefaults, curriculumList]);
 
     useEffect(() => {
       if (!school?.id) return;
@@ -415,6 +447,18 @@ const SchoolDetailsPage = () => {
         if (t.teacherId) teacherIds.push(t.teacherId);
         if (t.teacherId) teacherPhoneMap[t.teacherId] = t.phone || '';
       });
+      const curriculumBySubjectId = {};
+      if (Array.isArray(rep.curriculumItems) && rep.curriculumItems.length > 0) {
+        rep.curriculumItems.forEach((it) => {
+          if (it.subjectId) curriculumBySubjectId[it.subjectId] = it.content || '';
+        });
+      } else {
+        curriculumList.forEach((subj) => {
+          const nm = String(subj.name || '').trim();
+          const legacy = rep.lessonCoverage || {};
+          curriculumBySubjectId[subj.id] = legacy[nm] || '';
+        });
+      }
       setReportForm({
         reportTitle: rep.reportTitle || 'تقرير إشراف على المدارس',
         teacherIds,
@@ -447,6 +491,7 @@ const SchoolDetailsPage = () => {
         notes: rep.notes || '',
         absentStudentIds: (rep.absentStudents || []).map((s) => s.studentId).filter(Boolean),
         starAwards: rep.starAwards || [],
+        curriculumBySubjectId,
       });
       setEditingReportMeta({ id: rep.id, ownerId: rep.ownerId });
       setReportError('');
@@ -487,6 +532,15 @@ const SchoolDetailsPage = () => {
         const absentStudents = students
           .filter((s) => reportForm.absentStudentIds.includes(s.id))
           .map((s) => ({ studentId: s.id, studentName: s.displayName || '' }));
+        const curriculumItems = curriculumList.map((subj) => ({
+          subjectId: subj.id,
+          subjectName: subj.name || subj.id,
+          content: reportForm.curriculumBySubjectId?.[subj.id] || '',
+        }));
+        const legacyLessonCoverage = {};
+        curriculumItems.forEach((it) => {
+          legacyLessonCoverage[it.subjectName] = it.content;
+        });
 
         const payload = {
           reportType: 'school_supervision',
@@ -515,14 +569,8 @@ const SchoolDetailsPage = () => {
           absentStudents,
           studentLevel: reportForm.studentLevel || '',
           curriculumProgress: reportForm.curriculumProgress || '',
-          lessonCoverage: {
-            quran: reportForm.quran || '',
-            aqeedah: reportForm.aqeedah || '',
-            fiqh: reportForm.fiqh || '',
-            hadith: reportForm.hadith || '',
-            seerah: reportForm.seerah || '',
-            noorAlBayan: reportForm.noorAlBayan || '',
-          },
+          lessonCoverage: legacyLessonCoverage,
+          curriculumItems,
           schoolEvaluation: reportForm.schoolEvaluation || '',
           teacherEvaluation: reportForm.teacherEvaluation || '',
           marketDone: reportForm.marketDone || '',
@@ -576,6 +624,13 @@ const SchoolDetailsPage = () => {
       const absentStudents = Array.isArray(rep.absentStudents) ? rep.absentStudents : [];
       const starAwards = Array.isArray(rep.starAwards) ? rep.starAwards : [];
       const lessons = rep.lessonCoverage || {};
+      const curriculumItems = Array.isArray(rep.curriculumItems)
+        ? rep.curriculumItems
+        : Object.entries(lessons).map(([subjectName, content], idx) => ({
+            subjectId: String(idx),
+            subjectName,
+            content,
+          }));
 
       const teachersHtml =
         teachers.length > 0
@@ -607,6 +662,16 @@ const SchoolDetailsPage = () => {
               )
               .join('')
           : '<tr><td colspan="3">لا توجد بيانات نجوم</td></tr>';
+
+      const curriculumRowsHtml =
+        curriculumItems.length > 0
+          ? curriculumItems
+              .map(
+                (it) =>
+                  `<tr><th>${safeHtml(it.subjectName || '-')}</th><td>${safeHtml(it.content || '-')}</td></tr>`
+              )
+              .join('')
+          : '<tr><td colspan="2">لا توجد مواد مضافة</td></tr>';
 
       const html = `<!doctype html>
 <html lang="ar" dir="rtl">
@@ -668,9 +733,7 @@ const SchoolDetailsPage = () => {
     <h3>المقررات والمتابعة العلمية</h3>
     <table>
       <tbody>
-        <tr><th>القرآن</th><td>${safeHtml(lessons.quran || '-')}</td><th>العقيدة</th><td>${safeHtml(lessons.aqeedah || '-')}</td></tr>
-        <tr><th>الفقه</th><td>${safeHtml(lessons.fiqh || '-')}</td><th>الحديث</th><td>${safeHtml(lessons.hadith || '-')}</td></tr>
-        <tr><th>السيرة</th><td>${safeHtml(lessons.seerah || '-')}</td><th>نور البيان</th><td>${safeHtml(lessons.noorAlBayan || '-')}</td></tr>
+        ${curriculumRowsHtml}
       </tbody>
     </table>
   </div>
@@ -717,6 +780,11 @@ const SchoolDetailsPage = () => {
 
     const buildDraftPrintableReport = () => {
       const selectedTeachers = staff.filter((t) => reportForm.teacherIds.includes(t.id));
+      const curriculumItems = curriculumList.map((subj) => ({
+        subjectId: subj.id,
+        subjectName: subj.name || subj.id,
+        content: reportForm.curriculumBySubjectId?.[subj.id] || '',
+      }));
       return {
         reportTitle: reportForm.reportTitle || 'تقرير إشراف على المدارس',
         schoolName: school?.name || '',
@@ -738,14 +806,8 @@ const SchoolDetailsPage = () => {
         curriculumProgress: reportForm.curriculumProgress,
         schoolEvaluation: reportForm.schoolEvaluation,
         teacherEvaluation: reportForm.teacherEvaluation,
-        lessonCoverage: {
-          quran: reportForm.quran,
-          aqeedah: reportForm.aqeedah,
-          fiqh: reportForm.fiqh,
-          hadith: reportForm.hadith,
-          seerah: reportForm.seerah,
-          noorAlBayan: reportForm.noorAlBayan,
-        },
+        lessonCoverage: {},
+        curriculumItems,
         teachers: selectedTeachers.map((t) => ({
           teacherId: t.id,
           teacherName: t.displayName || '',
@@ -1034,7 +1096,9 @@ const SchoolDetailsPage = () => {
                     setReportDateTo('');
                   }}
                 >
-                  مسح
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <RotateCcw size={14} /> مسح
+                  </span>
                 </button>
               </div>
               {filteredReports.length === 0 ? (
@@ -1133,7 +1197,9 @@ const SchoolDetailsPage = () => {
                             busy={assigning}
                             onClick={handleAssignSelected}
                           >
-                            تعيين المحددين
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <Check size={14} /> تعيين المحددين
+                            </span>
                           </BusyButton>
                           <button
                             type="button"
@@ -1142,7 +1208,9 @@ const SchoolDetailsPage = () => {
                             onClick={() => setSelectedIds([])}
                             disabled={selectedIds.length === 0}
                           >
-                            إلغاء التحديد
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                              <X size={14} /> إلغاء التحديد
+                            </span>
                           </button>
                         </div>
 
@@ -1193,7 +1261,10 @@ const SchoolDetailsPage = () => {
                     </button>
                   </div>
                   <div style={{ display: 'grid', gap: '0.75rem', maxHeight: '68vh', overflowY: 'auto', paddingInlineEnd: '0.25rem' }}>
-                    <input className="app-input" value={reportForm.reportTitle} onChange={(e) => setReportForm((p) => ({ ...p, reportTitle: e.target.value }))} placeholder="عنوان التقرير" />
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.5rem' }}>
+                      <input className="app-input" value={reportForm.reportTitle} onChange={(e) => setReportForm((p) => ({ ...p, reportTitle: e.target.value }))} placeholder="عنوان التقرير" />
+                      <input className="app-input" value={reportForm.groupName} onChange={(e) => setReportForm((p) => ({ ...p, groupName: e.target.value }))} placeholder="اسم المدرسة/الجروب" />
+                    </div>
                     <div className="app-alert app-alert--info" style={{ margin: 0 }}>
                       اختيار المعلمين (يمكن اختيار أكثر من معلم) + تعديل أرقام الهاتف.
                     </div>
@@ -1203,23 +1274,26 @@ const SchoolDetailsPage = () => {
                           <input type="checkbox" checked={reportForm.teacherIds.includes(t.id)} onChange={() => toggleTeacherSelection(t.id)} />
                           <span>{t.displayName}</span>
                         </label>
-                        <input className="app-input" value={reportForm.teacherPhoneMap[t.id] || ''} onChange={(e) => setReportForm((p) => ({ ...p, teacherPhoneMap: { ...p.teacherPhoneMap, [t.id]: e.target.value } }))} placeholder="رقم هاتف المعلم" />
+                        <input className="app-input" type="tel" inputMode="numeric" value={reportForm.teacherPhoneMap[t.id] || ''} onChange={(e) => setReportForm((p) => ({ ...p, teacherPhoneMap: { ...p.teacherPhoneMap, [t.id]: e.target.value } }))} placeholder="رقم هاتف المعلم" />
                         <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{t.phoneNumber ? `المسجل: ${t.phoneNumber}` : 'لا يوجد رقم مسجل'}</span>
                       </div>
                     ))}
+                    <div className="app-alert app-alert--info" style={{ margin: 0 }}>
+                      الحقول الجغرافية تُجلب تلقائيا من: المدرسة ← القرية ← المنطقة ← المحافظة.
+                    </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      <input className="app-input" value={reportForm.village} onChange={(e) => setReportForm((p) => ({ ...p, village: e.target.value }))} placeholder="القرية" />
-                      <input className="app-input" value={reportForm.groupName} onChange={(e) => setReportForm((p) => ({ ...p, groupName: e.target.value }))} placeholder="الجروب" />
-                      <input className="app-input" value={reportForm.governorate} onChange={(e) => setReportForm((p) => ({ ...p, governorate: e.target.value }))} placeholder="المحافظة" />
-                      <input className="app-input" value={reportForm.country} onChange={(e) => setReportForm((p) => ({ ...p, country: e.target.value }))} placeholder="الدولة" />
+                      <input className="app-input" value={reportForm.village} readOnly placeholder="القرية" />
+                      <input className="app-input" value={geoDefaults.regionName} readOnly placeholder="المنطقة" />
+                      <input className="app-input" value={reportForm.governorate} readOnly placeholder="المحافظة" />
+                      <input className="app-input" value={reportForm.country} readOnly placeholder="الدولة" />
                       <select className="app-input" value={reportForm.day} onChange={(e) => setReportForm((p) => ({ ...p, day: e.target.value }))}>
                         {DAY_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
                       </select>
                       <input className="app-input" type="date" value={reportForm.date} onChange={(e) => setReportForm((p) => ({ ...p, date: e.target.value }))} />
                       <input className="app-input" type="time" value={reportForm.arrivalTime} onChange={(e) => setReportForm((p) => ({ ...p, arrivalTime: e.target.value }))} />
                       <input className="app-input" type="time" value={reportForm.departureTime} onChange={(e) => setReportForm((p) => ({ ...p, departureTime: e.target.value }))} />
-                      <input className="app-input" type="number" value={reportForm.totalStudents} onChange={(e) => setReportForm((p) => ({ ...p, totalStudents: e.target.value }))} placeholder="عدد الطلاب المسجلين" />
-                      <input className="app-input" type="number" value={reportForm.presentCount} onChange={(e) => setReportForm((p) => ({ ...p, presentCount: e.target.value }))} placeholder="عدد الحضور" />
+                      <input className="app-input" type="number" min="0" value={reportForm.totalStudents} onChange={(e) => setReportForm((p) => ({ ...p, totalStudents: e.target.value }))} placeholder="عدد الطلاب المسجلين" />
+                      <input className="app-input" type="number" min="0" value={reportForm.presentCount} onChange={(e) => setReportForm((p) => ({ ...p, presentCount: e.target.value }))} placeholder="عدد الحضور" />
                     </div>
                     <input className="app-input" value={reportForm.absenceReview} onChange={(e) => setReportForm((p) => ({ ...p, absenceReview: e.target.value }))} placeholder="مراجعة الغياب" />
                     <div className="app-alert app-alert--info" style={{ margin: 0 }}>تعليم الغائبين من طلاب المدرسة الموجودة في النظام:</div>
@@ -1243,26 +1317,56 @@ const SchoolDetailsPage = () => {
                       ))}
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      <input className="app-input" value={reportForm.studentLevel} onChange={(e) => setReportForm((p) => ({ ...p, studentLevel: e.target.value }))} placeholder="مستوى الطلاب" />
-                      <input className="app-input" value={reportForm.curriculumProgress} onChange={(e) => setReportForm((p) => ({ ...p, curriculumProgress: e.target.value }))} placeholder="نسبة السير على المنهج" />
-                      <input className="app-input" value={reportForm.quran} onChange={(e) => setReportForm((p) => ({ ...p, quran: e.target.value }))} placeholder="القرآن" />
-                      <input className="app-input" value={reportForm.aqeedah} onChange={(e) => setReportForm((p) => ({ ...p, aqeedah: e.target.value }))} placeholder="العقيدة" />
-                      <input className="app-input" value={reportForm.fiqh} onChange={(e) => setReportForm((p) => ({ ...p, fiqh: e.target.value }))} placeholder="الفقه" />
-                      <input className="app-input" value={reportForm.hadith} onChange={(e) => setReportForm((p) => ({ ...p, hadith: e.target.value }))} placeholder="الحديث" />
-                      <input className="app-input" value={reportForm.seerah} onChange={(e) => setReportForm((p) => ({ ...p, seerah: e.target.value }))} placeholder="السيرة" />
-                      <input className="app-input" value={reportForm.noorAlBayan} onChange={(e) => setReportForm((p) => ({ ...p, noorAlBayan: e.target.value }))} placeholder="نور البيان" />
-                      <input className="app-input" value={reportForm.schoolEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, schoolEvaluation: e.target.value }))} placeholder="تقييم المدرسة" />
-                      <input className="app-input" value={reportForm.teacherEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, teacherEvaluation: e.target.value }))} placeholder="تقييم المدرس" />
-                      <input className="app-input" value={reportForm.marketDone} onChange={(e) => setReportForm((p) => ({ ...p, marketDone: e.target.value }))} placeholder="تعمل السوق؟ نعم/لا" />
-                      <input className="app-input" type="number" value={reportForm.mealsCount} onChange={(e) => setReportForm((p) => ({ ...p, mealsCount: e.target.value }))} placeholder="عدد الوجبات" />
+                      <select className="app-input" value={reportForm.studentLevel} onChange={(e) => setReportForm((p) => ({ ...p, studentLevel: e.target.value }))}>
+                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                      </select>
+                      <select className="app-input" value={reportForm.curriculumProgress} onChange={(e) => setReportForm((p) => ({ ...p, curriculumProgress: e.target.value }))}>
+                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                      </select>
+                      <select className="app-input" value={reportForm.schoolEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, schoolEvaluation: e.target.value }))}>
+                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                      </select>
+                      <select className="app-input" value={reportForm.teacherEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, teacherEvaluation: e.target.value }))}>
+                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                      </select>
+                      <select className="app-input" value={reportForm.marketDone} onChange={(e) => setReportForm((p) => ({ ...p, marketDone: e.target.value }))}>
+                        <option value="">تعمل السوق؟</option>
+                        <option value="نعم">نعم</option>
+                        <option value="لا">لا</option>
+                      </select>
+                      <input className="app-input" type="number" min="0" value={reportForm.mealsCount} onChange={(e) => setReportForm((p) => ({ ...p, mealsCount: e.target.value }))} placeholder="عدد الوجبات" />
                       <input className="app-input" value={reportForm.supervisorName} onChange={(e) => setReportForm((p) => ({ ...p, supervisorName: e.target.value }))} placeholder="المشرف" />
                       <input className="app-input" value={reportForm.projectsOfficerName} onChange={(e) => setReportForm((p) => ({ ...p, projectsOfficerName: e.target.value }))} placeholder="مسؤول المشاريع" />
+                    </div>
+                    <div className="app-alert app-alert--info" style={{ margin: 0 }}>
+                      مواد التقرير (من المناهج `curriculum`):
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                      {curriculumList.map((subj) => (
+                        <input
+                          key={subj.id}
+                          className="app-input"
+                          value={reportForm.curriculumBySubjectId?.[subj.id] || ''}
+                          onChange={(e) =>
+                            setReportForm((p) => ({
+                              ...p,
+                              curriculumBySubjectId: {
+                                ...(p.curriculumBySubjectId || {}),
+                                [subj.id]: e.target.value,
+                              },
+                            }))
+                          }
+                          placeholder={`${subj.name || subj.id}`}
+                        />
+                      ))}
                     </div>
                     <textarea className="app-input" style={{ minHeight: '80px' }} value={reportForm.notes} onChange={(e) => setReportForm((p) => ({ ...p, notes: e.target.value }))} placeholder="ملاحظات إضافية" />
                   </div>
                   <div className="school-details-assign-modal__toolbar" style={{ marginTop: '0.75rem' }}>
                     <button type="button" className="google-btn" style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }} onClick={() => setIsReportModalOpen(false)}>
-                      إلغاء
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <X size={14} /> إلغاء
+                      </span>
                     </button>
                     <button
                       type="button"
@@ -1281,7 +1385,9 @@ const SchoolDetailsPage = () => {
                       busy={reportSaving}
                       onClick={handleSaveSchoolReport}
                     >
-                      {editingReportMeta ? 'حفظ التعديلات' : 'حفظ التقرير'}
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <Save size={14} /> {editingReportMeta ? 'حفظ التعديلات' : 'حفظ التقرير'}
+                      </span>
                     </BusyButton>
                   </div>
                 </div>

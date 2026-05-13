@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText, Settings2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -834,6 +834,16 @@ const VillagesPage = () => {
                     <Eye size={16} color="var(--accent-color)" />
                   </button>
                 )}
+                {can(PERMISSION_PAGE_IDS.villages, 'village_report_quick_add') && (
+                  <button
+                    className="icon-btn"
+                    title="إضافة تقرير المدرسة الافتراضية"
+                    disabled={!defaultSchoolByVillage[vil.id]}
+                    onClick={() => navigate(`/schools/${defaultSchoolByVillage[vil.id]}?composeReport=1`)}
+                  >
+                    <Plus size={16} color="var(--success-color)" />
+                  </button>
+                )}
                 {can(PERMISSION_PAGE_IDS.villages, 'village_edit') && (
                   <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">
                     <Edit2 size={16} />
@@ -932,7 +942,9 @@ const VillagesPage = () => {
                         busy={savingDefaultSchoolForVillageId === vil.id}
                         onClick={() => handleSaveDefaultSchool(vil, defaultSchoolByVillage[vil.id])}
                       >
-                        حفظ الافتراضي
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <Settings2 size={14} /> حفظ الافتراضي
+                        </span>
                       </BusyButton>
                     )}
                     {can(PERMISSION_PAGE_IDS.villages, 'village_report_quick_add') && (

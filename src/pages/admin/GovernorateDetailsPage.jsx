@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Map, MapPin, Home, ChevronRight, Info } from 'lucide-react';
+import { MapPin, Home, ChevronRight, Info } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
@@ -99,6 +99,7 @@ const GovernorateDetailsPage = () => {
                 </div>
               }
               title={<>محافظة: <span style={{ color: 'var(--md-primary)' }}>{gov.name}</span></>}
+              subtitle={`الدولة: ${gov.country || 'غير محددة'}`}
             />
 
             <div className="governorate-details-grid">
@@ -115,7 +116,7 @@ const GovernorateDetailsPage = () => {
                               <div key={reg.id} className="governorate-details-item">
                                  <h4 className="governorate-details-item__name">{reg.name}</h4>
                                  {can(PERMISSION_PAGE_IDS.governorates, 'governorate_region_view') && (
-                                   <button onClick={() => navigate(`/regions/${reg.id}`)} className="icon-btn"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/regions/${reg.id}`)} className="icon-btn" title="عرض المنطقة"><Info size={16}/></button>
                                  )}
                               </div>
                            ))}
@@ -136,7 +137,7 @@ const GovernorateDetailsPage = () => {
                               <div key={vil.id} className="governorate-details-item">
                                  <h4 className="governorate-details-item__name">{vil.villageName}</h4>
                                  {can(PERMISSION_PAGE_IDS.governorates, 'governorate_village_view') && (
-                                   <button onClick={() => navigate(`/villages/${vil.id}`)} className="icon-btn"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/villages/${vil.id}`)} className="icon-btn" title="عرض القرية"><Info size={16}/></button>
                                  )}
                               </div>
                            ))}

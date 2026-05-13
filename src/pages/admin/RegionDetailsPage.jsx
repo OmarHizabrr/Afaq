@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { MapPin, School, Users, ChevronRight, UserPlus, Info, Search, X, Check, Trash2 } from 'lucide-react';
+import { School, Users, ChevronRight, UserPlus, Info, Search, X, Check, Trash2 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import BusyButton from '../../components/BusyButton';
@@ -249,7 +249,7 @@ const RegionDetailsPage = () => {
     }, {});
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="region-details-page">
             <PageHeader
               topRow={
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -262,20 +262,20 @@ const RegionDetailsPage = () => {
               title={<>منطقة: <span style={{ color: 'var(--md-primary)' }}>{region.name}</span></>}
             />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
-                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="region-details-grid">
+                <div className="surface-card surface-card--lg region-details-panel">
+                    <div className="region-details-panel__head">
+                        <h2 className="region-details-panel__title">
                            <School size={18} color="var(--accent-color)" /> المدارس في هذه المنطقة
                         </h2>
                     </div>
-                    {schools.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا توجد مدارس مضافة لهذه المنطقة.</p> : (
-                        <div style={{ display: 'grid', gap: '10px' }}>
+                    {schools.length === 0 ? <p className="region-details-panel__empty">لا توجد مدارس مضافة لهذه المنطقة.</p> : (
+                        <div className="region-details-list">
                            {schools.map(sch => (
-                              <div key={sch.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-                                 <h4 style={{ margin: 0 }}>{sch.name}</h4>
+                              <div key={sch.id} className="region-details-item">
+                                 <h4 className="region-details-item__name">{sch.name}</h4>
                                  {can(PERMISSION_PAGE_IDS.regions, 'region_school_view') && (
-                                   <button type="button" onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn" title="عرض المدرسة"><Info size={16}/></button>
                                  )}
                               </div>
                            ))}
@@ -283,22 +283,22 @@ const RegionDetailsPage = () => {
                     )}
                 </div>
 
-                <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="surface-card surface-card--lg region-details-panel">
+                    <div className="region-details-panel__head">
+                        <h2 className="region-details-panel__title">
                            <Users size={18} color="var(--success-color)" /> أعضاء المنطقة
                         </h2>
                         {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
                           <button type="button" className="icon-btn" title="تعيين مشرف" onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                         )}
                     </div>
-                    {supervisors.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد أعضاء مسجّلون لهذه المنطقة حالياً.</p> : (
-                        <div style={{ display: 'grid', gap: '10px' }}>
+                    {supervisors.length === 0 ? <p className="region-details-panel__empty">لا يوجد أعضاء مسجّلون لهذه المنطقة حالياً.</p> : (
+                        <div className="region-details-list">
                            {supervisors.map(sup => (
-                              <div key={sup.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div key={sup.id} className="region-details-item">
+                                 <div className="region-details-item__member">
                                     <img src={sup.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(sup.displayName || '')}`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
-                                    <h4 style={{ margin: 0 }}>{sup.displayName}</h4>
+                                    <h4 className="region-details-item__name">{sup.displayName}</h4>
                                  </div>
                                  <div style={{ display: 'flex', gap: 6 }}>
                                  {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_view_profile') && (

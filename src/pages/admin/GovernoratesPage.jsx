@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Map, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, Map, Eye, X, Save } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -23,6 +23,7 @@ const GovernoratesPage = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(null); // stores gubernorate object being edited
   const [govName, setGovName] = useState('');
+  const [govCountry, setGovCountry] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
@@ -58,6 +59,18 @@ const GovernoratesPage = () => {
     fetchGovernorates();
   }, [ready, membershipLoading, fetchGovernorates, pageDataScope]);
 
+  useEffect(() => {
+    if (!success) return;
+    const t = setTimeout(() => setSuccess(''), 3500);
+    return () => clearTimeout(t);
+  }, [success]);
+
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(''), 5000);
+    return () => clearTimeout(t);
+  }, [error]);
+
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!govName.trim()) return;
@@ -69,10 +82,11 @@ const GovernoratesPage = () => {
       
       await api.setData({
         docRef,
-        data: { name: govName.trim() }
+        data: { name: govName.trim(), country: govCountry.trim() }
       });
 
       setGovName('');
+      setGovCountry('');
       setIsAdding(false);
       setSuccess('تمت إضافة المحافظة بنجاح.');
       setError('');
@@ -93,10 +107,11 @@ const GovernoratesPage = () => {
       
       await api.updateData({
         docRef,
-        data: { name: govName.trim() }
+        data: { name: govName.trim(), country: govCountry.trim() }
       });
 
       setGovName('');
+      setGovCountry('');
       setIsEditing(null);
       setSuccess('تم تحديث المحافظة بنجاح.');
       setError('');
@@ -110,6 +125,7 @@ const GovernoratesPage = () => {
   const startEdit = (gov) => {
       setIsEditing(gov);
       setGovName(gov.name);
+      setGovCountry(gov.country || '');
       setIsAdding(false);
   };
 
@@ -131,7 +147,7 @@ const GovernoratesPage = () => {
     <div>
       <PageHeader icon={Map} title="إدارة المحافظات">
         {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') && (
-          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); }}>
+          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
             <Plus size={18} />
             <span>إضافة محافظة</span>
           </button>
@@ -143,14 +159,28 @@ const GovernoratesPage = () => {
           عرض محدود: المحافظات الظاهرة مرتبطة بمناطق مجموعاتك (عضوية منطقة أو ما يترتب عليها).
         </div>
       )}
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
-      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
+      {error && (
+        <div className="app-alert app-alert--error" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <span>{error}</span>
+          <button type="button" className="icon-btn" title="إغلاق" onClick={() => setError('')} style={{ width: 28, height: 28 }}>
+            <X size={14} />
+          </button>
+        </div>
+      )}
+      {success && (
+        <div className="app-alert app-alert--success" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <span>{success}</span>
+          <button type="button" className="icon-btn" title="إغلاق" onClick={() => setSuccess('')} style={{ width: 28, height: 28 }}>
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Add/Edit Modal */}
       <FormModal
         open={isAdding || !!isEditing}
         title={isEditing ? 'تعديل المحافظة' : 'إضافة محافظة'}
-        onClose={() => { setIsAdding(false); setIsEditing(null); setGovName(''); }}
+        onClose={() => { setIsAdding(false); setIsEditing(null); setGovName(''); setGovCountry(''); }}
       >
         <form onSubmit={isEditing ? handleEdit : handleAdd}>
           <input 
@@ -162,12 +192,24 @@ const GovernoratesPage = () => {
             className="app-input"
             style={{ marginBottom: '1rem' }}
           />
+          <input
+            type="text"
+            placeholder="الدولة (مثال: MALAWI)"
+            value={govCountry}
+            onChange={(e) => setGovCountry(e.target.value)}
+            className="app-input"
+            style={{ marginBottom: '1rem' }}
+          />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); }}>
-              إلغاء
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <X size={14} aria-hidden /> إلغاء
+              </span>
             </button>
             <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
-              {isEditing ? 'تحديث' : 'حفظ'}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Save size={14} aria-hidden /> {isEditing ? 'تحديث' : 'حفظ'}
+              </span>
             </BusyButton>
           </div>
         </form>
@@ -187,20 +229,23 @@ const GovernoratesPage = () => {
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{gov.name}</h3>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ID: {gov.id.substring(0,8)}...</span>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 4 }}>
+                  الدولة: {gov.country || 'غير محددة'}
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_view') && (
-                  <button className="icon-btn" onClick={() => navigate(`/governorates/${gov.id}`)} title="عرض التفاصيل">
+                  <button type="button" className="icon-btn" onClick={() => navigate(`/governorates/${gov.id}`)} title="عرض التفاصيل">
                     <Eye size={16} color="var(--accent-color)" />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_edit') && (
-                  <button className="icon-btn" onClick={() => startEdit(gov)} title="تعديل">
+                  <button type="button" className="icon-btn" onClick={() => startEdit(gov)} title="تعديل">
                     <Edit2 size={16} />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_delete') && (
-                  <button className="icon-btn" onClick={() => setPendingDelete({ id: gov.id, name: gov.name })} title="حذف">
+                  <button type="button" className="icon-btn" onClick={() => setPendingDelete({ id: gov.id, name: gov.name })} title="حذف">
                     <Trash2 size={16} color="var(--danger-color)" />
                   </button>
                 )}
