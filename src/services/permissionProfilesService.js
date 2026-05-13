@@ -27,7 +27,8 @@ export async function savePermissionProfile(user, profileId, payload) {
       name: String(payload.name || '').trim(),
       pages: payload.pages && typeof payload.pages === 'object' ? payload.pages : {},
     },
-    merge: true,
+    // مهم: لا نستخدم merge هنا حتى تُحذف الصفحات/الإجراءات الملغاة فعلياً من الخريطة.
+    merge: false,
     userData: user || {},
   });
   return id;
