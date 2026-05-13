@@ -179,46 +179,53 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
   );
 }
 
-export default function ExplorationDynamicFieldBlock({ fields, values, onChange, storageUserId }) {
+export default function ExplorationDynamicFieldBlock({ fields, values, onChange, storageUserId, variant = 'default' }) {
   const [uploadingFieldId, setUploadingFieldId] = useState(null);
 
-  return (
-    <>
-      {fields.map((f) => {
-        const v = values[f.id];
-        const commonLabel = (
-          <label className="app-label">
-            {f.label}
-            {f.required ? ' *' : ''}
-          </label>
-        );
+  const cells = fields.map((f) => {
+    const wrap = (inner) =>
+      variant === 'sheet' ? (
+        <div key={f.id} className="exploration-field-sheet__row">
+          {inner}
+        </div>
+      ) : (
+        <React.Fragment key={f.id}>{inner}</React.Fragment>
+      );
 
-        if (f.fieldType === 'hidden') {
-          return null;
-        }
+    const v = values[f.id];
+    const commonLabel = (
+      <label className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__label' : ''}`}>
+        {f.label}
+        {f.required ? ' *' : ''}
+      </label>
+    );
 
-        if (f.fieldType === 'textarea' || f.fieldType === 'rich_text') {
-          return (
-            <React.Fragment key={f.id}>
-              {commonLabel}
-              <textarea
-                className="app-input exploration-form-grid__full"
-                style={{ minHeight: f.fieldType === 'rich_text' ? 120 : 72 }}
-                placeholder={f.placeholder || ''}
-                value={v ?? ''}
-                onChange={(e) => onChange(f.id, e.target.value)}
-              />
-            </React.Fragment>
-          );
-        }
+    if (f.fieldType === 'hidden') {
+      return null;
+    }
+
+    if (f.fieldType === 'textarea' || f.fieldType === 'rich_text') {
+      return wrap(
+        <>
+          {commonLabel}
+          <textarea
+            className={`app-input ${variant === 'sheet' ? 'exploration-field-sheet__input exploration-field-sheet__input--multiline' : 'exploration-form-grid__full'}`}
+            style={{ minHeight: f.fieldType === 'rich_text' ? 120 : 72 }}
+            placeholder={f.placeholder || ''}
+            value={v ?? ''}
+            onChange={(e) => onChange(f.id, e.target.value)}
+          />
+        </>
+      );
+    }
 
         if (f.fieldType === 'number' || f.fieldType === 'currency' || f.fieldType === 'percentage') {
           const step = f.fieldType === 'currency' ? '0.01' : f.fieldType === 'percentage' ? '0.1' : 'any';
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
               <input
-                className="app-input"
+                className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
                 inputMode="decimal"
                 step={step}
                 placeholder={f.placeholder || ''}
@@ -227,7 +234,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                 max={f.max != null ? f.max : undefined}
                 onChange={(e) => onChange(f.id, e.target.value.replace(/[^\d.-]/g, ''))}
               />
-            </React.Fragment>
+            </>
           );
         }
 
@@ -236,10 +243,10 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           const hi = f.max != null && Number.isFinite(f.max) ? f.max : 100;
           const n = Number(v);
           const cur = Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : lo;
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="exploration-field-sheet__range" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <input
                   type="range"
                   min={lo}
@@ -250,7 +257,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                 />
                 <span style={{ minWidth: 36, fontVariantNumeric: 'tabular-nums' }}>{cur}</span>
               </div>
-            </React.Fragment>
+            </>
           );
         }
 
@@ -259,10 +266,10 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           const hi = f.max != null && Number.isFinite(f.max) ? Math.min(10, f.max) : 5;
           const n = Number(v);
           const cur = Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : null;
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <div className="exploration-form-grid__full" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+              <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
                 {Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).map((star) => (
                   <button
                     key={star}
@@ -278,56 +285,54 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                   إلغاء التقييم
                 </button>
               </div>
-            </React.Fragment>
+            </>
           );
         }
 
         if (f.fieldType === 'date' || f.fieldType === 'time' || f.fieldType === 'datetime-local' || f.fieldType === 'month' || f.fieldType === 'week') {
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <input className="app-input" type={f.fieldType} value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)} />
-            </React.Fragment>
+              <input className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`} type={f.fieldType} value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)} />
+            </>
           );
         }
 
         if (f.fieldType === 'date_range') {
           const pair = v && typeof v === 'object' ? v : { from: '', to: '' };
-          return (
-            <React.Fragment key={f.id}>
-              <div className="exploration-form-grid__full" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div>
-                  <label className="app-label">
-                    {f.label} — من{f.required ? ' *' : ''}
-                  </label>
-                  <input
-                    className="app-input"
-                    type="date"
-                    value={pair.from || ''}
-                    onChange={(e) => onChange(f.id, { ...pair, from: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="app-label">
-                    {f.label} — إلى{f.required ? ' *' : ''}
-                  </label>
-                  <input
-                    className="app-input"
-                    type="date"
-                    value={pair.to || ''}
-                    onChange={(e) => onChange(f.id, { ...pair, to: e.target.value })}
-                  />
-                </div>
+          return wrap(
+            <div className={variant === 'sheet' ? 'exploration-field-sheet__subgrid' : 'exploration-form-grid__full'} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div>
+                <label className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__sublabel' : ''}`}>
+                  {f.label} — من{f.required ? ' *' : ''}
+                </label>
+                <input
+                  className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
+                  type="date"
+                  value={pair.from || ''}
+                  onChange={(e) => onChange(f.id, { ...pair, from: e.target.value })}
+                />
               </div>
-            </React.Fragment>
+              <div>
+                <label className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__sublabel' : ''}`}>
+                  {f.label} — إلى{f.required ? ' *' : ''}
+                </label>
+                <input
+                  className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
+                  type="date"
+                  value={pair.to || ''}
+                  onChange={(e) => onChange(f.id, { ...pair, to: e.target.value })}
+                />
+              </div>
+            </div>
           );
         }
 
         if (f.fieldType === 'dropdown') {
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <AppSelect searchable value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)}>
+              <AppSelect searchable className={variant === 'sheet' ? 'exploration-field-sheet__select' : ''} value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)}>
                 <option value="">-- اختر --</option>
                 {(f.options || []).map((opt) => (
                   <option key={opt} value={opt}>
@@ -335,34 +340,34 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                   </option>
                 ))}
               </AppSelect>
-            </React.Fragment>
+            </>
           );
         }
 
         if (f.fieldType === 'radio') {
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <div className="exploration-form-grid__full" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px' }}>
+              <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px' }}>
                 {(f.options || []).map((opt) => (
-                  <label key={opt} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                  <label key={opt} className="exploration-field-sheet__choice" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
                     <input type="radio" name={`dyn-${f.id}`} checked={v === opt} onChange={() => onChange(f.id, opt)} />
                     {opt}
                   </label>
                 ))}
               </div>
-            </React.Fragment>
+            </>
           );
         }
 
         if (f.fieldType === 'multi_select') {
           const arr = Array.isArray(v) ? v : [];
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <div className="exploration-form-grid__full" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {(f.options || []).map((opt) => (
-                  <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <label key={opt} className="exploration-field-sheet__choice" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <input
                       type="checkbox"
                       checked={arr.includes(opt)}
@@ -375,51 +380,47 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                   </label>
                 ))}
               </div>
-            </React.Fragment>
+            </>
           );
         }
 
         if (f.fieldType === 'yes_no') {
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <AppSelect value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)}>
+              <AppSelect className={variant === 'sheet' ? 'exploration-field-sheet__select' : ''} value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)}>
                 {yesNo.map((i) => (
                   <option key={i.value} value={i.value}>
                     {i.label}
                   </option>
                 ))}
               </AppSelect>
-            </React.Fragment>
+            </>
           );
         }
 
         if (f.fieldType === 'checkbox') {
-          return (
-            <React.Fragment key={f.id}>
-              <label className="app-label exploration-form-grid__full" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-                <input type="checkbox" checked={Boolean(v)} onChange={(e) => onChange(f.id, e.target.checked)} />
-                {f.label}
-                {f.required ? ' *' : ''}
-              </label>
-            </React.Fragment>
+          return wrap(
+            <label className={`app-label exploration-form-grid__full${variant === 'sheet' ? ' exploration-field-sheet__row--toggle' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', margin: 0 }}>
+              <input type="checkbox" checked={Boolean(v)} onChange={(e) => onChange(f.id, e.target.checked)} />
+              {f.label}
+              {f.required ? ' *' : ''}
+            </label>
           );
         }
 
         if (f.fieldType === 'switch') {
-          return (
-            <React.Fragment key={f.id}>
-              <div className="exploration-form-grid__full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                <span className="app-label" style={{ margin: 0 }}>
-                  {f.label}
-                  {f.required ? ' *' : ''}
-                </span>
-                <label className="exploration-switch">
-                  <input type="checkbox" checked={Boolean(v)} onChange={(e) => onChange(f.id, e.target.checked)} />
-                  <span className="exploration-switch__slider" />
-                </label>
-              </div>
-            </React.Fragment>
+          return wrap(
+            <div className={`exploration-form-grid__full${variant === 'sheet' ? ' exploration-field-sheet__row--toggle' : ''}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <span className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__label' : ''}`} style={{ margin: 0 }}>
+                {f.label}
+                {f.required ? ' *' : ''}
+              </span>
+              <label className="exploration-switch">
+                <input type="checkbox" checked={Boolean(v)} onChange={(e) => onChange(f.id, e.target.checked)} />
+                <span className="exploration-switch__slider" />
+              </label>
+            </div>
           );
         }
 
@@ -428,11 +429,11 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           const strVal = String(v || '').trim();
           const isHttp = strVal.startsWith('http://') || strVal.startsWith('https://');
           const isLegacyData = strVal.startsWith('data:');
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
               <input
-                className="app-input"
+                className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input exploration-field-sheet__input--file' : ''}`}
                 type="file"
                 accept={acceptForType(f.fieldType)}
                 disabled={Boolean(uploadingFieldId) || !storageUserId}
@@ -472,7 +473,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '6px 0 0' }}>جاري الرفع إلى Firebase Storage…</p>
               )}
               {isHttp && (
-                <div style={{ marginTop: 10 }} className="exploration-form-grid__full">
+                <div style={{ marginTop: 10 }} className={variant === 'sheet' ? 'exploration-field-sheet__media' : 'exploration-form-grid__full'}>
                   {f.fieldType === 'image' && (
                     <img src={strVal} alt="" style={{ maxWidth: '100%', maxHeight: 160, borderRadius: 8, border: '1px solid var(--border-color)' }} />
                   )}
@@ -488,54 +489,52 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                   يوجد مرفق قديم مخزّن داخل السجل (base64). يُفضّل إعادة الرفع ليُحفظ الرابط في Storage فقط.
                 </p>
               )}
-            </React.Fragment>
+            </>
           );
         }
 
         if (f.fieldType === 'color') {
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <input className="app-input" type="color" value={v || '#000000'} onChange={(e) => onChange(f.id, e.target.value)} style={{ height: 44, padding: 4 }} />
-            </React.Fragment>
+              <input className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input exploration-field-sheet__input--color' : ''}`} type="color" value={v || '#000000'} onChange={(e) => onChange(f.id, e.target.value)} style={{ height: 44, padding: 4 }} />
+            </>
           );
         }
 
         if (f.fieldType === 'location') {
           const pair = v && typeof v === 'object' ? v : { lat: '', lng: '' };
-          return (
-            <React.Fragment key={f.id}>
-              <div className="exploration-form-grid__full" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div>
-                  <label className="app-label">خط العرض (Lat){f.required ? ' *' : ''}</label>
-                  <input
-                    className="app-input"
-                    inputMode="decimal"
-                    placeholder="-13.254"
-                    value={pair.lat ?? ''}
-                    onChange={(e) => onChange(f.id, { ...pair, lat: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="app-label">خط الطول (Lng){f.required ? ' *' : ''}</label>
-                  <input
-                    className="app-input"
-                    inputMode="decimal"
-                    placeholder="34.301"
-                    value={pair.lng ?? ''}
-                    onChange={(e) => onChange(f.id, { ...pair, lng: e.target.value })}
-                  />
-                </div>
+          return wrap(
+            <div className={variant === 'sheet' ? 'exploration-field-sheet__subgrid' : 'exploration-form-grid__full'} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div>
+                <label className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__sublabel' : ''}`}>خط العرض (Lat){f.required ? ' *' : ''}</label>
+                <input
+                  className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
+                  inputMode="decimal"
+                  placeholder="-13.254"
+                  value={pair.lat ?? ''}
+                  onChange={(e) => onChange(f.id, { ...pair, lat: e.target.value })}
+                />
               </div>
-            </React.Fragment>
+              <div>
+                <label className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__sublabel' : ''}`}>خط الطول (Lng){f.required ? ' *' : ''}</label>
+                <input
+                  className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
+                  inputMode="decimal"
+                  placeholder="34.301"
+                  value={pair.lng ?? ''}
+                  onChange={(e) => onChange(f.id, { ...pair, lng: e.target.value })}
+                />
+              </div>
+            </div>
           );
         }
 
         if (f.fieldType === 'signature') {
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
-              <div className="exploration-form-grid__full">
+              <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'}>
                 <SignatureCanvas
                   value={v}
                   onChange={(data) => onChange(f.id, data)}
@@ -543,17 +542,17 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                   fieldId={f.id}
                 />
               </div>
-            </React.Fragment>
+            </>
           );
         }
 
         if (f.fieldType === 'tag') {
           const str = Array.isArray(v) ? v.join('، ') : '';
-          return (
-            <React.Fragment key={f.id}>
+          return wrap(
+            <>
               {commonLabel}
               <input
-                className="app-input"
+                className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
                 placeholder={f.placeholder || 'وسم1، وسم2'}
                 value={str}
                 onChange={(e) =>
@@ -566,7 +565,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                   )
                 }
               />
-            </React.Fragment>
+            </>
           );
         }
 
@@ -583,20 +582,20 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                     ? 'tel'
                     : 'text';
 
-        return (
-          <React.Fragment key={f.id}>
+        return wrap(
+          <>
             {commonLabel}
             <input
-              className="app-input"
+              className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
               type={inputType}
               autoComplete={f.fieldType === 'password' ? 'new-password' : undefined}
               placeholder={f.placeholder || ''}
               value={v ?? ''}
               onChange={(e) => onChange(f.id, e.target.value)}
             />
-          </React.Fragment>
+          </>
         );
-      })}
-    </>
-  );
+      });
+
+  return variant === 'sheet' ? <div className="exploration-field-sheet">{cells.filter(Boolean)}</div> : <>{cells.filter(Boolean)}</>;
 }
