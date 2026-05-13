@@ -219,6 +219,22 @@ const RegionDetailsPage = () => {
         if (supervisorIds.has(u.id)) return false;
         return matchesSearch && matchesRole;
     });
+    const assignRoleCounts = ASSIGN_ROLE_FILTER_ORDER.reduce((acc, rid) => {
+        const q = searchTerm.trim().toLowerCase();
+        const base = allUsers.filter((u) => {
+            const matchesSearch =
+                !q ||
+                u.displayName?.toLowerCase().includes(q) ||
+                u.email?.toLowerCase().includes(q);
+            return !supervisorIds.has(u.id) && matchesSearch;
+        });
+        if (rid === 'all') {
+            acc.all = base.length;
+            return acc;
+        }
+        acc[rid] = base.filter((u) => (u.role || 'unassigned') === rid).length;
+        return acc;
+    }, {});
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -322,7 +338,7 @@ const RegionDetailsPage = () => {
                               className={`role-filter-btn ${assignRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                               onClick={() => setAssignRoleFilter(rid)}
                             >
-                              {rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid}
+                              {(rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid)} ({assignRoleCounts[rid] || 0})
                             </button>
                           ))}
                         </div>

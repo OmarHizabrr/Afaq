@@ -150,6 +150,14 @@ const NotificationsPage = ({ user }) => {
     if (chatRoleFilter === 'all') return recipients;
     return recipients.filter((u) => (u.role || 'unassigned') === chatRoleFilter);
   }, [recipients, chatRoleFilter]);
+  const recipientRoleCounts = useMemo(() => {
+    const counts = { all: recipients.length };
+    recipients.forEach((u) => {
+      const rid = u.role || 'unassigned';
+      counts[rid] = (counts[rid] || 0) + 1;
+    });
+    return counts;
+  }, [recipients]);
 
   const markAllRead = useCallback(async () => {
     if (markAllRunningRef.current || notifications.length === 0) return;
@@ -499,7 +507,7 @@ const NotificationsPage = ({ user }) => {
                 className={`role-filter-btn ${composeRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                 onClick={() => setComposeRoleFilter(rid)}
               >
-                {rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid}
+                {(rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
               </button>
             ))}
           </div>
@@ -577,7 +585,7 @@ const NotificationsPage = ({ user }) => {
                 className={`role-filter-btn ${chatRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                 onClick={() => setChatRoleFilter(rid)}
               >
-                {rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid}
+                {(rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
               </button>
             ))}
           </div>

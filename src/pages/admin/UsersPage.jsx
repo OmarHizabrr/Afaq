@@ -69,6 +69,14 @@ const UsersPage = () => {
       })),
     []
   );
+  const usersRoleCounts = useMemo(() => {
+    const counts = { all: users.length };
+    users.forEach((u) => {
+      const rid = u.role || 'unassigned';
+      counts[rid] = (counts[rid] || 0) + 1;
+    });
+    return counts;
+  }, [users]);
   const visibleUsers = useMemo(() => {
     if (usersRoleFilter === 'all') return users;
     return users.filter((u) => (u.role || 'unassigned') === usersRoleFilter);
@@ -247,7 +255,7 @@ const UsersPage = () => {
             className={`role-filter-btn ${usersRoleFilter === opt.id ? 'role-filter-btn--active' : ''}`}
             onClick={() => setUsersRoleFilter(opt.id)}
           >
-            {opt.label}
+            {opt.label} ({usersRoleCounts[opt.id] || 0})
           </button>
         ))}
       </div>

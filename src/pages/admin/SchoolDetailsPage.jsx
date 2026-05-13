@@ -270,6 +270,31 @@ const SchoolDetailsPage = () => {
         const matchesRole = assignRoleFilter === 'all' || role === assignRoleFilter;
         return matchesSearch && matchesRole && !alreadyMember;
     });
+    const assignRoleCounts = ASSIGN_ROLE_FILTER_ORDER.reduce((acc, rid) => {
+      if (rid === 'all') {
+        const q = searchTerm.trim().toLowerCase();
+        acc.all = allUsers.filter((u) => {
+          const alreadyMember = staff.find((s) => s.id === u.id) || students.find((s) => s.id === u.id);
+          const matchesSearch =
+            !q ||
+            u.displayName?.toLowerCase().includes(q) ||
+            u.email?.toLowerCase().includes(q);
+          return !alreadyMember && matchesSearch;
+        }).length;
+        return acc;
+      }
+      const q = searchTerm.trim().toLowerCase();
+      acc[rid] = allUsers.filter((u) => {
+        const alreadyMember = staff.find((s) => s.id === u.id) || students.find((s) => s.id === u.id);
+        const role = u.role || 'unassigned';
+        const matchesSearch =
+          !q ||
+          u.displayName?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q);
+        return !alreadyMember && role === rid && matchesSearch;
+      }).length;
+      return acc;
+    }, {});
 
     const renderStatCard = (label, value, IconComponent, color) => (
       <div className="surface-card school-details-stat-card">
@@ -432,7 +457,7 @@ const SchoolDetailsPage = () => {
                               className={`role-filter-btn ${assignRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                               onClick={() => setAssignRoleFilter(rid)}
                             >
-                              {rid === 'all' ? 'الكل' : userRoleLabel(rid)}
+                              {(rid === 'all' ? 'الكل' : userRoleLabel(rid))} ({assignRoleCounts[rid] || 0})
                             </button>
                           ))}
                         </div>
