@@ -87,6 +87,18 @@ const RegionDetailsPage = () => {
         fetchRegionDetails();
     }, [fetchRegionDetails]);
 
+    useEffect(() => {
+        if (!assignMsg) return;
+        const t = setTimeout(() => setAssignMsg(''), 3500);
+        return () => clearTimeout(t);
+    }, [assignMsg]);
+
+    useEffect(() => {
+        if (!error) return;
+        const t = setTimeout(() => setError(''), 5000);
+        return () => clearTimeout(t);
+    }, [error]);
+
     const handleAssignSupervisor = async (userToAssign) => {
         if (!userToAssign || assigning || !id) return;
         setAssigning(true);
@@ -317,9 +329,39 @@ const RegionDetailsPage = () => {
                           <code style={{ fontSize: '0.75rem' }}>Mygroup/{'{'}userId{'}'}/Mygroup/{'{'}معرف_المنطقة{'}'}</code>. يظهر هنا جميع المستخدمين بما فيهم مدير النظام، باستثناء من عُيِّن مسبقاً لهذه المنطقة — يمكنك تعيين أكثر من مشرف دون إغلاق النافذة.
                         </p>
                         {assignMsg && (
-                          <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'var(--success-color)' }}>{assignMsg}</p>
+                          <div
+                            className="app-alert app-alert--success"
+                            style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
+                          >
+                            <span>{assignMsg}</span>
+                            <button
+                              type="button"
+                              className="icon-btn"
+                              title="إغلاق"
+                              onClick={() => setAssignMsg('')}
+                              style={{ width: 28, height: 28 }}
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
                         )}
-                        {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+                        {error && (
+                          <div
+                            className="app-alert app-alert--error"
+                            style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
+                          >
+                            <span>{error}</span>
+                            <button
+                              type="button"
+                              className="icon-btn"
+                              title="إغلاق"
+                              onClick={() => setError('')}
+                              style={{ width: 28, height: 28 }}
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        )}
 
                         <div className="md-field" style={{ borderRadius: '12px', marginBottom: '1rem' }}>
                             <Search size={18} color="var(--text-secondary)" aria-hidden />

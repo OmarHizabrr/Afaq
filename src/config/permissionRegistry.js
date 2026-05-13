@@ -66,6 +66,8 @@ export const PERMISSION_PAGES = [
       { id: 'village_new_muslim_edit', label: 'تعديل مهتدي / مسلم قديم' },
       { id: 'village_new_muslim_delete', label: 'حذف مهتدي / مسلم قديم' },
       { id: 'village_school_view', label: 'تفاصيل المدرسة من صفحة القرية' },
+      { id: 'village_default_school_set', label: 'تحديد المدرسة الافتراضية للقرية' },
+      { id: 'village_report_quick_add', label: 'فتح تقرير المدرسة الافتراضية من بطاقة/تفاصيل القرية' },
     ],
   },
   {
@@ -80,6 +82,7 @@ export const PERMISSION_PAGES = [
       { id: 'school_view', label: 'عرض التفاصيل' },
       { id: 'school_member_assign', label: 'إضافة/تعيين أعضاء المدرسة' },
       { id: 'school_member_view_profile', label: 'عرض ملفات أعضاء المدرسة' },
+      { id: 'school_report_create', label: 'إنشاء تقرير مدرسة' },
     ],
   },
   {

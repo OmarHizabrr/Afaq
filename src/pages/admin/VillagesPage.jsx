@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users } from 'lucide-react';
+import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -34,6 +34,8 @@ const VillagesPage = () => {
   const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
   /** @type {Record<string, { id: string, name: string }[]>} */
   const [schoolsByVillage, setSchoolsByVillage] = useState({});
+  const [defaultSchoolByVillage, setDefaultSchoolByVillage] = useState({});
+  const [savingDefaultSchoolForVillageId, setSavingDefaultSchoolForVillageId] = useState('');
   
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -192,6 +194,17 @@ const VillagesPage = () => {
         byVil[k].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
       });
       setSchoolsByVillage(byVil);
+      const defaults = {};
+      villagesRows.forEach((v) => {
+        const list = byVil[v.id] || [];
+        if (!list.length) {
+          defaults[v.id] = '';
+          return;
+        }
+        const valid = list.some((s) => s.id === v.defaultSchoolId);
+        defaults[v.id] = valid ? v.defaultSchoolId : list[0].id;
+      });
+      setDefaultSchoolByVillage(defaults);
 
       const grouped = {};
       newMuslimsDocs.forEach((doc) => {
@@ -229,6 +242,18 @@ const VillagesPage = () => {
     if (pageDataScope(PERMISSION_PAGE_IDS.villages) === DATA_SCOPE_MEMBERSHIP && membershipLoading) return;
     fetchData();
   }, [ready, membershipLoading, fetchData, pageDataScope]);
+
+  useEffect(() => {
+    if (!success) return;
+    const t = setTimeout(() => setSuccess(''), 3500);
+    return () => clearTimeout(t);
+  }, [success]);
+
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(''), 5000);
+    return () => clearTimeout(t);
+  }, [error]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -365,6 +390,28 @@ const VillagesPage = () => {
   const getRegionName = (regId) => {
     const reg = regions.find(r => r.id === regId);
     return reg ? reg.name : 'غير معروف';
+  };
+
+  const handleSaveDefaultSchool = async (vil, schoolId) => {
+    if (!vil?.id || !schoolId) return;
+    setSavingDefaultSchoolForVillageId(vil.id);
+    setError('');
+    try {
+      const api = FirestoreApi.Api;
+      await api.updateData({
+        docRef: api.getVillageDoc(vil.regionId, vil.id),
+        data: { defaultSchoolId: schoolId },
+      });
+      setVillages((prev) =>
+        prev.map((v) => (v.id === vil.id ? { ...v, defaultSchoolId: schoolId } : v))
+      );
+      setSuccess('تم حفظ المدرسة الافتراضية للقرية.');
+    } catch (err) {
+      console.error(err);
+      setError('تعذر حفظ المدرسة الافتراضية.');
+    } finally {
+      setSavingDefaultSchoolForVillageId('');
+    }
   };
 
   const syncVillageNewMuslimCounters = async (regionId, villageId, items) => {
@@ -580,8 +627,40 @@ const VillagesPage = () => {
           عرض محدود: القرى والمناطق والمهتدين الظاهرون مرتبطون بمجموعاتك (عضوية مدرسة أو منطقة).
         </div>
       )}
-      {error && <div className="app-alert app-alert--error villages-alert">{error}</div>}
-      {success && <div className="app-alert app-alert--success villages-alert">{success}</div>}
+      {error && (
+        <div
+          className="app-alert app-alert--error villages-alert"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
+        >
+          <span>{error}</span>
+          <button
+            type="button"
+            className="icon-btn"
+            title="إغلاق"
+            onClick={() => setError('')}
+            style={{ width: 28, height: 28 }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+      {success && (
+        <div
+          className="app-alert app-alert--success villages-alert"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
+        >
+          <span>{success}</span>
+          <button
+            type="button"
+            className="icon-btn"
+            title="إغلاق"
+            onClick={() => setSuccess('')}
+            style={{ width: 28, height: 28 }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Complex Add/Edit Modal */}
       <FormModal
@@ -739,6 +818,11 @@ const VillagesPage = () => {
         <div className="entity-grid entity-grid--lg">
           {villages.map((vil) => {
             const nmList = newMuslimsDocsByVillage[vil.id] || [];
+            const villageSchools = schoolsByVillage[vil.id] || [];
+            const defaultSchoolName =
+              villageSchools.find((s) => s.id === defaultSchoolByVillage[vil.id])?.name ||
+              villageSchools[0]?.name ||
+              '';
             const isBorn = (m) => normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN;
             const convertsList = nmList.filter((m) => !isBorn(m));
             const bornList = nmList.filter(isBorn);
@@ -763,6 +847,27 @@ const VillagesPage = () => {
               </div>
               
               <h3 className="villages-card__title">{vil.villageName}</h3>
+              {!!defaultSchoolName && (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    marginTop: '0.25rem',
+                    marginBottom: '0.35rem',
+                    padding: '0.25rem 0.55rem',
+                    borderRadius: 999,
+                    background: 'color-mix(in srgb, var(--accent-color) 14%, transparent)',
+                    color: 'var(--accent-color)',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                  }}
+                  title={`المدرسة الافتراضية: ${defaultSchoolName}`}
+                >
+                  <FileText size={12} />
+                  <span>الافتراضية: {defaultSchoolName}</span>
+                </div>
+              )}
               <p className="villages-card__subtitle">
                 المنطقة: {getRegionName(vil.regionId)}
               </p>
@@ -782,6 +887,85 @@ const VillagesPage = () => {
               <div className="villages-card__meta">
                 <span>جروب: {vil.groupName || '-'}</span>
                 <span>LTI: {vil.ltiName || '-'}</span>
+              </div>
+              <div
+                className="surface-card"
+                style={{
+                  marginTop: '0.85rem',
+                  padding: '0.75rem',
+                  borderRadius: '12px',
+                  display: 'grid',
+                  gap: '0.6rem',
+                }}
+              >
+                <strong style={{ fontSize: '0.92rem' }}>المدرسة الافتراضية للتقرير</strong>
+                {(schoolsByVillage[vil.id] || []).length === 0 ? (
+                  <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
+                    لا توجد مدارس مرتبطة بهذه القرية.
+                  </p>
+                ) : (
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                      gap: '0.5rem',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <AppSelect
+                      value={defaultSchoolByVillage[vil.id] || ''}
+                      onChange={(e) =>
+                        setDefaultSchoolByVillage((prev) => ({ ...prev, [vil.id]: e.target.value }))
+                      }
+                    >
+                      {villageSchools.map((sch) => (
+                        <option key={sch.id} value={sch.id}>
+                          {sch.name}
+                        </option>
+                      ))}
+                    </AppSelect>
+                    {can(PERMISSION_PAGE_IDS.villages, 'village_default_school_set') && (
+                      <BusyButton
+                        type="button"
+                        className="google-btn"
+                        style={{ width: 'auto', minHeight: '38px', padding: '0 12px' }}
+                        busy={savingDefaultSchoolForVillageId === vil.id}
+                        onClick={() => handleSaveDefaultSchool(vil, defaultSchoolByVillage[vil.id])}
+                      >
+                        حفظ الافتراضي
+                      </BusyButton>
+                    )}
+                    {can(PERMISSION_PAGE_IDS.villages, 'village_report_quick_add') && (
+                      <button
+                        type="button"
+                        className="google-btn google-btn--filled"
+                        style={{ width: '100%', minHeight: '38px', padding: '0 12px' }}
+                        disabled={!defaultSchoolByVillage[vil.id]}
+                        onClick={() => navigate(`/schools/${defaultSchoolByVillage[vil.id]}?composeReport=1`)}
+                        title={
+                          defaultSchoolByVillage[vil.id]
+                            ? 'إضافة تقرير للمدرسة الافتراضية'
+                            : 'لا توجد مدرسة افتراضية متاحة'
+                        }
+                      >
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <FileText size={14} /> إضافة تقرير المدرسة الافتراضية
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                )}
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  الافتراضي التلقائي هو أول مدرسة في القائمة، ويمكن تغييره يدويًا.
+                </p>
+                {!!defaultSchoolName && (
+                  <div
+                    className="app-alert app-alert--info"
+                    style={{ margin: 0, padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
+                  >
+                    المدرسة الافتراضية الحالية: <strong>{defaultSchoolName}</strong>
+                  </div>
+                )}
               </div>
 
               {(can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') ||
