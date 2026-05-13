@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText, Settings2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText, Settings2, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
+import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import {
@@ -24,11 +25,19 @@ import {
   syncVillageListingPersonStudentFields,
   deleteVillageListedPersonFully,
 } from '../../services/villageStudentEnrollment';
+import {
+  normalizeSchemaFields,
+  initialFieldValues,
+  validateFieldValues,
+  sanitizeFieldValuesForSave,
+} from '../../utils/explorationDynamicFields';
+import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
 
 const VillagesPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser } = perm;
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
   const [newMuslimsDocsByVillage, setNewMuslimsDocsByVillage] = useState({});
@@ -76,6 +85,117 @@ const VillagesPage = () => {
   const [muslimCategoryForm, setMuslimCategoryForm] = useState(normalizeMuslimCategory());
   /** عند تعديل القرية: المدارس التي يُسجَّل فيها كل سجل جديد من نموذج القرية */
   const [villageModalSchoolIds, setVillageModalSchoolIds] = useState([]);
+
+  /* ============================================================
+   * مودال «الإضافة من نموذج الاستكشاف»: ينشئ قرية مع حقول استكشاف
+   * ديناميكية + سجل المهتدين، ويحفظ كل ذلك في `villages`.
+   * ============================================================ */
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [explorationTypes, setExplorationTypes] = useState([]);
+  const [explorationTypesLoading, setExplorationTypesLoading] = useState(false);
+  const [expRegionId, setExpRegionId] = useState('');
+  const [expVillageName, setExpVillageName] = useState('');
+  const [expGroupName, setExpGroupName] = useState('');
+  const [expLtiName, setExpLtiName] = useState('');
+  const [expPopulationCount, setExpPopulationCount] = useState('');
+  const [expMuslimsCount, setExpMuslimsCount] = useState('');
+  const [expNonMuslimsCount, setExpNonMuslimsCount] = useState('');
+  const [expSelectedTypeId, setExpSelectedTypeId] = useState('');
+  const [expFieldValues, setExpFieldValues] = useState({});
+  const [expNewMuslims, setExpNewMuslims] = useState([]);
+  const [expMuslimName, setExpMuslimName] = useState('');
+  const [expMuslimType, setExpMuslimType] = useState('رجل');
+  const [expMuslimCategoryForm, setExpMuslimCategoryForm] = useState(normalizeMuslimCategory());
+  const [expSavingExploration, setExpSavingExploration] = useState(false);
+
+  const expSelectedType = useMemo(
+    () => explorationTypes.find((t) => t.id === expSelectedTypeId) || null,
+    [explorationTypes, expSelectedTypeId]
+  );
+  const expSchemaFields = useMemo(
+    () => normalizeSchemaFields(expSelectedType?.schemaFields || expSelectedType?.fields || []),
+    [expSelectedType]
+  );
+
+  const { mergeFields: mergeExplorationFields, loading: expOptionCachesLoading } = useExplorationOptionCaches(
+    isExploringAdding
+  );
+  const mergedExpFields = useMemo(
+    () => mergeExplorationFields(expSchemaFields, expFieldValues, actorUser),
+    [mergeExplorationFields, expSchemaFields, expFieldValues, actorUser]
+  );
+
+  const setExpDynamicValue = (fieldId, value) => {
+    setExpFieldValues((prev) => ({ ...prev, [fieldId]: value }));
+  };
+
+  const resetExplorationModalState = () => {
+    setExpRegionId('');
+    setExpVillageName('');
+    setExpGroupName('');
+    setExpLtiName('');
+    setExpPopulationCount('');
+    setExpMuslimsCount('');
+    setExpNonMuslimsCount('');
+    setExpFieldValues({});
+    setExpNewMuslims([]);
+    setExpMuslimName('');
+    setExpMuslimType('رجل');
+    setExpMuslimCategoryForm(normalizeMuslimCategory());
+  };
+
+  const loadExplorationTypesOnce = useCallback(async () => {
+    if (explorationTypes.length > 0 || explorationTypesLoading) return;
+    setExplorationTypesLoading(true);
+    try {
+      const api = FirestoreApi.Api;
+      const docs = await api.getDocuments(api.getExplorationTypesCollection());
+      const rows = docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
+      setExplorationTypes(rows);
+      if (rows.length > 0 && !expSelectedTypeId) {
+        setExpSelectedTypeId(rows[0].id);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('تعذر تحميل أنواع الاستكشاف.');
+    } finally {
+      setExplorationTypesLoading(false);
+    }
+  }, [explorationTypes.length, explorationTypesLoading, expSelectedTypeId]);
+
+  const openExplorationAddModal = async () => {
+    resetExplorationModalState();
+    setIsExploringAdding(true);
+    await loadExplorationTypesOnce();
+  };
+
+  useEffect(() => {
+    if (!isExploringAdding) return;
+    if (expSchemaFields.length === 0) {
+      setExpFieldValues({});
+      return;
+    }
+    setExpFieldValues((prev) => initialFieldValues(expSchemaFields, prev || {}));
+  }, [isExploringAdding, expSchemaFields]);
+
+  const addExpNewMuslimToList = () => {
+    if (!expMuslimName.trim()) return;
+    setExpNewMuslims((prev) => [
+      ...prev,
+      {
+        name: expMuslimName.trim(),
+        type: expMuslimType,
+        muslimCategory: normalizeMuslimCategory(expMuslimCategoryForm),
+      },
+    ]);
+    setExpMuslimName('');
+  };
+
+  const removeExpMuslimFromList = (index) => {
+    setExpNewMuslims((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const normalizeNewMuslims = (items) =>
     items
@@ -341,6 +461,71 @@ const VillagesPage = () => {
     }
   };
 
+  const handleExplorationAdd = async (e) => {
+    e.preventDefault();
+    if (!expVillageName.trim() || !expRegionId) {
+      setError('يرجى إدخال اسم القرية واختيار المنطقة.');
+      return;
+    }
+    const missing = validateFieldValues(expSchemaFields, expFieldValues);
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+
+    setExpSavingExploration(true);
+    setError('');
+    try {
+      const api = FirestoreApi.Api;
+      const selectedRegion = regions.find((r) => r.id === expRegionId);
+      const govId = selectedRegion ? selectedRegion.govId : null;
+
+      const sanitized =
+        expSchemaFields.length > 0 ? sanitizeFieldValuesForSave(expSchemaFields, expFieldValues) : {};
+
+      const normalizedNewMuslims = normalizeNewMuslims(expNewMuslims);
+      const counters = villageMuslimCounterFields(normalizedNewMuslims);
+
+      const newVilId = api.getNewId('villages');
+      const vilRef = api.getVillageDoc(expRegionId, newVilId);
+
+      await api.setData({
+        docRef: vilRef,
+        data: {
+          villageName: expVillageName.trim(),
+          groupName: expGroupName.trim(),
+          ltiName: expLtiName.trim(),
+          regionId: expRegionId,
+          govId,
+          populationCount: parseInt(expPopulationCount, 10) || 0,
+          muslimsCount: parseInt(expMuslimsCount, 10) || 0,
+          nonMuslimsCount: parseInt(expNonMuslimsCount, 10) || 0,
+          explorationTypeId: expSelectedType?.id || '',
+          explorationTypeName: expSelectedType?.name || '',
+          explorationFieldValues: sanitized,
+          ...counters,
+        },
+        userData: actorUser || {},
+      });
+
+      await syncVillageNewMuslims(api, newVilId, normalizedNewMuslims, []);
+
+      setIsExploringAdding(false);
+      resetExplorationModalState();
+      setSuccess('تمت إضافة القرية من نموذج الاستكشاف بنجاح.');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      if (err?.code === 'NO_SCHOOL_IN_VILLAGE') {
+        setError('لا توجد مدرسة في هذه القرية لتسجيل المهتدين/المسلمين القدامى كطلاب. أضف مدرسة أولاً.');
+      } else {
+        setError('حدث خطأ أثناء الحفظ.');
+      }
+    } finally {
+      setExpSavingExploration(false);
+    }
+  };
+
   const handleEditClick = (vil) => {
     setNmQuickVillageId(null);
     cancelNmQuickEdit();
@@ -599,26 +784,37 @@ const VillagesPage = () => {
     <div>
       <PageHeader icon={Home} title="إدارة القرى" subtitle="البيانات الديموغرافية والمجموعات">
         {can(PERMISSION_PAGE_IDS.villages, 'village_add') && (
-          <button
-            type="button"
-            className="google-btn google-btn--toolbar"
-            onClick={() => {
-              setIsAdding(true);
-              setIsEditing(null);
-              setSelectedRegId('');
-              setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
-              setNewMuslims([]);
-              setMuslimName('');
-              setMuslimType('رجل');
-              setMuslimCategoryForm(normalizeMuslimCategory());
-              setVillageModalSchoolIds([]);
-              setNmQuickVillageId(null);
-              cancelNmQuickEdit();
-            }}
-          >
-            <Plus size={18} />
-            <span>إضافة قرية جديدة</span>
-          </button>
+          <>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => {
+                setIsAdding(true);
+                setIsEditing(null);
+                setSelectedRegId('');
+                setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
+                setNewMuslims([]);
+                setMuslimName('');
+                setMuslimType('رجل');
+                setMuslimCategoryForm(normalizeMuslimCategory());
+                setVillageModalSchoolIds([]);
+                setNmQuickVillageId(null);
+                cancelNmQuickEdit();
+              }}
+            >
+              <Plus size={18} />
+              <span>إضافة قرية جديدة</span>
+            </button>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={openExplorationAddModal}
+              title="فتح نموذج استكشاف لإدخال قرية جديدة"
+            >
+              <Compass size={18} />
+              <span>إضافة من نموذج الاستكشاف</span>
+            </button>
+          </>
         )}
       </PageHeader>
 
@@ -805,6 +1001,252 @@ const VillagesPage = () => {
             </BusyButton>
           </div>
           </form>
+      </FormModal>
+
+      {/* Exploration-driven Add Modal — يحفظ القرية في `villages` مع explorationFieldValues */}
+      <FormModal
+        open={isExploringAdding}
+        title="إضافة قرية من نموذج الاستكشاف"
+        size="lg"
+        onClose={() => setIsExploringAdding(false)}
+      >
+        <form onSubmit={handleExplorationAdd} className="villages-form">
+          {explorationTypesLoading ? (
+            <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+              جاري تحميل أنواع الاستكشاف…
+            </div>
+          ) : explorationTypes.length === 0 ? (
+            <div className="app-alert app-alert--warning" style={{ marginBottom: '0.75rem' }}>
+              لا توجد أنواع استكشاف معرَّفة. أضف نوعاً من «أنواع الاستكشاف» قبل استخدام هذا النموذج.
+            </div>
+          ) : (
+            <div
+              className="app-field app-field--grow"
+              style={{ marginBottom: '0.75rem' }}
+            >
+              <label className="app-label">نوع الاستكشاف</label>
+              <AppSelect
+                searchable
+                value={expSelectedTypeId}
+                onChange={(e) => setExpSelectedTypeId(e.target.value)}
+              >
+                {explorationTypes.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name || t.id}
+                  </option>
+                ))}
+              </AppSelect>
+              {expSelectedType?.description && (
+                <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  {expSelectedType.description}
+                </p>
+              )}
+            </div>
+          )}
+
+          <h3 className="villages-form__title">البيانات الأساسية للقرية</h3>
+
+          <div className="villages-form__grid">
+            <div className="app-field app-field--grow">
+              <label className="app-label">المنطقة التابعة لها</label>
+              <AppSelect
+                searchable
+                value={expRegionId}
+                onChange={(e) => setExpRegionId(e.target.value)}
+                required
+              >
+                <option value="">-- اختر المنطقة --</option>
+                {regions.map((reg) => (
+                  <option key={reg.id} value={reg.id}>{reg.name}</option>
+                ))}
+              </AppSelect>
+            </div>
+            <div className="app-field app-field--grow">
+              <label className="app-label">اسم القرية</label>
+              <input
+                type="text"
+                value={expVillageName}
+                onChange={(e) => setExpVillageName(e.target.value)}
+                className="app-input"
+                required
+              />
+            </div>
+            <div className="app-field app-field--grow">
+              <label className="app-label">اسم الجروب</label>
+              <input
+                type="text"
+                value={expGroupName}
+                onChange={(e) => setExpGroupName(e.target.value)}
+                className="app-input"
+              />
+            </div>
+            <div className="app-field app-field--grow">
+              <label className="app-label">اسم الـ LTI</label>
+              <input
+                type="text"
+                value={expLtiName}
+                onChange={(e) => setExpLtiName(e.target.value)}
+                className="app-input"
+              />
+            </div>
+          </div>
+
+          <div className="villages-form__grid villages-form__grid--stats">
+            <div className="app-field app-field--grow">
+              <label className="app-label">إجمالي السكان</label>
+              <input
+                type="number"
+                min="0"
+                value={expPopulationCount}
+                onChange={(e) => setExpPopulationCount(e.target.value)}
+                className="app-input"
+              />
+            </div>
+            <div className="app-field app-field--grow">
+              <label className="app-label">عدد المسلمين</label>
+              <input
+                type="number"
+                min="0"
+                value={expMuslimsCount}
+                onChange={(e) => setExpMuslimsCount(e.target.value)}
+                className="app-input"
+              />
+            </div>
+            <div className="app-field app-field--grow">
+              <label className="app-label">عدد غير المسلمين</label>
+              <input
+                type="number"
+                min="0"
+                value={expNonMuslimsCount}
+                onChange={(e) => setExpNonMuslimsCount(e.target.value)}
+                className="app-input"
+              />
+            </div>
+          </div>
+
+          {expSchemaFields.length > 0 && (
+            <>
+              <hr className="villages-form__divider" />
+              <h3 className="villages-form__title">
+                حقول النوع: {expSelectedType?.name || ''}
+              </h3>
+              {expOptionCachesLoading && (
+                <p style={{ margin: '0 0 8px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  جاري تحميل قوائم البيانات من المنصة…
+                </p>
+              )}
+              <div className="exploration-modal-flow">
+                <ExplorationDynamicFieldBlock
+                  variant="sheet"
+                  fields={mergedExpFields}
+                  values={expFieldValues}
+                  onChange={setExpDynamicValue}
+                  storageUserId={storageUserId}
+                  actorUser={actorUser}
+                />
+              </div>
+            </>
+          )}
+
+          <hr className="villages-form__divider" />
+
+          <div className="villages-form__head-row">
+            <h3 className="villages-form__title villages-form__title--inline">
+              سجل المهتدين والمسلمين القدامى (يُسجَّلون كطلاب في المدارس التي تختارها)
+            </h3>
+            <div className="villages-form__counter">الإجمالي: {expNewMuslims.length}</div>
+          </div>
+
+          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+            يتم تسجيل المهتدين/المسلمين القدامى كطلاب بعد إنشاء القرية. اربط المدارس بهذه القرية لتُسجَّل الأسماء فيها
+            تلقائياً. عند عدم وجود مدرسة، تُسجَّل أسماؤهم كأفراد قرية فقط.
+          </div>
+
+          <div className="villages-form__new-muslim-row">
+            <div className="app-field app-field--grow">
+              <label className="app-label">الاسم</label>
+              <input
+                type="text"
+                value={expMuslimName}
+                onChange={(e) => setExpMuslimName(e.target.value)}
+                className="app-input"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addExpNewMuslimToList())}
+              />
+            </div>
+            <div className="app-field villages-form__new-muslim-type">
+              <label className="app-label">النوع</label>
+              <AppSelect
+                searchable
+                value={expMuslimType}
+                onChange={(e) => setExpMuslimType(e.target.value)}
+              >
+                <option value="رجل">رجل</option>
+                <option value="امرأة">امرأة</option>
+                <option value="طفل">طفل</option>
+              </AppSelect>
+            </div>
+            <div className="app-field villages-form__new-muslim-type">
+              <label className="app-label">التصنيف</label>
+              <AppSelect
+                searchable
+                value={expMuslimCategoryForm}
+                onChange={(e) => setExpMuslimCategoryForm(normalizeMuslimCategory(e.target.value))}
+              >
+                <option value="convert">مهتد جديد</option>
+                <option value="born">مسلم قديم</option>
+              </AppSelect>
+            </div>
+            <button
+              type="button"
+              onClick={addExpNewMuslimToList}
+              className="google-btn google-btn--toolbar villages-form__new-muslim-btn"
+            >
+              <UserPlus size={16} /> إضافة
+            </button>
+          </div>
+
+          {expNewMuslims.length > 0 && (
+            <div className="villages-form__new-muslims-list">
+              {expNewMuslims.map((m, index) => (
+                <div
+                  key={index}
+                  className={`villages-form__new-muslims-item ${index !== expNewMuslims.length - 1 ? 'villages-form__new-muslims-item--with-border' : ''}`}
+                >
+                  <span className="villages-form__new-muslims-name">
+                    {m.name} — <span className="villages-form__new-muslims-type">{m.type}</span>
+                    {' '}
+                    <span className="villages-form__new-muslims-type" style={{ opacity: 0.85 }}>
+                      ({normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN ? 'مسلم قديم' : 'مهتد'})
+                    </span>
+                  </span>
+                  <X
+                    size={16}
+                    color="var(--danger-color)"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => removeExpMuslimFromList(index)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="villages-form__actions">
+            <button
+              type="button"
+              onClick={() => setIsExploringAdding(false)}
+              className="google-btn villages-form__action-btn"
+            >
+              إلغاء
+            </button>
+            <BusyButton
+              type="submit"
+              busy={expSavingExploration}
+              className="google-btn google-btn--filled villages-form__action-btn villages-form__action-btn--primary"
+            >
+              حفظ القرية
+            </BusyButton>
+          </div>
+        </form>
       </FormModal>
 
       {/* Villages List */}
