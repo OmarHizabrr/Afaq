@@ -410,11 +410,11 @@ const StudentManagementPage = () => {
               placeholder="بحث بالاسم أو البريد أو الارتباط..."
             />
           </div>
-          <AppSelect className="student-management-filters__select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
+          <AppSelect searchable className="student-management-filters__select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
             <option value="">كل المدارس</option>
             {schoolOptions.map((s) => <option key={s} value={s}>{s}</option>)}
           </AppSelect>
-          <AppSelect className="student-management-filters__select" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)}>
+          <AppSelect searchable className="student-management-filters__select" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)}>
             <option value="">كل المناطق</option>
             {regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}
           </AppSelect>

@@ -237,13 +237,13 @@ const SchoolsPage = () => {
       >
         <form onSubmit={handleAdd} className="schools-form">
           <label className="app-label">تصفية حسب المنطقة</label>
-          <AppSelect value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="schools-form__field-gap">
+          <AppSelect searchable value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="schools-form__field-gap">
             <option value="">-- كل المناطق --</option>
             {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
           </AppSelect>
 
           <label className="app-label">القرية (مطلوب)</label>
-          <AppSelect value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="schools-form__field-gap" required>
+          <AppSelect searchable value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="schools-form__field-gap" required>
             <option value="">-- اختر القرية --</option>
             {filteredVillages.map(v => <option key={v.id} value={v.id}>{v.villageName}</option>)}
           </AppSelect>
@@ -252,7 +252,7 @@ const SchoolsPage = () => {
           <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder="مثال: مدرسة النور" />
 
           <label className="app-label">نوع المدرسة (مطلوب)</label>
-          <AppSelect
+          <AppSelect searchable
             value={schoolLevel}
             onChange={(e) => setSchoolLevel(e.target.value)}
             className="schools-form__field-gap"

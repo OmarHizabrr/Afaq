@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2, Plus, Printer, Edit2, RotateCcw, Save } from 'lucide-react';
+import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2, Plus, Printer, Edit2, RotateCcw, Save, Square, CheckSquare } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import BusyButton from '../../components/BusyButton';
+import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
@@ -55,6 +56,13 @@ const safeHtml = (value) =>
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+
+const ReportField = ({ label, children }) => (
+  <label className="report-field">
+    <span className="report-field__label">{label}</span>
+    {children}
+  </label>
+);
 
 const SchoolDetailsPage = () => {
     const { id } = useParams();
@@ -403,7 +411,7 @@ const SchoolDetailsPage = () => {
         arrivalTime: formatTimeInput(now),
         departureTime: '',
         totalStudents: students.length,
-        presentCount: '',
+        presentCount: students.length,
         absenceReview: '',
         studentLevel: 'جيد',
         curriculumProgress: 'جيد',
@@ -472,7 +480,7 @@ const SchoolDetailsPage = () => {
         arrivalTime: rep.arrivalTime || '',
         departureTime: rep.departureTime || '',
         totalStudents: rep.totalStudents ?? students.length,
-        presentCount: rep.presentCount ?? '',
+        presentCount: rep.presentCount ?? Math.max(Number(rep.totalStudents ?? students.length) - Number((rep.absentStudents || []).length), 0),
         absenceReview: rep.absenceReview || '',
         studentLevel: rep.studentLevel || 'جيد',
         curriculumProgress: rep.curriculumProgress || 'جيد',
@@ -498,6 +506,23 @@ const SchoolDetailsPage = () => {
       setReportSuccess('');
       setIsReportModalOpen(true);
     };
+
+    const updateReportAbsences = useCallback((nextAbsentIds) => {
+      setReportForm((p) => {
+        const total = Number(p.totalStudents || 0);
+        return {
+          ...p,
+          absentStudentIds: nextAbsentIds,
+          presentCount: Math.max(total - nextAbsentIds.length, 0),
+        };
+      });
+    }, []);
+
+    const toggleAllAbsentStudents = useCallback(() => {
+      const allIds = students.map((s) => s.id);
+      const allSelected = allIds.length > 0 && reportForm.absentStudentIds.length === allIds.length;
+      updateReportAbsences(allSelected ? [] : allIds);
+    }, [students, reportForm.absentStudentIds.length, updateReportAbsences]);
 
     const toggleTeacherSelection = (teacherId) => {
       setReportForm((prev) => {
@@ -1261,9 +1286,13 @@ const SchoolDetailsPage = () => {
                     </button>
                   </div>
                   <div style={{ display: 'grid', gap: '0.75rem', maxHeight: '68vh', overflowY: 'auto', paddingInlineEnd: '0.25rem' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.5rem' }}>
-                      <input className="app-input" value={reportForm.reportTitle} onChange={(e) => setReportForm((p) => ({ ...p, reportTitle: e.target.value }))} placeholder="عنوان التقرير" />
-                      <input className="app-input" value={reportForm.groupName} onChange={(e) => setReportForm((p) => ({ ...p, groupName: e.target.value }))} placeholder="اسم المدرسة/الجروب" />
+                    <div className="report-field-grid report-field-grid--2">
+                      <ReportField label="عنوان التقرير">
+                        <input className="app-input" value={reportForm.reportTitle} onChange={(e) => setReportForm((p) => ({ ...p, reportTitle: e.target.value }))} placeholder="عنوان التقرير" />
+                      </ReportField>
+                      <ReportField label="اسم المدرسة/الجروب">
+                        <input className="app-input" value={reportForm.groupName} onChange={(e) => setReportForm((p) => ({ ...p, groupName: e.target.value }))} placeholder="اسم المدرسة/الجروب" />
+                      </ReportField>
                     </div>
                     <div className="app-alert app-alert--info" style={{ margin: 0 }}>
                       اختيار المعلمين (يمكن اختيار أكثر من معلم) + تعديل أرقام الهاتف.
@@ -1281,62 +1310,104 @@ const SchoolDetailsPage = () => {
                     <div className="app-alert app-alert--info" style={{ margin: 0 }}>
                       الحقول الجغرافية تُجلب تلقائيا من: المدرسة ← القرية ← المنطقة ← المحافظة.
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      <input className="app-input" value={reportForm.village} readOnly placeholder="القرية" />
-                      <input className="app-input" value={geoDefaults.regionName} readOnly placeholder="المنطقة" />
-                      <input className="app-input" value={reportForm.governorate} readOnly placeholder="المحافظة" />
-                      <input className="app-input" value={reportForm.country} readOnly placeholder="الدولة" />
-                      <select className="app-input" value={reportForm.day} onChange={(e) => setReportForm((p) => ({ ...p, day: e.target.value }))}>
-                        {DAY_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
-                      </select>
-                      <input className="app-input" type="date" value={reportForm.date} onChange={(e) => setReportForm((p) => ({ ...p, date: e.target.value }))} />
-                      <input className="app-input" type="time" value={reportForm.arrivalTime} onChange={(e) => setReportForm((p) => ({ ...p, arrivalTime: e.target.value }))} />
-                      <input className="app-input" type="time" value={reportForm.departureTime} onChange={(e) => setReportForm((p) => ({ ...p, departureTime: e.target.value }))} />
-                      <input className="app-input" type="number" min="0" value={reportForm.totalStudents} onChange={(e) => setReportForm((p) => ({ ...p, totalStudents: e.target.value }))} placeholder="عدد الطلاب المسجلين" />
-                      <input className="app-input" type="number" min="0" value={reportForm.presentCount} onChange={(e) => setReportForm((p) => ({ ...p, presentCount: e.target.value }))} placeholder="عدد الحضور" />
+                    <div className="report-field-grid report-field-grid--2">
+                      <ReportField label="القرية"><input className="app-input" value={reportForm.village} readOnly placeholder="القرية" /></ReportField>
+                      <ReportField label="المنطقة"><input className="app-input" value={geoDefaults.regionName} readOnly placeholder="المنطقة" /></ReportField>
+                      <ReportField label="المحافظة"><input className="app-input" value={reportForm.governorate} readOnly placeholder="المحافظة" /></ReportField>
+                      <ReportField label="الدولة"><input className="app-input" value={reportForm.country} readOnly placeholder="الدولة" /></ReportField>
+                      <ReportField label="اليوم">
+                        <AppSelect searchable value={reportForm.day} onChange={(e) => setReportForm((p) => ({ ...p, day: e.target.value }))}>
+                          {DAY_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
+                        </AppSelect>
+                      </ReportField>
+                      <ReportField label="التاريخ"><input className="app-input" type="date" value={reportForm.date} onChange={(e) => setReportForm((p) => ({ ...p, date: e.target.value }))} /></ReportField>
+                      <ReportField label="وقت الحضور"><input className="app-input" type="time" value={reportForm.arrivalTime} onChange={(e) => setReportForm((p) => ({ ...p, arrivalTime: e.target.value }))} /></ReportField>
+                      <ReportField label="وقت المغادرة"><input className="app-input" type="time" value={reportForm.departureTime} onChange={(e) => setReportForm((p) => ({ ...p, departureTime: e.target.value }))} /></ReportField>
+                      <ReportField label="عدد الطلاب المسجلين">
+                        <input
+                          className="app-input"
+                          type="number"
+                          min="0"
+                          value={reportForm.totalStudents}
+                          onChange={(e) =>
+                            setReportForm((p) => {
+                              const total = Math.max(Number(e.target.value || 0), 0);
+                              return {
+                                ...p,
+                                totalStudents: total,
+                                presentCount: Math.max(total - p.absentStudentIds.length, 0),
+                              };
+                            })
+                          }
+                          placeholder="عدد الطلاب المسجلين"
+                        />
+                      </ReportField>
+                      <ReportField label="عدد الحضور (تلقائي)">
+                        <input className="app-input" type="number" min="0" value={reportForm.presentCount} readOnly placeholder="عدد الحضور" />
+                      </ReportField>
                     </div>
                     <input className="app-input" value={reportForm.absenceReview} onChange={(e) => setReportForm((p) => ({ ...p, absenceReview: e.target.value }))} placeholder="مراجعة الغياب" />
                     <div className="app-alert app-alert--info" style={{ margin: 0 }}>تعليم الغائبين من طلاب المدرسة الموجودة في النظام:</div>
+                    <button
+                      type="button"
+                      className={`icon-btn ${students.length > 0 && reportForm.absentStudentIds.length === students.length ? 'icon-btn--active' : ''}`}
+                      title={students.length > 0 && reportForm.absentStudentIds.length === students.length ? 'إلغاء تحديد الكل' : 'تحديد الكل كغائب'}
+                      onClick={toggleAllAbsentStudents}
+                      style={{ width: 'fit-content', minWidth: 42, paddingInline: 12, gap: 8 }}
+                    >
+                      {students.length > 0 && reportForm.absentStudentIds.length === students.length ? <CheckSquare size={16} /> : <Square size={16} />}
+                      <span style={{ fontSize: '0.85rem' }}>
+                        {students.length > 0 && reportForm.absentStudentIds.length === students.length ? 'إلغاء تحديد الكل' : 'تحديد الكل'}
+                      </span>
+                    </button>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: '0.5rem' }}>
                       {students.map((s) => (
                         <label key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                           <input
                             type="checkbox"
                             checked={reportForm.absentStudentIds.includes(s.id)}
-                            onChange={(e) =>
-                              setReportForm((p) => ({
-                                ...p,
-                                absentStudentIds: e.target.checked
-                                  ? [...p.absentStudentIds, s.id]
-                                  : p.absentStudentIds.filter((idVal) => idVal !== s.id),
-                              }))
-                            }
+                            onChange={(e) => {
+                              const next = e.target.checked
+                                ? [...new Set([...reportForm.absentStudentIds, s.id])]
+                                : reportForm.absentStudentIds.filter((idVal) => idVal !== s.id);
+                              updateReportAbsences(next);
+                            }}
                           />
                           <span>{s.displayName}</span>
                         </label>
                       ))}
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      <select className="app-input" value={reportForm.studentLevel} onChange={(e) => setReportForm((p) => ({ ...p, studentLevel: e.target.value }))}>
-                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                      </select>
-                      <select className="app-input" value={reportForm.curriculumProgress} onChange={(e) => setReportForm((p) => ({ ...p, curriculumProgress: e.target.value }))}>
-                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                      </select>
-                      <select className="app-input" value={reportForm.schoolEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, schoolEvaluation: e.target.value }))}>
-                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                      </select>
-                      <select className="app-input" value={reportForm.teacherEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, teacherEvaluation: e.target.value }))}>
-                        {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                      </select>
-                      <select className="app-input" value={reportForm.marketDone} onChange={(e) => setReportForm((p) => ({ ...p, marketDone: e.target.value }))}>
-                        <option value="">تعمل السوق؟</option>
-                        <option value="نعم">نعم</option>
-                        <option value="لا">لا</option>
-                      </select>
-                      <input className="app-input" type="number" min="0" value={reportForm.mealsCount} onChange={(e) => setReportForm((p) => ({ ...p, mealsCount: e.target.value }))} placeholder="عدد الوجبات" />
-                      <input className="app-input" value={reportForm.supervisorName} onChange={(e) => setReportForm((p) => ({ ...p, supervisorName: e.target.value }))} placeholder="المشرف" />
-                      <input className="app-input" value={reportForm.projectsOfficerName} onChange={(e) => setReportForm((p) => ({ ...p, projectsOfficerName: e.target.value }))} placeholder="مسؤول المشاريع" />
+                    <div className="report-field-grid report-field-grid--2">
+                      <ReportField label="مستوى الطلاب">
+                        <AppSelect searchable value={reportForm.studentLevel} onChange={(e) => setReportForm((p) => ({ ...p, studentLevel: e.target.value }))}>
+                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                        </AppSelect>
+                      </ReportField>
+                      <ReportField label="السير على المنهج">
+                        <AppSelect searchable value={reportForm.curriculumProgress} onChange={(e) => setReportForm((p) => ({ ...p, curriculumProgress: e.target.value }))}>
+                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                        </AppSelect>
+                      </ReportField>
+                      <ReportField label="تقييم المدرسة">
+                        <AppSelect searchable value={reportForm.schoolEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, schoolEvaluation: e.target.value }))}>
+                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                        </AppSelect>
+                      </ReportField>
+                      <ReportField label="تقييم المدرس">
+                        <AppSelect searchable value={reportForm.teacherEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, teacherEvaluation: e.target.value }))}>
+                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
+                        </AppSelect>
+                      </ReportField>
+                      <ReportField label="تعمل السوق؟">
+                        <AppSelect searchable value={reportForm.marketDone} onChange={(e) => setReportForm((p) => ({ ...p, marketDone: e.target.value }))}>
+                          <option value="">غير محدد</option>
+                          <option value="نعم">نعم</option>
+                          <option value="لا">لا</option>
+                        </AppSelect>
+                      </ReportField>
+                      <ReportField label="عدد الوجبات"><input className="app-input" type="number" min="0" value={reportForm.mealsCount} onChange={(e) => setReportForm((p) => ({ ...p, mealsCount: e.target.value }))} placeholder="عدد الوجبات" /></ReportField>
+                      <ReportField label="المشرف"><input className="app-input" value={reportForm.supervisorName} onChange={(e) => setReportForm((p) => ({ ...p, supervisorName: e.target.value }))} placeholder="المشرف" /></ReportField>
+                      <ReportField label="مسؤول المشاريع"><input className="app-input" value={reportForm.projectsOfficerName} onChange={(e) => setReportForm((p) => ({ ...p, projectsOfficerName: e.target.value }))} placeholder="مسؤول المشاريع" /></ReportField>
                     </div>
                     <div className="app-alert app-alert--info" style={{ margin: 0 }}>
                       مواد التقرير (من المناهج `curriculum`):

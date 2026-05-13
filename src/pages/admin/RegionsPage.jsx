@@ -185,7 +185,7 @@ const RegionsPage = () => {
         onClose={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}
       >
         <form onSubmit={isEditing ? handleEdit : handleAdd}>
-          <AppSelect
+          <AppSelect searchable
             value={selectedGovId}
             onChange={(e) => setSelectedGovId(e.target.value)}
             className="app-select"

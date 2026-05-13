@@ -334,7 +334,7 @@ const UsersPage = () => {
             {can(PERMISSION_PAGE_IDS.users, 'user_edit_role') && (
               <div className="users-modal__field">
                 <label className="app-label">الدور في النظام</label>
-                <AppSelect
+                <AppSelect searchable
                   value={selectedRole}
                   onChange={(e) => {
                     const v = e.target.value;
@@ -359,7 +359,7 @@ const UsersPage = () => {
               <label className="app-label">
                 نوع الصلاحيات
               </label>
-              <AppSelect
+              <AppSelect searchable
                 value={selectedPermissionProfileId}
                 onChange={e => setSelectedPermissionProfileId(e.target.value)}
                 className="app-select"
@@ -467,7 +467,7 @@ const UsersPage = () => {
 
             <div className="users-modal__field">
               <label className="app-label">الدور في النظام</label>
-              <AppSelect
+              <AppSelect searchable
                 value={newUserRole}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -489,7 +489,7 @@ const UsersPage = () => {
             </div>
             <div className="users-modal__field">
               <label className="app-label">نوع الصلاحيات</label>
-              <AppSelect
+              <AppSelect searchable
                 value={newUserPermissionProfileId}
                 onChange={(e) => setNewUserPermissionProfileId(e.target.value)}
                 className="app-select"

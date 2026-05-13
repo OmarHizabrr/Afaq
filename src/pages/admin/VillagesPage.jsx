@@ -675,7 +675,7 @@ const VillagesPage = () => {
           <div className="villages-form__grid">
             <div className="app-field app-field--grow">
               <label className="app-label">المنطقة التابعة لها</label>
-              <AppSelect value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} required>
+              <AppSelect searchable value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} required>
                 <option value="">-- اختر المنطقة --</option>
                 {regions.map(reg => (
                   <option key={reg.id} value={reg.id}>{reg.name} ({getRegionName(reg.id)})</option> // Simplified
@@ -757,7 +757,7 @@ const VillagesPage = () => {
             </div>
             <div className="app-field villages-form__new-muslim-type">
               <label className="app-label">النوع</label>
-              <AppSelect value={muslimType} onChange={(e) => setMuslimType(e.target.value)}>
+              <AppSelect searchable value={muslimType} onChange={(e) => setMuslimType(e.target.value)}>
                 <option value="رجل">رجل</option>
                 <option value="امرأة">امرأة</option>
                 <option value="طفل">طفل</option>
@@ -765,7 +765,7 @@ const VillagesPage = () => {
             </div>
             <div className="app-field villages-form__new-muslim-type">
               <label className="app-label">التصنيف</label>
-              <AppSelect value={muslimCategoryForm} onChange={(e) => setMuslimCategoryForm(normalizeMuslimCategory(e.target.value))}>
+              <AppSelect searchable value={muslimCategoryForm} onChange={(e) => setMuslimCategoryForm(normalizeMuslimCategory(e.target.value))}>
                 <option value="convert">مهتد جديد</option>
                 <option value="born">مسلم قديم</option>
               </AppSelect>
@@ -922,7 +922,7 @@ const VillagesPage = () => {
                       alignItems: 'center',
                     }}
                   >
-                    <AppSelect
+                    <AppSelect searchable
                       value={defaultSchoolByVillage[vil.id] || ''}
                       onChange={(e) =>
                         setDefaultSchoolByVillage((prev) => ({ ...prev, [vil.id]: e.target.value }))
@@ -1042,7 +1042,7 @@ const VillagesPage = () => {
                         }
                       }}
                     />
-                    <AppSelect
+                    <AppSelect searchable
                       value={nmDraftType}
                       onChange={(e) => setNmDraftType(e.target.value)}
                       disabled={nmSaving}
@@ -1051,7 +1051,7 @@ const VillagesPage = () => {
                       <option value="امرأة">امرأة</option>
                       <option value="طفل">طفل</option>
                     </AppSelect>
-                    <AppSelect
+                    <AppSelect searchable
                       value={nmDraftCategory}
                       onChange={(e) => setNmDraftCategory(normalizeMuslimCategory(e.target.value))}
                       disabled={nmSaving}
@@ -1088,7 +1088,7 @@ const VillagesPage = () => {
                                 className="app-input"
                                 disabled={nmSaving}
                               />
-                              <AppSelect
+                              <AppSelect searchable
                                 value={nmEditingType}
                                 onChange={(e) => setNmEditingType(e.target.value)}
                                 disabled={nmSaving}
@@ -1097,7 +1097,7 @@ const VillagesPage = () => {
                                 <option value="امرأة">امرأة</option>
                                 <option value="طفل">طفل</option>
                               </AppSelect>
-                              <AppSelect
+                              <AppSelect searchable
                                 value={nmEditingCategory}
                                 onChange={(e) => setNmEditingCategory(normalizeMuslimCategory(e.target.value))}
                                 disabled={nmSaving}

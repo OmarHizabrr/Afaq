@@ -360,7 +360,7 @@ const VillageDetailsPage = () => {
                                   placeholder="الاسم"
                                   className="app-input"
                                 />
-                                <AppSelect
+                                <AppSelect searchable
                                   value={newType}
                                   onChange={(e) => setNewType(e.target.value)}
                                   className=""
@@ -369,7 +369,7 @@ const VillageDetailsPage = () => {
                                   <option value="امرأة">امرأة</option>
                                   <option value="طفل">طفل</option>
                                 </AppSelect>
-                                <AppSelect
+                                <AppSelect searchable
                                   value={newMuslimCategory}
                                   onChange={(e) => setNewMuslimCategory(normalizeMuslimCategory(e.target.value))}
                                   className=""
@@ -398,7 +398,7 @@ const VillageDetailsPage = () => {
                                               onChange={(e) => setEditingName(e.target.value)}
                                               className="app-input"
                                             />
-                                            <AppSelect
+                                            <AppSelect searchable
                                               value={editingType}
                                               onChange={(e) => setEditingType(e.target.value)}
                                               className=""
@@ -407,7 +407,7 @@ const VillageDetailsPage = () => {
                                               <option value="امرأة">امرأة</option>
                                               <option value="طفل">طفل</option>
                                             </AppSelect>
-                                            <AppSelect
+                                            <AppSelect searchable
                                               value={editingMuslimCategory}
                                               onChange={(e) => setEditingMuslimCategory(normalizeMuslimCategory(e.target.value))}
                                               className=""
@@ -503,7 +503,7 @@ const VillageDetailsPage = () => {
                                 alignItems: 'center',
                               }}
                             >
-                              <AppSelect value={defaultSchoolId} onChange={(e) => setDefaultSchoolId(e.target.value)}>
+                              <AppSelect searchable value={defaultSchoolId} onChange={(e) => setDefaultSchoolId(e.target.value)}>
                                 {schools.map((sch) => (
                                   <option key={sch.id} value={sch.id}>
                                     {sch.name}
