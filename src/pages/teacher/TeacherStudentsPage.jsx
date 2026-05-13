@@ -575,6 +575,45 @@ const TeacherStudentsPage = ({ user }) => {
         onClose={() => setViewingExplorationOf(null)}
         title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.studentName || ''}` : 'بيانات النموذج'}
         record={viewingExplorationOf}
+        actorUser={user}
+        storageUserId={actorId}
+        fallbackName={viewingExplorationOf?.studentName}
+        onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
+          const target = viewingExplorationOf;
+          if (!target || !activeSchoolId) return;
+          const api = FirestoreApi.Api;
+          const studentName = derivedName || target.studentName || '';
+          const ageRaw = controller.getValueByType('number');
+          const data = {
+            studentName,
+            age: ageRaw === '' ? (target.age || 0) : (parseInt(ageRaw, 10) || 0),
+            schoolId: activeSchoolId,
+            teacherId: actorId,
+            explorationTypeId: selectedType?.id || target.explorationTypeId || '',
+            explorationTypeName: selectedType?.name || target.explorationTypeName || '',
+            explorationFieldValues: fieldValues,
+          };
+          await Promise.all([
+            api.updateData({
+              docRef: api.getSchoolStudentDoc(activeSchoolId, target.id),
+              data,
+              userData: user || {},
+            }),
+            api.setData({
+              docRef: api.getGroupMemberDoc(activeSchoolId, target.id),
+              data: { ...data, id: target.id, type: 'student' },
+              userData: user || {},
+            }),
+            api.setData({
+              docRef: api.getUserMembershipMirrorDoc(target.id, activeSchoolId),
+              data: { schoolId: activeSchoolId, studentName },
+              userData: user || {},
+            }),
+          ]);
+          setSuccess('تم تحديث بيانات نموذج الدارس.');
+          setError('');
+          reloadStudents();
+        }}
       />
     </div>
   );

@@ -654,6 +654,37 @@ const UsersPage = () => {
         onClose={() => setViewingExplorationOf(null)}
         title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : 'بيانات النموذج'}
         record={viewingExplorationOf}
+        actorUser={actorUser}
+        storageUserId={storageUserId}
+        canEdit={
+          can(PERMISSION_PAGE_IDS.users, 'user_edit_role') ||
+          can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')
+        }
+        fallbackName={viewingExplorationOf?.displayName}
+        onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
+          const target = viewingExplorationOf;
+          if (!target) return;
+          const api = FirestoreApi.Api;
+          const data = {
+            explorationTypeId: selectedType?.id || target.explorationTypeId || '',
+            explorationTypeName: selectedType?.name || target.explorationTypeName || '',
+            explorationFieldValues: fieldValues,
+          };
+          const newDisplay = derivedName || target.displayName || '';
+          if (newDisplay) data.displayName = newDisplay;
+          const newPhone = controller.getValueByType('tel').trim();
+          if (newPhone) data.phoneNumber = newPhone;
+          const newEmail = controller.getValueByType('email').trim().toLowerCase();
+          if (newEmail) data.email = newEmail;
+          const newPermissionProfile = controller.getValueBySource('permission_profiles');
+          if (newPermissionProfile) data.permissionProfileId = newPermissionProfile;
+          await api.updateData({
+            docRef: api.getUserDoc(target.id),
+            data,
+            userData: actorUser || {},
+          });
+          await fetchData({ quiet: true });
+        }}
       />
     </div>
   );

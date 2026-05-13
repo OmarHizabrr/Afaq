@@ -424,6 +424,43 @@ const SchoolsPage = () => {
         onClose={() => setViewingExplorationOf(null)}
         title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
         record={viewingExplorationOf}
+        actorUser={actorUser}
+        storageUserId={storageUserId}
+        canEdit={can(PERMISSION_PAGE_IDS.schools, 'school_edit')}
+        fallbackName={viewingExplorationOf?.name}
+        onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
+          const target = viewingExplorationOf;
+          if (!target) return;
+          const api = FirestoreApi.Api;
+          const pathVid = target.pathVillageId || target.villageId;
+          if (!pathVid) throw new Error('تعذر تحديد مسار المدرسة في القاعدة.');
+          const nextVillageId = controller.getValueBySource('villages') || pathVid;
+          const nextData = {
+            name: derivedName || target.name || '',
+            villageId: nextVillageId,
+            explorationTypeId: selectedType?.id || target.explorationTypeId || '',
+            explorationTypeName: selectedType?.name || target.explorationTypeName || '',
+            explorationFieldValues: fieldValues,
+          };
+          if (nextVillageId !== pathVid) {
+            const { id: _id, pathVillageId: _pathVillageId, ...rest } = target;
+            await api.setData({
+              docRef: api.getSchoolDoc(nextVillageId, target.id),
+              data: { ...rest, ...nextData },
+              userData: actorUser || {},
+            });
+            await api.deleteData(api.getSchoolDoc(pathVid, target.id));
+          } else {
+            await api.updateData({
+              docRef: api.getSchoolDoc(pathVid, target.id),
+              data: nextData,
+              userData: actorUser || {},
+            });
+          }
+          setSuccess('تم تحديث بيانات نموذج المدرسة.');
+          setError('');
+          fetchData();
+        }}
       />
 
       <ConfirmDialog

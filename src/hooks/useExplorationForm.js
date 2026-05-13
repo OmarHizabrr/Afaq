@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import FirestoreApi from '../services/firestoreApi';
 import {
   normalizeSchemaFields,
@@ -29,12 +29,17 @@ const NAME_HINT_RE = /(اسم|الاسم|name|title|عنوان|displayname)/i;
  *
  * @param {boolean} open — هل المودال مفتوح حالياً (لتفعيل التحميل والكاش)
  * @param {{ uid?: string, id?: string }} [actorUser]
+ * @param {{ typeId?: string, values?: Record<string, any> } | null} [seed]
+ *   عند تمريره ولحظة فتح المودال (انتقال open → true) يَفرض اختيار النوع
+ *   ويزرع القيم الابتدائية (يُستخدم في وضع التعديل لسجل قائم).
  */
-export function useExplorationForm(open, actorUser) {
+export function useExplorationForm(open, actorUser, seed = null) {
   const [explorationTypes, setExplorationTypes] = useState([]);
   const [typesLoading, setTypesLoading] = useState(false);
   const [selectedTypeId, setSelectedTypeId] = useState('');
   const [fieldValues, setFieldValues] = useState({});
+  /** يلتقط seed لحظة فتح المودال ثم يُهمَل بعد التطبيق */
+  const pendingSeedRef = useRef(null);
 
   const selectedType = useMemo(
     () => explorationTypes.find((t) => t.id === selectedTypeId) || null,
@@ -72,8 +77,18 @@ export function useExplorationForm(open, actorUser) {
   }, [explorationTypes.length, typesLoading]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      pendingSeedRef.current = null;
+      return;
+    }
+    // التقاط seed لحظة الفتح فقط
+    pendingSeedRef.current = seed ? { ...seed } : null;
+    if (seed?.typeId) {
+      setSelectedTypeId(seed.typeId);
+    }
     loadTypesOnce();
+    // intentionally omitting `seed` from deps to lock seed at the moment of opening
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, loadTypesOnce]);
 
   useEffect(() => {
@@ -82,8 +97,14 @@ export function useExplorationForm(open, actorUser) {
       setFieldValues({});
       return;
     }
+    const pending = pendingSeedRef.current;
+    if (pending && pending.values && pending.typeId === selectedTypeId) {
+      setFieldValues(initialFieldValues(schemaFields, pending.values));
+      pendingSeedRef.current = null;
+      return;
+    }
     setFieldValues((prev) => initialFieldValues(schemaFields, prev || {}));
-  }, [open, schemaFields]);
+  }, [open, schemaFields, selectedTypeId]);
 
   const setDynamicValue = useCallback((fieldId, value) => {
     setFieldValues((prev) => ({ ...prev, [fieldId]: value }));

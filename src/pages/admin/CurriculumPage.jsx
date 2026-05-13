@@ -486,6 +486,28 @@ const CurriculumPage = () => {
         onClose={() => setViewingExplorationOf(null)}
         title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name || ''}` : 'بيانات النموذج'}
         record={viewingExplorationOf}
+        actorUser={actorUser}
+        storageUserId={storageUserId}
+        canEdit={can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject')}
+        fallbackName={viewingExplorationOf?.name}
+        onSave={async ({ fieldValues, derivedName, selectedType }) => {
+          const target = viewingExplorationOf;
+          if (!target) return;
+          const api = FirestoreApi.Api;
+          await api.updateData({
+            docRef: api.getCurriculumDoc(target.id),
+            data: {
+              name: derivedName || target.name || '',
+              explorationTypeId: selectedType?.id || target.explorationTypeId || '',
+              explorationTypeName: selectedType?.name || target.explorationTypeName || '',
+              explorationFieldValues: fieldValues,
+            },
+            userData: actorUser || {},
+          });
+          setSuccess('تم تحديث بيانات نموذج المادة.');
+          setError('');
+          fetchSubjects();
+        }}
       />
     </div>
   );

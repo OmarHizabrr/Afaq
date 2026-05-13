@@ -356,6 +356,41 @@ const RegionsPage = () => {
         onClose={() => setViewingExplorationOf(null)}
         title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
         record={viewingExplorationOf}
+        actorUser={actorUser}
+        storageUserId={storageUserId}
+        canEdit={can(PERMISSION_PAGE_IDS.regions, 'region_edit')}
+        fallbackName={viewingExplorationOf?.name}
+        onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
+          const target = viewingExplorationOf;
+          if (!target) return;
+          const api = FirestoreApi.Api;
+          const nextGovId = controller.getValueBySource('governorates') || target.govId;
+          const nextData = {
+            name: derivedName || target.name || '',
+            govId: nextGovId,
+            explorationTypeId: selectedType?.id || target.explorationTypeId || '',
+            explorationTypeName: selectedType?.name || target.explorationTypeName || '',
+            explorationFieldValues: fieldValues,
+          };
+          if (nextGovId !== target.govId) {
+            const { id: _id, ...rest } = target;
+            await api.setData({
+              docRef: api.getRegionDoc(nextGovId, target.id),
+              data: { ...rest, ...nextData },
+              userData: actorUser || {},
+            });
+            await api.deleteData(api.getRegionDoc(target.govId, target.id));
+          } else {
+            await api.updateData({
+              docRef: api.getRegionDoc(target.govId, target.id),
+              data: nextData,
+              userData: actorUser || {},
+            });
+          }
+          setSuccess('تم تحديث بيانات نموذج المنطقة.');
+          setError('');
+          fetchData();
+        }}
       />
 
       <ConfirmDialog

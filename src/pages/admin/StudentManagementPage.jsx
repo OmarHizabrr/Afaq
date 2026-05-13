@@ -706,6 +706,34 @@ const StudentManagementPage = () => {
         onClose={() => setViewingExplorationOf(null)}
         title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : 'بيانات النموذج'}
         record={viewingExplorationOf}
+        actorUser={actorUser}
+        storageUserId={storageUserId}
+        canEdit={can(PERMISSION_PAGE_IDS.students_management, 'student_management_edit')}
+        fallbackName={viewingExplorationOf?.displayName}
+        onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
+          const target = viewingExplorationOf;
+          if (!target) return;
+          const api = FirestoreApi.Api;
+          const data = {
+            explorationTypeId: selectedType?.id || target.explorationTypeId || '',
+            explorationTypeName: selectedType?.name || target.explorationTypeName || '',
+            explorationFieldValues: fieldValues,
+          };
+          const newDisplay = derivedName || target.displayName || '';
+          if (newDisplay) data.displayName = newDisplay;
+          const newPhone = controller.getValueByType('tel').trim();
+          if (newPhone) data.phoneNumber = newPhone;
+          const newEmail = controller.getValueByType('email').trim().toLowerCase();
+          if (newEmail) data.email = newEmail;
+          const newPhoto = controller.getValueByType('url').trim();
+          if (newPhoto) data.photoURL = newPhoto;
+          await api.updateData({
+            docRef: api.getUserDoc(target.id),
+            data,
+            userData: actorUser || {},
+          });
+          await fetchStudentsData();
+        }}
       />
     </div>
   );

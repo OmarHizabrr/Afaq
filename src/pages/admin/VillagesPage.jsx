@@ -1418,6 +1418,43 @@ const VillagesPage = () => {
         onClose={() => setViewingExplorationOf(null)}
         title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.villageName}` : 'بيانات النموذج'}
         record={viewingExplorationOf}
+        actorUser={actorUser}
+        storageUserId={storageUserId}
+        canEdit={can(PERMISSION_PAGE_IDS.villages, 'village_edit')}
+        fallbackName={viewingExplorationOf?.villageName}
+        onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
+          const target = viewingExplorationOf;
+          if (!target) return;
+          const api = FirestoreApi.Api;
+          const nextRegionId = controller.getValueBySource('regions') || target.regionId;
+          const selectedRegion = regions.find((r) => r.id === nextRegionId);
+          const nextData = {
+            villageName: derivedName || target.villageName || '',
+            regionId: nextRegionId,
+            govId: selectedRegion?.govId || target.govId || null,
+            explorationTypeId: selectedType?.id || target.explorationTypeId || '',
+            explorationTypeName: selectedType?.name || target.explorationTypeName || '',
+            explorationFieldValues: fieldValues,
+          };
+          if (nextRegionId !== target.regionId) {
+            const { id: _id, ...rest } = target;
+            await api.setData({
+              docRef: api.getVillageDoc(nextRegionId, target.id),
+              data: { ...rest, ...nextData },
+              userData: actorUser || {},
+            });
+            await api.deleteData(api.getVillageDoc(target.regionId, target.id));
+          } else {
+            await api.updateData({
+              docRef: api.getVillageDoc(target.regionId, target.id),
+              data: nextData,
+              userData: actorUser || {},
+            });
+          }
+          setSuccess('تم تحديث بيانات نموذج القرية.');
+          setError('');
+          fetchData();
+        }}
       />
 
       <ConfirmDialog
