@@ -33,16 +33,12 @@ const GovernoratesPage = () => {
   const [showScopeNotice, setShowScopeNotice] = useState(true);
   const [pendingDelete, setPendingDelete] = useState(null);
 
-  /* مودال «الإضافة من نموذج الاستكشاف» */
+  /* مودال «الإضافة من نموذج الاستكشاف» — يعرض حقول الاستكشاف فقط */
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [expGovName, setExpGovName] = useState('');
-  const [expGovCountry, setExpGovCountry] = useState('');
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
 
   const openExplorationModal = () => {
-    setExpGovName('');
-    setExpGovCountry('');
     setIsExploringAdding(true);
   };
 
@@ -162,10 +158,16 @@ const GovernoratesPage = () => {
 
   const handleExplorationAdd = async (e) => {
     e.preventDefault();
-    if (!expGovName.trim() || expSaving) return;
+    if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    const fallbackName = expForm.selectedType?.name ? `محافظة - ${expForm.selectedType.name}` : '';
+    const derivedName = expForm.deriveDisplayName(fallbackName);
+    if (!derivedName) {
+      setError('لا يمكن استخراج اسم المحافظة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم" داخل النموذج.');
       return;
     }
     setExpSaving(true);
@@ -176,8 +178,7 @@ const GovernoratesPage = () => {
       await api.setData({
         docRef,
         data: {
-          name: expGovName.trim(),
-          country: expGovCountry.trim(),
+          name: derivedName,
           explorationTypeId: expForm.selectedType?.id || '',
           explorationTypeName: expForm.selectedType?.name || '',
           explorationFieldValues: expForm.sanitize(),
@@ -185,6 +186,7 @@ const GovernoratesPage = () => {
         userData: actorUser || {},
       });
       setIsExploringAdding(false);
+      expForm.reset();
       setSuccess('تمت إضافة المحافظة من نموذج الاستكشاف بنجاح.');
       setError('');
       fetchGovernorates();
@@ -297,23 +299,6 @@ const GovernoratesPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd}>
-          <input
-            type="text"
-            placeholder="اسم المحافظة"
-            value={expGovName}
-            onChange={(e) => setExpGovName(e.target.value)}
-            className="app-input"
-            required
-            style={{ marginBottom: '1rem' }}
-          />
-          <input
-            type="text"
-            placeholder="الدولة"
-            value={expGovCountry}
-            onChange={(e) => setExpGovCountry(e.target.value)}
-            className="app-input"
-            style={{ marginBottom: '1rem' }}
-          />
           <ExplorationFormSection
             controller={expForm}
             actorUser={actorUser}

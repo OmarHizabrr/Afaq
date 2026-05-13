@@ -1,0 +1,38 @@
+refactor(explorations): show only exploration fields in 'Add from exploration' modals
+
+Strip page-specific base inputs (name, parent IDs, role, level, donor, etc.)
+from every 'Add from exploration' modal across the platform. The exploration
+template now drives the entire record: every value, including parent links,
+is derived from the dynamic fields configured by the form designer.
+
+useExplorationForm now exposes three helpers used at save time:
+- getValueBySource(sourceId): read the first field whose option source is
+  the requested platform collection (governorates, regions, villages,
+  permission_profiles...)
+- getValueByType(fieldType): read the first field of a given input type
+  (tel, password, email, url, number...)
+- deriveDisplayName(fallback): pick a reasonable display name from a
+  name-like text field, with sensible fallbacks
+
+Page-level rewrites:
+- Governorates: derives name from a name-like text field.
+- Regions: derives name, requires a field sourced from 'governorates'
+  for the parent govId.
+- Schools: derives name, requires a field sourced from 'villages'
+  for the parent villageId; defaults schoolLevel/donorName.
+- Users / Student Management: derives displayName from name-like field,
+  reads phone (tel), password (password) and optional email/photo from
+  typed fields; permissionProfileId can come from a field sourced from
+  'permission_profiles'.
+- Curriculum: derives name and creates the empty 50-week plan.
+- Teacher Students: derives studentName and reads age from a number field.
+
+Villages keeps a single page-specific block (سجل المهتدين والمسلمين القدامى)
+on top of the exploration fields per the requirement that legacy fields
+elsewhere disappear. The page was also refactored onto the shared
+useExplorationForm hook + ExplorationFormSection component for parity
+with the rest of the platform.
+
+When the chosen template is missing a required parent source or a
+recognizable name field, the modal surfaces a clear Arabic error
+instead of saving an inconsistent record.

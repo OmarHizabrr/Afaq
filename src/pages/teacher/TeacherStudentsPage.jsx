@@ -29,8 +29,6 @@ const TeacherStudentsPage = ({ user }) => {
   const [schoolOptions, setSchoolOptions] = useState([]);
   const [schoolReady, setSchoolReady] = useState(false);
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [expStudentName, setExpStudentName] = useState("");
-  const [expStudentAge, setExpStudentAge] = useState("");
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, user);
 
@@ -184,20 +182,27 @@ const TeacherStudentsPage = ({ user }) => {
 
   const handleExplorationAdd = async (e) => {
     e.preventDefault();
-    if (!expStudentName.trim() || !activeSchoolId || !actorId || expSaving) return;
+    if (!activeSchoolId || !actorId || expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join("، ")}`);
       return;
     }
+    const studentName = expForm.deriveDisplayName('');
+    if (!studentName) {
+      setError('لا يمكن استخراج اسم الدارس من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      return;
+    }
+    const ageRaw = expForm.getValueByType('number');
+    const age = parseInt(ageRaw, 10) || 0;
 
     try {
       setExpSaving(true);
       const api = FirestoreApi.Api;
       const docId = api.getNewId("students");
       const studentData = {
-        studentName: expStudentName.trim(),
-        age: parseInt(expStudentAge, 10) || 0,
+        studentName,
+        age,
         schoolId: activeSchoolId,
         teacherId: actorId,
         explorationTypeId: expForm.selectedType?.id || "",
@@ -219,9 +224,8 @@ const TeacherStudentsPage = ({ user }) => {
         }),
       ]);
 
-      setExpStudentName("");
-      setExpStudentAge("");
       setIsExploringAdding(false);
+      expForm.reset();
       setSuccess("تمت إضافة الدارس من نموذج الاستكشاف بنجاح.");
       setError("");
       reloadStudents();
@@ -315,11 +319,7 @@ const TeacherStudentsPage = ({ user }) => {
           <button
             type="button"
             className="google-btn google-btn--toolbar"
-            onClick={() => {
-              setExpStudentName("");
-              setExpStudentAge("");
-              setIsExploringAdding(true);
-            }}
+            onClick={() => setIsExploringAdding(true)}
           >
             <Compass size={18} />
             <span>إضافة من الاستكشاف</span>
@@ -426,25 +426,6 @@ const TeacherStudentsPage = ({ user }) => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd}>
-          <label className="app-label">اسم الدارس</label>
-          <input
-            type="text"
-            placeholder="اسم الدارس الرباعي"
-            value={expStudentName}
-            onChange={(e) => setExpStudentName(e.target.value)}
-            required
-            className="app-input"
-            style={{ marginBottom: "0.75rem" }}
-          />
-          <label className="app-label">السن</label>
-          <input
-            type="number"
-            placeholder="السن"
-            value={expStudentAge}
-            onChange={(e) => setExpStudentAge(e.target.value)}
-            className="app-input"
-            style={{ marginBottom: "1rem" }}
-          />
           <ExplorationFormSection
             controller={expForm}
             actorUser={user}

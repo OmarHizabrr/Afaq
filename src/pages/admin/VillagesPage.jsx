@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText, Settings2, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -7,7 +7,8 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
-import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
+import ExplorationFormSection from '../../components/ExplorationFormSection';
+import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import {
@@ -25,13 +26,6 @@ import {
   syncVillageListingPersonStudentFields,
   deleteVillageListedPersonFully,
 } from '../../services/villageStudentEnrollment';
-import {
-  normalizeSchemaFields,
-  initialFieldValues,
-  validateFieldValues,
-  sanitizeFieldValuesForSave,
-} from '../../utils/explorationDynamicFields';
-import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
 
 const VillagesPage = () => {
   const navigate = useNavigate();
@@ -87,98 +81,31 @@ const VillagesPage = () => {
   const [villageModalSchoolIds, setVillageModalSchoolIds] = useState([]);
 
   /* ============================================================
-   * مودال «الإضافة من نموذج الاستكشاف»: ينشئ قرية مع حقول استكشاف
-   * ديناميكية + سجل المهتدين، ويحفظ كل ذلك في `villages`.
+   * مودال «الإضافة من نموذج الاستكشاف»: ينشئ قرية باستخدام حقول
+   * نموذج الاستكشاف فقط (لاسم القرية والمنطقة)، مع الإبقاء على
+   * بلوك «سجل المهتدين والمسلمين القدامى» المخصص للقرى.
    * ============================================================ */
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [explorationTypes, setExplorationTypes] = useState([]);
-  const [explorationTypesLoading, setExplorationTypesLoading] = useState(false);
-  const [expRegionId, setExpRegionId] = useState('');
-  const [expVillageName, setExpVillageName] = useState('');
-  const [expGroupName, setExpGroupName] = useState('');
-  const [expLtiName, setExpLtiName] = useState('');
-  const [expPopulationCount, setExpPopulationCount] = useState('');
-  const [expMuslimsCount, setExpMuslimsCount] = useState('');
-  const [expNonMuslimsCount, setExpNonMuslimsCount] = useState('');
-  const [expSelectedTypeId, setExpSelectedTypeId] = useState('');
-  const [expFieldValues, setExpFieldValues] = useState({});
+  const [expSavingExploration, setExpSavingExploration] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, actorUser);
+
+  /* سجل المهتدين والمسلمين القدامى ضمن نفس المودال */
   const [expNewMuslims, setExpNewMuslims] = useState([]);
   const [expMuslimName, setExpMuslimName] = useState('');
   const [expMuslimType, setExpMuslimType] = useState('رجل');
   const [expMuslimCategoryForm, setExpMuslimCategoryForm] = useState(normalizeMuslimCategory());
-  const [expSavingExploration, setExpSavingExploration] = useState(false);
 
-  const expSelectedType = useMemo(
-    () => explorationTypes.find((t) => t.id === expSelectedTypeId) || null,
-    [explorationTypes, expSelectedTypeId]
-  );
-  const expSchemaFields = useMemo(
-    () => normalizeSchemaFields(expSelectedType?.schemaFields || expSelectedType?.fields || []),
-    [expSelectedType]
-  );
-
-  const { mergeFields: mergeExplorationFields, loading: expOptionCachesLoading } = useExplorationOptionCaches(
-    isExploringAdding
-  );
-  const mergedExpFields = useMemo(
-    () => mergeExplorationFields(expSchemaFields, expFieldValues, actorUser),
-    [mergeExplorationFields, expSchemaFields, expFieldValues, actorUser]
-  );
-
-  const setExpDynamicValue = (fieldId, value) => {
-    setExpFieldValues((prev) => ({ ...prev, [fieldId]: value }));
-  };
-
-  const resetExplorationModalState = () => {
-    setExpRegionId('');
-    setExpVillageName('');
-    setExpGroupName('');
-    setExpLtiName('');
-    setExpPopulationCount('');
-    setExpMuslimsCount('');
-    setExpNonMuslimsCount('');
-    setExpFieldValues({});
+  const resetExplorationNewMuslims = () => {
     setExpNewMuslims([]);
     setExpMuslimName('');
     setExpMuslimType('رجل');
     setExpMuslimCategoryForm(normalizeMuslimCategory());
   };
 
-  const loadExplorationTypesOnce = useCallback(async () => {
-    if (explorationTypes.length > 0 || explorationTypesLoading) return;
-    setExplorationTypesLoading(true);
-    try {
-      const api = FirestoreApi.Api;
-      const docs = await api.getDocuments(api.getExplorationTypesCollection());
-      const rows = docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
-        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
-      setExplorationTypes(rows);
-      if (rows.length > 0 && !expSelectedTypeId) {
-        setExpSelectedTypeId(rows[0].id);
-      }
-    } catch (err) {
-      console.error(err);
-      setError('تعذر تحميل أنواع الاستكشاف.');
-    } finally {
-      setExplorationTypesLoading(false);
-    }
-  }, [explorationTypes.length, explorationTypesLoading, expSelectedTypeId]);
-
-  const openExplorationAddModal = async () => {
-    resetExplorationModalState();
+  const openExplorationAddModal = () => {
+    resetExplorationNewMuslims();
     setIsExploringAdding(true);
-    await loadExplorationTypesOnce();
   };
-
-  useEffect(() => {
-    if (!isExploringAdding) return;
-    if (expSchemaFields.length === 0) {
-      setExpFieldValues({});
-      return;
-    }
-    setExpFieldValues((prev) => initialFieldValues(expSchemaFields, prev || {}));
-  }, [isExploringAdding, expSchemaFields]);
 
   const addExpNewMuslimToList = () => {
     if (!expMuslimName.trim()) return;
@@ -463,13 +390,21 @@ const VillagesPage = () => {
 
   const handleExplorationAdd = async (e) => {
     e.preventDefault();
-    if (!expVillageName.trim() || !expRegionId) {
-      setError('يرجى إدخال اسم القرية واختيار المنطقة.');
-      return;
-    }
-    const missing = validateFieldValues(expSchemaFields, expFieldValues);
+    if (expSavingExploration) return;
+    const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    const regionId = expForm.getValueBySource('regions');
+    if (!regionId) {
+      setError('يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «المناطق» لربط القرية بمنطقتها.');
+      return;
+    }
+    const fallbackName = expForm.selectedType?.name ? `قرية - ${expForm.selectedType.name}` : '';
+    const derivedVillageName = expForm.deriveDisplayName(fallbackName);
+    if (!derivedVillageName) {
+      setError('لا يمكن استخراج اسم القرية من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
       return;
     }
 
@@ -477,31 +412,25 @@ const VillagesPage = () => {
     setError('');
     try {
       const api = FirestoreApi.Api;
-      const selectedRegion = regions.find((r) => r.id === expRegionId);
+      const selectedRegion = regions.find((r) => r.id === regionId);
       const govId = selectedRegion ? selectedRegion.govId : null;
 
-      const sanitized =
-        expSchemaFields.length > 0 ? sanitizeFieldValuesForSave(expSchemaFields, expFieldValues) : {};
+      const sanitized = expForm.sanitize();
 
       const normalizedNewMuslims = normalizeNewMuslims(expNewMuslims);
       const counters = villageMuslimCounterFields(normalizedNewMuslims);
 
       const newVilId = api.getNewId('villages');
-      const vilRef = api.getVillageDoc(expRegionId, newVilId);
+      const vilRef = api.getVillageDoc(regionId, newVilId);
 
       await api.setData({
         docRef: vilRef,
         data: {
-          villageName: expVillageName.trim(),
-          groupName: expGroupName.trim(),
-          ltiName: expLtiName.trim(),
-          regionId: expRegionId,
+          villageName: derivedVillageName,
+          regionId,
           govId,
-          populationCount: parseInt(expPopulationCount, 10) || 0,
-          muslimsCount: parseInt(expMuslimsCount, 10) || 0,
-          nonMuslimsCount: parseInt(expNonMuslimsCount, 10) || 0,
-          explorationTypeId: expSelectedType?.id || '',
-          explorationTypeName: expSelectedType?.name || '',
+          explorationTypeId: expForm.selectedType?.id || '',
+          explorationTypeName: expForm.selectedType?.name || '',
           explorationFieldValues: sanitized,
           ...counters,
         },
@@ -511,7 +440,8 @@ const VillagesPage = () => {
       await syncVillageNewMuslims(api, newVilId, normalizedNewMuslims, []);
 
       setIsExploringAdding(false);
-      resetExplorationModalState();
+      resetExplorationNewMuslims();
+      expForm.reset();
       setSuccess('تمت إضافة القرية من نموذج الاستكشاف بنجاح.');
       fetchData();
     } catch (err) {
@@ -1011,142 +941,16 @@ const VillagesPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd} className="villages-form">
-          {explorationTypesLoading ? (
-            <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
-              جاري تحميل أنواع الاستكشاف…
-            </div>
-          ) : explorationTypes.length === 0 ? (
-            <div className="app-alert app-alert--warning" style={{ marginBottom: '0.75rem' }}>
-              لا توجد أنواع استكشاف معرَّفة. أضف نوعاً من «أنواع الاستكشاف» قبل استخدام هذا النموذج.
-            </div>
-          ) : (
-            <div
-              className="app-field app-field--grow"
-              style={{ marginBottom: '0.75rem' }}
-            >
-              <label className="app-label">نوع الاستكشاف</label>
-              <AppSelect
-                searchable
-                value={expSelectedTypeId}
-                onChange={(e) => setExpSelectedTypeId(e.target.value)}
-              >
-                {explorationTypes.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name || t.id}
-                  </option>
-                ))}
-              </AppSelect>
-              {expSelectedType?.description && (
-                <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  {expSelectedType.description}
-                </p>
-              )}
-            </div>
-          )}
-
-          <h3 className="villages-form__title">البيانات الأساسية للقرية</h3>
-
-          <div className="villages-form__grid">
-            <div className="app-field app-field--grow">
-              <label className="app-label">المنطقة التابعة لها</label>
-              <AppSelect
-                searchable
-                value={expRegionId}
-                onChange={(e) => setExpRegionId(e.target.value)}
-                required
-              >
-                <option value="">-- اختر المنطقة --</option>
-                {regions.map((reg) => (
-                  <option key={reg.id} value={reg.id}>{reg.name}</option>
-                ))}
-              </AppSelect>
-            </div>
-            <div className="app-field app-field--grow">
-              <label className="app-label">اسم القرية</label>
-              <input
-                type="text"
-                value={expVillageName}
-                onChange={(e) => setExpVillageName(e.target.value)}
-                className="app-input"
-                required
-              />
-            </div>
-            <div className="app-field app-field--grow">
-              <label className="app-label">اسم الجروب</label>
-              <input
-                type="text"
-                value={expGroupName}
-                onChange={(e) => setExpGroupName(e.target.value)}
-                className="app-input"
-              />
-            </div>
-            <div className="app-field app-field--grow">
-              <label className="app-label">اسم الـ LTI</label>
-              <input
-                type="text"
-                value={expLtiName}
-                onChange={(e) => setExpLtiName(e.target.value)}
-                className="app-input"
-              />
-            </div>
+          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+            النموذج يحتاج حقلاً مصدره «المناطق» لربط القرية بمنطقتها، وحقلاً نصياً للاسم.
           </div>
 
-          <div className="villages-form__grid villages-form__grid--stats">
-            <div className="app-field app-field--grow">
-              <label className="app-label">إجمالي السكان</label>
-              <input
-                type="number"
-                min="0"
-                value={expPopulationCount}
-                onChange={(e) => setExpPopulationCount(e.target.value)}
-                className="app-input"
-              />
-            </div>
-            <div className="app-field app-field--grow">
-              <label className="app-label">عدد المسلمين</label>
-              <input
-                type="number"
-                min="0"
-                value={expMuslimsCount}
-                onChange={(e) => setExpMuslimsCount(e.target.value)}
-                className="app-input"
-              />
-            </div>
-            <div className="app-field app-field--grow">
-              <label className="app-label">عدد غير المسلمين</label>
-              <input
-                type="number"
-                min="0"
-                value={expNonMuslimsCount}
-                onChange={(e) => setExpNonMuslimsCount(e.target.value)}
-                className="app-input"
-              />
-            </div>
-          </div>
-
-          {expSchemaFields.length > 0 && (
-            <>
-              <hr className="villages-form__divider" />
-              <h3 className="villages-form__title">
-                حقول النوع: {expSelectedType?.name || ''}
-              </h3>
-              {expOptionCachesLoading && (
-                <p style={{ margin: '0 0 8px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  جاري تحميل قوائم البيانات من المنصة…
-                </p>
-              )}
-              <div className="exploration-modal-flow">
-                <ExplorationDynamicFieldBlock
-                  variant="sheet"
-                  fields={mergedExpFields}
-                  values={expFieldValues}
-                  onChange={setExpDynamicValue}
-                  storageUserId={storageUserId}
-                  actorUser={actorUser}
-                />
-              </div>
-            </>
-          )}
+          <ExplorationFormSection
+            controller={expForm}
+            actorUser={actorUser}
+            storageUserId={storageUserId}
+            heading="حقول نموذج الاستكشاف"
+          />
 
           <hr className="villages-form__divider" />
 

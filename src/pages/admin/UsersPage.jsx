@@ -62,12 +62,6 @@ const UsersPage = () => {
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [expUserName, setExpUserName] = useState('');
-  const [expUserEmail, setExpUserEmail] = useState('');
-  const [expUserPhone, setExpUserPhone] = useState('');
-  const [expUserPassword, setExpUserPassword] = useState('');
-  const [expUserRole, setExpUserRole] = useState('unassigned');
-  const [expUserPermissionProfileId, setExpUserPermissionProfileId] = useState('');
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
 
@@ -193,16 +187,27 @@ const UsersPage = () => {
   };
 
   const handleExplorationCreateUser = async () => {
-    if (!expUserName.trim() || !expUserPhone.trim() || !expUserPassword.trim()) {
-      setError('يرجى إدخال الاسم ورقم الهاتف وكلمة المرور للمستخدم.');
-      return;
-    }
     const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
       return;
     }
-    const emailNormalized = expUserEmail.trim().toLowerCase();
+    const displayName = expForm.deriveDisplayName('');
+    if (!displayName) {
+      setError('لا يمكن استخراج اسم المستخدم من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      return;
+    }
+    const phone = expForm.getValueByType('tel').trim();
+    if (!phone) {
+      setError('يحتاج النموذج إلى حقل من نوع «رقم هاتف» لرقم المستخدم.');
+      return;
+    }
+    const password = expForm.getValueByType('password').trim();
+    if (!password) {
+      setError('يحتاج النموذج إلى حقل من نوع «كلمة مرور» لإنشاء حساب المستخدم.');
+      return;
+    }
+    const emailNormalized = expForm.getValueByType('email').trim().toLowerCase();
     const emailExists = emailNormalized
       ? users.some((u) => (u.email || '').toLowerCase() === emailNormalized)
       : false;
@@ -210,23 +215,22 @@ const UsersPage = () => {
       setError('هذا البريد الإلكتروني مستخدم مسبقاً.');
       return;
     }
+    const permissionProfileId = expForm.getValueBySource('permission_profiles') || null;
 
     try {
       setExpSaving(true);
       setError('');
       const api = FirestoreApi.Api;
       const userId = api.getNewId('users');
-      const role = expUserRole === SYSTEM_ADMIN_ROLE && canAssignSystemAdmin ? SYSTEM_ADMIN_ROLE : expUserRole || 'unassigned';
-      const permissionProfileId = role === SYSTEM_ADMIN_ROLE ? null : expUserPermissionProfileId || null;
       await api.setData({
         docRef: api.getUserDoc(userId),
         data: {
-          displayName: expUserName.trim(),
+          displayName,
           email: emailNormalized || '',
-          phoneNumber: expUserPhone.trim(),
-          password: expUserPassword.trim(),
+          phoneNumber: phone,
+          password,
           permissionProfileId,
-          role,
+          role: 'unassigned',
           accountDisabled: false,
           photoURL: '',
           explorationTypeId: expForm.selectedType?.id || '',
@@ -236,12 +240,7 @@ const UsersPage = () => {
         userData: actorUser || {},
       });
       setIsExploringAdding(false);
-      setExpUserName('');
-      setExpUserEmail('');
-      setExpUserPhone('');
-      setExpUserPassword('');
-      setExpUserRole('unassigned');
-      setExpUserPermissionProfileId('');
+      expForm.reset();
       await fetchData({ quiet: true });
     } catch (err) {
       console.error(err);
@@ -320,12 +319,6 @@ const UsersPage = () => {
               className="google-btn google-btn--toolbar"
               style={{ width: 'auto' }}
               onClick={() => {
-                setExpUserName('');
-                setExpUserEmail('');
-                setExpUserPhone('');
-                setExpUserPassword('');
-                setExpUserRole('unassigned');
-                setExpUserPermissionProfileId('');
                 setIsExploringAdding(true);
                 setError('');
               }}
@@ -499,57 +492,9 @@ const UsersPage = () => {
               </button>
             </div>
 
-            <div className="users-modal__field">
-              <label className="app-label">اسم المستخدم</label>
-              <input className="app-input" value={expUserName} onChange={(e) => setExpUserName(e.target.value)} placeholder="الاسم الكامل" />
-            </div>
-            <div className="users-modal__field">
-              <label className="app-label">البريد الإلكتروني (اختياري)</label>
-              <input className="app-input" type="email" value={expUserEmail} onChange={(e) => setExpUserEmail(e.target.value)} placeholder="example@email.com" />
-            </div>
-            <div className="users-modal__field">
-              <label className="app-label">رقم الهاتف (إجباري)</label>
-              <input className="app-input" value={expUserPhone} onChange={(e) => setExpUserPhone(e.target.value.replace(/\D/g, ''))} inputMode="numeric" maxLength={15} placeholder="07xxxxxxxx" />
-            </div>
-            <div className="users-modal__field">
-              <label className="app-label">كلمة المرور (إجباري)</label>
-              <input className="app-input" type="password" value={expUserPassword} onChange={(e) => setExpUserPassword(e.target.value)} autoComplete="new-password" />
-            </div>
-            <div className="users-modal__field">
-              <label className="app-label">الدور في النظام</label>
-              <AppSelect
-                searchable
-                value={expUserRole}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setExpUserRole(v);
-                  if (v === SYSTEM_ADMIN_ROLE) setExpUserPermissionProfileId('');
-                }}
-              >
-                <option value="unassigned">{USER_ROLE_LABELS.unassigned}</option>
-                <option value="student">{USER_ROLE_LABELS.student}</option>
-                <option value="teacher">{USER_ROLE_LABELS.teacher}</option>
-                <option value="supervisor_local">{USER_ROLE_LABELS.supervisor_local}</option>
-                <option value="supervisor_arab">{USER_ROLE_LABELS.supervisor_arab}</option>
-                <option value="admin">{USER_ROLE_LABELS.admin}</option>
-                {canAssignSystemAdmin && (
-                  <option value={SYSTEM_ADMIN_ROLE}>{USER_ROLE_LABELS[SYSTEM_ADMIN_ROLE]}</option>
-                )}
-              </AppSelect>
-            </div>
-            <div className="users-modal__field">
-              <label className="app-label">نوع الصلاحيات</label>
-              <AppSelect
-                searchable
-                value={expUserPermissionProfileId}
-                onChange={(e) => setExpUserPermissionProfileId(e.target.value)}
-                disabled={expUserRole === SYSTEM_ADMIN_ROLE}
-              >
-                <option value="">بدون نوع صلاحيات</option>
-                {permissionProfiles.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name || p.id}</option>
-                ))}
-              </AppSelect>
+            <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+              يحتاج النموذج إلى حقول من نوع: نص (للاسم)، هاتف، كلمة مرور. ويمكن إضافة بريد إلكتروني وحقل مصدره
+              «ملفات الصلاحيات» اختيارياً.
             </div>
             <ExplorationFormSection
               controller={expForm}

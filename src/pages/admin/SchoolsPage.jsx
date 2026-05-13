@@ -48,11 +48,6 @@ const SchoolsPage = () => {
   const [schoolLevel, setSchoolLevel] = useState('children');
   const [donorName, setDonorName] = useState('');
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [expSelectedRegId, setExpSelectedRegId] = useState('');
-  const [expSelectedVilId, setExpSelectedVilId] = useState('');
-  const [expSchoolName, setExpSchoolName] = useState('');
-  const [expSchoolLevel, setExpSchoolLevel] = useState('children');
-  const [expDonorName, setExpDonorName] = useState('');
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
 
@@ -116,9 +111,6 @@ const SchoolsPage = () => {
   const filteredVillages = selectedRegId 
     ? villages.filter(v => v.regionId === selectedRegId) 
     : villages;
-  const expFilteredVillages = expSelectedRegId
-    ? villages.filter((v) => v.regionId === expSelectedRegId)
-    : villages;
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -180,13 +172,21 @@ const SchoolsPage = () => {
 
   const handleExplorationAdd = async (e) => {
     e.preventDefault();
-    if (!expSchoolName.trim() || !expSelectedVilId || !expSchoolLevel || expSaving) {
-      setError('يرجى إدخال اسم المدرسة واختيار القرية ونوع المدرسة (كبار / صغار)');
-      return;
-    }
+    if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    const villageId = expForm.getValueBySource('villages');
+    if (!villageId) {
+      setError('يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «القرى» لربط المدرسة بقريتها.');
+      return;
+    }
+    const fallbackName = expForm.selectedType?.name ? `مدرسة - ${expForm.selectedType.name}` : '';
+    const derivedName = expForm.deriveDisplayName(fallbackName);
+    if (!derivedName) {
+      setError('لا يمكن استخراج اسم المدرسة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
       return;
     }
     setExpSaving(true);
@@ -194,24 +194,20 @@ const SchoolsPage = () => {
       const api = FirestoreApi.Api;
       const newSchId = api.getNewId('schools');
       await api.setData({
-        docRef: api.getSchoolDoc(expSelectedVilId, newSchId),
+        docRef: api.getSchoolDoc(villageId, newSchId),
         data: {
-          name: expSchoolName.trim(),
-          villageId: expSelectedVilId,
-          schoolLevel: expSchoolLevel,
-          donorName: expDonorName.trim() || '',
+          name: derivedName,
+          villageId,
+          schoolLevel: 'children',
+          donorName: '',
           explorationTypeId: expForm.selectedType?.id || '',
           explorationTypeName: expForm.selectedType?.name || '',
           explorationFieldValues: expForm.sanitize(),
         },
         userData: actorUser || {},
       });
-      setExpSelectedRegId('');
-      setExpSelectedVilId('');
-      setExpSchoolName('');
-      setExpSchoolLevel('children');
-      setExpDonorName('');
       setIsExploringAdding(false);
+      expForm.reset();
       setError('');
       setSuccess('تمت إضافة المدرسة من نموذج الاستكشاف بنجاح.');
       fetchData();
@@ -282,14 +278,7 @@ const SchoolsPage = () => {
             <button
               type="button"
               className="google-btn google-btn--toolbar"
-              onClick={() => {
-                setExpSelectedRegId('');
-                setExpSelectedVilId('');
-                setExpSchoolName('');
-                setExpSchoolLevel('children');
-                setExpDonorName('');
-                setIsExploringAdding(true);
-              }}
+              onClick={() => setIsExploringAdding(true)}
             >
               <Compass size={18} />
               <span>إضافة من الاستكشاف</span>
@@ -362,31 +351,9 @@ const SchoolsPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd} className="schools-form">
-          <label className="app-label">تصفية حسب المنطقة</label>
-          <AppSelect searchable value={expSelectedRegId} onChange={(e) => { setExpSelectedRegId(e.target.value); setExpSelectedVilId(''); }} className="schools-form__field-gap">
-            <option value="">-- كل المناطق --</option>
-            {regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </AppSelect>
-
-          <label className="app-label">القرية (مطلوب)</label>
-          <AppSelect searchable value={expSelectedVilId} onChange={(e) => setExpSelectedVilId(e.target.value)} className="schools-form__field-gap" required>
-            <option value="">-- اختر القرية --</option>
-            {expFilteredVillages.map((v) => <option key={v.id} value={v.id}>{v.villageName}</option>)}
-          </AppSelect>
-
-          <label className="app-label">اسم المدرسة (مطلوب)</label>
-          <input type="text" value={expSchoolName} onChange={(e) => setExpSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder="مثال: مدرسة النور" />
-
-          <label className="app-label">نوع المدرسة (مطلوب)</label>
-          <AppSelect searchable value={expSchoolLevel} onChange={(e) => setExpSchoolLevel(e.target.value)} className="schools-form__field-gap" required>
-            {SCHOOL_LEVEL_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </AppSelect>
-
-          <label className="app-label">اسم المتبرع</label>
-          <input type="text" value={expDonorName} onChange={(e) => setExpDonorName(e.target.value)} className="app-input schools-form__field-gap" placeholder="اختياري" />
-
+          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+            النموذج يحتاج حقلاً مصدره «القرى» لربط المدرسة بقريتها.
+          </div>
           <ExplorationFormSection
             controller={expForm}
             actorUser={actorUser}

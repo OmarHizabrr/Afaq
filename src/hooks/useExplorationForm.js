@@ -8,6 +8,18 @@ import {
 } from '../utils/explorationDynamicFields';
 import { useExplorationOptionCaches } from './useExplorationOptionCaches';
 
+/** أنواع الحقول النصية التي تعتبر "اسم/قيمة قابلة للعرض" */
+const TEXT_LIKE_TYPES = new Set([
+  'text',
+  'textarea',
+  'search',
+  'rich_text',
+  'tag',
+]);
+
+/** كلمات دلالية للبحث عن حقل يمثل "اسماً" داخل المخطط */
+const NAME_HINT_RE = /(اسم|الاسم|name|title|عنوان|displayname)/i;
+
 /**
  * يدير حالة "الإضافة من نموذج الاستكشاف" داخل صفحات قوائم البيانات:
  * - يحمّل أنواع الاستكشاف عند فتح المودال أول مرة
@@ -91,6 +103,62 @@ export function useExplorationForm(open, actorUser) {
     [schemaFields, fieldValues]
   );
 
+  /**
+   * يرجع قيمة أول حقل في المخطط مصدره من مجموعة بيانات المنصة المحددة
+   * (مثل 'governorates' أو 'regions'... إلخ). يعيد سلسلة فارغة إن لم يوجد.
+   */
+  const getValueBySource = useCallback(
+    (sourceId) => {
+      if (!sourceId) return '';
+      const field = schemaFields.find((f) => f.optionSource === sourceId);
+      if (!field) return '';
+      const raw = fieldValues?.[field.id];
+      if (Array.isArray(raw)) return raw.length ? String(raw[0]) : '';
+      return raw == null ? '' : String(raw).trim();
+    },
+    [schemaFields, fieldValues]
+  );
+
+  /**
+   * يرجع قيمة أول حقل من نوع معيّن (text, email, tel, password, number...).
+   */
+  const getValueByType = useCallback(
+    (fieldType) => {
+      if (!fieldType) return '';
+      const field = schemaFields.find((f) => f.fieldType === fieldType);
+      if (!field) return '';
+      const raw = fieldValues?.[field.id];
+      return raw == null ? '' : String(raw);
+    },
+    [schemaFields, fieldValues]
+  );
+
+  /**
+   * يحاول استخراج اسم عرض ملائم من حقول الاستكشاف:
+   * 1) أول حقل نصي ملصقه/معرّفه يحتوي إحدى كلمات الاسم
+   * 2) أول حقل نصي به قيمة
+   * 3) قيمة احتياطية (مثلاً اسم نوع الاستكشاف)
+   */
+  const deriveDisplayName = useCallback(
+    (fallback = '') => {
+      const matched = schemaFields.find(
+        (f) =>
+          TEXT_LIKE_TYPES.has(f.fieldType) &&
+          (NAME_HINT_RE.test(String(f.label || '')) || NAME_HINT_RE.test(String(f.id || '')))
+      );
+      if (matched) {
+        const v = String(fieldValues?.[matched.id] ?? '').trim();
+        if (v) return v;
+      }
+      const firstText = schemaFields.find(
+        (f) => TEXT_LIKE_TYPES.has(f.fieldType) && String(fieldValues?.[f.id] ?? '').trim()
+      );
+      if (firstText) return String(fieldValues[firstText.id]).trim();
+      return String(fallback || '').trim();
+    },
+    [schemaFields, fieldValues]
+  );
+
   return {
     explorationTypes,
     typesLoading,
@@ -105,5 +173,8 @@ export function useExplorationForm(open, actorUser) {
     reset,
     validate,
     sanitize,
+    getValueBySource,
+    getValueByType,
+    deriveDisplayName,
   };
 }

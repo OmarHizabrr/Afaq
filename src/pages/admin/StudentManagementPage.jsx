@@ -45,12 +45,6 @@ const StudentManagementPage = () => {
   const [formSchoolIds, setFormSchoolIds] = useState([]);
   const [saving, setSaving] = useState(false);
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [expFormName, setExpFormName] = useState('');
-  const [expFormEmail, setExpFormEmail] = useState('');
-  const [expFormPhone, setExpFormPhone] = useState('');
-  const [expFormPassword, setExpFormPassword] = useState('');
-  const [expFormPhotoURL, setExpFormPhotoURL] = useState('');
-  const [expFormAccountDisabled, setExpFormAccountDisabled] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
 
@@ -352,49 +346,48 @@ const StudentManagementPage = () => {
     }
   };
 
-  const resetExplorationStudentForm = () => {
-    setExpFormName('');
-    setExpFormEmail('');
-    setExpFormPhone('');
-    setExpFormPassword('');
-    setExpFormPhotoURL('');
-    setExpFormAccountDisabled(false);
-  };
-
   const handleExplorationSaveStudent = async () => {
-    if (!expFormName.trim()) {
-      setError('اسم الطالب مطلوب.');
-      return;
-    }
-    if (!expFormPhone.trim() || !expFormPassword.trim()) {
-      setError('عند إضافة طالب جديد يجب إدخال رقم الهاتف وكلمة المرور.');
-      return;
-    }
     const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
       return;
     }
+    const displayName = expForm.deriveDisplayName('');
+    if (!displayName) {
+      setError('لا يمكن استخراج اسم الطالب من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      return;
+    }
+    const phone = expForm.getValueByType('tel').trim();
+    if (!phone) {
+      setError('يحتاج النموذج إلى حقل من نوع «رقم هاتف» لإنشاء حساب الطالب.');
+      return;
+    }
+    const password = expForm.getValueByType('password').trim();
+    if (!password) {
+      setError('يحتاج النموذج إلى حقل من نوع «كلمة مرور» لإنشاء حساب الطالب.');
+      return;
+    }
+    const emailNorm = expForm.getValueByType('email').trim().toLowerCase();
+    const photoURL = expForm.getValueByType('url').trim();
     try {
       setExpSaving(true);
       setError('');
       const api = FirestoreApi.Api;
       const studentId = api.getNewId('users');
-      const emailNorm = expFormEmail.trim().toLowerCase();
       await api.setData({
         docRef: api.getUserDoc(studentId),
         data: {
           uid: studentId,
-          displayName: expFormName.trim(),
+          displayName,
           email: emailNorm,
-          phoneNumber: expFormPhone.trim(),
+          phoneNumber: phone,
           role: 'student',
           permissionProfileId: null,
-          photoURL: expFormPhotoURL.trim(),
-          accountDisabled: expFormAccountDisabled,
+          photoURL,
+          accountDisabled: false,
           primarySchoolId: '',
           villageId: '',
-          password: expFormPassword.trim(),
+          password,
           explorationTypeId: expForm.selectedType?.id || '',
           explorationTypeName: expForm.selectedType?.name || '',
           explorationFieldValues: expForm.sanitize(),
@@ -403,7 +396,7 @@ const StudentManagementPage = () => {
         userData: actorUser || {},
       });
       setIsExploringAdding(false);
-      resetExplorationStudentForm();
+      expForm.reset();
       await fetchStudentsData();
     } catch (err) {
       console.error(err);
@@ -465,10 +458,7 @@ const StudentManagementPage = () => {
             <button
               type="button"
               className="google-btn google-btn--toolbar"
-              onClick={() => {
-                resetExplorationStudentForm();
-                setIsExploringAdding(true);
-              }}
+              onClick={() => setIsExploringAdding(true)}
             >
               <Compass size={16} /> إضافة من الاستكشاف
             </button>
@@ -679,72 +669,14 @@ const StudentManagementPage = () => {
 
       <FormModal
         open={isExploringAdding}
-        onClose={() => {
-          setIsExploringAdding(false);
-          resetExplorationStudentForm();
-        }}
+        onClose={() => setIsExploringAdding(false)}
         size="lg"
         title="إضافة طالب من نموذج الاستكشاف"
       >
         <div className="app-form-grid">
-          <div className="app-field app-field--grow">
-            <label className="app-label">الاسم الكامل</label>
-            <input className="app-input" value={expFormName} onChange={(e) => setExpFormName(e.target.value)} />
-          </div>
-          <div className="app-field app-field--grow">
-            <label className="app-label">البريد الإلكتروني (اختياري)</label>
-            <input
-              className="app-input"
-              type="email"
-              value={expFormEmail}
-              onChange={(e) => setExpFormEmail(e.target.value)}
-              placeholder="example@email.com"
-            />
-          </div>
-          <div className="app-field app-field--grow">
-            <label className="app-label">رقم الهاتف (إجباري)</label>
-            <input
-              className="app-input"
-              value={expFormPhone}
-              onChange={(e) => setExpFormPhone(e.target.value.replace(/\D/g, ''))}
-              inputMode="numeric"
-              maxLength={15}
-              placeholder="07xxxxxxxx"
-            />
-          </div>
-          <div className="app-field app-field--grow">
-            <label className="app-label">كلمة المرور (إجباري)</label>
-            <input
-              className="app-input"
-              type="password"
-              value={expFormPassword}
-              onChange={(e) => setExpFormPassword(e.target.value)}
-              autoComplete="new-password"
-              placeholder="كلمة مرور الطالب"
-            />
-          </div>
-          <div className="app-field app-field--grow">
-            <label className="app-label">رابط صورة شخصية (اختياري)</label>
-            <input
-              className="app-input"
-              type="url"
-              value={expFormPhotoURL}
-              onChange={(e) => setExpFormPhotoURL(e.target.value)}
-              placeholder="https://..."
-            />
-          </div>
-          <div className="app-field app-field--grow" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={expFormAccountDisabled}
-                onChange={(e) => setExpFormAccountDisabled(e.target.checked)}
-              />
-              <span>حساب معطّل (لا يستطيع تسجيل الدخول)</span>
-            </label>
-          </div>
           <div className="app-alert app-alert--info" style={{ gridColumn: '1 / -1', margin: 0 }}>
-            يتم إنشاء حساب الطالب فقط من هنا. ربط الطالب بمدرسة يتم من صفحة المدرسة حسب مسار العضوية المعتمد.
+            يحتاج النموذج إلى حقول من نوع: نص (للاسم)، هاتف، كلمة مرور — مع إمكانية إضافة بريد إلكتروني ورابط
+            للصورة اختيارياً. ربط الطالب بالمدرسة يتم من صفحة المدرسة لاحقاً.
           </div>
           <div style={{ gridColumn: '1 / -1' }}>
             <ExplorationFormSection
@@ -755,7 +687,7 @@ const StudentManagementPage = () => {
             />
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8, gridColumn: '1 / -1' }}>
-            <button type="button" className="google-btn" onClick={() => { setIsExploringAdding(false); resetExplorationStudentForm(); }}>إلغاء</button>
+            <button type="button" className="google-btn" onClick={() => setIsExploringAdding(false)}>إلغاء</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleExplorationSaveStudent} busy={expSaving}>
               حفظ
             </BusyButton>

@@ -23,7 +23,6 @@ const CurriculumPage = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newSubjectName, setNewSubjectName] = useState('');
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [expSubjectName, setExpSubjectName] = useState('');
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
   const [confirmConfig, setConfirmConfig] = useState(null);
@@ -115,10 +114,16 @@ const CurriculumPage = () => {
 
   const handleExplorationAddSubject = async (e) => {
     e.preventDefault();
-    if (!expSubjectName.trim()) return;
+    if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    const fallbackName = expForm.selectedType?.name ? `مادة - ${expForm.selectedType.name}` : '';
+    const derivedName = expForm.deriveDisplayName(fallbackName);
+    if (!derivedName) {
+      setError('لا يمكن استخراج اسم المادة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
       return;
     }
 
@@ -134,7 +139,7 @@ const CurriculumPage = () => {
       await api.setData({
         docRef: api.getCurriculumDoc(docId),
         data: {
-          name: expSubjectName.trim(),
+          name: derivedName,
           weeks: initialWeeks,
           explorationTypeId: expForm.selectedType?.id || '',
           explorationTypeName: expForm.selectedType?.name || '',
@@ -143,8 +148,8 @@ const CurriculumPage = () => {
         userData: actorUser || {},
       });
 
-      setExpSubjectName('');
       setIsExploringAdding(false);
+      expForm.reset();
       setSuccess('تمت إضافة المادة من نموذج الاستكشاف بنجاح.');
       setError('');
       fetchSubjects();
@@ -294,15 +299,6 @@ const CurriculumPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAddSubject}>
-          <input
-            type="text"
-            placeholder="اسم المادة"
-            value={expSubjectName}
-            onChange={(e) => setExpSubjectName(e.target.value)}
-            className="app-input"
-            required
-            style={{ marginBottom: '1rem' }}
-          />
           <ExplorationFormSection
             controller={expForm}
             actorUser={actorUser}

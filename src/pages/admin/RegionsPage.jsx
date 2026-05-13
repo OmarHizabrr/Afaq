@@ -35,8 +35,6 @@ const RegionsPage = () => {
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
   const [isExploringAdding, setIsExploringAdding] = useState(false);
-  const [expRegionName, setExpRegionName] = useState('');
-  const [expGovId, setExpGovId] = useState('');
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
 
@@ -164,13 +162,21 @@ const RegionsPage = () => {
 
   const handleExplorationAdd = async (e) => {
     e.preventDefault();
-    if (!expRegionName.trim() || !expGovId || expSaving) {
-      setError('يرجى إدخال اسم المنطقة واختيار المحافظة');
-      return;
-    }
+    if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
       setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    const govId = expForm.getValueBySource('governorates');
+    if (!govId) {
+      setError('يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «المحافظات» لاختيار المحافظة الأم.');
+      return;
+    }
+    const fallbackName = expForm.selectedType?.name ? `منطقة - ${expForm.selectedType.name}` : '';
+    const derivedName = expForm.deriveDisplayName(fallbackName);
+    if (!derivedName) {
+      setError('لا يمكن استخراج اسم المنطقة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
       return;
     }
     setExpSaving(true);
@@ -178,19 +184,18 @@ const RegionsPage = () => {
       const api = FirestoreApi.Api;
       const regId = api.getNewId('regions');
       await api.setData({
-        docRef: api.getRegionDoc(expGovId, regId),
+        docRef: api.getRegionDoc(govId, regId),
         data: {
-          name: expRegionName.trim(),
-          govId: expGovId,
+          name: derivedName,
+          govId,
           explorationTypeId: expForm.selectedType?.id || '',
           explorationTypeName: expForm.selectedType?.name || '',
           explorationFieldValues: expForm.sanitize(),
         },
         userData: actorUser || {},
       });
-      setExpRegionName('');
-      setExpGovId('');
       setIsExploringAdding(false);
+      expForm.reset();
       setSuccess('تمت إضافة المنطقة من نموذج الاستكشاف بنجاح.');
       setError('');
       fetchData();
@@ -219,11 +224,7 @@ const RegionsPage = () => {
             <button
               type="button"
               className="google-btn google-btn--toolbar"
-              onClick={() => {
-                setExpRegionName('');
-                setExpGovId('');
-                setIsExploringAdding(true);
-              }}
+              onClick={() => setIsExploringAdding(true)}
             >
               <Compass size={18} />
               <span>إضافة من الاستكشاف</span>
@@ -284,26 +285,9 @@ const RegionsPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd}>
-          <AppSelect
-            searchable
-            value={expGovId}
-            onChange={(e) => setExpGovId(e.target.value)}
-            style={{ marginBottom: '0.75rem' }}
-          >
-            <option value="">-- اختر المحافظة --</option>
-            {governorates.map((gov) => (
-              <option key={gov.id} value={gov.id}>{gov.name}</option>
-            ))}
-          </AppSelect>
-          <input
-            type="text"
-            placeholder="اسم المنطقة"
-            value={expRegionName}
-            onChange={(e) => setExpRegionName(e.target.value)}
-            className="app-input"
-            required
-            style={{ marginBottom: '1rem' }}
-          />
+          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+            النموذج يحتاج حقلاً مصدره «المحافظات» لربط المنطقة بالمحافظة الأم.
+          </div>
           <ExplorationFormSection
             controller={expForm}
             actorUser={actorUser}
