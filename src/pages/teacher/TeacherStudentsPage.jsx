@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, Plus, Edit2, Trash2, UserPlus, Eye } from "lucide-react";
+import { Users, Plus, Edit2, Trash2, UserPlus, Eye, Compass } from "lucide-react";
 import FirestoreApi from "../../services/firestoreApi";
 import PageHeader from "../../components/PageHeader";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import FormModal from "../../components/FormModal";
 import AppSelect from "../../components/AppSelect";
 import BusyButton from "../../components/BusyButton";
+import ExplorationFormSection from "../../components/ExplorationFormSection";
+import { useExplorationForm } from "../../hooks/useExplorationForm";
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "");
 
@@ -26,6 +28,11 @@ const TeacherStudentsPage = ({ user }) => {
   const [activeSchoolId, setActiveSchoolId] = useState("");
   const [schoolOptions, setSchoolOptions] = useState([]);
   const [schoolReady, setSchoolReady] = useState(false);
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [expStudentName, setExpStudentName] = useState("");
+  const [expStudentAge, setExpStudentAge] = useState("");
+  const [expSaving, setExpSaving] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, user);
 
   const reloadStudents = useCallback(async () => {
     if (!activeSchoolId) return;
@@ -174,6 +181,58 @@ const TeacherStudentsPage = ({ user }) => {
       setLoading(false);
     }
   };
+
+  const handleExplorationAdd = async (e) => {
+    e.preventDefault();
+    if (!expStudentName.trim() || !activeSchoolId || !actorId || expSaving) return;
+    const missing = expForm.validate();
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join("، ")}`);
+      return;
+    }
+
+    try {
+      setExpSaving(true);
+      const api = FirestoreApi.Api;
+      const docId = api.getNewId("students");
+      const studentData = {
+        studentName: expStudentName.trim(),
+        age: parseInt(expStudentAge, 10) || 0,
+        schoolId: activeSchoolId,
+        teacherId: actorId,
+        explorationTypeId: expForm.selectedType?.id || "",
+        explorationTypeName: expForm.selectedType?.name || "",
+        explorationFieldValues: expForm.sanitize(),
+      };
+
+      await Promise.all([
+        api.setData({ docRef: api.getSchoolStudentDoc(activeSchoolId, docId), data: studentData, userData: user || {} }),
+        api.setData({
+          docRef: api.getGroupMemberDoc(activeSchoolId, docId),
+          data: { ...studentData, id: docId, type: "student" },
+          userData: user || {},
+        }),
+        api.setData({
+          docRef: api.getUserMembershipMirrorDoc(docId, activeSchoolId),
+          data: { schoolId: activeSchoolId, studentName: studentData.studentName },
+          userData: user || {},
+        }),
+      ]);
+
+      setExpStudentName("");
+      setExpStudentAge("");
+      setIsExploringAdding(false);
+      setSuccess("تمت إضافة الدارس من نموذج الاستكشاف بنجاح.");
+      setError("");
+      reloadStudents();
+    } catch (err) {
+      console.error(err);
+      setError("حدث خطأ أثناء الحفظ");
+    } finally {
+      setExpSaving(false);
+    }
+  };
+
   const handleEditClick = (student) => {
     setIsEditing(student);
     setIsAdding(true);
@@ -238,20 +297,34 @@ const TeacherStudentsPage = ({ user }) => {
         title="إدارة الحلقات والدارسين"
         subtitle="قائمة الدارسين المسجلين لديك"
       >
-        <button
-          type="button"
-          className="google-btn google-btn--filled google-btn--toolbar"
-          style={{ background: "var(--success-color)", color: "#fff" }}
-          onClick={() => {
-            setIsAdding(true);
-            setIsEditing(null);
-            setStudentName("");
-            setStudentAge("");
-          }}
-        >
-          <UserPlus size={18} />
-          <span>إضافة دارس جديد</span>
-        </button>
+        <>
+          <button
+            type="button"
+            className="google-btn google-btn--filled google-btn--toolbar"
+            style={{ background: "var(--success-color)", color: "#fff" }}
+            onClick={() => {
+              setIsAdding(true);
+              setIsEditing(null);
+              setStudentName("");
+              setStudentAge("");
+            }}
+          >
+            <UserPlus size={18} />
+            <span>إضافة دارس جديد</span>
+          </button>
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => {
+              setExpStudentName("");
+              setExpStudentAge("");
+              setIsExploringAdding(true);
+            }}
+          >
+            <Compass size={18} />
+            <span>إضافة من الاستكشاف</span>
+          </button>
+        </>
       </PageHeader>
 
       {error && (
@@ -342,6 +415,53 @@ const TeacherStudentsPage = ({ user }) => {
               }}
             >
               {isEditing ? "تحديث" : "حفظ"}
+            </BusyButton>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={isExploringAdding}
+        title="إضافة دارس من نموذج الاستكشاف"
+        onClose={() => setIsExploringAdding(false)}
+      >
+        <form onSubmit={handleExplorationAdd}>
+          <label className="app-label">اسم الدارس</label>
+          <input
+            type="text"
+            placeholder="اسم الدارس الرباعي"
+            value={expStudentName}
+            onChange={(e) => setExpStudentName(e.target.value)}
+            required
+            className="app-input"
+            style={{ marginBottom: "0.75rem" }}
+          />
+          <label className="app-label">السن</label>
+          <input
+            type="number"
+            placeholder="السن"
+            value={expStudentAge}
+            onChange={(e) => setExpStudentAge(e.target.value)}
+            className="app-input"
+            style={{ marginBottom: "1rem" }}
+          />
+          <ExplorationFormSection
+            controller={expForm}
+            actorUser={user}
+            storageUserId={actorId}
+            heading="حقول نموذج الاستكشاف"
+          />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "1rem" }}>
+            <button type="button" className="google-btn" style={{ width: "auto", marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>
+              إلغاء
+            </button>
+            <BusyButton
+              type="submit"
+              busy={expSaving}
+              className="google-btn google-btn--filled"
+              style={{ width: "auto", marginTop: 0, background: "var(--success-color)", color: "#fff" }}
+            >
+              حفظ
             </BusyButton>
           </div>
         </form>

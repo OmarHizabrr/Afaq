@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, Search, Activity, Eye, EyeOff, Plus, Edit2, Lock } from 'lucide-react';
+import { GraduationCap, Search, Activity, Eye, EyeOff, Plus, Edit2, Lock, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
@@ -8,6 +8,8 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import FormModal from '../../components/FormModal';
 import BusyButton from '../../components/BusyButton';
+import ExplorationFormSection from '../../components/ExplorationFormSection';
+import { useExplorationForm } from '../../hooks/useExplorationForm';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterRegionsByScope,
@@ -20,6 +22,7 @@ const StudentManagementPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [students, setStudents] = useState([]);
@@ -41,6 +44,15 @@ const StudentManagementPage = () => {
   /** @type {string[]} */
   const [formSchoolIds, setFormSchoolIds] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [expFormName, setExpFormName] = useState('');
+  const [expFormEmail, setExpFormEmail] = useState('');
+  const [expFormPhone, setExpFormPhone] = useState('');
+  const [expFormPassword, setExpFormPassword] = useState('');
+  const [expFormPhotoURL, setExpFormPhotoURL] = useState('');
+  const [expFormAccountDisabled, setExpFormAccountDisabled] = useState(false);
+  const [expSaving, setExpSaving] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, actorUser);
 
   const sortedSchoolsCatalog = useMemo(
     () => [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar')),
@@ -340,6 +352,67 @@ const StudentManagementPage = () => {
     }
   };
 
+  const resetExplorationStudentForm = () => {
+    setExpFormName('');
+    setExpFormEmail('');
+    setExpFormPhone('');
+    setExpFormPassword('');
+    setExpFormPhotoURL('');
+    setExpFormAccountDisabled(false);
+  };
+
+  const handleExplorationSaveStudent = async () => {
+    if (!expFormName.trim()) {
+      setError('اسم الطالب مطلوب.');
+      return;
+    }
+    if (!expFormPhone.trim() || !expFormPassword.trim()) {
+      setError('عند إضافة طالب جديد يجب إدخال رقم الهاتف وكلمة المرور.');
+      return;
+    }
+    const missing = expForm.validate();
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    try {
+      setExpSaving(true);
+      setError('');
+      const api = FirestoreApi.Api;
+      const studentId = api.getNewId('users');
+      const emailNorm = expFormEmail.trim().toLowerCase();
+      await api.setData({
+        docRef: api.getUserDoc(studentId),
+        data: {
+          uid: studentId,
+          displayName: expFormName.trim(),
+          email: emailNorm,
+          phoneNumber: expFormPhone.trim(),
+          role: 'student',
+          permissionProfileId: null,
+          photoURL: expFormPhotoURL.trim(),
+          accountDisabled: expFormAccountDisabled,
+          primarySchoolId: '',
+          villageId: '',
+          password: expFormPassword.trim(),
+          explorationTypeId: expForm.selectedType?.id || '',
+          explorationTypeName: expForm.selectedType?.name || '',
+          explorationFieldValues: expForm.sanitize(),
+        },
+        merge: true,
+        userData: actorUser || {},
+      });
+      setIsExploringAdding(false);
+      resetExplorationStudentForm();
+      await fetchStudentsData();
+    } catch (err) {
+      console.error(err);
+      setError('تعذر حفظ الطالب من نموذج الاستكشاف.');
+    } finally {
+      setExpSaving(false);
+    }
+  };
+
   const schoolOptions = useMemo(() => {
     const setVals = new Set();
     students.forEach((s) => s.memberships.forEach((m) => m.schoolName && setVals.add(m.schoolName)));
@@ -376,18 +449,30 @@ const StudentManagementPage = () => {
         subtitle="عرض الارتباطات والتحركات لكل طالب بنمط عضويات المجموعات"
       >
         {can(PERMISSION_PAGE_IDS.students_management, 'student_management_add') && (
-          <button
-            type="button"
-            className="google-btn google-btn--toolbar"
-            onClick={() => {
-              resetForm();
-              setIsAddOpen(true);
-              const sorted = [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-              if (sorted.length) setFormSchoolIds([sorted[0].id]);
-            }}
-          >
-            <Plus size={16} /> إضافة طالب
-          </button>
+          <>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => {
+                resetForm();
+                setIsAddOpen(true);
+                const sorted = [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+                if (sorted.length) setFormSchoolIds([sorted[0].id]);
+              }}
+            >
+              <Plus size={16} /> إضافة طالب
+            </button>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => {
+                resetExplorationStudentForm();
+                setIsExploringAdding(true);
+              }}
+            >
+              <Compass size={16} /> إضافة من الاستكشاف
+            </button>
+          </>
         )}
       </PageHeader>
 
@@ -586,6 +671,92 @@ const StudentManagementPage = () => {
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
             <button type="button" className="google-btn" onClick={() => { setIsAddOpen(false); resetForm(); }}>إلغاء</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSaveStudent} busy={saving}>
+              حفظ
+            </BusyButton>
+          </div>
+        </div>
+      </FormModal>
+
+      <FormModal
+        open={isExploringAdding}
+        onClose={() => {
+          setIsExploringAdding(false);
+          resetExplorationStudentForm();
+        }}
+        size="lg"
+        title="إضافة طالب من نموذج الاستكشاف"
+      >
+        <div className="app-form-grid">
+          <div className="app-field app-field--grow">
+            <label className="app-label">الاسم الكامل</label>
+            <input className="app-input" value={expFormName} onChange={(e) => setExpFormName(e.target.value)} />
+          </div>
+          <div className="app-field app-field--grow">
+            <label className="app-label">البريد الإلكتروني (اختياري)</label>
+            <input
+              className="app-input"
+              type="email"
+              value={expFormEmail}
+              onChange={(e) => setExpFormEmail(e.target.value)}
+              placeholder="example@email.com"
+            />
+          </div>
+          <div className="app-field app-field--grow">
+            <label className="app-label">رقم الهاتف (إجباري)</label>
+            <input
+              className="app-input"
+              value={expFormPhone}
+              onChange={(e) => setExpFormPhone(e.target.value.replace(/\D/g, ''))}
+              inputMode="numeric"
+              maxLength={15}
+              placeholder="07xxxxxxxx"
+            />
+          </div>
+          <div className="app-field app-field--grow">
+            <label className="app-label">كلمة المرور (إجباري)</label>
+            <input
+              className="app-input"
+              type="password"
+              value={expFormPassword}
+              onChange={(e) => setExpFormPassword(e.target.value)}
+              autoComplete="new-password"
+              placeholder="كلمة مرور الطالب"
+            />
+          </div>
+          <div className="app-field app-field--grow">
+            <label className="app-label">رابط صورة شخصية (اختياري)</label>
+            <input
+              className="app-input"
+              type="url"
+              value={expFormPhotoURL}
+              onChange={(e) => setExpFormPhotoURL(e.target.value)}
+              placeholder="https://..."
+            />
+          </div>
+          <div className="app-field app-field--grow" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={expFormAccountDisabled}
+                onChange={(e) => setExpFormAccountDisabled(e.target.checked)}
+              />
+              <span>حساب معطّل (لا يستطيع تسجيل الدخول)</span>
+            </label>
+          </div>
+          <div className="app-alert app-alert--info" style={{ gridColumn: '1 / -1', margin: 0 }}>
+            يتم إنشاء حساب الطالب فقط من هنا. ربط الطالب بمدرسة يتم من صفحة المدرسة حسب مسار العضوية المعتمد.
+          </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <ExplorationFormSection
+              controller={expForm}
+              actorUser={actorUser}
+              storageUserId={storageUserId}
+              heading="حقول نموذج الاستكشاف"
+            />
+          </div>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8, gridColumn: '1 / -1' }}>
+            <button type="button" className="google-btn" onClick={() => { setIsExploringAdding(false); resetExplorationStudentForm(); }}>إلغاء</button>
+            <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleExplorationSaveStudent} busy={expSaving}>
               حفظ
             </BusyButton>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Plus, Trash2, Save, ChevronDown, ChevronUp, Printer } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Save, ChevronDown, ChevronUp, Printer, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -8,10 +8,13 @@ import FormModal from '../../components/FormModal';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
+import ExplorationFormSection from '../../components/ExplorationFormSection';
+import { useExplorationForm } from '../../hooks/useExplorationForm';
 
 const CurriculumPage = () => {
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const { can, actorUser } = usePermissions();
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,6 +22,10 @@ const CurriculumPage = () => {
   
   const [isAdding, setIsAdding] = useState(false);
   const [newSubjectName, setNewSubjectName] = useState('');
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [expSubjectName, setExpSubjectName] = useState('');
+  const [expSaving, setExpSaving] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, actorUser);
   const [confirmConfig, setConfirmConfig] = useState(null);
   
   // Expanded state for the accordion
@@ -106,6 +113,49 @@ const CurriculumPage = () => {
     }
   };
 
+  const handleExplorationAddSubject = async (e) => {
+    e.preventDefault();
+    if (!expSubjectName.trim()) return;
+    const missing = expForm.validate();
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+
+    try {
+      setExpSaving(true);
+      const api = FirestoreApi.Api;
+      const docId = api.getNewId('curriculum');
+      const initialWeeks = Array.from({ length: 50 }, (_, i) => ({
+        week: i + 1,
+        lesson: '',
+      }));
+
+      await api.setData({
+        docRef: api.getCurriculumDoc(docId),
+        data: {
+          name: expSubjectName.trim(),
+          weeks: initialWeeks,
+          explorationTypeId: expForm.selectedType?.id || '',
+          explorationTypeName: expForm.selectedType?.name || '',
+          explorationFieldValues: expForm.sanitize(),
+        },
+        userData: actorUser || {},
+      });
+
+      setExpSubjectName('');
+      setIsExploringAdding(false);
+      setSuccess('تمت إضافة المادة من نموذج الاستكشاف بنجاح.');
+      setError('');
+      fetchSubjects();
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء إضافة المادة من الاستكشاف');
+    } finally {
+      setExpSaving(false);
+    }
+  };
+
   const handleDeleteSubject = async (id) => {
     try {
       const api = FirestoreApi.Api;
@@ -188,10 +238,23 @@ const CurriculumPage = () => {
         subtitle="توزيع خطة الأسابيع (٥٠ أسبوعاً)"
       >
         {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_add_subject') && (
-          <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
-            <Plus size={18} />
-            <span>إضافة مادة جديدة</span>
-          </button>
+          <>
+            <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
+              <Plus size={18} />
+              <span>إضافة مادة جديدة</span>
+            </button>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => {
+                setExpSubjectName('');
+                setIsExploringAdding(true);
+              }}
+            >
+              <Compass size={18} />
+              <span>إضافة من الاستكشاف</span>
+            </button>
+          </>
         )}
       </PageHeader>
 
@@ -221,6 +284,38 @@ const CurriculumPage = () => {
             <button type="submit" className="google-btn google-btn--filled curriculum-modal-actions__btn">
               إنشاء الخطة
             </button>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={isExploringAdding}
+        title="إضافة مادة من نموذج الاستكشاف"
+        onClose={() => setIsExploringAdding(false)}
+      >
+        <form onSubmit={handleExplorationAddSubject}>
+          <input
+            type="text"
+            placeholder="اسم المادة"
+            value={expSubjectName}
+            onChange={(e) => setExpSubjectName(e.target.value)}
+            className="app-input"
+            required
+            style={{ marginBottom: '1rem' }}
+          />
+          <ExplorationFormSection
+            controller={expForm}
+            actorUser={actorUser}
+            storageUserId={storageUserId}
+            heading="حقول نموذج الاستكشاف"
+          />
+          <div className="curriculum-modal-actions" style={{ marginTop: '1rem' }}>
+            <button type="button" className="google-btn curriculum-modal-actions__btn" onClick={() => setIsExploringAdding(false)}>
+              إلغاء
+            </button>
+            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled curriculum-modal-actions__btn">
+              إنشاء الخطة
+            </BusyButton>
           </div>
         </form>
       </FormModal>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, MapPin, Map, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, MapPin, Map, Eye, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -9,6 +9,8 @@ import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
+import ExplorationFormSection from '../../components/ExplorationFormSection';
+import { useExplorationForm } from '../../hooks/useExplorationForm';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterGovernoratesByScope,
@@ -18,7 +20,8 @@ import {
 const RegionsPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [regions, setRegions] = useState([]);
   const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +34,11 @@ const RegionsPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [expRegionName, setExpRegionName] = useState('');
+  const [expGovId, setExpGovId] = useState('');
+  const [expSaving, setExpSaving] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, actorUser);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -154,6 +162,46 @@ const RegionsPage = () => {
     }
   };
 
+  const handleExplorationAdd = async (e) => {
+    e.preventDefault();
+    if (!expRegionName.trim() || !expGovId || expSaving) {
+      setError('يرجى إدخال اسم المنطقة واختيار المحافظة');
+      return;
+    }
+    const missing = expForm.validate();
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    setExpSaving(true);
+    try {
+      const api = FirestoreApi.Api;
+      const regId = api.getNewId('regions');
+      await api.setData({
+        docRef: api.getRegionDoc(expGovId, regId),
+        data: {
+          name: expRegionName.trim(),
+          govId: expGovId,
+          explorationTypeId: expForm.selectedType?.id || '',
+          explorationTypeName: expForm.selectedType?.name || '',
+          explorationFieldValues: expForm.sanitize(),
+        },
+        userData: actorUser || {},
+      });
+      setExpRegionName('');
+      setExpGovId('');
+      setIsExploringAdding(false);
+      setSuccess('تمت إضافة المنطقة من نموذج الاستكشاف بنجاح.');
+      setError('');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء الإضافة');
+    } finally {
+      setExpSaving(false);
+    }
+  };
+
   const getGovName = (govId) => {
     const gov = governorates.find(g => g.id === govId);
     return gov ? gov.name : 'غير معروف';
@@ -163,10 +211,24 @@ const RegionsPage = () => {
     <div>
       <PageHeader icon={MapPin} title="إدارة المناطق">
         {can(PERMISSION_PAGE_IDS.regions, 'region_add') && (
-          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
-            <Plus size={18} />
-            <span>إضافة منطقة</span>
-          </button>
+          <>
+            <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
+              <Plus size={18} />
+              <span>إضافة منطقة</span>
+            </button>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => {
+                setExpRegionName('');
+                setExpGovId('');
+                setIsExploringAdding(true);
+              }}
+            >
+              <Compass size={18} />
+              <span>إضافة من الاستكشاف</span>
+            </button>
+          </>
         )}
       </PageHeader>
 
@@ -211,6 +273,49 @@ const RegionsPage = () => {
             </button>
             <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
               {isEditing ? 'تحديث' : 'حفظ'}
+            </BusyButton>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={isExploringAdding}
+        title="إضافة منطقة من نموذج الاستكشاف"
+        onClose={() => setIsExploringAdding(false)}
+      >
+        <form onSubmit={handleExplorationAdd}>
+          <AppSelect
+            searchable
+            value={expGovId}
+            onChange={(e) => setExpGovId(e.target.value)}
+            style={{ marginBottom: '0.75rem' }}
+          >
+            <option value="">-- اختر المحافظة --</option>
+            {governorates.map((gov) => (
+              <option key={gov.id} value={gov.id}>{gov.name}</option>
+            ))}
+          </AppSelect>
+          <input
+            type="text"
+            placeholder="اسم المنطقة"
+            value={expRegionName}
+            onChange={(e) => setExpRegionName(e.target.value)}
+            className="app-input"
+            required
+            style={{ marginBottom: '1rem' }}
+          />
+          <ExplorationFormSection
+            controller={expForm}
+            actorUser={actorUser}
+            storageUserId={storageUserId}
+            heading="حقول نموذج الاستكشاف"
+          />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>
+              إلغاء
+            </button>
+            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+              حفظ المنطقة
             </BusyButton>
           </div>
         </form>

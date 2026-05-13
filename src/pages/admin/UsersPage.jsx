@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Edit2, X, Eye, UserPlus, Lock, EyeOff } from 'lucide-react';
+import { Shield, Edit2, X, Eye, UserPlus, Lock, EyeOff, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
+import ExplorationFormSection from '../../components/ExplorationFormSection';
+import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
@@ -58,6 +60,16 @@ const UsersPage = () => {
   const [modalBusy, setModalBusy] = useState(false);
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [expUserName, setExpUserName] = useState('');
+  const [expUserEmail, setExpUserEmail] = useState('');
+  const [expUserPhone, setExpUserPhone] = useState('');
+  const [expUserPassword, setExpUserPassword] = useState('');
+  const [expUserRole, setExpUserRole] = useState('unassigned');
+  const [expUserPermissionProfileId, setExpUserPermissionProfileId] = useState('');
+  const [expSaving, setExpSaving] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, actorUser);
 
   const canAssignSystemAdmin =
     actorUser?.role === SYSTEM_ADMIN_ROLE || actorUser?.role === 'admin';
@@ -180,6 +192,65 @@ const UsersPage = () => {
     }
   };
 
+  const handleExplorationCreateUser = async () => {
+    if (!expUserName.trim() || !expUserPhone.trim() || !expUserPassword.trim()) {
+      setError('يرجى إدخال الاسم ورقم الهاتف وكلمة المرور للمستخدم.');
+      return;
+    }
+    const missing = expForm.validate();
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    const emailNormalized = expUserEmail.trim().toLowerCase();
+    const emailExists = emailNormalized
+      ? users.some((u) => (u.email || '').toLowerCase() === emailNormalized)
+      : false;
+    if (emailNormalized && emailExists) {
+      setError('هذا البريد الإلكتروني مستخدم مسبقاً.');
+      return;
+    }
+
+    try {
+      setExpSaving(true);
+      setError('');
+      const api = FirestoreApi.Api;
+      const userId = api.getNewId('users');
+      const role = expUserRole === SYSTEM_ADMIN_ROLE && canAssignSystemAdmin ? SYSTEM_ADMIN_ROLE : expUserRole || 'unassigned';
+      const permissionProfileId = role === SYSTEM_ADMIN_ROLE ? null : expUserPermissionProfileId || null;
+      await api.setData({
+        docRef: api.getUserDoc(userId),
+        data: {
+          displayName: expUserName.trim(),
+          email: emailNormalized || '',
+          phoneNumber: expUserPhone.trim(),
+          password: expUserPassword.trim(),
+          permissionProfileId,
+          role,
+          accountDisabled: false,
+          photoURL: '',
+          explorationTypeId: expForm.selectedType?.id || '',
+          explorationTypeName: expForm.selectedType?.name || '',
+          explorationFieldValues: expForm.sanitize(),
+        },
+        userData: actorUser || {},
+      });
+      setIsExploringAdding(false);
+      setExpUserName('');
+      setExpUserEmail('');
+      setExpUserPhone('');
+      setExpUserPassword('');
+      setExpUserRole('unassigned');
+      setExpUserPermissionProfileId('');
+      await fetchData({ quiet: true });
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء إضافة المستخدم من الاستكشاف.');
+    } finally {
+      setExpSaving(false);
+    }
+  };
+
   const handleSaveRole = async () => {
     if (!editingUser) return;
 
@@ -231,18 +302,38 @@ const UsersPage = () => {
           </div>
         )}
         {(can(PERMISSION_PAGE_IDS.users, 'user_edit_role') || can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')) && (
-          <button
-            type="button"
-            className="google-btn google-btn--toolbar"
-            style={{ width: 'auto' }}
-            onClick={() => {
-              setIsAddUserOpen(true);
-              setError('');
-            }}
-          >
-            <UserPlus size={18} />
-            <span>إضافة مستخدم</span>
-          </button>
+          <>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              style={{ width: 'auto' }}
+              onClick={() => {
+                setIsAddUserOpen(true);
+                setError('');
+              }}
+            >
+              <UserPlus size={18} />
+              <span>إضافة مستخدم</span>
+            </button>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              style={{ width: 'auto' }}
+              onClick={() => {
+                setExpUserName('');
+                setExpUserEmail('');
+                setExpUserPhone('');
+                setExpUserPassword('');
+                setExpUserRole('unassigned');
+                setExpUserPermissionProfileId('');
+                setIsExploringAdding(true);
+                setError('');
+              }}
+            >
+              <Compass size={18} />
+              <span>إضافة من الاستكشاف</span>
+            </button>
+          </>
         )}
       </PageHeader>
 
@@ -392,6 +483,88 @@ const UsersPage = () => {
                 }
               >
                 حفظ التغييرات
+              </BusyButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isExploringAdding && (
+        <div className="modal-overlay" onClick={() => setIsExploringAdding(false)}>
+          <div className="modal-card modal-card--lg" onClick={(e) => e.stopPropagation()}>
+            <div className="users-modal__head">
+              <h2 className="users-modal__title">إضافة مستخدم من نموذج الاستكشاف</h2>
+              <button type="button" className="icon-btn" onClick={() => setIsExploringAdding(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="users-modal__field">
+              <label className="app-label">اسم المستخدم</label>
+              <input className="app-input" value={expUserName} onChange={(e) => setExpUserName(e.target.value)} placeholder="الاسم الكامل" />
+            </div>
+            <div className="users-modal__field">
+              <label className="app-label">البريد الإلكتروني (اختياري)</label>
+              <input className="app-input" type="email" value={expUserEmail} onChange={(e) => setExpUserEmail(e.target.value)} placeholder="example@email.com" />
+            </div>
+            <div className="users-modal__field">
+              <label className="app-label">رقم الهاتف (إجباري)</label>
+              <input className="app-input" value={expUserPhone} onChange={(e) => setExpUserPhone(e.target.value.replace(/\D/g, ''))} inputMode="numeric" maxLength={15} placeholder="07xxxxxxxx" />
+            </div>
+            <div className="users-modal__field">
+              <label className="app-label">كلمة المرور (إجباري)</label>
+              <input className="app-input" type="password" value={expUserPassword} onChange={(e) => setExpUserPassword(e.target.value)} autoComplete="new-password" />
+            </div>
+            <div className="users-modal__field">
+              <label className="app-label">الدور في النظام</label>
+              <AppSelect
+                searchable
+                value={expUserRole}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setExpUserRole(v);
+                  if (v === SYSTEM_ADMIN_ROLE) setExpUserPermissionProfileId('');
+                }}
+              >
+                <option value="unassigned">{USER_ROLE_LABELS.unassigned}</option>
+                <option value="student">{USER_ROLE_LABELS.student}</option>
+                <option value="teacher">{USER_ROLE_LABELS.teacher}</option>
+                <option value="supervisor_local">{USER_ROLE_LABELS.supervisor_local}</option>
+                <option value="supervisor_arab">{USER_ROLE_LABELS.supervisor_arab}</option>
+                <option value="admin">{USER_ROLE_LABELS.admin}</option>
+                {canAssignSystemAdmin && (
+                  <option value={SYSTEM_ADMIN_ROLE}>{USER_ROLE_LABELS[SYSTEM_ADMIN_ROLE]}</option>
+                )}
+              </AppSelect>
+            </div>
+            <div className="users-modal__field">
+              <label className="app-label">نوع الصلاحيات</label>
+              <AppSelect
+                searchable
+                value={expUserPermissionProfileId}
+                onChange={(e) => setExpUserPermissionProfileId(e.target.value)}
+                disabled={expUserRole === SYSTEM_ADMIN_ROLE}
+              >
+                <option value="">بدون نوع صلاحيات</option>
+                {permissionProfiles.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name || p.id}</option>
+                ))}
+              </AppSelect>
+            </div>
+            <ExplorationFormSection
+              controller={expForm}
+              actorUser={actorUser}
+              storageUserId={storageUserId}
+              heading="حقول نموذج الاستكشاف"
+            />
+            <div className="users-modal__actions">
+              <BusyButton
+                type="button"
+                busy={expSaving}
+                className="google-btn google-btn--filled users-modal__save-btn"
+                onClick={handleExplorationCreateUser}
+              >
+                حفظ المستخدم
               </BusyButton>
             </div>
           </div>

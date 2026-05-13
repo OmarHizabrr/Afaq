@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, School, Eye, MapPin, Handshake } from 'lucide-react';
+import { Plus, Edit2, Trash2, School, Eye, MapPin, Handshake, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
+import ExplorationFormSection from '../../components/ExplorationFormSection';
+import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import {
@@ -26,7 +28,8 @@ const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?
 const SchoolsPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser } = perm;
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [schools, setSchools] = useState([]);
   const [regions, setRegions] = useState([]);
   const [villages, setVillages] = useState([]);
@@ -44,6 +47,14 @@ const SchoolsPage = () => {
   const [schoolName, setSchoolName] = useState('');
   const [schoolLevel, setSchoolLevel] = useState('children');
   const [donorName, setDonorName] = useState('');
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [expSelectedRegId, setExpSelectedRegId] = useState('');
+  const [expSelectedVilId, setExpSelectedVilId] = useState('');
+  const [expSchoolName, setExpSchoolName] = useState('');
+  const [expSchoolLevel, setExpSchoolLevel] = useState('children');
+  const [expDonorName, setExpDonorName] = useState('');
+  const [expSaving, setExpSaving] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, actorUser);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -105,6 +116,9 @@ const SchoolsPage = () => {
   const filteredVillages = selectedRegId 
     ? villages.filter(v => v.regionId === selectedRegId) 
     : villages;
+  const expFilteredVillages = expSelectedRegId
+    ? villages.filter((v) => v.regionId === expSelectedRegId)
+    : villages;
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -163,6 +177,52 @@ const SchoolsPage = () => {
       setLoading(false);
     }
   };
+
+  const handleExplorationAdd = async (e) => {
+    e.preventDefault();
+    if (!expSchoolName.trim() || !expSelectedVilId || !expSchoolLevel || expSaving) {
+      setError('يرجى إدخال اسم المدرسة واختيار القرية ونوع المدرسة (كبار / صغار)');
+      return;
+    }
+    const missing = expForm.validate();
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    setExpSaving(true);
+    try {
+      const api = FirestoreApi.Api;
+      const newSchId = api.getNewId('schools');
+      await api.setData({
+        docRef: api.getSchoolDoc(expSelectedVilId, newSchId),
+        data: {
+          name: expSchoolName.trim(),
+          villageId: expSelectedVilId,
+          schoolLevel: expSchoolLevel,
+          donorName: expDonorName.trim() || '',
+          explorationTypeId: expForm.selectedType?.id || '',
+          explorationTypeName: expForm.selectedType?.name || '',
+          explorationFieldValues: expForm.sanitize(),
+        },
+        userData: actorUser || {},
+      });
+      setExpSelectedRegId('');
+      setExpSelectedVilId('');
+      setExpSchoolName('');
+      setExpSchoolLevel('children');
+      setExpDonorName('');
+      setIsExploringAdding(false);
+      setError('');
+      setSuccess('تمت إضافة المدرسة من نموذج الاستكشاف بنجاح.');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء الحفظ');
+    } finally {
+      setExpSaving(false);
+    }
+  };
+
   const handleEditClick = (sch) => {
     setIsEditing(sch);
     setIsAdding(true);
@@ -202,22 +262,39 @@ const SchoolsPage = () => {
     <div>
       <PageHeader icon={School} title="إدارة المدارس">
         {can(PERMISSION_PAGE_IDS.schools, 'school_add') && (
-          <button
-            type="button"
-            className="google-btn google-btn--toolbar"
-            onClick={() => {
-              setIsAdding(true);
-              setIsEditing(null);
-              setSchoolLevel('children');
-              setSchoolName('');
-              setDonorName('');
-              setSelectedVilId('');
-              setSelectedRegId('');
-            }}
-          >
-            <Plus size={18} />
-            <span>إضافة مدرسة</span>
-          </button>
+          <>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => {
+                setIsAdding(true);
+                setIsEditing(null);
+                setSchoolLevel('children');
+                setSchoolName('');
+                setDonorName('');
+                setSelectedVilId('');
+                setSelectedRegId('');
+              }}
+            >
+              <Plus size={18} />
+              <span>إضافة مدرسة</span>
+            </button>
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => {
+                setExpSelectedRegId('');
+                setExpSelectedVilId('');
+                setExpSchoolName('');
+                setExpSchoolLevel('children');
+                setExpDonorName('');
+                setIsExploringAdding(true);
+              }}
+            >
+              <Compass size={18} />
+              <span>إضافة من الاستكشاف</span>
+            </button>
+          </>
         )}
       </PageHeader>
 
@@ -273,6 +350,55 @@ const SchoolsPage = () => {
               إلغاء
             </button>
             <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled schools-form__action-btn">
+              حفظ المدرسة
+            </BusyButton>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={isExploringAdding}
+        title="إضافة مدرسة من نموذج الاستكشاف"
+        onClose={() => setIsExploringAdding(false)}
+      >
+        <form onSubmit={handleExplorationAdd} className="schools-form">
+          <label className="app-label">تصفية حسب المنطقة</label>
+          <AppSelect searchable value={expSelectedRegId} onChange={(e) => { setExpSelectedRegId(e.target.value); setExpSelectedVilId(''); }} className="schools-form__field-gap">
+            <option value="">-- كل المناطق --</option>
+            {regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+          </AppSelect>
+
+          <label className="app-label">القرية (مطلوب)</label>
+          <AppSelect searchable value={expSelectedVilId} onChange={(e) => setExpSelectedVilId(e.target.value)} className="schools-form__field-gap" required>
+            <option value="">-- اختر القرية --</option>
+            {expFilteredVillages.map((v) => <option key={v.id} value={v.id}>{v.villageName}</option>)}
+          </AppSelect>
+
+          <label className="app-label">اسم المدرسة (مطلوب)</label>
+          <input type="text" value={expSchoolName} onChange={(e) => setExpSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder="مثال: مدرسة النور" />
+
+          <label className="app-label">نوع المدرسة (مطلوب)</label>
+          <AppSelect searchable value={expSchoolLevel} onChange={(e) => setExpSchoolLevel(e.target.value)} className="schools-form__field-gap" required>
+            {SCHOOL_LEVEL_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </AppSelect>
+
+          <label className="app-label">اسم المتبرع</label>
+          <input type="text" value={expDonorName} onChange={(e) => setExpDonorName(e.target.value)} className="app-input schools-form__field-gap" placeholder="اختياري" />
+
+          <ExplorationFormSection
+            controller={expForm}
+            actorUser={actorUser}
+            storageUserId={storageUserId}
+            heading="حقول نموذج الاستكشاف"
+          />
+
+          <div className="schools-form__actions" style={{ marginTop: '1rem' }}>
+            <button type="button" onClick={() => setIsExploringAdding(false)} className="google-btn schools-form__action-btn">
+              إلغاء
+            </button>
+            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled schools-form__action-btn">
               حفظ المدرسة
             </BusyButton>
           </div>

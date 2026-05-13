@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Map, Eye, X, Save } from 'lucide-react';
+import { Plus, Edit2, Trash2, Map, Eye, X, Save, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -8,6 +8,8 @@ import FormModal from '../../components/FormModal';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
+import ExplorationFormSection from '../../components/ExplorationFormSection';
+import { useExplorationForm } from '../../hooks/useExplorationForm';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterGovernoratesByScope,
@@ -17,7 +19,8 @@ import {
 const GovernoratesPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -29,6 +32,19 @@ const GovernoratesPage = () => {
   const [saving, setSaving] = useState(false);
   const [showScopeNotice, setShowScopeNotice] = useState(true);
   const [pendingDelete, setPendingDelete] = useState(null);
+
+  /* مودال «الإضافة من نموذج الاستكشاف» */
+  const [isExploringAdding, setIsExploringAdding] = useState(false);
+  const [expGovName, setExpGovName] = useState('');
+  const [expGovCountry, setExpGovCountry] = useState('');
+  const [expSaving, setExpSaving] = useState(false);
+  const expForm = useExplorationForm(isExploringAdding, actorUser);
+
+  const openExplorationModal = () => {
+    setExpGovName('');
+    setExpGovCountry('');
+    setIsExploringAdding(true);
+  };
 
   const fetchGovernorates = useCallback(async () => {
     setLoading(true);
@@ -144,6 +160,42 @@ const GovernoratesPage = () => {
       setIsAdding(false);
   };
 
+  const handleExplorationAdd = async (e) => {
+    e.preventDefault();
+    if (!expGovName.trim() || expSaving) return;
+    const missing = expForm.validate();
+    if (missing.length > 0) {
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      return;
+    }
+    setExpSaving(true);
+    try {
+      const api = FirestoreApi.Api;
+      const docId = api.getNewId('governorates');
+      const docRef = api.getGovernorateDoc(docId);
+      await api.setData({
+        docRef,
+        data: {
+          name: expGovName.trim(),
+          country: expGovCountry.trim(),
+          explorationTypeId: expForm.selectedType?.id || '',
+          explorationTypeName: expForm.selectedType?.name || '',
+          explorationFieldValues: expForm.sanitize(),
+        },
+        userData: actorUser || {},
+      });
+      setIsExploringAdding(false);
+      setSuccess('تمت إضافة المحافظة من نموذج الاستكشاف بنجاح.');
+      setError('');
+      fetchGovernorates();
+    } catch (err) {
+      console.error(err);
+      setError('حدث خطأ أثناء الإضافة');
+    } finally {
+      setExpSaving(false);
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       const api = FirestoreApi.Api;
@@ -162,10 +214,16 @@ const GovernoratesPage = () => {
     <div>
       <PageHeader icon={Map} title="إدارة المحافظات">
         {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') && (
-          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
-            <Plus size={18} />
-            <span>إضافة محافظة</span>
-          </button>
+          <>
+            <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
+              <Plus size={18} />
+              <span>إضافة محافظة</span>
+            </button>
+            <button type="button" className="google-btn google-btn--toolbar" onClick={openExplorationModal}>
+              <Compass size={18} />
+              <span>إضافة من الاستكشاف</span>
+            </button>
+          </>
         )}
       </PageHeader>
 
@@ -228,6 +286,46 @@ const GovernoratesPage = () => {
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Save size={14} aria-hidden /> {isEditing ? 'تحديث' : 'حفظ'}
               </span>
+            </BusyButton>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={isExploringAdding}
+        title="إضافة محافظة من نموذج الاستكشاف"
+        onClose={() => setIsExploringAdding(false)}
+      >
+        <form onSubmit={handleExplorationAdd}>
+          <input
+            type="text"
+            placeholder="اسم المحافظة"
+            value={expGovName}
+            onChange={(e) => setExpGovName(e.target.value)}
+            className="app-input"
+            required
+            style={{ marginBottom: '1rem' }}
+          />
+          <input
+            type="text"
+            placeholder="الدولة"
+            value={expGovCountry}
+            onChange={(e) => setExpGovCountry(e.target.value)}
+            className="app-input"
+            style={{ marginBottom: '1rem' }}
+          />
+          <ExplorationFormSection
+            controller={expForm}
+            actorUser={actorUser}
+            storageUserId={storageUserId}
+            heading="حقول نموذج الاستكشاف"
+          />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>
+              إلغاء
+            </button>
+            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+              حفظ المحافظة
             </BusyButton>
           </div>
         </form>
