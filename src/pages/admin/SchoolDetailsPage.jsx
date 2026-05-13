@@ -440,13 +440,14 @@ const SchoolDetailsPage = () => {
 
     useEffect(() => {
       if (!school?.id) return;
+      if (loading) return;
       const qp = new URLSearchParams(location.search || '');
       const shouldCompose = qp.get('composeReport') === '1';
       if (!shouldCompose) return;
       if (!can(PERMISSION_PAGE_IDS.schools, 'school_report_create')) return;
       openReportModal();
       navigate(`/schools/${id}`, { replace: true });
-    }, [location.search, school, can, navigate, id, openReportModal]);
+    }, [location.search, school, loading, can, navigate, id, openReportModal]);
 
     const openEditReportModal = (rep) => {
       const teacherPhoneMap = {};
