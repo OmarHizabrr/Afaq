@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import AppSelect from './AppSelect';
+import { uploadExplorationFieldFile } from '../services/storageApi';
 
 const yesNo = [
   { value: '', label: 'غير محدد' },
@@ -7,7 +8,12 @@ const yesNo = [
   { value: 'no', label: 'لا' },
 ];
 
-const FILE_MAX_BYTES = 650_000;
+function maxBytesForFieldType(t) {
+  if (t === 'image') return 12 * 1024 * 1024;
+  if (t === 'video') return 45 * 1024 * 1024;
+  if (t === 'audio') return 25 * 1024 * 1024;
+  return 20 * 1024 * 1024;
+}
 
 const acceptForType = (t) => {
   if (t === 'image') return 'image/*';
@@ -16,19 +22,11 @@ const acceptForType = (t) => {
   return '*/*';
 };
 
-function readFileAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('read'));
-    r.readAsDataURL(file);
-  });
-}
-
-function SignatureCanvas({ value, onChange, disabled }) {
+function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fieldId }) {
   const ref = useRef(null);
   const drawing = useRef(false);
   const last = useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   const drawLine = useCallback((x0, y0, x1, y1) => {
     const c = ref.current;
@@ -61,18 +59,32 @@ function SignatureCanvas({ value, onChange, disabled }) {
     }
   }, []);
 
-  useEffect(() => {
+  const paintValueOnCanvas = useCallback(() => {
     const c = ref.current;
     if (!c) return;
     const ctx = c.getContext('2d');
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, c.width, c.height);
-    if (value && String(value).startsWith('data:image')) {
+    const val = String(value || '').trim();
+    if (!val) return;
+    if (val.startsWith('data:image')) {
       const img = new Image();
       img.onload = () => ctx.drawImage(img, 0, 0, c.width, c.height);
-      img.src = value;
+      img.src = val;
+      return;
+    }
+    if (val.startsWith('http://') || val.startsWith('https://')) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => ctx.drawImage(img, 0, 0, c.width, c.height);
+      img.onerror = () => {};
+      img.src = val;
     }
   }, [value]);
+
+  useEffect(() => {
+    paintValueOnCanvas();
+  }, [value, paintValueOnCanvas]);
 
   const start = (e) => {
     if (disabled) return;
@@ -94,7 +106,43 @@ function SignatureCanvas({ value, onChange, disabled }) {
     if (drawing.current) {
       drawing.current = false;
       last.current = null;
+    }
+  };
+
+  const clearCanvas = () => {
+    const c = ref.current;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    onChange('');
+  };
+
+  const handleUploadSignature = async () => {
+    const c = ref.current;
+    if (!c || disabled) return;
+    const blob = await new Promise((resolve) => {
+      c.toBlob((b) => resolve(b), 'image/png', 0.92);
+    });
+    if (!blob || blob.size < 80) {
+      window.alert('ارسم التوقيع أولاً ثم اضغط «رفع التوقيع».');
+      return;
+    }
+    if (!storageUserId) {
       onChange(toData());
+      return;
+    }
+    setUploading(true);
+    try {
+      const file = new File([blob], `signature_${fieldId}.png`, { type: 'image/png' });
+      const url = await uploadExplorationFieldFile(file, { userId: storageUserId, fieldId: `${fieldId}_sig` });
+      onChange(url);
+    } catch (err) {
+      console.error(err);
+      window.alert('تعذر رفع التوقيع إلى التخزين. تحقق من قواعد Firebase Storage والصلاحيات.');
+      onChange(toData());
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -114,14 +162,26 @@ function SignatureCanvas({ value, onChange, disabled }) {
         onTouchMove={move}
         onTouchEnd={end}
       />
-      <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 8 }} onClick={() => onChange('')} disabled={disabled}>
-        مسح التوقيع
-      </button>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8, alignItems: 'center' }}>
+        <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={clearCanvas} disabled={disabled || uploading}>
+          مسح اللوحة
+        </button>
+        <button type="button" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }} onClick={handleUploadSignature} disabled={disabled || uploading}>
+          {uploading ? 'جاري الرفع…' : storageUserId ? 'رفع التوقيع إلى التخزين' : 'حفظ التوقيع (محلي)'}
+        </button>
+      </div>
+      {String(value || '').startsWith('http') && (
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '8px 0 0', wordBreak: 'break-all' }}>
+          رابط محفوظ: <a href={value} target="_blank" rel="noreferrer">فتح</a>
+        </p>
+      )}
     </div>
   );
 }
 
-export default function ExplorationDynamicFieldBlock({ fields, values, onChange }) {
+export default function ExplorationDynamicFieldBlock({ fields, values, onChange, storageUserId }) {
+  const [uploadingFieldId, setUploadingFieldId] = useState(null);
+
   return (
     <>
       {fields.map((f) => {
@@ -364,6 +424,10 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange 
         }
 
         if (f.fieldType === 'file' || f.fieldType === 'image' || f.fieldType === 'video' || f.fieldType === 'audio') {
+          const maxB = maxBytesForFieldType(f.fieldType);
+          const strVal = String(v || '').trim();
+          const isHttp = strVal.startsWith('http://') || strVal.startsWith('https://');
+          const isLegacyData = strVal.startsWith('data:');
           return (
             <React.Fragment key={f.id}>
               {commonLabel}
@@ -371,6 +435,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange 
                 className="app-input"
                 type="file"
                 accept={acceptForType(f.fieldType)}
+                disabled={Boolean(uploadingFieldId) || !storageUserId}
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   e.target.value = '';
@@ -378,20 +443,50 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange 
                     onChange(f.id, '');
                     return;
                   }
-                  if (file.size > FILE_MAX_BYTES) {
-                    window.alert(`حجم الملف يتجاوز الحد (${Math.round(FILE_MAX_BYTES / 1000)} كيلوبايت تقريباً). اختر ملفاً أصغر أو ارفع رابطاً في حقل نصي.`);
+                  if (!storageUserId) {
+                    window.alert('يجب تسجيل الدخول لرفع الملفات إلى التخزين.');
                     return;
                   }
+                  if (file.size > maxB) {
+                    window.alert(
+                      `حجم الملف يتجاوز الحد المسموح (${Math.round(maxB / (1024 * 1024))} ميجابايت لهذا النوع).`
+                    );
+                    return;
+                  }
+                  setUploadingFieldId(f.id);
                   try {
-                    const data = await readFileAsDataUrl(file);
-                    onChange(f.id, data);
-                  } catch {
-                    window.alert('تعذر قراءة الملف.');
+                    const url = await uploadExplorationFieldFile(file, { userId: storageUserId, fieldId: f.id });
+                    onChange(f.id, url);
+                  } catch (err) {
+                    console.error(err);
+                    window.alert('تعذر رفع الملف. تحقق من قواعد Firebase Storage والصلاحيات.');
+                  } finally {
+                    setUploadingFieldId(null);
                   }
                 }}
               />
-              {String(v || '').startsWith('data:') && (
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '4px 0 0' }}>تم اختيار ملف (مخزن كنص ضمن السجل).</p>
+              {!storageUserId && (
+                <p style={{ fontSize: '0.78rem', color: 'var(--danger-color)', margin: '4px 0 0' }}>تسجيل الدخول مطلوب لرفع الملفات.</p>
+              )}
+              {uploadingFieldId === f.id && (
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '6px 0 0' }}>جاري الرفع إلى Firebase Storage…</p>
+              )}
+              {isHttp && (
+                <div style={{ marginTop: 10 }} className="exploration-form-grid__full">
+                  {f.fieldType === 'image' && (
+                    <img src={strVal} alt="" style={{ maxWidth: '100%', maxHeight: 160, borderRadius: 8, border: '1px solid var(--border-color)' }} />
+                  )}
+                  {f.fieldType === 'video' && <video src={strVal} controls style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8 }} />}
+                  {f.fieldType === 'audio' && <audio src={strVal} controls style={{ width: '100%', marginTop: 6 }} />}
+                  <a href={strVal} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: 8, fontSize: '0.85rem' }}>
+                    فتح الرابط / تحميل
+                  </a>
+                </div>
+              )}
+              {isLegacyData && (
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '6px 0 0' }}>
+                  يوجد مرفق قديم مخزّن داخل السجل (base64). يُفضّل إعادة الرفع ليُحفظ الرابط في Storage فقط.
+                </p>
               )}
             </React.Fragment>
           );
@@ -441,7 +536,12 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange 
             <React.Fragment key={f.id}>
               {commonLabel}
               <div className="exploration-form-grid__full">
-                <SignatureCanvas value={v} onChange={(data) => onChange(f.id, data)} />
+                <SignatureCanvas
+                  value={v}
+                  onChange={(data) => onChange(f.id, data)}
+                  storageUserId={storageUserId}
+                  fieldId={f.id}
+                />
               </div>
             </React.Fragment>
           );

@@ -61,7 +61,8 @@ const numberOrZero = (v) => {
 };
 
 const ExplorationsPage = () => {
-  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading } = usePermissions();
+  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser } = usePermissions();
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -572,7 +573,12 @@ const ExplorationsPage = () => {
           </AppSelect>
 
           {useDynamicForm ? (
-            <ExplorationDynamicFieldBlock fields={schemaFields} values={form.fieldValues || {}} onChange={setDynamicValue} />
+            <ExplorationDynamicFieldBlock
+              fields={schemaFields}
+              values={form.fieldValues || {}}
+              onChange={setDynamicValue}
+              storageUserId={storageUserId}
+            />
           ) : (
             <>
               <label className="app-label">اسم اللواء / District</label>
