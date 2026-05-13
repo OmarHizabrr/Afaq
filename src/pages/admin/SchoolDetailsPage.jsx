@@ -20,6 +20,16 @@ const USER_ROLE_LABELS = {
   student: 'طالب',
   unassigned: 'غير معيّن',
 };
+const ASSIGN_ROLE_FILTER_ORDER = [
+  'teacher',
+  'supervisor_local',
+  'supervisor_arab',
+  'student',
+  'admin',
+  'system_admin',
+  'unassigned',
+  'all',
+];
 
 const userRoleLabel = (role) => USER_ROLE_LABELS[role] || role || 'مستخدم';
 
@@ -37,6 +47,7 @@ const SchoolDetailsPage = () => {
     const [staffSearch, setStaffSearch] = useState('');
     const [studentSearch, setStudentSearch] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [assignRoleFilter, setAssignRoleFilter] = useState('all');
     const [assigning, setAssigning] = useState(false);
     const [assignError, setAssignError] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
@@ -255,7 +266,9 @@ const SchoolDetailsPage = () => {
             u.displayName?.toLowerCase().includes(q) ||
             u.email?.toLowerCase().includes(q);
         const alreadyMember = staff.find((s) => s.id === u.id) || students.find((s) => s.id === u.id);
-        return matchesSearch && !alreadyMember;
+        const role = u.role || 'unassigned';
+        const matchesRole = assignRoleFilter === 'all' || role === assignRoleFilter;
+        return matchesSearch && matchesRole && !alreadyMember;
     });
 
     const renderStatCard = (label, value, IconComponent, color) => (
@@ -310,7 +323,7 @@ const SchoolDetailsPage = () => {
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                             )}
                         </div>
                     </div>
@@ -362,7 +375,7 @@ const SchoolDetailsPage = () => {
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); }}><UserPlus size={18} /></button>
+                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                             )}
                         </div>
                     </div>
@@ -410,6 +423,18 @@ const SchoolDetailsPage = () => {
                               onChange={(e) => setSearchTerm(e.target.value)}
                               className="app-input school-details-assign-modal__search-input"
                             />
+                        </div>
+                        <div className="role-filter-bar" style={{ marginBottom: '0.75rem' }}>
+                          {ASSIGN_ROLE_FILTER_ORDER.map((rid) => (
+                            <button
+                              key={rid}
+                              type="button"
+                              className={`role-filter-btn ${assignRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
+                              onClick={() => setAssignRoleFilter(rid)}
+                            >
+                              {rid === 'all' ? 'الكل' : userRoleLabel(rid)}
+                            </button>
+                          ))}
                         </div>
                         {assignError && <div className="app-alert app-alert--error school-details-assign-modal__alert">{assignError}</div>}
                         {selectedIds.length > 0 && (

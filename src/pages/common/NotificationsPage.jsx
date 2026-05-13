@@ -20,6 +20,16 @@ const ROLE_LABELS = {
   student: 'طالب',
   unassigned: 'غير معين',
 };
+const RECIPIENT_ROLE_FILTER_ORDER = [
+  'teacher',
+  'supervisor_local',
+  'supervisor_arab',
+  'student',
+  'admin',
+  'system_admin',
+  'unassigned',
+  'all',
+];
 
 const NotificationsPage = ({ user }) => {
   const location = useLocation();
@@ -33,12 +43,14 @@ const NotificationsPage = ({ user }) => {
   const [messageText, setMessageText] = useState('');
   const [replyTo, setReplyTo] = useState(null);
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const [composeRoleFilter, setComposeRoleFilter] = useState('all');
   const [selectedRecipientIds, setSelectedRecipientIds] = useState([]);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [type, setType] = useState('info');
   const [sending, setSending] = useState(false);
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
+  const [chatRoleFilter, setChatRoleFilter] = useState('all');
   const [newChatTitle, setNewChatTitle] = useState('');
   const [newChatUsers, setNewChatUsers] = useState([]);
   const [sendingMessage, setSendingMessage] = useState(false);
@@ -130,6 +142,14 @@ const NotificationsPage = ({ user }) => {
   }, [allUsers, actorId]);
 
   const recipientsMap = useMemo(() => Object.fromEntries(recipients.map((r) => [r.id, r])), [recipients]);
+  const composeRecipients = useMemo(() => {
+    if (composeRoleFilter === 'all') return recipients;
+    return recipients.filter((u) => (u.role || 'unassigned') === composeRoleFilter);
+  }, [recipients, composeRoleFilter]);
+  const chatRecipients = useMemo(() => {
+    if (chatRoleFilter === 'all') return recipients;
+    return recipients.filter((u) => (u.role || 'unassigned') === chatRoleFilter);
+  }, [recipients, chatRoleFilter]);
 
   const markAllRead = useCallback(async () => {
     if (markAllRunningRef.current || notifications.length === 0) return;
@@ -338,12 +358,12 @@ const NotificationsPage = ({ user }) => {
           <MessageCircle size={16} /> المحادثات
         </button>
         {recipients.length > 0 && (
-          <button type="button" className="btn-md btn-md--outline" onClick={() => setIsNewChatOpen(true)}>
+          <button type="button" className="btn-md btn-md--outline" onClick={() => { setIsNewChatOpen(true); setChatRoleFilter('all'); }}>
             <Users size={16} /> محادثة جديدة
           </button>
         )}
         {recipients.length > 0 && (
-          <button type="button" className="btn-md btn-md--primary" onClick={() => setIsComposeOpen(true)}>
+          <button type="button" className="btn-md btn-md--primary" onClick={() => { setIsComposeOpen(true); setComposeRoleFilter('all'); }}>
             <Send size={16} /> إرسال إشعار
           </button>
         )}
@@ -458,7 +478,7 @@ const NotificationsPage = ({ user }) => {
               type="button"
               className="btn-md btn-md--outline"
               style={{ minHeight: 32, fontSize: '0.8rem' }}
-              onClick={() => setSelectedRecipientIds(recipients.map((u) => u.id))}
+              onClick={() => setSelectedRecipientIds(composeRecipients.map((u) => u.id))}
             >
               تحديد الكل
             </button>
@@ -471,8 +491,20 @@ const NotificationsPage = ({ user }) => {
               إلغاء التحديد
             </button>
           </div>
+          <div className="role-filter-bar" style={{ marginBottom: '0.5rem' }}>
+            {RECIPIENT_ROLE_FILTER_ORDER.map((rid) => (
+              <button
+                key={`compose-${rid}`}
+                type="button"
+                className={`role-filter-btn ${composeRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
+                onClick={() => setComposeRoleFilter(rid)}
+              >
+                {rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid}
+              </button>
+            ))}
+          </div>
           <div className="modal-scroll-box" style={{ maxHeight: 320, marginBottom: '0.75rem' }}>
-            {recipients.map((u) => (
+            {composeRecipients.map((u) => (
               <RecipientUserCard
                 key={u.id}
                 user={u}
@@ -524,7 +556,7 @@ const NotificationsPage = ({ user }) => {
               type="button"
               className="btn-md btn-md--outline"
               style={{ minHeight: 32, fontSize: '0.8rem' }}
-              onClick={() => setNewChatUsers(recipients.map((u) => u.id))}
+              onClick={() => setNewChatUsers(chatRecipients.map((u) => u.id))}
             >
               تحديد الكل
             </button>
@@ -537,8 +569,20 @@ const NotificationsPage = ({ user }) => {
               إلغاء التحديد
             </button>
           </div>
+          <div className="role-filter-bar" style={{ marginBottom: '0.5rem' }}>
+            {RECIPIENT_ROLE_FILTER_ORDER.map((rid) => (
+              <button
+                key={`chat-${rid}`}
+                type="button"
+                className={`role-filter-btn ${chatRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
+                onClick={() => setChatRoleFilter(rid)}
+              >
+                {rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid}
+              </button>
+            ))}
+          </div>
           <div className="modal-scroll-box" style={{ maxHeight: 320, marginBottom: '1rem' }}>
-            {recipients.map((u) => (
+            {chatRecipients.map((u) => (
               <RecipientUserCard
                 key={u.id}
                 user={u}

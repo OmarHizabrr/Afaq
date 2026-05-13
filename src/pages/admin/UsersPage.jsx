@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Edit2, X, Eye, UserPlus, Lock, EyeOff } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -24,6 +24,16 @@ const USER_ROLE_LABELS = {
   student: 'طالب',
   unassigned: 'غير معيّن',
 };
+const USERS_ROLE_FILTER_ORDER = [
+  'teacher',
+  'supervisor_local',
+  'supervisor_arab',
+  'student',
+  'admin',
+  SYSTEM_ADMIN_ROLE,
+  'unassigned',
+  'all',
+];
 
 const UsersPage = () => {
   const navigate = useNavigate();
@@ -44,12 +54,25 @@ const UsersPage = () => {
   const [newUserPermissionProfileId, setNewUserPermissionProfileId] = useState('');
   const [newUserRole, setNewUserRole] = useState('unassigned');
   const [selectedRole, setSelectedRole] = useState('unassigned');
+  const [usersRoleFilter, setUsersRoleFilter] = useState('teacher');
   const [modalBusy, setModalBusy] = useState(false);
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
 
   const canAssignSystemAdmin =
     actorUser?.role === SYSTEM_ADMIN_ROLE || actorUser?.role === 'admin';
+  const roleFilterOptions = useMemo(
+    () =>
+      USERS_ROLE_FILTER_ORDER.map((id) => ({
+        id,
+        label: id === 'all' ? 'الكل' : USER_ROLE_LABELS[id] || id,
+      })),
+    []
+  );
+  const visibleUsers = useMemo(() => {
+    if (usersRoleFilter === 'all') return users;
+    return users.filter((u) => (u.role || 'unassigned') === usersRoleFilter);
+  }, [users, usersRoleFilter]);
 
   const fetchData = useCallback(async (opts = {}) => {
     const quiet = Boolean(opts.quiet);
@@ -216,12 +239,24 @@ const UsersPage = () => {
       </PageHeader>
 
       {error && <div className="app-alert app-alert--error users-alert">{error}</div>}
+      <div className="role-filter-bar users-role-filter-bar">
+        {roleFilterOptions.map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            className={`role-filter-btn ${usersRoleFilter === opt.id ? 'role-filter-btn--active' : ''}`}
+            onClick={() => setUsersRoleFilter(opt.id)}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
 
       {loading && !editingUser ? (
         <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
       ) : (
         <div className="users-grid">
-          {users.map(user => (
+          {visibleUsers.map(user => (
             <div key={user.id} className="surface-card users-card">
               <img
                 src={user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || '')}

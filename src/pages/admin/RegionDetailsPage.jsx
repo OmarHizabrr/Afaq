@@ -17,6 +17,16 @@ const ROLE_LABELS = {
     student: 'طالب / دارس',
     unassigned: 'صلاحية معلقة'
 };
+const ASSIGN_ROLE_FILTER_ORDER = [
+    'teacher',
+    'supervisor_local',
+    'supervisor_arab',
+    'student',
+    'admin',
+    'system_admin',
+    'unassigned',
+    'all',
+];
 
 const RegionDetailsPage = () => {
     const { id } = useParams();
@@ -29,6 +39,7 @@ const RegionDetailsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [allUsers, setAllUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [assignRoleFilter, setAssignRoleFilter] = useState('all');
     const [assigning, setAssigning] = useState(false);
     const [assignMsg, setAssignMsg] = useState('');
     const [error, setError] = useState('');
@@ -203,8 +214,10 @@ const RegionDetailsPage = () => {
             !q ||
             u.displayName?.toLowerCase().includes(q) ||
             u.email?.toLowerCase().includes(q);
+        const role = u.role || 'unassigned';
+        const matchesRole = assignRoleFilter === 'all' || role === assignRoleFilter;
         if (supervisorIds.has(u.id)) return false;
-        return matchesSearch;
+        return matchesSearch && matchesRole;
     });
 
     return (
@@ -248,7 +261,7 @@ const RegionDetailsPage = () => {
                            <Users size={18} color="var(--success-color)" /> أعضاء المنطقة
                         </h2>
                         {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
-                          <button type="button" className="icon-btn" title="تعيين مشرف" onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); }}><UserPlus size={18} /></button>
+                          <button type="button" className="icon-btn" title="تعيين مشرف" onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                         )}
                     </div>
                     {supervisors.length === 0 ? <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>لا يوجد أعضاء مسجّلون لهذه المنطقة حالياً.</p> : (
@@ -300,6 +313,18 @@ const RegionDetailsPage = () => {
                               value={searchTerm}
                               onChange={(e) => setSearchTerm(e.target.value)}
                             />
+                        </div>
+                        <div className="role-filter-bar" style={{ marginBottom: '0.75rem' }}>
+                          {ASSIGN_ROLE_FILTER_ORDER.map((rid) => (
+                            <button
+                              key={rid}
+                              type="button"
+                              className={`role-filter-btn ${assignRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
+                              onClick={() => setAssignRoleFilter(rid)}
+                            >
+                              {rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid}
+                            </button>
+                          ))}
                         </div>
 
                         <div className="modal-scroll-box" style={{ maxHeight: 'min(50vh, 380px)', marginBottom: 0 }}>

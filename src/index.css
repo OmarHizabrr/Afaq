@@ -2291,6 +2291,40 @@ html:not(.light-mode) .nav-link.active {
   margin-bottom: 1rem;
 }
 
+.role-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.users-role-filter-bar {
+  margin-bottom: 1rem;
+}
+
+.role-filter-btn {
+  border: 1px solid var(--border-color);
+  background: var(--panel-color);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast), background var(--motion-fast);
+}
+
+.role-filter-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--md-primary);
+  color: var(--md-primary);
+}
+
+.role-filter-btn--active {
+  background: color-mix(in srgb, var(--md-primary) 14%, transparent);
+  border-color: var(--md-primary);
+  color: var(--md-primary);
+}
+
 .users-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
