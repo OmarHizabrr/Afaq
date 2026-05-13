@@ -74,10 +74,9 @@ const ExplorationsPage = () => {
 
   const [explorations, setExplorations] = useState([]);
   const [types, setTypes] = useState([]);
-  const [governorates, setGovernorates] = useState([]);
-  const [regions, setRegions] = useState([]);
-  const [villages, setVillages] = useState([]);
   const [form, setForm] = useState(defaultForm());
+  /** إضافة جديدة: 1 = اختيار النوع فقط، 2 = النموذج */
+  const [addModalStep, setAddModalStep] = useState(1);
 
   const selectedType = useMemo(
     () => types.find((t) => t.id === form.explorationTypeId) || null,
@@ -90,16 +89,6 @@ const ExplorationsPage = () => {
   );
 
   const useDynamicForm = schemaFields.length > 0;
-
-  const filteredRegions = useMemo(() => {
-    if (!form.governorateId) return regions;
-    return regions.filter((r) => (r.govId || '') === form.governorateId);
-  }, [regions, form.governorateId]);
-
-  const filteredVillages = useMemo(() => {
-    if (!form.regionId) return villages;
-    return villages.filter((v) => (v.regionId || '') === form.regionId);
-  }, [villages, form.regionId]);
 
   const filteredExplorations = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -124,26 +113,20 @@ const ExplorationsPage = () => {
     setLoading(true);
     try {
       const api = FirestoreApi.Api;
-      const [expDocs, typeDocs, govDocs, regionDocs, villageDocs] = await Promise.all([
-        api.getDocuments(api.getExplorationsCollection()),
-        api.getDocuments(api.getExplorationTypesCollection()),
-        api.getDocuments(api.getGovernoratesCollection()),
-        api.getCollectionGroupDocuments('regions'),
-        api.getCollectionGroupDocuments('villages'),
-      ]);
+      const expDocs = await api.getDocuments(api.getExplorationsCollection());
+      const typeDocs = await api.getDocuments(api.getExplorationTypesCollection());
 
       const typeRows = typeDocs
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
 
-      const govRows = govDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      const regionRows = regionDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      const villageRows = villageDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
       const typeMap = new Map(typeRows.map((t) => [t.id, t.name || '']));
 
       const scope = pageDataScope(PERMISSION_PAGE_IDS.explorations);
       let allowedVillageIds = null;
       if (scope === DATA_SCOPE_MEMBERSHIP) {
+        const villageDocs = await api.getCollectionGroupDocuments('villages');
+        const villageRows = villageDocs.map((doc) => ({ id: doc.id, ...doc.data() }));
         const villageSet = new Set();
         villageRows.forEach((v) => {
           if (
@@ -161,7 +144,7 @@ const ExplorationsPage = () => {
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .filter((row) => {
           if (!allowedVillageIds) return true;
-          return allowedVillageIds.has(row.villageId);
+          return row.villageId && allowedVillageIds.has(row.villageId);
         })
         .map((row) => ({
           ...row,
@@ -170,9 +153,6 @@ const ExplorationsPage = () => {
         .sort((a, b) => new Date(b.explorationDate || b.createdAt || 0) - new Date(a.explorationDate || a.createdAt || 0));
 
       setTypes(typeRows);
-      setGovernorates(govRows);
-      setRegions(regionRows);
-      setVillages(villageRows);
       setExplorations(expRows);
     } catch (err) {
       console.error(err);
@@ -203,12 +183,22 @@ const ExplorationsPage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingItem(null);
+    setAddModalStep(1);
     setForm(defaultForm());
   };
 
   const openAddModal = () => {
     setEditingItem(null);
-    setForm(defaultForm());
+    const firstId = types[0]?.id || '';
+    const t = types.find((x) => x.id === firstId);
+    const sch = normalizeSchemaFields(t?.schemaFields || t?.fields || []);
+    setForm({
+      ...defaultForm(),
+      explorationTypeId: firstId,
+      explorationTypeName: t?.name || '',
+      fieldValues: sch.length > 0 ? initialFieldValues(sch, {}) : {},
+    });
+    setAddModalStep(1);
     setIsModalOpen(true);
   };
 
@@ -246,6 +236,7 @@ const ExplorationsPage = () => {
       });
     }
     setEditingItem(item);
+    setAddModalStep(2);
     setIsModalOpen(true);
   };
 
@@ -271,57 +262,20 @@ const ExplorationsPage = () => {
     }));
   };
 
-  const onGovernorateChange = (nextGovId) => {
-    const gov = governorates.find((g) => g.id === nextGovId);
-    setForm((prev) => ({
-      ...prev,
-      governorateId: nextGovId,
-      governorateName: gov?.name || '',
-      regionId: '',
-      regionName: '',
-      villageId: '',
-      villageName: '',
-      districtName: gov?.name || '',
-    }));
-  };
-
-  const onRegionChange = (nextRegionId) => {
-    const region = regions.find((r) => r.id === nextRegionId);
-    const gov = governorates.find((g) => g.id === (region?.govId || ''));
-    setForm((prev) => ({
-      ...prev,
-      regionId: nextRegionId,
-      regionName: region?.name || '',
-      governorateId: region?.govId || prev.governorateId,
-      governorateName: gov?.name || prev.governorateName,
-      villageId: '',
-      villageName: '',
-      districtName: gov?.name || prev.districtName,
-    }));
-  };
-
-  const onVillageChange = (nextVillageId) => {
-    const village = villages.find((v) => v.id === nextVillageId);
-    const region = regions.find((r) => r.id === (village?.regionId || ''));
-    const gov = governorates.find((g) => g.id === (region?.govId || village?.govId || ''));
-    setForm((prev) => ({
-      ...prev,
-      villageId: nextVillageId,
-      villageName: village?.villageName || '',
-      groupName: village?.groupName || prev.groupName,
-      ltiName: village?.ltiName || prev.ltiName,
-      regionId: village?.regionId || prev.regionId,
-      regionName: region?.name || prev.regionName,
-      governorateId: region?.govId || village?.govId || prev.governorateId,
-      governorateName: gov?.name || prev.governorateName,
-      districtName: gov?.name || prev.districtName,
-    }));
+  const goToAddFormStep = () => {
+    if (!form.explorationTypeId) {
+      setError('اختر نوع الاستكشاف أولاً.');
+      return;
+    }
+    setError('');
+    setAddModalStep(2);
   };
 
   const saveExploration = async (e) => {
     e.preventDefault();
-    if (!form.explorationTypeId || !form.villageId || saving) {
-      setError('يرجى اختيار نوع الاستكشاف والقرية على الأقل.');
+    if (!editingItem && addModalStep === 1) return;
+    if (!form.explorationTypeId || saving) {
+      setError('يرجى اختيار نوع الاستكشاف.');
       return;
     }
 
@@ -341,7 +295,7 @@ const ExplorationsPage = () => {
         governorateName: form.governorateName || '',
         regionId: form.regionId || '',
         regionName: form.regionName || '',
-        villageId: form.villageId,
+        villageId: form.villageId || '',
         villageName: form.villageName || '',
         districtName: form.districtName || '',
         groupName: form.groupName || '',
@@ -448,6 +402,8 @@ const ExplorationsPage = () => {
     return `تاريخ الاستكشاف: ${item.explorationDate || '-'} - المشرف: ${item.explorationSupervisor || '-'}`;
   };
 
+  const showExplorationFormBody = Boolean(editingItem) || addModalStep === 2;
+
   return (
     <div>
       <PageHeader icon={Compass} title="قسم الاستكشاف">
@@ -473,7 +429,7 @@ const ExplorationsPage = () => {
           <Search size={16} color="var(--text-secondary)" />
           <input
             className="app-input"
-            placeholder="ابحث بالنوع أو القرية أو المشرف أو قيم الحقول..."
+            placeholder="ابحث بالنوع أو المشرف أو الحقول أو القرية..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -506,7 +462,7 @@ const ExplorationsPage = () => {
                     type="button"
                     className="icon-btn"
                     title="حذف"
-                    onClick={() => setPendingDelete({ id: item.id, name: item.villageName || item.id })}
+                    onClick={() => setPendingDelete({ id: item.id, name: item.explorationTypeName || item.villageName || item.id })}
                   >
                     <Trash2 size={16} color="var(--danger-color)" />
                   </button>
@@ -521,213 +477,284 @@ const ExplorationsPage = () => {
         open={isModalOpen}
         title={editingItem ? 'تعديل الاستكشاف' : 'إضافة استكشاف جديد'}
         onClose={closeModal}
-        size="lg"
+        size="xl"
+        className="modal-card--exploration-flow"
       >
-        <form onSubmit={saveExploration} className="exploration-form-grid">
-          <label className="app-label">نوع الاستكشاف (مطلوب)</label>
-          <AppSelect searchable value={form.explorationTypeId} onChange={(e) => onExplorationTypeChange(e.target.value)} required>
-            <option value="">-- اختر النوع --</option>
-            {types.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </AppSelect>
+        <form
+          onSubmit={saveExploration}
+          style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}
+        >
+          <div className="exploration-modal-scroll">
+            {!showExplorationFormBody ? (
+              <div className="exploration-modal-intro">
+                <label className="app-label">نوع الاستكشاف (مطلوب)</label>
+                <AppSelect
+                  searchable
+                  value={form.explorationTypeId}
+                  onChange={(e) => onExplorationTypeChange(e.target.value)}
+                  required
+                >
+                  {types.length === 0 ? (
+                    <option value="">لا توجد أنواع — أضف نوعاً من «أنواع الاستكشاف»</option>
+                  ) : (
+                    types.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))
+                  )}
+                </AppSelect>
+                <p className="exploration-modal-intro__hint">
+                  يُختار نوع الاستكشاف أولاً (مُعرّف تلقائياً بأول نوع عند وجود قائمة). بعد الضغط على «متابعة إلى
+                  النموذج» تظهر الحقول المعتمدة على النوع فقط. ربط المحافظة والقرية يُكمَل لاحقاً ضمن تدفق الأنواع.
+                </p>
+              </div>
+            ) : (
+              <div className={`exploration-form-grid ${useDynamicForm ? 'exploration-form-grid--stacked' : ''}`}>
+                {!editingItem && (
+                  <div className="exploration-form-grid__full" style={{ marginBottom: '0.25rem' }}>
+                    <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setAddModalStep(1)}>
+                      ← تغيير النوع
+                    </button>
+                  </div>
+                )}
+                <label className="app-label exploration-form-grid__full">نوع الاستكشاف (مطلوب)</label>
+                <AppSelect
+                  searchable
+                  className="exploration-form-grid__full"
+                  value={form.explorationTypeId}
+                  onChange={(e) => onExplorationTypeChange(e.target.value)}
+                  required
+                >
+                  <option value="">-- اختر النوع --</option>
+                  {types.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </AppSelect>
 
-          {form.explorationTypeId && (
-            <p className="exploration-form-grid__full" style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-              {useDynamicForm
-                ? 'هذا النوع يستخدم حقولاً مخصصة. عُرّف الحقول من صفحة «أنواع الاستكشاف».'
-                : 'هذا النوع بدون حقول مخصصة: يظهر النموذج الكامل التقليدي.'}
-            </p>
-          )}
+                {form.explorationTypeId && (
+                  <div
+                    className="exploration-form-grid__full"
+                    style={{
+                      padding: '0.65rem 0.75rem',
+                      borderRadius: 10,
+                      background: 'color-mix(in srgb, var(--bg-color) 90%, var(--accent-color))',
+                      border: '1px solid color-mix(in srgb, var(--border-color) 75%, var(--accent-color))',
+                    }}
+                  >
+                    <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+                      {useDynamicForm ? (
+                        <>
+                          <strong>نموذج مخصص.</strong> الحقول تُعرّف من صفحة «أنواع الاستكشاف» وتظهر أدناه.
+                        </>
+                      ) : (
+                        <>
+                          <strong>النموذج التقليدي الكامل.</strong> لم يُضف لهذا النوع حقول مخصصة بعد؛ يمكن تعبئة
+                          الحقول التفصيلية أدناه.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                )}
 
-          <label className="app-label">المحافظة</label>
-          <AppSelect searchable value={form.governorateId} onChange={(e) => onGovernorateChange(e.target.value)}>
-            <option value="">-- اختر المحافظة --</option>
-            {governorates.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))}
-          </AppSelect>
+                {useDynamicForm ? (
+                  <ExplorationDynamicFieldBlock
+                    fields={schemaFields}
+                    values={form.fieldValues || {}}
+                    onChange={setDynamicValue}
+                    storageUserId={storageUserId}
+                  />
+                ) : (
+                  <>
+                    <label className="app-label">اسم اللواء / District</label>
+                    <input className="app-input" value={form.districtName} onChange={(e) => setField('districtName', e.target.value)} />
 
-          <label className="app-label">المنطقة</label>
-          <AppSelect searchable value={form.regionId} onChange={(e) => onRegionChange(e.target.value)}>
-            <option value="">-- اختر المنطقة --</option>
-            {filteredRegions.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </AppSelect>
+                    <label className="app-label">اسم المجموعة</label>
+                    <input className="app-input" value={form.groupName} onChange={(e) => setField('groupName', e.target.value)} />
 
-          <label className="app-label">القرية (مطلوب)</label>
-          <AppSelect searchable value={form.villageId} onChange={(e) => onVillageChange(e.target.value)} required>
-            <option value="">-- اختر القرية --</option>
-            {filteredVillages.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.villageName}
-              </option>
-            ))}
-          </AppSelect>
+                    <label className="app-label">L/A</label>
+                    <input className="app-input" value={form.ltiName} onChange={(e) => setField('ltiName', e.target.value)} />
 
-          {useDynamicForm ? (
-            <ExplorationDynamicFieldBlock
-              fields={schemaFields}
-              values={form.fieldValues || {}}
-              onChange={setDynamicValue}
-              storageUserId={storageUserId}
-            />
-          ) : (
-            <>
-              <label className="app-label">اسم اللواء / District</label>
-              <input className="app-input" value={form.districtName} onChange={(e) => setField('districtName', e.target.value)} />
+                    <label className="app-label">اسم القرية</label>
+                    <input className="app-input" value={form.villageName} onChange={(e) => setField('villageName', e.target.value)} />
 
-              <label className="app-label">اسم المجموعة</label>
-              <input className="app-input" value={form.groupName} onChange={(e) => setField('groupName', e.target.value)} />
+                    <label className="app-label">اسم الملك/الإنجيلي</label>
+                    <input className="app-input" value={form.kingName} onChange={(e) => setField('kingName', e.target.value)} />
 
-              <label className="app-label">L/A</label>
-              <input className="app-input" value={form.ltiName} onChange={(e) => setField('ltiName', e.target.value)} />
+                    <label className="app-label">عدد الأسر</label>
+                    <input
+                      className="app-input"
+                      inputMode="numeric"
+                      value={form.familiesCount}
+                      onChange={(e) => setField('familiesCount', e.target.value.replace(/[^\d.]/g, ''))}
+                    />
 
-              <label className="app-label">اسم القرية</label>
-              <input className="app-input" value={form.villageName} onChange={(e) => setField('villageName', e.target.value)} />
+                    <label className="app-label">عدد الأسر المسلمين</label>
+                    <input
+                      className="app-input"
+                      inputMode="numeric"
+                      value={form.muslimFamiliesCount}
+                      onChange={(e) => setField('muslimFamiliesCount', e.target.value.replace(/[^\d.]/g, ''))}
+                    />
 
-              <label className="app-label">اسم الملك/الإنجيلي</label>
-              <input className="app-input" value={form.kingName} onChange={(e) => setField('kingName', e.target.value)} />
+                    <label className="app-label">عدد الأسر غير المسلمين</label>
+                    <input
+                      className="app-input"
+                      inputMode="numeric"
+                      value={form.nonMuslimFamiliesCount}
+                      onChange={(e) => setField('nonMuslimFamiliesCount', e.target.value.replace(/[^\d.]/g, ''))}
+                    />
 
-              <label className="app-label">عدد الأسر</label>
-              <input
-                className="app-input"
-                inputMode="numeric"
-                value={form.familiesCount}
-                onChange={(e) => setField('familiesCount', e.target.value.replace(/[^\d.]/g, ''))}
-              />
+                    <label className="app-label">هل يوجد مسجد؟</label>
+                    <AppSelect value={form.hasMosque} onChange={(e) => setField('hasMosque', e.target.value)}>
+                      {yesNo.map((i) => (
+                        <option key={i.value} value={i.value}>
+                          {i.label}
+                        </option>
+                      ))}
+                    </AppSelect>
 
-              <label className="app-label">عدد الأسر المسلمين</label>
-              <input
-                className="app-input"
-                inputMode="numeric"
-                value={form.muslimFamiliesCount}
-                onChange={(e) => setField('muslimFamiliesCount', e.target.value.replace(/[^\d.]/g, ''))}
-              />
+                    <label className="app-label">المسافة لأقرب مسجد (كم)</label>
+                    <input
+                      className="app-input"
+                      inputMode="decimal"
+                      value={form.nearestMosqueDistanceKm}
+                      onChange={(e) => setField('nearestMosqueDistanceKm', e.target.value.replace(/[^\d.]/g, ''))}
+                    />
 
-              <label className="app-label">عدد الأسر غير المسلمين</label>
-              <input
-                className="app-input"
-                inputMode="numeric"
-                value={form.nonMuslimFamiliesCount}
-                onChange={(e) => setField('nonMuslimFamiliesCount', e.target.value.replace(/[^\d.]/g, ''))}
-              />
+                    <label className="app-label">هل يوجد بئر؟</label>
+                    <AppSelect value={form.hasWell} onChange={(e) => setField('hasWell', e.target.value)}>
+                      {yesNo.map((i) => (
+                        <option key={i.value} value={i.value}>
+                          {i.label}
+                        </option>
+                      ))}
+                    </AppSelect>
 
-              <label className="app-label">هل يوجد مسجد؟</label>
-              <AppSelect value={form.hasMosque} onChange={(e) => setField('hasMosque', e.target.value)}>
-                {yesNo.map((i) => (
-                  <option key={i.value} value={i.value}>
-                    {i.label}
-                  </option>
-                ))}
-              </AppSelect>
+                    <label className="app-label">المسافة لأقرب بئر (كم)</label>
+                    <input
+                      className="app-input"
+                      inputMode="decimal"
+                      value={form.nearestWellDistanceKm}
+                      onChange={(e) => setField('nearestWellDistanceKm', e.target.value.replace(/[^\d.]/g, ''))}
+                    />
 
-              <label className="app-label">المسافة لأقرب مسجد (كم)</label>
-              <input
-                className="app-input"
-                inputMode="decimal"
-                value={form.nearestMosqueDistanceKm}
-                onChange={(e) => setField('nearestMosqueDistanceKm', e.target.value.replace(/[^\d.]/g, ''))}
-              />
+                    <label className="app-label">هل دخل الإسلام للقرية؟</label>
+                    <AppSelect value={form.islamEnteredVillage} onChange={(e) => setField('islamEnteredVillage', e.target.value)}>
+                      {yesNo.map((i) => (
+                        <option key={i.value} value={i.value}>
+                          {i.label}
+                        </option>
+                      ))}
+                    </AppSelect>
 
-              <label className="app-label">هل يوجد بئر؟</label>
-              <AppSelect value={form.hasWell} onChange={(e) => setField('hasWell', e.target.value)}>
-                {yesNo.map((i) => (
-                  <option key={i.value} value={i.value}>
-                    {i.label}
-                  </option>
-                ))}
-              </AppSelect>
+                    <label className="app-label">هل يوجد مدرسة قرآنية؟</label>
+                    <AppSelect value={form.hasMadrasa} onChange={(e) => setField('hasMadrasa', e.target.value)}>
+                      {yesNo.map((i) => (
+                        <option key={i.value} value={i.value}>
+                          {i.label}
+                        </option>
+                      ))}
+                    </AppSelect>
 
-              <label className="app-label">المسافة لأقرب بئر (كم)</label>
-              <input
-                className="app-input"
-                inputMode="decimal"
-                value={form.nearestWellDistanceKm}
-                onChange={(e) => setField('nearestWellDistanceKm', e.target.value.replace(/[^\d.]/g, ''))}
-              />
+                    <label className="app-label">هل يوجد مدرسة؟</label>
+                    <AppSelect value={form.hasSchool} onChange={(e) => setField('hasSchool', e.target.value)}>
+                      {yesNo.map((i) => (
+                        <option key={i.value} value={i.value}>
+                          {i.label}
+                        </option>
+                      ))}
+                    </AppSelect>
 
-              <label className="app-label">هل دخل الإسلام للقرية؟</label>
-              <AppSelect value={form.islamEnteredVillage} onChange={(e) => setField('islamEnteredVillage', e.target.value)}>
-                {yesNo.map((i) => (
-                  <option key={i.value} value={i.value}>
-                    {i.label}
-                  </option>
-                ))}
-              </AppSelect>
+                    <label className="app-label">كم سيكلف استخدام البئر؟</label>
+                    <input
+                      className="app-input"
+                      inputMode="decimal"
+                      value={form.wellUsageCost}
+                      onChange={(e) => setField('wellUsageCost', e.target.value.replace(/[^\d.]/g, ''))}
+                    />
 
-              <label className="app-label">هل يوجد مدرسة قرآنية؟</label>
-              <AppSelect value={form.hasMadrasa} onChange={(e) => setField('hasMadrasa', e.target.value)}>
-                {yesNo.map((i) => (
-                  <option key={i.value} value={i.value}>
-                    {i.label}
-                  </option>
-                ))}
-              </AppSelect>
+                    <label className="app-label">هل لدى القرية كهرباء؟</label>
+                    <AppSelect value={form.hasElectricity} onChange={(e) => setField('hasElectricity', e.target.value)}>
+                      {yesNo.map((i) => (
+                        <option key={i.value} value={i.value}>
+                          {i.label}
+                        </option>
+                      ))}
+                    </AppSelect>
 
-              <label className="app-label">هل يوجد مدرسة؟</label>
-              <AppSelect value={form.hasSchool} onChange={(e) => setField('hasSchool', e.target.value)}>
-                {yesNo.map((i) => (
-                  <option key={i.value} value={i.value}>
-                    {i.label}
-                  </option>
-                ))}
-              </AppSelect>
+                    <label className="app-label">أقرب قريتين</label>
+                    <input className="app-input" value={form.closestVillages} onChange={(e) => setField('closestVillages', e.target.value)} />
 
-              <label className="app-label">كم سيكلف استخدام البئر؟</label>
-              <input
-                className="app-input"
-                inputMode="decimal"
-                value={form.wellUsageCost}
-                onChange={(e) => setField('wellUsageCost', e.target.value.replace(/[^\d.]/g, ''))}
-              />
+                    <label className="app-label">تاريخ الاستكشاف</label>
+                    <input className="app-input" type="date" value={form.explorationDate} onChange={(e) => setField('explorationDate', e.target.value)} />
 
-              <label className="app-label">هل لدى القرية كهرباء؟</label>
-              <AppSelect value={form.hasElectricity} onChange={(e) => setField('hasElectricity', e.target.value)}>
-                {yesNo.map((i) => (
-                  <option key={i.value} value={i.value}>
-                    {i.label}
-                  </option>
-                ))}
-              </AppSelect>
+                    <label className="app-label">اسم المشرف</label>
+                    <input className="app-input" value={form.explorationSupervisor} onChange={(e) => setField('explorationSupervisor', e.target.value)} />
 
-              <label className="app-label">أقرب قريتين</label>
-              <input className="app-input" value={form.closestVillages} onChange={(e) => setField('closestVillages', e.target.value)} />
+                    <label className="app-label">احتياج القرية</label>
+                    <textarea
+                      className="app-input exploration-form-grid__full"
+                      value={form.villageNeeds}
+                      onChange={(e) => setField('villageNeeds', e.target.value)}
+                      style={{ minHeight: '90px' }}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+          </div>
 
-              <label className="app-label">تاريخ الاستكشاف</label>
-              <input className="app-input" type="date" value={form.explorationDate} onChange={(e) => setField('explorationDate', e.target.value)} />
-
-              <label className="app-label">اسم المشرف</label>
-              <input className="app-input" value={form.explorationSupervisor} onChange={(e) => setField('explorationSupervisor', e.target.value)} />
-
-              <label className="app-label">احتياج القرية</label>
-              <textarea
-                className="app-input exploration-form-grid__full"
-                value={form.villageNeeds}
-                onChange={(e) => setField('villageNeeds', e.target.value)}
-                style={{ minHeight: '90px' }}
-              />
-            </>
-          )}
-
-          <div className="exploration-form-grid__full" style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-            <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={closeModal}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <X size={14} /> إلغاء
-              </span>
-            </button>
-            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled" style={{ width: 'auto' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <Save size={14} /> حفظ الاستكشاف
-              </span>
-            </BusyButton>
+          <div
+            className="exploration-modal-footer"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: 10,
+              justifyContent: showExplorationFormBody && !editingItem ? 'space-between' : 'flex-end',
+            }}
+          >
+            {!showExplorationFormBody ? (
+              <>
+                <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={closeModal}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <X size={14} /> إلغاء
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="google-btn google-btn--filled"
+                  style={{ width: 'auto' }}
+                  onClick={goToAddFormStep}
+                  disabled={!form.explorationTypeId || types.length === 0}
+                >
+                  متابعة إلى النموذج
+                </button>
+              </>
+            ) : (
+              <>
+                {!editingItem && (
+                  <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setAddModalStep(1)}>
+                    رجوع
+                  </button>
+                )}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                  <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={closeModal}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <X size={14} /> إلغاء
+                    </span>
+                  </button>
+                  <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled" style={{ width: 'auto' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <Save size={14} /> حفظ الاستكشاف
+                    </span>
+                  </BusyButton>
+                </div>
+              </>
+            )}
           </div>
         </form>
       </FormModal>
@@ -735,7 +762,7 @@ const ExplorationsPage = () => {
       <ConfirmDialog
         open={!!pendingDelete}
         title="تأكيد حذف الاستكشاف"
-        message={`سيتم حذف سجل الاستكشاف للقرية "${pendingDelete?.name || ''}" نهائياً.`}
+        message={`سيتم حذف سجل الاستكشاف «${pendingDelete?.name || ''}» نهائياً.`}
         danger
         confirmLabel="حذف نهائي"
         onCancel={() => setPendingDelete(null)}

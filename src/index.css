@@ -1338,6 +1338,67 @@ html:not(.light-mode) .nav-link.active {
   width: 100%;
 }
 
+.modal-card--xl {
+  max-width: min(1100px, 100%);
+  width: 100%;
+}
+
+.modal-card--exploration-flow {
+  display: flex;
+  flex-direction: column;
+  max-height: min(92vh, 900px);
+  overflow: hidden;
+}
+
+.modal-card--exploration-flow > h3 {
+  flex-shrink: 0;
+}
+
+.modal-card--exploration-flow > form {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-card--exploration-flow .exploration-modal-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-inline: 2px;
+  margin-inline: -2px;
+}
+
+.exploration-modal-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.exploration-modal-intro__hint {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.exploration-modal-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 1rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.exploration-form-grid--stacked {
+  grid-template-columns: 1fr;
+}
+
 .modal-scroll-box {
   max-height: 150px;
   overflow-y: auto;
@@ -4197,7 +4258,8 @@ html:not(.light-mode) .nav-link.active {
   }
 
   .modal-overlay--drawer .modal-card--sm,
-  .modal-overlay--drawer .modal-card--lg {
+  .modal-overlay--drawer .modal-card--lg,
+  .modal-overlay--drawer .modal-card--xl {
     width: 100%;
     max-width: 100%;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
