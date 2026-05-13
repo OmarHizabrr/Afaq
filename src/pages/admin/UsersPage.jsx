@@ -6,6 +6,8 @@ import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
+import ExplorationBadge from '../../components/ExplorationBadge';
+import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
@@ -63,6 +65,7 @@ const UsersPage = () => {
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
 
   const canAssignSystemAdmin =
@@ -375,6 +378,7 @@ const UsersPage = () => {
                       معطّل
                     </span>
                   )}
+                  <ExplorationBadge record={user} onClick={() => setViewingExplorationOf(user)} />
                 </div>
               </div>
               <div className="users-card__actions">
@@ -644,6 +648,13 @@ const UsersPage = () => {
           </div>
         </div>
       )}
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
+      />
     </div>
   );
 };

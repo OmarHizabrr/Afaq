@@ -8,6 +8,8 @@ import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
+import ExplorationBadge from '../../components/ExplorationBadge';
+import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
@@ -47,6 +49,7 @@ const VillagesPage = () => {
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
   const [pendingNewMuslimDelete, setPendingNewMuslimDelete] = useState(null);
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
 
   /** لوحة المهتدين السريعة داخل البطاقة */
   const [nmQuickVillageId, setNmQuickVillageId] = useState(null);
@@ -1144,6 +1147,9 @@ const VillagesPage = () => {
                 <span>جروب: {vil.groupName || '-'}</span>
                 <span>LTI: {vil.ltiName || '-'}</span>
               </div>
+              <div style={{ marginTop: 6 }}>
+                <ExplorationBadge record={vil} onClick={() => setViewingExplorationOf(vil)} />
+              </div>
               <div
                 className="surface-card"
                 style={{
@@ -1406,6 +1412,13 @@ const VillagesPage = () => {
           })}
         </div>
       )}
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.villageName}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
+      />
 
       <ConfirmDialog
         open={!!pendingDelete}

@@ -8,6 +8,8 @@ import FormModal from "../../components/FormModal";
 import AppSelect from "../../components/AppSelect";
 import BusyButton from "../../components/BusyButton";
 import ExplorationFormSection from "../../components/ExplorationFormSection";
+import ExplorationBadge from "../../components/ExplorationBadge";
+import ExplorationDataModal from "../../components/ExplorationDataModal";
 import { useExplorationForm } from "../../hooks/useExplorationForm";
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "");
@@ -30,6 +32,7 @@ const TeacherStudentsPage = ({ user }) => {
   const [schoolReady, setSchoolReady] = useState(false);
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
   const expForm = useExplorationForm(isExploringAdding, user);
 
   const reloadStudents = useCallback(async () => {
@@ -497,7 +500,11 @@ const TeacherStudentsPage = ({ user }) => {
                       >
                         {student.studentName.charAt(0)}
                       </div>
-                      {student.studentName}
+                      <span>{student.studentName}</span>
+                      <ExplorationBadge
+                        record={student}
+                        onClick={() => setViewingExplorationOf(student)}
+                      />
                     </td>
                     <td style={{ padding: "16px" }}>{student.age || "-"}</td>
                     <td
@@ -561,6 +568,13 @@ const TeacherStudentsPage = ({ user }) => {
           setPendingDelete(null);
           if (item) await handleDelete(item.id);
         }}
+      />
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.studentName || ''}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
       />
     </div>
   );

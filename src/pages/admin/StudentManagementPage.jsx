@@ -9,6 +9,8 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import FormModal from '../../components/FormModal';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
+import ExplorationBadge from '../../components/ExplorationBadge';
+import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import {
   DATA_SCOPE_MEMBERSHIP,
@@ -46,6 +48,7 @@ const StudentManagementPage = () => {
   const [saving, setSaving] = useState(false);
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
 
   const sortedSchoolsCatalog = useMemo(
@@ -526,6 +529,9 @@ const StudentManagementPage = () => {
                         <div>
                           <div className="student-management-student-cell__name">{s.displayName || 'بدون اسم'}</div>
                           <div className="student-management-student-cell__email">{s.email || 'بدون بريد'}</div>
+                          <div style={{ marginTop: 4 }}>
+                            <ExplorationBadge record={s} onClick={() => setViewingExplorationOf(s)} />
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -694,6 +700,13 @@ const StudentManagementPage = () => {
           </div>
         </div>
       </FormModal>
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
+      />
     </div>
   );
 };

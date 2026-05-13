@@ -10,6 +10,8 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
+import ExplorationBadge from '../../components/ExplorationBadge';
+import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import {
   DATA_SCOPE_MEMBERSHIP,
@@ -34,6 +36,7 @@ const RegionsPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
@@ -322,6 +325,9 @@ const RegionsPage = () => {
                   <Map size={14} />
                   <span>المحافظة: {getGovName(region.govId)}</span>
                 </div>
+                <div style={{ marginTop: 6 }}>
+                  <ExplorationBadge record={region} onClick={() => setViewingExplorationOf(region)} />
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {can(PERMISSION_PAGE_IDS.regions, 'region_view') && (
@@ -344,6 +350,13 @@ const RegionsPage = () => {
           ))}
         </div>
       )}
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
+      />
 
       <ConfirmDialog
         open={!!pendingDelete}

@@ -20,6 +20,7 @@ import {
 } from '../../utils/explorationDynamicFields';
 import { EXPLORATION_OPTION_SOURCES, EXPLORATION_USER_ROLE_FILTERS, EXPLORATION_OPTION_SOURCE_SUPPORTS_DEPENDS } from '../../services/explorationFieldOptions';
 import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
+import { invalidateExplorationTypesCache } from '../../hooks/useExplorationTypesCache';
 import './ExplorationTypesPage.css';
 
 const emptySchemaRow = (api) => ({
@@ -207,6 +208,7 @@ const ExplorationTypesPage = () => {
         });
         setSuccess('تمت إضافة نوع استكشاف جديد.');
       }
+      invalidateExplorationTypesCache();
       clearForm();
       setError('');
       fetchTypes();
@@ -222,6 +224,7 @@ const ExplorationTypesPage = () => {
     try {
       const api = FirestoreApi.Api;
       await api.deleteData(api.getExplorationTypeDoc(id));
+      invalidateExplorationTypesCache();
       setSuccess('تم حذف نوع الاستكشاف.');
       setError('');
       fetchTypes();

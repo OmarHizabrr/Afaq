@@ -9,6 +9,8 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
+import ExplorationBadge from '../../components/ExplorationBadge';
+import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import {
   DATA_SCOPE_MEMBERSHIP,
@@ -32,6 +34,8 @@ const GovernoratesPage = () => {
   const [saving, setSaving] = useState(false);
   const [showScopeNotice, setShowScopeNotice] = useState(true);
   const [pendingDelete, setPendingDelete] = useState(null);
+  /* مودال عرض بيانات نموذج الاستكشاف لسجل */
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
 
   /* مودال «الإضافة من نموذج الاستكشاف» — يعرض حقول الاستكشاف فقط */
   const [isExploringAdding, setIsExploringAdding] = useState(false);
@@ -333,6 +337,9 @@ const GovernoratesPage = () => {
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 4 }}>
                   الدولة: {gov.country || 'غير محددة'}
                 </div>
+                <div style={{ marginTop: 6 }}>
+                  <ExplorationBadge record={gov} onClick={() => setViewingExplorationOf(gov)} />
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_view') && (
@@ -355,6 +362,13 @@ const GovernoratesPage = () => {
           ))}
         </div>
       )}
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
+      />
 
       <ConfirmDialog
         open={!!pendingDelete}

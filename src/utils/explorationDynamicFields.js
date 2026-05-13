@@ -328,6 +328,66 @@ export function validateFieldValues(schemaFields, fieldValues) {
   return errs;
 }
 
+const MEDIA_LIKE = new Set(['file', 'image', 'video', 'audio', 'signature']);
+
+/**
+ * تنسيق قيمة حقل لعرضها للمستخدم بشكل مقروء (قراءة فقط).
+ * يعيد سلسلة نصية ملائمة لجميع أنواع الحقول، أو الرمز '—' عند الفراغ.
+ */
+export function formatFieldValueForDisplay(field, value) {
+  const t = field?.fieldType || 'text';
+
+  if (t === 'date_range') {
+    const from = String(value?.from ?? '').trim();
+    const to = String(value?.to ?? '').trim();
+    if (!from && !to) return '—';
+    return `${from || '…'} ← ${to || '…'}`;
+  }
+  if (t === 'location') {
+    const lat = String(value?.lat ?? '').trim();
+    const lng = String(value?.lng ?? '').trim();
+    if (!lat && !lng) return '—';
+    return `(${lat || '—'}, ${lng || '—'})`;
+  }
+  if (t === 'multi_select' || t === 'tag') {
+    return Array.isArray(value) && value.length > 0 ? value.join('، ') : '—';
+  }
+  if (t === 'checkbox' || t === 'switch') {
+    return value === true ? 'نعم' : 'لا';
+  }
+  if (t === 'yes_no') {
+    if (value === 'yes') return 'نعم';
+    if (value === 'no') return 'لا';
+    return '—';
+  }
+  if (t === 'password') {
+    return value ? '••••••' : '—';
+  }
+  if (t === 'color') {
+    const v = String(value ?? '').trim();
+    return v || '—';
+  }
+  if (t === 'rating') {
+    if (value === '' || value == null) return '—';
+    const n = Number(value);
+    return Number.isFinite(n) ? `${n} / ${field?.max ?? 5}` : '—';
+  }
+  if (t === 'percentage') {
+    if (value === '' || value == null) return '—';
+    const n = Number(value);
+    return Number.isFinite(n) ? `${n}%` : '—';
+  }
+  if (MEDIA_LIKE.has(t)) {
+    const v = String(value ?? '').trim();
+    return v || '—';
+  }
+  if (value == null || value === '') return '—';
+  if (typeof value === 'object') {
+    try { return JSON.stringify(value); } catch { return '—'; }
+  }
+  return String(value);
+}
+
 /** تنظيف القيم قبل الحفظ (إزالة حقول لم تعد في المخطط) */
 export function sanitizeFieldValuesForSave(schemaFields, fieldValues) {
   const allowed = new Set(schemaFields.map((x) => x.id));

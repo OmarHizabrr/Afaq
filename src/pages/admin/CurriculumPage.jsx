@@ -9,6 +9,8 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
+import ExplorationBadge from '../../components/ExplorationBadge';
+import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 
 const CurriculumPage = () => {
@@ -24,6 +26,7 @@ const CurriculumPage = () => {
   const [newSubjectName, setNewSubjectName] = useState('');
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
   const expForm = useExplorationForm(isExploringAdding, actorUser);
   const [confirmConfig, setConfirmConfig] = useState(null);
   
@@ -354,6 +357,10 @@ const CurriculumPage = () => {
                     <div className="curriculum-item__badge">
                       الخطة: 50 أسبوع
                     </div>
+                    <ExplorationBadge
+                      record={subject}
+                      onClick={() => setViewingExplorationOf(subject)}
+                    />
                     <div className="curriculum-item__actions">
                       {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_print_subject') && (
                         <button
@@ -472,6 +479,13 @@ const CurriculumPage = () => {
           setConfirmConfig(null);
           if (action) await action();
         }}
+      />
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name || ''}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
       />
     </div>
   );

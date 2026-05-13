@@ -8,6 +8,8 @@ import FormModal from '../../components/FormModal';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
+import ExplorationBadge from '../../components/ExplorationBadge';
+import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
@@ -40,6 +42,7 @@ const SchoolsPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
 
   // Form State
   const [selectedRegId, setSelectedRegId] = useState('');
@@ -390,6 +393,9 @@ const SchoolsPage = () => {
                   <span>النوع: {schoolLevelLabel(sch.schoolLevel)}</span>
                   {sch.donorName && <span className="schools-card__donor"><Handshake size={14} /> المتبرع: {sch.donorName}</span>}
                 </div>
+                <div style={{ marginTop: 6 }}>
+                  <ExplorationBadge record={sch} onClick={() => setViewingExplorationOf(sch)} />
+                </div>
               </div>
               <div className="schools-card__actions">
                 {can(PERMISSION_PAGE_IDS.schools, 'school_view') && (
@@ -412,6 +418,13 @@ const SchoolsPage = () => {
           ))}
         </div>
       )}
+
+      <ExplorationDataModal
+        open={!!viewingExplorationOf}
+        onClose={() => setViewingExplorationOf(null)}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
+        record={viewingExplorationOf}
+      />
 
       <ConfirmDialog
         open={!!pendingDelete}
