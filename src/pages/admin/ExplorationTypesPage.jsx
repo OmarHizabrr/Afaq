@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Edit2, Trash2, Tags, X, Save, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import FirestoreApi from '../../services/firestoreApi';
@@ -7,7 +7,16 @@ import FormModal from '../../components/FormModal';
 import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
-import { EXPLORATION_FIELD_TYPE_GROUPS, EXPLORATION_FIELD_TYPE_LABEL_MAP, FIELD_TYPES_WITH_OPTIONS, normalizeSchemaFields } from '../../utils/explorationDynamicFields';
+import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
+import {
+  EXPLORATION_FIELD_TYPE_GROUPS,
+  EXPLORATION_FIELD_TYPE_LABEL_MAP,
+  FIELD_TYPES_WITH_OPTIONS,
+  editorSchemaRowsToFields,
+  emptyValueForField,
+  initialFieldValues,
+  normalizeSchemaFields,
+} from '../../utils/explorationDynamicFields';
 
 const emptySchemaRow = (api) => ({
   id: api.getNewId('expl_field'),
@@ -22,7 +31,8 @@ const emptySchemaRow = (api) => ({
 });
 
 const ExplorationTypesPage = () => {
-  const { can } = usePermissions();
+  const { can, actorUser } = usePermissions();
+  const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -34,6 +44,40 @@ const ExplorationTypesPage = () => {
   const [pendingDelete, setPendingDelete] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [previewValues, setPreviewValues] = useState({});
+
+  const previewFields = useMemo(() => editorSchemaRowsToFields(schemaFields), [schemaFields]);
+
+  const previewMergeKey = useMemo(
+    () =>
+      JSON.stringify(
+        previewFields.map((f) => ({
+          id: f.id,
+          fieldType: f.fieldType,
+          options: f.options,
+          min: f.min,
+          max: f.max,
+          required: f.required,
+          defaultValue: f.defaultValue,
+        }))
+      ),
+    [previewFields]
+  );
+
+  const previewStructureKeyRef = useRef('');
+
+  useEffect(() => {
+    if (previewStructureKeyRef.current !== previewMergeKey) {
+      previewStructureKeyRef.current = previewMergeKey;
+      setPreviewValues(initialFieldValues(previewFields, {}));
+      return;
+    }
+    setPreviewValues((prev) => initialFieldValues(previewFields, prev));
+  }, [previewFields, previewMergeKey]);
+
+  const setPreviewFieldValue = useCallback((id, val) => {
+    setPreviewValues((prev) => ({ ...prev, [id]: val }));
+  }, []);
 
   const fetchTypes = useCallback(async () => {
     setLoading(true);
@@ -69,6 +113,7 @@ const ExplorationTypesPage = () => {
   }, [success]);
 
   const clearForm = () => {
+    previewStructureKeyRef.current = '';
     setTypeName('');
     setDescription('');
     setSchemaFields([]);
@@ -104,27 +149,8 @@ const ExplorationTypesPage = () => {
     if (!typeName.trim() || saving) return;
 
     const api = FirestoreApi.Api;
-    const schemaFieldsToSave = schemaFields.map((r, i) => {
-      const options = FIELD_TYPES_WITH_OPTIONS.has(r.fieldType)
-        ? String(r.optionsText || '')
-            .split(/\r?\n/)
-            .map((l) => l.trim())
-            .filter(Boolean)
-        : [];
-      const base = {
-        id: String(r.id || '').trim() || api.getNewId('expl_field'),
-        label: String(r.label || '').trim() || `حقل ${i + 1}`,
-        fieldType: r.fieldType || 'text',
-        required: Boolean(r.required),
-        placeholder: String(r.placeholder || '').trim(),
-        options,
-        min: r.min === '' || r.min == null ? null : Number(r.min),
-        max: r.max === '' || r.max == null ? null : Number(r.max),
-      };
-      if (r.fieldType === 'hidden') {
-        base.defaultValue = String(r.defaultValue ?? '').trim();
-      }
-      return base;
+    const schemaFieldsToSave = editorSchemaRowsToFields(schemaFields, {
+      ensureId: (i, row) => String(row.id || '').trim() || api.getNewId('expl_field'),
     });
 
     if (schemaFieldsToSave.some((f) => FIELD_TYPES_WITH_OPTIONS.has(f.fieldType) && f.options.length === 0)) {
@@ -273,7 +299,8 @@ const ExplorationTypesPage = () => {
                 لا توجد حقول مخصصة بعد. اضغط «إضافة حقل» أو احفظ النوع بلا حقول لاستخدام النموذج الافتراضي.
               </div>
             ) : (
-              schemaFields.map((row, index) => (
+              <>
+                {schemaFields.map((row, index) => (
                 <div
                   key={row.id}
                   style={{
@@ -403,8 +430,59 @@ const ExplorationTypesPage = () => {
                       />
                     </div>
                   )}
+                  {previewFields[index] && previewFields[index].fieldType !== 'hidden' && (
+                    <div
+                      style={{
+                        marginTop: 12,
+                        paddingTop: 10,
+                        borderTop: '1px dashed color-mix(in srgb, var(--border-color) 80%, transparent)',
+                      }}
+                    >
+                      <div style={{ fontSize: '0.78rem', fontWeight: 600, marginBottom: 8, color: 'var(--text-secondary)' }}>
+                        معاينة هذا الحقل (يتغيّر حسب النوع)
+                      </div>
+                      <div className="exploration-form-grid" style={{ gridTemplateColumns: '1fr', maxWidth: 560 }}>
+                        <ExplorationDynamicFieldBlock
+                          key={`${previewFields[index].id}-${previewFields[index].fieldType}`}
+                          fields={[previewFields[index]]}
+                          values={{
+                            [previewFields[index].id]:
+                              previewValues[previewFields[index].id] ?? emptyValueForField(previewFields[index]),
+                          }}
+                          onChange={setPreviewFieldValue}
+                          storageUserId={storageUserId}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ))
+                ))}
+                {previewFields.length > 0 && (
+                  <div
+                    style={{
+                      marginTop: 14,
+                      padding: '0.75rem',
+                      borderRadius: 8,
+                      border: '1px solid color-mix(in srgb, var(--accent-color) 35%, var(--border-color))',
+                      background: 'color-mix(in srgb, var(--panel-color) 88%, var(--bg-color))',
+                    }}
+                  >
+                    <strong style={{ display: 'block', marginBottom: 4 }}>معاينة النموذج كاملاً</strong>
+                    <p style={{ margin: '0 0 10px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                      هكذا تظهر الحقول للمستخدم عند إدخال استكشاف من هذا النوع (بعد اختيار القرية). الحقول المخفية لا
+                      تظهر هنا.
+                    </p>
+                    <div className="exploration-form-grid">
+                      <ExplorationDynamicFieldBlock
+                        fields={previewFields.filter((f) => f.fieldType !== 'hidden')}
+                        values={previewValues}
+                        onChange={setPreviewFieldValue}
+                        storageUserId={storageUserId}
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

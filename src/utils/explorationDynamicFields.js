@@ -128,6 +128,47 @@ export function normalizeSchemaFields(raw) {
     .filter((f) => f.label.length > 0);
 }
 
+/**
+ * تحويل صفوف محرّر نوع الاستكشاف (optionsText، min/max كنص) إلى حقول مخطط للمعاينة أو الحفظ.
+ * @param {Array<object>} rows
+ * @param {{ ensureId?: (index: number, row: object) => string }=} opts
+ */
+export function editorSchemaRowsToFields(rows, opts) {
+  const ensureId = opts?.ensureId;
+  const list = Array.isArray(rows) ? rows : [];
+  return list.map((r, i) => {
+    const ft = ALLOWED_TYPES.has(r?.fieldType) ? r.fieldType : 'text';
+    const options = FIELD_TYPES_WITH_OPTIONS.has(ft)
+      ? String(r?.optionsText ?? '')
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean)
+      : [];
+    const minRaw = r?.min === '' || r?.min == null ? null : Number(r.min);
+    const maxRaw = r?.max === '' || r?.max == null ? null : Number(r.max);
+    let id;
+    if (typeof ensureId === 'function') {
+      id = String(ensureId(i, r) || '').trim() || `field_${i}`;
+    } else {
+      id = String(r?.id || '').trim() || `preview_field_${i}`;
+    }
+    const field = {
+      id,
+      label: String(r?.label ?? '').trim() || `حقل ${i + 1}`,
+      fieldType: ft,
+      required: Boolean(r?.required),
+      placeholder: String(r?.placeholder ?? '').trim(),
+      options,
+      min: minRaw != null && Number.isFinite(minRaw) ? minRaw : null,
+      max: maxRaw != null && Number.isFinite(maxRaw) ? maxRaw : null,
+    };
+    if (ft === 'hidden') {
+      field.defaultValue = String(r?.defaultValue ?? '').trim();
+    }
+    return field;
+  });
+}
+
 export function emptyValueForField(f) {
   const t = f.fieldType;
   if (t === 'date_range') return { from: '', to: '' };
