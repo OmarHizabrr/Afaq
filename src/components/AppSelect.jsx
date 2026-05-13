@@ -73,7 +73,8 @@ const AppSelect = ({ className = '', children, searchable = false, placeholder =
         placeholder={placeholder}
         onFocus={() => {
           if (disabled) return;
-          setQuery(selectedOption?.label || '');
+          // Open with full list visible; filtering starts only after typing.
+          setQuery('');
           setOpen(true);
         }}
         onChange={(e) => {
