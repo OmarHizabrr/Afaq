@@ -16,6 +16,7 @@ import {
   sanitizeFieldValuesForSave,
 } from '../../utils/explorationDynamicFields';
 import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
+import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
 
 const defaultForm = () => ({
   explorationTypeId: '',
@@ -87,6 +88,14 @@ const ExplorationsPage = () => {
   );
 
   const useDynamicForm = schemaFields.length > 0;
+
+  const optionCachesEnabled = isModalOpen && useDynamicForm;
+  const { mergeFields, loading: optionCachesLoading } = useExplorationOptionCaches(optionCachesEnabled);
+
+  const mergedDynamicFields = useMemo(
+    () => mergeFields(schemaFields, form.fieldValues || {}, actorUser),
+    [mergeFields, schemaFields, form.fieldValues, actorUser]
+  );
 
   const filteredExplorations = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -512,13 +521,21 @@ const ExplorationsPage = () => {
                     </p>
                   </div>
                   {useDynamicForm ? (
-                    <ExplorationDynamicFieldBlock
-                      variant="sheet"
-                      fields={schemaFields}
-                      values={form.fieldValues || {}}
-                      onChange={setDynamicValue}
-                      storageUserId={storageUserId}
-                    />
+                    <>
+                      {optionCachesLoading && (
+                        <p style={{ margin: '0 0 8px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                          جاري تحميل قوائم البيانات من المنصة…
+                        </p>
+                      )}
+                      <ExplorationDynamicFieldBlock
+                        variant="sheet"
+                        fields={mergedDynamicFields}
+                        values={form.fieldValues || {}}
+                        onChange={setDynamicValue}
+                        storageUserId={storageUserId}
+                        actorUser={actorUser}
+                      />
+                    </>
                   ) : (
                     <div className="exploration-field-sheet exploration-field-sheet--legacy">
                       <label className="app-label">اسم اللواء / District</label>

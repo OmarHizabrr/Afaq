@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Plus, Edit2, Trash2, Tags, X, Save, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, Tags, X, Save, GripVertical, ArrowUp, ArrowDown, Eye, LayoutList } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import FirestoreApi from '../../services/firestoreApi';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -11,12 +11,16 @@ import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFie
 import {
   EXPLORATION_FIELD_TYPE_GROUPS,
   EXPLORATION_FIELD_TYPE_LABEL_MAP,
+  EXPLORATION_VALUE_SOURCES,
   FIELD_TYPES_WITH_OPTIONS,
   editorSchemaRowsToFields,
   emptyValueForField,
   initialFieldValues,
   normalizeSchemaFields,
 } from '../../utils/explorationDynamicFields';
+import { EXPLORATION_OPTION_SOURCES, EXPLORATION_USER_ROLE_FILTERS, EXPLORATION_OPTION_SOURCE_SUPPORTS_DEPENDS } from '../../services/explorationFieldOptions';
+import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
+import './ExplorationTypesPage.css';
 
 const emptySchemaRow = (api) => ({
   id: api.getNewId('expl_field'),
@@ -28,6 +32,10 @@ const emptySchemaRow = (api) => ({
   min: '',
   max: '',
   defaultValue: '',
+  optionSource: 'manual',
+  dependsOnFieldId: '',
+  userRoleFilter: 'all',
+  valueSource: '',
 });
 
 const ExplorationTypesPage = () => {
@@ -48,6 +56,13 @@ const ExplorationTypesPage = () => {
 
   const previewFields = useMemo(() => editorSchemaRowsToFields(schemaFields), [schemaFields]);
 
+  const { mergeFields, loading: optionCachesLoading } = useExplorationOptionCaches(Boolean(isAdding || isEditing));
+
+  const mergedPreviewFields = useMemo(
+    () => mergeFields(previewFields, previewValues, actorUser),
+    [mergeFields, previewFields, previewValues, actorUser]
+  );
+
   const previewMergeKey = useMemo(
     () =>
       JSON.stringify(
@@ -55,6 +70,10 @@ const ExplorationTypesPage = () => {
           id: f.id,
           fieldType: f.fieldType,
           options: f.options,
+          optionSource: f.optionSource,
+          dependsOnFieldId: f.dependsOnFieldId,
+          userRoleFilter: f.userRoleFilter,
+          valueSource: f.valueSource,
           min: f.min,
           max: f.max,
           required: f.required,
@@ -153,8 +172,14 @@ const ExplorationTypesPage = () => {
       ensureId: (i, row) => String(row.id || '').trim() || api.getNewId('expl_field'),
     });
 
-    if (schemaFieldsToSave.some((f) => FIELD_TYPES_WITH_OPTIONS.has(f.fieldType) && f.options.length === 0)) {
-      setError('أي حقل من نوع «قائمة منسدلة / اختيار متعدد / راديو» يجب أن يحتوي سطراً واحداً على الأقل في الخيارات.');
+    if (
+      schemaFieldsToSave.some((f) => {
+        if (!FIELD_TYPES_WITH_OPTIONS.has(f.fieldType)) return false;
+        if ((f.optionSource || 'manual') !== 'manual') return false;
+        return f.options.length === 0;
+      })
+    ) {
+      setError('أي حقل يدوي من نوع «قائمة منسدلة / اختيار متعدد / راديو» يجب أن يحتوي سطراً واحداً على الأقل في الخيارات، أو اختر مصدر بيانات من المنصة.');
       return;
     }
 
@@ -220,6 +245,10 @@ const ExplorationTypesPage = () => {
         min: f.min == null ? '' : String(f.min),
         max: f.max == null ? '' : String(f.max),
         defaultValue: f.defaultValue != null ? String(f.defaultValue) : '',
+        optionSource: f.optionSource || 'manual',
+        dependsOnFieldId: f.dependsOnFieldId || '',
+        userRoleFilter: f.userRoleFilter || 'all',
+        valueSource: f.valueSource || '',
       }))
     );
   };
@@ -250,8 +279,9 @@ const ExplorationTypesPage = () => {
         title={isEditing ? 'تعديل نوع الاستكشاف' : 'إضافة نوع استكشاف'}
         onClose={clearForm}
         size="lg"
+        className="exploration-type-modal"
       >
-        <form onSubmit={onSave}>
+        <form className="exploration-type-form" onSubmit={onSave}>
           <label className="app-label">الاسم (مطلوب)</label>
           <input
             className="app-input"
@@ -259,7 +289,6 @@ const ExplorationTypesPage = () => {
             onChange={(e) => setTypeName(e.target.value)}
             placeholder="مثال: استكشاف بئر"
             required
-            style={{ marginBottom: '0.75rem' }}
           />
           <label className="app-label">وصف مختصر</label>
           <textarea
@@ -267,33 +296,26 @@ const ExplorationTypesPage = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="تفاصيل إضافية عن النوع (اختياري)"
-            style={{ minHeight: '72px', marginBottom: '0.75rem' }}
+            style={{ minHeight: '72px' }}
           />
 
-          <div
-            style={{
-              border: '1px solid var(--border-color)',
-              borderRadius: 10,
-              padding: '0.75rem',
-              marginBottom: '0.75rem',
-              maxHeight: 'min(52vh, 420px)',
-              overflow: 'auto',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-              <strong>حقول النموذج لهذا النوع</strong>
+          <div className="exploration-type-editor__schema-panel">
+            <div className="exploration-type-editor__schema-head">
+              <div className="exploration-type-editor__schema-title-wrap">
+                <h4 className="exploration-type-editor__schema-title">حقول النموذج لهذا النوع</h4>
+                <p className="exploration-type-editor__schema-lead">
+                  إذا لم تُضف حقول، يُستخدم النموذج الافتراضي الكامل عند إدخال استكشاف من هذا النوع. عند وجود حقول، يظهر
+                  للمستخدم موقع القرية ثم هذه الحقول.
+                </p>
+              </div>
               {(can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_add') ||
                 can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_edit')) && (
-                <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={addSchemaRow}>
-                  <Plus size={16} style={{ marginLeft: 6 }} />
-                  إضافة حقل
+                <button type="button" className="google-btn google-btn--toolbar" onClick={addSchemaRow}>
+                  <Plus size={16} />
+                  <span>إضافة حقل</span>
                 </button>
               )}
             </div>
-            <p style={{ margin: '0 0 10px', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-              إذا لم تضف أي حقول هنا، سيُستخدم النموذج الكامل الافتراضي عند إدخال استكشاف من هذا النوع. عند وجود حقول، يظهر
-              للمستخدم فقط موقع القرية ثم هذه الحقول.
-            </p>
             {schemaFields.length === 0 ? (
               <div className="empty-state" style={{ padding: '1rem' }}>
                 لا توجد حقول مخصصة بعد. اضغط «إضافة حقل» أو احفظ النوع بلا حقول لاستخدام النموذج الافتراضي.
@@ -301,19 +323,10 @@ const ExplorationTypesPage = () => {
             ) : (
               <>
                 {schemaFields.map((row, index) => (
-                <div
-                  key={row.id}
-                  style={{
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 8,
-                    padding: '0.65rem',
-                    marginBottom: 8,
-                    background: 'color-mix(in srgb, var(--bg-color) 92%, var(--panel-color))',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
-                    <GripVertical size={18} style={{ marginTop: 6, opacity: 0.35, flexShrink: 0 }} aria-hidden />
-                    <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+                <div key={row.id} className="exploration-type-editor__field-card">
+                  <div className="exploration-type-editor__field-row">
+                    <GripVertical size={18} className="exploration-type-editor__grip" aria-hidden />
+                    <div className="exploration-type-editor__field-grow">
                       <label className="app-label">عنوان الحقل</label>
                       <input
                         className="app-input"
@@ -322,7 +335,7 @@ const ExplorationTypesPage = () => {
                         placeholder="مثال: عدد الأسر"
                       />
                     </div>
-                    <div style={{ flex: '1 1 140px', minWidth: 0 }}>
+                    <div className="exploration-type-editor__field-type">
                       <label className="app-label">نوع الإدخال</label>
                       <select
                         className="app-input"
@@ -340,16 +353,7 @@ const ExplorationTypesPage = () => {
                         ))}
                       </select>
                     </div>
-                    <label
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        marginTop: 28,
-                        whiteSpace: 'nowrap',
-                        fontSize: '0.9rem',
-                      }}
-                    >
+                    <label className="exploration-type-editor__required">
                       <input
                         type="checkbox"
                         checked={row.required}
@@ -357,7 +361,7 @@ const ExplorationTypesPage = () => {
                       />
                       مطلوب
                     </label>
-                    <div style={{ display: 'flex', gap: 4, marginTop: 22, flexShrink: 0 }}>
+                    <div className="exploration-type-editor__row-actions">
                       <button type="button" className="icon-btn" title="أعلى" onClick={() => moveSchemaRow(index, -1)}>
                         <ArrowUp size={16} />
                       </button>
@@ -369,7 +373,7 @@ const ExplorationTypesPage = () => {
                       </button>
                     </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8, marginTop: 8 }}>
+                  <div className="exploration-type-editor__grid-2">
                     {row.fieldType !== 'hidden' && (
                       <div>
                         <label className="app-label">نص توضيحي (placeholder)</label>
@@ -408,19 +412,98 @@ const ExplorationTypesPage = () => {
                     )}
                   </div>
                   {FIELD_TYPES_WITH_OPTIONS.has(row.fieldType) && (
-                    <div style={{ marginTop: 8 }}>
-                      <label className="app-label">الخيارات (سطر لكل خيار)</label>
-                      <textarea
+                    <div className="exploration-type-editor__options-block">
+                      <div>
+                        <label className="app-label">مصدر الخيارات</label>
+                        <select
+                          className="app-input"
+                          value={row.optionSource || 'manual'}
+                          onChange={(e) => updateSchemaRow(index, { optionSource: e.target.value })}
+                        >
+                          {EXPLORATION_OPTION_SOURCES.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      {EXPLORATION_OPTION_SOURCE_SUPPORTS_DEPENDS.has(row.optionSource) && (
+                        <div>
+                          <label className="app-label">يعتمد على حقل (اختياري)</label>
+                          <select
+                            className="app-input"
+                            value={row.dependsOnFieldId || ''}
+                            onChange={(e) => updateSchemaRow(index, { dependsOnFieldId: e.target.value })}
+                          >
+                            <option value="">— مستقل (عرض الكل) —</option>
+                            {schemaFields
+                              .filter((_, i) => i !== index)
+                              .map((r) => (
+                                <option key={r.id} value={r.id}>
+                                  {r.label || r.id} ({EXPLORATION_FIELD_TYPE_LABEL_MAP.get(r.fieldType) || r.fieldType})
+                                </option>
+                              ))}
+                          </select>
+                          <p className="exploration-type-editor__hint">
+                            المناطق: اربط بحقل محافظات. القرى: بحقل مناطق. المدارس: بحقل قرية أو منطقة. طلاب المدرسة: بحقل
+                            مدرسة. المهتدون: بحقل قرية.
+                          </p>
+                        </div>
+                      )}
+                      {row.optionSource === 'users' && (
+                        <div>
+                          <label className="app-label">تصفية المستخدمين</label>
+                          <select
+                            className="app-input"
+                            value={row.userRoleFilter || 'all'}
+                            onChange={(e) => updateSchemaRow(index, { userRoleFilter: e.target.value })}
+                          >
+                            {EXPLORATION_USER_ROLE_FILTERS.map((r) => (
+                              <option key={r.id} value={r.id}>
+                                {r.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      {(row.optionSource || 'manual') === 'manual' && (
+                        <div className="exploration-type-editor__options-span">
+                          <label className="app-label">الخيارات (سطر لكل خيار)</label>
+                          <textarea
+                            className="app-input"
+                            style={{ minHeight: 88 }}
+                            value={row.optionsText}
+                            onChange={(e) => updateSchemaRow(index, { optionsText: e.target.value })}
+                            placeholder={'الخيار الأول\nالخيار الثاني'}
+                          />
+                        </div>
+                      )}
+                      {(row.optionSource || 'manual') !== 'manual' && (
+                        <p className="exploration-type-editor__hint--muted exploration-type-editor__options-span">
+                          تُحمَّل الخيارات من بيانات المنصة عند المعاينة والاستكشاف. جرّب المعاينة الكاملة واختر قيمة الحقل
+                          الأم أولاً عند استخدام الربط التسلسلي.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {(row.fieldType === 'text' || row.fieldType === 'email' || row.fieldType === 'tel') && (
+                    <div className="exploration-type-editor__section-divider">
+                      <label className="app-label">قيمة من المستخدم الحالي (اختياري)</label>
+                      <select
                         className="app-input"
-                        style={{ minHeight: 88 }}
-                        value={row.optionsText}
-                        onChange={(e) => updateSchemaRow(index, { optionsText: e.target.value })}
-                        placeholder={'الخيار الأول\nالخيار الثاني'}
-                      />
+                        value={row.valueSource || ''}
+                        onChange={(e) => updateSchemaRow(index, { valueSource: e.target.value })}
+                      >
+                        {EXPLORATION_VALUE_SOURCES.map((s) => (
+                          <option key={s.id === '' ? '_none' : s.id} value={s.id}>
+                            {s.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   )}
                   {row.fieldType === 'hidden' && (
-                    <div style={{ marginTop: 8 }}>
+                    <div className="exploration-type-editor__section-divider">
                       <label className="app-label">القيمة المحفوظة (لا تظهر في نموذج الاستكشاف)</label>
                       <input
                         className="app-input"
@@ -430,54 +513,57 @@ const ExplorationTypesPage = () => {
                       />
                     </div>
                   )}
-                  {previewFields[index] && previewFields[index].fieldType !== 'hidden' && (
-                    <div
-                      style={{
-                        marginTop: 12,
-                        paddingTop: 10,
-                        borderTop: '1px dashed color-mix(in srgb, var(--border-color) 80%, transparent)',
-                      }}
-                    >
-                      <div style={{ fontSize: '0.78rem', fontWeight: 600, marginBottom: 8, color: 'var(--text-secondary)' }}>
-                        معاينة هذا الحقل (يتغيّر حسب النوع)
+                  {mergedPreviewFields[index] && mergedPreviewFields[index].fieldType !== 'hidden' && (
+                    <div className="exploration-type-editor__preview-band">
+                      <div className="exploration-type-editor__preview-label">
+                        <Eye size={15} aria-hidden />
+                        معاينة هذا الحقل
                       </div>
-                      <div className="exploration-form-grid" style={{ gridTemplateColumns: '1fr', maxWidth: 560 }}>
+                      <div className="exploration-type-editor__preview-shell exploration-modal-flow">
                         <ExplorationDynamicFieldBlock
-                          key={`${previewFields[index].id}-${previewFields[index].fieldType}`}
-                          fields={[previewFields[index]]}
+                          key={`${mergedPreviewFields[index].id}-${mergedPreviewFields[index].fieldType}-${mergedPreviewFields[index].optionSource || 'manual'}`}
+                          variant="sheet"
+                          fields={[mergedPreviewFields[index]]}
                           values={{
-                            [previewFields[index].id]:
-                              previewValues[previewFields[index].id] ?? emptyValueForField(previewFields[index]),
+                            [mergedPreviewFields[index].id]:
+                              previewValues[mergedPreviewFields[index].id] ?? emptyValueForField(mergedPreviewFields[index]),
                           }}
                           onChange={setPreviewFieldValue}
                           storageUserId={storageUserId}
+                          actorUser={actorUser}
                         />
                       </div>
                     </div>
                   )}
                 </div>
                 ))}
-                {previewFields.length > 0 && (
-                  <div
-                    style={{
-                      marginTop: 14,
-                      padding: '0.75rem',
-                      borderRadius: 8,
-                      border: '1px solid color-mix(in srgb, var(--accent-color) 35%, var(--border-color))',
-                      background: 'color-mix(in srgb, var(--panel-color) 88%, var(--bg-color))',
-                    }}
-                  >
-                    <strong style={{ display: 'block', marginBottom: 4 }}>معاينة النموذج كاملاً</strong>
-                    <p style={{ margin: '0 0 10px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                      هكذا تظهر الحقول للمستخدم عند إدخال استكشاف من هذا النوع (بعد اختيار القرية). الحقول المخفية لا
-                      تظهر هنا.
-                    </p>
-                    <div className="exploration-form-grid">
+                {mergedPreviewFields.length > 0 && (
+                  <div className="exploration-type-editor__preview-full">
+                    <div className="exploration-type-editor__preview-full-head">
+                      <div>
+                        <h4 className="exploration-type-editor__preview-full-title">
+                          <LayoutList size={20} aria-hidden />
+                          معاينة النموذج كاملاً
+                        </h4>
+                        <p className="exploration-type-editor__preview-full-desc">
+                          كما يظهر للمستخدم عند إدخال استكشاف من هذا النوع. الحقول المخفية لا تُعرض. عند ربط قائمة بحقل
+                          آخر، اختر قيمة الحقل الأم في المعاينة لتتحدث القائمة الفرعية.
+                        </p>
+                      </div>
+                    </div>
+                    {optionCachesLoading && (
+                      <div className="exploration-type-editor__loading-pill" role="status">
+                        جاري تحميل بيانات المنصة للقوائم…
+                      </div>
+                    )}
+                    <div className="exploration-modal-flow">
                       <ExplorationDynamicFieldBlock
-                        fields={previewFields.filter((f) => f.fieldType !== 'hidden')}
+                        variant="sheet"
+                        fields={mergedPreviewFields.filter((f) => f.fieldType !== 'hidden')}
                         values={previewValues}
                         onChange={setPreviewFieldValue}
                         storageUserId={storageUserId}
+                        actorUser={actorUser}
                       />
                     </div>
                   </div>
@@ -486,7 +572,7 @@ const ExplorationTypesPage = () => {
             )}
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+          <div className="exploration-type-editor__actions">
             <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={clearForm}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <X size={14} /> إلغاء

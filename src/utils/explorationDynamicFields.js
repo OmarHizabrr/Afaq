@@ -103,6 +103,39 @@ function parseOptionsList(f) {
   return [];
 }
 
+const OPTION_SOURCE_IDS = new Set([
+  'manual',
+  'governorates',
+  'regions',
+  'villages',
+  'schools',
+  'students',
+  'curriculum',
+  'exploration_types',
+  'new_muslims',
+  'permission_profiles',
+  'users',
+]);
+const VALUE_SOURCE_IDS = new Set(['', 'current_user_id', 'current_user_display']);
+
+/** مصدر قيمة افتراضية لحقول نصية (مع عرض في المعاينة عند توفر المستخدم) */
+export const EXPLORATION_VALUE_SOURCES = [
+  { id: '', label: 'بدون — إدخال يدوي' },
+  { id: 'current_user_id', label: 'من المستخدم الحالي — المعرف' },
+  { id: 'current_user_display', label: 'من المستخدم الحالي — الاسم المعروض' },
+];
+
+function normalizeOptionSourceId(v) {
+  return OPTION_SOURCE_IDS.has(v) ? v : 'manual';
+}
+
+function normalizeValueSourceId(v) {
+  const s = v == null ? '' : String(v);
+  return VALUE_SOURCE_IDS.has(s) ? s : '';
+}
+
+export { normalizeOptionSourceId, normalizeValueSourceId };
+
 export function normalizeSchemaFields(raw) {
   const list = Array.isArray(raw) ? raw : [];
   return list
@@ -123,6 +156,10 @@ export function normalizeSchemaFields(raw) {
         max: maxRaw != null && Number.isFinite(maxRaw) ? maxRaw : null,
         defaultValue:
           f?.defaultValue === undefined || f?.defaultValue === null ? '' : String(f.defaultValue),
+        optionSource: normalizeOptionSourceId(f?.optionSource),
+        dependsOnFieldId: String(f?.dependsOnFieldId ?? '').trim(),
+        userRoleFilter: String(f?.userRoleFilter ?? 'all') || 'all',
+        valueSource: normalizeValueSourceId(f?.valueSource),
       };
     })
     .filter((f) => f.label.length > 0);
@@ -165,6 +202,10 @@ export function editorSchemaRowsToFields(rows, opts) {
     if (ft === 'hidden') {
       field.defaultValue = String(r?.defaultValue ?? '').trim();
     }
+    field.optionSource = normalizeOptionSourceId(r?.optionSource);
+    field.dependsOnFieldId = String(r?.dependsOnFieldId ?? '').trim();
+    field.userRoleFilter = String(r?.userRoleFilter ?? 'all') || 'all';
+    field.valueSource = normalizeValueSourceId(r?.valueSource);
     return field;
   });
 }

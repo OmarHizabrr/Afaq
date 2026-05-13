@@ -179,10 +179,30 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
   );
 }
 
-export default function ExplorationDynamicFieldBlock({ fields, values, onChange, storageUserId, variant = 'default' }) {
+export default function ExplorationDynamicFieldBlock({ fields, values, onChange, storageUserId, variant = 'default', actorUser = null }) {
   const [uploadingFieldId, setUploadingFieldId] = useState(null);
 
+  useEffect(() => {
+    if (!actorUser || !onChange) return;
+    for (const f of fields) {
+      if (!['text', 'email', 'tel'].includes(f.fieldType)) continue;
+      const vs = f.valueSource;
+      if (!vs) continue;
+      const cur = values[f.id];
+      if (cur !== undefined && cur !== null && String(cur).trim() !== '') continue;
+      let next = '';
+      if (vs === 'current_user_id') next = String(actorUser.uid || actorUser.id || '');
+      else if (vs === 'current_user_display') next = String(actorUser.displayName || actorUser.email || '');
+      if (next) onChange(f.id, next);
+    }
+  }, [fields, values, actorUser, onChange]);
+
   const cells = fields.map((f) => {
+    const listPairs = () => {
+      if (Array.isArray(f.optionPairs) && f.optionPairs.length) return f.optionPairs;
+      return (f.options || []).map((o) => ({ value: String(o), label: String(o) }));
+    };
+
     const wrap = (inner) =>
       variant === 'sheet' ? (
         <div key={f.id} className="exploration-field-sheet__row">
@@ -329,14 +349,15 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
         }
 
         if (f.fieldType === 'dropdown') {
+          const pairs = listPairs();
           return wrap(
             <>
               {commonLabel}
               <AppSelect searchable className={variant === 'sheet' ? 'exploration-field-sheet__select' : ''} value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)}>
                 <option value="">-- اختر --</option>
-                {(f.options || []).map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
+                {pairs.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
                   </option>
                 ))}
               </AppSelect>
@@ -345,14 +366,15 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
         }
 
         if (f.fieldType === 'radio') {
+          const pairs = listPairs();
           return wrap(
             <>
               {commonLabel}
               <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px' }}>
-                {(f.options || []).map((opt) => (
-                  <label key={opt} className="exploration-field-sheet__choice" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-                    <input type="radio" name={`dyn-${f.id}`} checked={v === opt} onChange={() => onChange(f.id, opt)} />
-                    {opt}
+                {pairs.map((opt) => (
+                  <label key={opt.value} className="exploration-field-sheet__choice" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                    <input type="radio" name={`dyn-${f.id}`} checked={v === opt.value} onChange={() => onChange(f.id, opt.value)} />
+                    {opt.label}
                   </label>
                 ))}
               </div>
@@ -362,21 +384,22 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
 
         if (f.fieldType === 'multi_select') {
           const arr = Array.isArray(v) ? v : [];
+          const pairs = listPairs();
           return wrap(
             <>
               {commonLabel}
               <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {(f.options || []).map((opt) => (
-                  <label key={opt} className="exploration-field-sheet__choice" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                {pairs.map((opt) => (
+                  <label key={opt.value} className="exploration-field-sheet__choice" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <input
                       type="checkbox"
-                      checked={arr.includes(opt)}
+                      checked={arr.includes(opt.value)}
                       onChange={() => {
-                        const next = arr.includes(opt) ? arr.filter((x) => x !== opt) : [...arr, opt];
+                        const next = arr.includes(opt.value) ? arr.filter((x) => x !== opt.value) : [...arr, opt.value];
                         onChange(f.id, next);
                       }}
                     />
-                    {opt}
+                    {opt.label}
                   </label>
                 ))}
               </div>
