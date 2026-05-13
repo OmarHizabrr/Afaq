@@ -4,6 +4,8 @@ export const PERMISSION_PAGE_IDS = {
   regions: 'regions',
   villages: 'villages',
   schools: 'schools',
+  explorations: 'explorations',
+  exploration_types: 'exploration_types',
   curriculum: 'curriculum',
   reports: 'reports',
   users: 'users',
@@ -83,6 +85,27 @@ export const PERMISSION_PAGES = [
       { id: 'school_member_assign', label: 'إضافة/تعيين أعضاء المدرسة' },
       { id: 'school_member_view_profile', label: 'عرض ملفات أعضاء المدرسة' },
       { id: 'school_report_create', label: 'إنشاء تقرير مدرسة' },
+    ],
+  },
+  {
+    id: PERMISSION_PAGE_IDS.explorations,
+    path: '/explorations',
+    label: 'الاستكشاف',
+    supportsDataScope: true,
+    actions: [
+      { id: 'exploration_add', label: 'إضافة استكشاف' },
+      { id: 'exploration_edit', label: 'تعديل استكشاف' },
+      { id: 'exploration_delete', label: 'حذف استكشاف' },
+    ],
+  },
+  {
+    id: PERMISSION_PAGE_IDS.exploration_types,
+    path: '/admin/exploration-types',
+    label: 'أنواع الاستكشاف',
+    actions: [
+      { id: 'exploration_type_add', label: 'إضافة نوع استكشاف' },
+      { id: 'exploration_type_edit', label: 'تعديل نوع استكشاف' },
+      { id: 'exploration_type_delete', label: 'حذف نوع استكشاف' },
     ],
   },
   {

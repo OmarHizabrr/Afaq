@@ -30,6 +30,8 @@ import PageGuard from './routes/PageGuard';
 import AdminUserTypesPage from './pages/admin/AdminUserTypesPage';
 import AdminBrandingPage from './pages/admin/AdminBrandingPage';
 import AdminSiteCopyPage from './pages/admin/AdminSiteCopyPage';
+import ExplorationsPage from './pages/admin/ExplorationsPage';
+import ExplorationTypesPage from './pages/admin/ExplorationTypesPage';
 import { PERMISSION_PAGE_IDS } from './config/permissionRegistry';
 import NoPermissionsPage from './pages/common/NoPermissionsPage';
 import usePermissions from './context/usePermissions';
@@ -105,6 +107,7 @@ function App() {
           <Route path="regions" element={<PageGuard pageId={PERMISSION_PAGE_IDS.regions}><RegionsPage /></PageGuard>} />
           <Route path="villages" element={<PageGuard pageId={PERMISSION_PAGE_IDS.villages}><VillagesPage /></PageGuard>} />
           <Route path="schools" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolsPage /></PageGuard>} />
+          <Route path="explorations" element={<PageGuard pageId={PERMISSION_PAGE_IDS.explorations}><ExplorationsPage /></PageGuard>} />
           <Route path="users" element={<PageGuard pageId={PERMISSION_PAGE_IDS.users}><UsersPage /></PageGuard>} />
           <Route path="students-management" element={<PageGuard pageId={PERMISSION_PAGE_IDS.students_management}><StudentManagementPage /></PageGuard>} />
           <Route path="curriculum" element={<PageGuard pageId={PERMISSION_PAGE_IDS.curriculum}><CurriculumPage /></PageGuard>} />
@@ -121,6 +124,7 @@ function App() {
           <Route path="admin/user-types" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_user_types}><AdminUserTypesPage user={user} /></PageGuard>} />
           <Route path="admin/branding" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_branding}><AdminBrandingPage user={user} /></PageGuard>} />
           <Route path="admin/site-copy" element={<PageGuard pageId={PERMISSION_PAGE_IDS.admin_site_copy}><AdminSiteCopyPage user={user} /></PageGuard>} />
+          <Route path="admin/exploration-types" element={<PageGuard pageId={PERMISSION_PAGE_IDS.exploration_types}><ExplorationTypesPage /></PageGuard>} />
         </Route>
 
         <Route path="/supervisor/*" element={<Navigate to="/" replace />} />

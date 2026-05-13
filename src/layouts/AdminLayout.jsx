@@ -21,7 +21,9 @@ import {
   GraduationCap,
   Shield,
   Palette,
-  FileText
+  FileText,
+  Compass,
+  Tags
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
@@ -75,6 +77,7 @@ const AdminLayout = ({ user }) => {
     { name: 'المناطق', icon: MapPin, path: '/regions', pageId: PERMISSION_PAGE_IDS.regions },
     { name: 'القرى', icon: Home, path: '/villages', pageId: PERMISSION_PAGE_IDS.villages },
     { name: 'المدارس', icon: School, path: '/schools', pageId: PERMISSION_PAGE_IDS.schools },
+    { name: 'الاستكشاف', icon: Compass, path: '/explorations', pageId: PERMISSION_PAGE_IDS.explorations },
     { name: 'المنَاهِج', icon: BookOpen, path: '/curriculum', pageId: PERMISSION_PAGE_IDS.curriculum },
     { name: 'التقارير', icon: ClipboardList, path: '/reports', pageId: PERMISSION_PAGE_IDS.reports },
     { name: str('layout.nav_users', 'المستخدمين'), icon: Users, path: '/users', pageId: PERMISSION_PAGE_IDS.users },
@@ -84,6 +87,7 @@ const AdminLayout = ({ user }) => {
     { name: 'أنواع المستخدمين', icon: Shield, path: '/admin/user-types', pageId: PERMISSION_PAGE_IDS.admin_user_types },
     { name: 'هوية الموقع', icon: Palette, path: '/admin/branding', pageId: PERMISSION_PAGE_IDS.admin_branding },
     { name: 'النصوص الثابتة', icon: FileText, path: '/admin/site-copy', pageId: PERMISSION_PAGE_IDS.admin_site_copy },
+    { name: 'أنواع الاستكشاف', icon: Tags, path: '/admin/exploration-types', pageId: PERMISSION_PAGE_IDS.exploration_types },
   ];
   const visibleNavItems = navItems.filter((item) => !item.pageId || canAccessPage(item.pageId));
 

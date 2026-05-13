@@ -228,6 +228,26 @@ class FirestoreApi {
     return this.getCollection('curriculum');
   }
 
+  /** exploration_types */
+  getExplorationTypesCollection() {
+    return this.getCollection('exploration_types');
+  }
+
+  /** exploration_types/{typeId} */
+  getExplorationTypeDoc(typeId) {
+    return this.getDocument('exploration_types', typeId);
+  }
+
+  /** explorations */
+  getExplorationsCollection() {
+    return this.getCollection('explorations');
+  }
+
+  /** explorations/{explorationId} */
+  getExplorationDoc(explorationId) {
+    return this.getDocument('explorations', explorationId);
+  }
+
   /** curriculum/{subjectId} */
   getCurriculumDoc(subjectId) {
     return this.getDocument('curriculum', subjectId);
