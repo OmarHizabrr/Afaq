@@ -1084,6 +1084,13 @@ html:not(.light-mode) .nav-link.active {
   overflow: auto;
 }
 
+.app-select-search__menu--portal {
+  right: auto;
+  z-index: 1000;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 .app-select-search__option {
   width: 100%;
   border: 0;
