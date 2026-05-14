@@ -6,7 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import usePermissions from '../../context/usePermissions';
-import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { PERMISSION_PAGE_IDS, EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
 import ExplorationBadge from '../../components/ExplorationBadge';
@@ -15,7 +15,7 @@ import { useExplorationForm } from '../../hooks/useExplorationForm';
 
 const CurriculumPage = () => {
   const navigate = useNavigate();
-  const { can, actorUser } = usePermissions();
+  const { can, actorUser, explorationBridgeAllowed } = usePermissions();
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -246,23 +246,23 @@ const CurriculumPage = () => {
         subtitle="توزيع خطة الأسابيع (٥٠ أسبوعاً)"
       >
         {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_add_subject') && (
-          <>
-            <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
-              <Plus size={18} />
-              <span>إضافة مادة جديدة</span>
-            </button>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              onClick={() => {
-                setExpSubjectName('');
-                setIsExploringAdding(true);
-              }}
-            >
-              <Compass size={18} />
-              <span>إضافة من الاستكشاف</span>
-            </button>
-          </>
+          <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
+            <Plus size={18} />
+            <span>إضافة مادة جديدة</span>
+          </button>
+        )}
+        {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_add_subject') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => {
+              setIsExploringAdding(true);
+            }}
+          >
+            <Compass size={18} />
+            <span>إضافة من الاستكشاف</span>
+          </button>
         )}
       </PageHeader>
 
@@ -357,10 +357,12 @@ const CurriculumPage = () => {
                     <div className="curriculum-item__badge">
                       الخطة: 50 أسبوع
                     </div>
-                    <ExplorationBadge
-                      record={subject}
-                      onClick={() => setViewingExplorationOf(subject)}
-                    />
+                    {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                      <ExplorationBadge
+                        record={subject}
+                        onClick={() => setViewingExplorationOf(subject)}
+                      />
+                    )}
                     <div className="curriculum-item__actions">
                       {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_print_subject') && (
                         <button
@@ -488,7 +490,10 @@ const CurriculumPage = () => {
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
-        canEdit={can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject')}
+        canEdit={
+          can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.edit)
+        }
         fallbackName={viewingExplorationOf?.name}
         onSave={async ({ fieldValues, derivedName, selectedType }) => {
           const target = viewingExplorationOf;

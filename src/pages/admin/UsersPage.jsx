@@ -11,7 +11,7 @@ import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { subscribePermissionProfiles } from '../../services/permissionProfilesService';
-import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { PERMISSION_PAGE_IDS, EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterUsersByScope,
@@ -61,7 +61,7 @@ const UsersPage = () => {
   const [usersRoleFilter, setUsersRoleFilter] = useState('teacher');
   const [modalBusy, setModalBusy] = useState(false);
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
@@ -317,18 +317,20 @@ const UsersPage = () => {
               <UserPlus size={18} />
               <span>إضافة مستخدم</span>
             </button>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              style={{ width: 'auto' }}
-              onClick={() => {
-                setIsExploringAdding(true);
-                setError('');
-              }}
-            >
-              <Compass size={18} />
-              <span>إضافة من الاستكشاف</span>
-            </button>
+            {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
+              <button
+                type="button"
+                className="google-btn google-btn--toolbar"
+                style={{ width: 'auto' }}
+                onClick={() => {
+                  setIsExploringAdding(true);
+                  setError('');
+                }}
+              >
+                <Compass size={18} />
+                <span>إضافة من الاستكشاف</span>
+              </button>
+            )}
           </>
         )}
       </PageHeader>
@@ -378,7 +380,9 @@ const UsersPage = () => {
                       معطّل
                     </span>
                   )}
-                  <ExplorationBadge record={user} onClick={() => setViewingExplorationOf(user)} />
+                  {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                    <ExplorationBadge record={user} onClick={() => setViewingExplorationOf(user)} />
+                  )}
                 </div>
               </div>
               <div className="users-card__actions">
@@ -657,8 +661,9 @@ const UsersPage = () => {
         actorUser={actorUser}
         storageUserId={storageUserId}
         canEdit={
-          can(PERMISSION_PAGE_IDS.users, 'user_edit_role') ||
-          can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')
+          (can(PERMISSION_PAGE_IDS.users, 'user_edit_role') ||
+            can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')) &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.edit)
         }
         fallbackName={viewingExplorationOf?.displayName}
         onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {

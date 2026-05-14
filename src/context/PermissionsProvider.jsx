@@ -9,6 +9,7 @@ import {
   expandMembershipGroupIdsForDataScope,
 } from '../utils/permissionDataScope';
 import { isSystemAdmin, skipsMembershipDataScopeLoading } from '../utils/systemRoles';
+import { isExplorationBridgeActionAllowed } from '../config/permissionRegistry';
 
 function pageVisible(pages, pageId) {
   if (!pages || typeof pages !== 'object') return false;
@@ -100,6 +101,7 @@ export default function PermissionsProvider({ user, children }) {
         hasPermissionProfile: false,
         canAccessPage: () => false,
         can: () => false,
+        explorationBridgeAllowed: () => false,
         pageDataScope: () => 'all',
         membershipGroupIds: new Set(),
         membershipMirrorGroupIds: new Set(),
@@ -114,6 +116,7 @@ export default function PermissionsProvider({ user, children }) {
         hasPermissionProfile: true,
         canAccessPage: () => true,
         can: () => true,
+        explorationBridgeAllowed: () => true,
         pageDataScope: () => DATA_SCOPE_ALL,
         membershipGroupIds: new Set(),
         membershipMirrorGroupIds: new Set(),
@@ -129,6 +132,7 @@ export default function PermissionsProvider({ user, children }) {
         hasPermissionProfile: false,
         canAccessPage: () => false,
         can: () => false,
+        explorationBridgeAllowed: () => true,
         pageDataScope: () => 'all',
         membershipGroupIds: new Set(),
         membershipMirrorGroupIds: new Set(),
@@ -143,6 +147,7 @@ export default function PermissionsProvider({ user, children }) {
         hasPermissionProfile: true,
         canAccessPage: () => false,
         can: () => false,
+        explorationBridgeAllowed: () => false,
         pageDataScope: () => 'all',
         membershipGroupIds: new Set(),
         membershipMirrorGroupIds: new Set(),
@@ -169,6 +174,7 @@ export default function PermissionsProvider({ user, children }) {
         if (!pageVisible(pagesResolved, pageId)) return false;
         return pagesResolved?.[pageId]?.actions?.[actionId] === true;
       },
+      explorationBridgeAllowed: (actionId) => isExplorationBridgeActionAllowed(pagesResolved, actionId),
     };
   }, [user, profileState, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, needsMembershipData]);
 

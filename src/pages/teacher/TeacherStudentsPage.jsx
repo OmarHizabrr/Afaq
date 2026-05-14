@@ -11,11 +11,14 @@ import ExplorationFormSection from "../../components/ExplorationFormSection";
 import ExplorationBadge from "../../components/ExplorationBadge";
 import ExplorationDataModal from "../../components/ExplorationDataModal";
 import { useExplorationForm } from "../../hooks/useExplorationForm";
+import usePermissions from "../../context/usePermissions";
+import { EXPLORATION_BRIDGE_ACTION_IDS } from "../../config/permissionRegistry";
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "");
 
 const TeacherStudentsPage = ({ user }) => {
   const navigate = useNavigate();
+  const { explorationBridgeAllowed } = usePermissions();
   const actorId = user?.uid || user?.id;
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -319,14 +322,16 @@ const TeacherStudentsPage = ({ user }) => {
             <UserPlus size={18} />
             <span>إضافة دارس جديد</span>
           </button>
-          <button
-            type="button"
-            className="google-btn google-btn--toolbar"
-            onClick={() => setIsExploringAdding(true)}
-          >
-            <Compass size={18} />
-            <span>إضافة من الاستكشاف</span>
-          </button>
+          {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => setIsExploringAdding(true)}
+            >
+              <Compass size={18} />
+              <span>إضافة من الاستكشاف</span>
+            </button>
+          )}
         </>
       </PageHeader>
 
@@ -501,10 +506,12 @@ const TeacherStudentsPage = ({ user }) => {
                         {student.studentName.charAt(0)}
                       </div>
                       <span>{student.studentName}</span>
-                      <ExplorationBadge
-                        record={student}
-                        onClick={() => setViewingExplorationOf(student)}
-                      />
+                      {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                        <ExplorationBadge
+                          record={student}
+                          onClick={() => setViewingExplorationOf(student)}
+                        />
+                      )}
                     </td>
                     <td style={{ padding: "16px" }}>{student.age || "-"}</td>
                     <td
@@ -577,6 +584,7 @@ const TeacherStudentsPage = ({ user }) => {
         record={viewingExplorationOf}
         actorUser={user}
         storageUserId={actorId}
+        canEdit={explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.edit)}
         fallbackName={viewingExplorationOf?.studentName}
         onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
           const target = viewingExplorationOf;

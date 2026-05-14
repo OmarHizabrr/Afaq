@@ -12,7 +12,7 @@ import ExplorationBadge from '../../components/ExplorationBadge';
 import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
-import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { PERMISSION_PAGE_IDS, EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterRegionsByScope,
@@ -30,7 +30,7 @@ const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?
 const SchoolsPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [schools, setSchools] = useState([]);
   const [regions, setRegions] = useState([]);
@@ -261,32 +261,33 @@ const SchoolsPage = () => {
     <div>
       <PageHeader icon={School} title="إدارة المدارس">
         {can(PERMISSION_PAGE_IDS.schools, 'school_add') && (
-          <>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              onClick={() => {
-                setIsAdding(true);
-                setIsEditing(null);
-                setSchoolLevel('children');
-                setSchoolName('');
-                setDonorName('');
-                setSelectedVilId('');
-                setSelectedRegId('');
-              }}
-            >
-              <Plus size={18} />
-              <span>إضافة مدرسة</span>
-            </button>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              onClick={() => setIsExploringAdding(true)}
-            >
-              <Compass size={18} />
-              <span>إضافة من الاستكشاف</span>
-            </button>
-          </>
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => {
+              setIsAdding(true);
+              setIsEditing(null);
+              setSchoolLevel('children');
+              setSchoolName('');
+              setDonorName('');
+              setSelectedVilId('');
+              setSelectedRegId('');
+            }}
+          >
+            <Plus size={18} />
+            <span>إضافة مدرسة</span>
+          </button>
+        )}
+        {can(PERMISSION_PAGE_IDS.schools, 'school_add') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => setIsExploringAdding(true)}
+          >
+            <Compass size={18} />
+            <span>إضافة من الاستكشاف</span>
+          </button>
         )}
       </PageHeader>
 
@@ -394,7 +395,9 @@ const SchoolsPage = () => {
                   {sch.donorName && <span className="schools-card__donor"><Handshake size={14} /> المتبرع: {sch.donorName}</span>}
                 </div>
                 <div style={{ marginTop: 6 }}>
-                  <ExplorationBadge record={sch} onClick={() => setViewingExplorationOf(sch)} />
+                  {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                    <ExplorationBadge record={sch} onClick={() => setViewingExplorationOf(sch)} />
+                  )}
                 </div>
               </div>
               <div className="schools-card__actions">
@@ -426,7 +429,10 @@ const SchoolsPage = () => {
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
-        canEdit={can(PERMISSION_PAGE_IDS.schools, 'school_edit')}
+        canEdit={
+          can(PERMISSION_PAGE_IDS.schools, 'school_edit') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.edit)
+        }
         fallbackName={viewingExplorationOf?.name}
         onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
           const target = viewingExplorationOf;

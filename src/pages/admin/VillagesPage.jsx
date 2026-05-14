@@ -12,7 +12,7 @@ import ExplorationBadge from '../../components/ExplorationBadge';
 import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
-import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { PERMISSION_PAGE_IDS, EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
 import {
   DATA_SCOPE_MEMBERSHIP,
   filterRegionsByScope,
@@ -32,7 +32,7 @@ import {
 const VillagesPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [villages, setVillages] = useState([]);
   const [regions, setRegions] = useState([]);
@@ -717,37 +717,38 @@ const VillagesPage = () => {
     <div>
       <PageHeader icon={Home} title="إدارة القرى" subtitle="البيانات الديموغرافية والمجموعات">
         {can(PERMISSION_PAGE_IDS.villages, 'village_add') && (
-          <>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              onClick={() => {
-                setIsAdding(true);
-                setIsEditing(null);
-                setSelectedRegId('');
-                setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
-                setNewMuslims([]);
-                setMuslimName('');
-                setMuslimType('رجل');
-                setMuslimCategoryForm(normalizeMuslimCategory());
-                setVillageModalSchoolIds([]);
-                setNmQuickVillageId(null);
-                cancelNmQuickEdit();
-              }}
-            >
-              <Plus size={18} />
-              <span>إضافة قرية جديدة</span>
-            </button>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              onClick={openExplorationAddModal}
-              title="فتح نموذج استكشاف لإدخال قرية جديدة"
-            >
-              <Compass size={18} />
-              <span>إضافة من نموذج الاستكشاف</span>
-            </button>
-          </>
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => {
+              setIsAdding(true);
+              setIsEditing(null);
+              setSelectedRegId('');
+              setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
+              setNewMuslims([]);
+              setMuslimName('');
+              setMuslimType('رجل');
+              setMuslimCategoryForm(normalizeMuslimCategory());
+              setVillageModalSchoolIds([]);
+              setNmQuickVillageId(null);
+              cancelNmQuickEdit();
+            }}
+          >
+            <Plus size={18} />
+            <span>إضافة قرية جديدة</span>
+          </button>
+        )}
+        {can(PERMISSION_PAGE_IDS.villages, 'village_add') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={openExplorationAddModal}
+            title="فتح نموذج استكشاف لإدخال قرية جديدة"
+          >
+            <Compass size={18} />
+            <span>إضافة من نموذج الاستكشاف</span>
+          </button>
         )}
       </PageHeader>
 
@@ -1148,7 +1149,9 @@ const VillagesPage = () => {
                 <span>LTI: {vil.ltiName || '-'}</span>
               </div>
               <div style={{ marginTop: 6 }}>
-                <ExplorationBadge record={vil} onClick={() => setViewingExplorationOf(vil)} />
+                {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                  <ExplorationBadge record={vil} onClick={() => setViewingExplorationOf(vil)} />
+                )}
               </div>
               <div
                 className="surface-card"
@@ -1420,7 +1423,10 @@ const VillagesPage = () => {
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
-        canEdit={can(PERMISSION_PAGE_IDS.villages, 'village_edit')}
+        canEdit={
+          can(PERMISSION_PAGE_IDS.villages, 'village_edit') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.edit)
+        }
         fallbackName={viewingExplorationOf?.villageName}
         onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
           const target = viewingExplorationOf;

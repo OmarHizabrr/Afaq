@@ -5,6 +5,8 @@ export const PermissionsContext = createContext({
   hasPermissionProfile: false,
   canAccessPage: () => false,
   can: () => false,
+  /** @type {(actionId: string) => boolean} */
+  explorationBridgeAllowed: () => false,
   pageDataScope: () => 'all',
   membershipGroupIds: new Set(),
   membershipMirrorGroupIds: new Set(),

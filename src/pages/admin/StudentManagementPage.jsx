@@ -5,7 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
-import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { PERMISSION_PAGE_IDS, EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
 import FormModal from '../../components/FormModal';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
@@ -23,7 +23,7 @@ import {
 const StudentManagementPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -445,27 +445,28 @@ const StudentManagementPage = () => {
         subtitle="عرض الارتباطات والتحركات لكل طالب بنمط عضويات المجموعات"
       >
         {can(PERMISSION_PAGE_IDS.students_management, 'student_management_add') && (
-          <>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              onClick={() => {
-                resetForm();
-                setIsAddOpen(true);
-                const sorted = [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-                if (sorted.length) setFormSchoolIds([sorted[0].id]);
-              }}
-            >
-              <Plus size={16} /> إضافة طالب
-            </button>
-            <button
-              type="button"
-              className="google-btn google-btn--toolbar"
-              onClick={() => setIsExploringAdding(true)}
-            >
-              <Compass size={16} /> إضافة من الاستكشاف
-            </button>
-          </>
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => {
+              resetForm();
+              setIsAddOpen(true);
+              const sorted = [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+              if (sorted.length) setFormSchoolIds([sorted[0].id]);
+            }}
+          >
+            <Plus size={16} /> إضافة طالب
+          </button>
+        )}
+        {can(PERMISSION_PAGE_IDS.students_management, 'student_management_add') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={() => setIsExploringAdding(true)}
+          >
+            <Compass size={16} /> إضافة من الاستكشاف
+          </button>
         )}
       </PageHeader>
 
@@ -530,7 +531,9 @@ const StudentManagementPage = () => {
                           <div className="student-management-student-cell__name">{s.displayName || 'بدون اسم'}</div>
                           <div className="student-management-student-cell__email">{s.email || 'بدون بريد'}</div>
                           <div style={{ marginTop: 4 }}>
-                            <ExplorationBadge record={s} onClick={() => setViewingExplorationOf(s)} />
+                            {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                              <ExplorationBadge record={s} onClick={() => setViewingExplorationOf(s)} />
+                            )}
                           </div>
                         </div>
                       </div>
@@ -708,7 +711,10 @@ const StudentManagementPage = () => {
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
-        canEdit={can(PERMISSION_PAGE_IDS.students_management, 'student_management_edit')}
+        canEdit={
+          can(PERMISSION_PAGE_IDS.students_management, 'student_management_edit') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.edit)
+        }
         fallbackName={viewingExplorationOf?.displayName}
         onSave={async ({ fieldValues, derivedName, selectedType, controller }) => {
           const target = viewingExplorationOf;

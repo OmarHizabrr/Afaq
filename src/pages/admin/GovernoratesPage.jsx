@@ -6,7 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import FormModal from '../../components/FormModal';
 import usePermissions from '../../context/usePermissions';
-import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import { PERMISSION_PAGE_IDS, EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
 import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
 import ExplorationBadge from '../../components/ExplorationBadge';
@@ -21,7 +21,7 @@ import {
 const GovernoratesPage = () => {
   const navigate = useNavigate();
   const perm = usePermissions();
-  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [governorates, setGovernorates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -220,16 +220,17 @@ const GovernoratesPage = () => {
     <div>
       <PageHeader icon={Map} title="إدارة المحافظات">
         {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') && (
-          <>
-            <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
-              <Plus size={18} />
-              <span>إضافة محافظة</span>
-            </button>
-            <button type="button" className="google-btn google-btn--toolbar" onClick={openExplorationModal}>
-              <Compass size={18} />
-              <span>إضافة من الاستكشاف</span>
-            </button>
-          </>
+          <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
+            <Plus size={18} />
+            <span>إضافة محافظة</span>
+          </button>
+        )}
+        {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
+          <button type="button" className="google-btn google-btn--toolbar" onClick={openExplorationModal}>
+            <Compass size={18} />
+            <span>إضافة من الاستكشاف</span>
+          </button>
         )}
       </PageHeader>
 
@@ -338,7 +339,9 @@ const GovernoratesPage = () => {
                   الدولة: {gov.country || 'غير محددة'}
                 </div>
                 <div style={{ marginTop: 6 }}>
-                  <ExplorationBadge record={gov} onClick={() => setViewingExplorationOf(gov)} />
+                  {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                    <ExplorationBadge record={gov} onClick={() => setViewingExplorationOf(gov)} />
+                  )}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -370,7 +373,10 @@ const GovernoratesPage = () => {
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
-        canEdit={can(PERMISSION_PAGE_IDS.governorates, 'governorate_edit')}
+        canEdit={
+          can(PERMISSION_PAGE_IDS.governorates, 'governorate_edit') &&
+          explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.edit)
+        }
         fallbackName={viewingExplorationOf?.name}
         onSave={async ({ fieldValues, derivedName, selectedType }) => {
           const target = viewingExplorationOf;

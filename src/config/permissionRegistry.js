@@ -6,6 +6,8 @@ export const PERMISSION_PAGE_IDS = {
   schools: 'schools',
   explorations: 'explorations',
   exploration_types: 'exploration_types',
+  /** أزرار «إضافة من الاستكشاف» وشارة البطاقة عبر الصفحات — لا مسار تنقل؛ تُضبط من «أنواع المستخدمين» */
+  exploration_bridge: 'exploration_bridge',
   curriculum: 'curriculum',
   reports: 'reports',
   users: 'users',
@@ -109,6 +111,16 @@ export const PERMISSION_PAGES = [
     ],
   },
   {
+    id: PERMISSION_PAGE_IDS.exploration_bridge,
+    path: '/__permissions/exploration-bridge',
+    label: 'نماذج الاستكشاف في الصفحات (إضافة / عرض / تعديل)',
+    actions: [
+      { id: 'exploration_bridge_add', label: 'إضافة سجلات من نموذج الاستكشاف (زر البوصلة في الصفحات)' },
+      { id: 'exploration_bridge_view', label: 'عرض بيانات النموذج من شارة البطاقة' },
+      { id: 'exploration_bridge_edit', label: 'تعديل بيانات النموذج من المودال' },
+    ],
+  },
+  {
     id: PERMISSION_PAGE_IDS.curriculum,
     path: '/curriculum',
     label: 'المناهج',
@@ -176,6 +188,24 @@ export const PERMISSION_PAGES = [
     actions: [],
   },
 ];
+
+/** معرفات إجراءات ربط نماذج الاستكشاف بالصفحات — تُستخدم مع `explorationBridgeAllowed` من السياق */
+export const EXPLORATION_BRIDGE_ACTION_IDS = {
+  add: 'exploration_bridge_add',
+  view: 'exploration_bridge_view',
+  edit: 'exploration_bridge_edit',
+};
+
+/**
+ * إن لم تُفعَّل صفحة «نماذج الاستكشاف في الصفحات» ضمن نوع المستخدم، يُسمح بكل الإجراءات (سلوك ما قبل التعريف).
+ * عند تفعيل الصفحة، يصبح كل إجراء صريحاً (مربعات الاختيار).
+ */
+export function isExplorationBridgeActionAllowed(pagesResolved, actionId) {
+  if (!actionId) return false;
+  const cfg = pagesResolved?.[PERMISSION_PAGE_IDS.exploration_bridge];
+  if (!cfg) return true;
+  return cfg.actions?.[actionId] === true;
+}
 
 const mapByPath = new Map(PERMISSION_PAGES.map((p) => [p.path, p.id]));
 
