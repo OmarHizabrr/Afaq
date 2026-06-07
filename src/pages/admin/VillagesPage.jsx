@@ -90,7 +90,7 @@ const VillagesPage = () => {
    * ============================================================ */
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSavingExploration, setExpSavingExploration] = useState(false);
-  const expForm = useExplorationForm(isExploringAdding, actorUser);
+  const expForm = useExplorationForm(isExploringAdding, actorUser, null, PERMISSION_PAGE_IDS.villages);
 
   /* سجل المهتدين والمسلمين القدامى ضمن نفس المودال */
   const [expNewMuslims, setExpNewMuslims] = useState([]);
@@ -954,6 +954,7 @@ const VillagesPage = () => {
             actorUser={actorUser}
             storageUserId={storageUserId}
             heading="حقول نموذج الاستكشاف"
+            currentPageId={PERMISSION_PAGE_IDS.villages}
           />
 
           <hr className="villages-form__divider" />

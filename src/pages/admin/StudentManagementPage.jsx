@@ -49,7 +49,7 @@ const StudentManagementPage = () => {
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
   const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
-  const expForm = useExplorationForm(isExploringAdding, actorUser);
+  const expForm = useExplorationForm(isExploringAdding, actorUser, null, PERMISSION_PAGE_IDS.students_management);
 
   const sortedSchoolsCatalog = useMemo(
     () => [...schoolsCatalog].sort((a, b) => a.name.localeCompare(b.name, 'ar')),
@@ -693,6 +693,7 @@ const StudentManagementPage = () => {
               actorUser={actorUser}
               storageUserId={storageUserId}
               heading="حقول نموذج الاستكشاف"
+              currentPageId={PERMISSION_PAGE_IDS.students_management}
             />
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8, gridColumn: '1 / -1' }}>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Plus, Edit2, Trash2, Tags, X, Save, GripVertical, ArrowUp, ArrowDown, Eye, LayoutList } from 'lucide-react';
+import { Plus, Edit2, Trash2, Tags, X, Save, GripVertical, ArrowUp, ArrowDown, Eye, LayoutList, MapPin } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import FirestoreApi from '../../services/firestoreApi';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -8,6 +8,7 @@ import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
+import ExplorationTargetPagesPicker from '../../components/ExplorationTargetPagesPicker';
 import {
   EXPLORATION_FIELD_TYPE_GROUPS,
   EXPLORATION_FIELD_TYPE_LABEL_MAP,
@@ -21,6 +22,11 @@ import {
 import { EXPLORATION_OPTION_SOURCES, EXPLORATION_USER_ROLE_FILTERS, EXPLORATION_OPTION_SOURCE_SUPPORTS_DEPENDS } from '../../services/explorationFieldOptions';
 import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
 import { invalidateExplorationTypesCache } from '../../hooks/useExplorationTypesCache';
+import {
+  formatAllowedPagesSummary,
+  getTargetPageLabel,
+  normalizeAllowedPageIds,
+} from '../../utils/explorationTargetPages';
 import './ExplorationTypesPage.css';
 
 const emptySchemaRow = (api) => ({
@@ -48,6 +54,7 @@ const ExplorationTypesPage = () => {
   const [isEditing, setIsEditing] = useState(null);
   const [typeName, setTypeName] = useState('');
   const [description, setDescription] = useState('');
+  const [allowedPageIds, setAllowedPageIds] = useState([]);
   const [schemaFields, setSchemaFields] = useState([]);
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
@@ -136,6 +143,7 @@ const ExplorationTypesPage = () => {
     previewStructureKeyRef.current = '';
     setTypeName('');
     setDescription('');
+    setAllowedPageIds([]);
     setSchemaFields([]);
     setIsAdding(false);
     setIsEditing(null);
@@ -192,6 +200,7 @@ const ExplorationTypesPage = () => {
           data: {
             name: typeName.trim(),
             description: description.trim(),
+            allowedPageIds: normalizeAllowedPageIds(allowedPageIds),
             schemaFields: schemaFieldsToSave,
           },
         });
@@ -203,6 +212,7 @@ const ExplorationTypesPage = () => {
           data: {
             name: typeName.trim(),
             description: description.trim(),
+            allowedPageIds: normalizeAllowedPageIds(allowedPageIds),
             schemaFields: schemaFieldsToSave,
           },
         });
@@ -239,6 +249,7 @@ const ExplorationTypesPage = () => {
     setIsAdding(false);
     setTypeName(item.name || '');
     setDescription(item.description || '');
+    setAllowedPageIds(normalizeAllowedPageIds(item.allowedPageIds));
     const raw = item.schemaFields || item.fields || [];
     const normalized = normalizeSchemaFields(raw);
     setSchemaFields(
@@ -301,6 +312,8 @@ const ExplorationTypesPage = () => {
             placeholder="تفاصيل إضافية عن النوع (اختياري)"
             style={{ minHeight: '72px' }}
           />
+
+          <ExplorationTargetPagesPicker value={allowedPageIds} onChange={setAllowedPageIds} />
 
           <div className="exploration-type-editor__schema-panel">
             <div className="exploration-type-editor__schema-head">
@@ -595,21 +608,34 @@ const ExplorationTypesPage = () => {
       ) : types.length === 0 ? (
         <div className="empty-state">لا توجد أنواع استكشاف مضافة حتى الآن.</div>
       ) : (
-        <div className="entity-grid entity-grid--md">
+        <div className="entity-grid entity-grid--md exploration-types-grid">
           {types.map((item) => {
             const n = normalizeSchemaFields(item.schemaFields || item.fields || []).length;
+            const pagesSummary = formatAllowedPagesSummary(item);
+            const pageIds = normalizeAllowedPageIds(item.allowedPageIds);
             return (
-              <div key={item.id} className="surface-card surface-card--entity">
-                <div>
-                  <h3 style={{ margin: 0 }}>{item.name || 'بدون اسم'}</h3>
-                  <p style={{ margin: '6px 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                    {item.description || 'بدون وصف'}
-                  </p>
-                  <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              <div key={item.id} className="surface-card surface-card--entity exploration-type-card">
+                <div className="exploration-type-card__body">
+                  <h3 className="exploration-type-card__title">{item.name || 'بدون اسم'}</h3>
+                  <p className="exploration-type-card__desc">{item.description || 'بدون وصف'}</p>
+                  <p className="exploration-type-card__meta">
                     {n === 0 ? 'يستخدم النموذج الافتراضي الكامل' : `${n} حقل مخصص في النموذج`}
                   </p>
+                  <div className="exploration-type-card__pages" title={pagesSummary}>
+                    <MapPin size={13} aria-hidden />
+                    <span>{pagesSummary}</span>
+                  </div>
+                  {pageIds.length > 0 && pageIds.length <= 4 && (
+                    <div className="exploration-type-card__page-chips">
+                      {pageIds.map((pid) => (
+                        <span key={pid} className="exploration-type-card__page-chip">
+                          {getTargetPageLabel(pid)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div className="exploration-type-card__actions">
                   {can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_edit') && (
                     <button type="button" className="icon-btn" title="تعديل" onClick={() => startEdit(item)}>
                       <Edit2 size={16} />

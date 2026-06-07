@@ -6,6 +6,7 @@ import {
   validateFieldValues,
   sanitizeFieldValuesForSave,
 } from '../utils/explorationDynamicFields';
+import { filterExplorationTypesForPage } from '../utils/explorationTargetPages';
 import { useExplorationOptionCaches } from './useExplorationOptionCaches';
 
 /** أنواع الحقول النصية التي تعتبر "اسم/قيمة قابلة للعرض" */
@@ -21,25 +22,25 @@ const TEXT_LIKE_TYPES = new Set([
 const NAME_HINT_RE = /(اسم|الاسم|name|title|عنوان|displayname)/i;
 
 /**
- * يدير حالة "الإضافة من نموذج الاستكشاف" داخل صفحات قوائم البيانات:
- * - يحمّل أنواع الاستكشاف عند فتح المودال أول مرة
- * - يدير النوع المختار وقيم الحقول الديناميكية
- * - يدمج خيارات القوائم من بيانات المنصة
- * - يوفر دوال التحقق والتنظيف قبل الحفظ
- *
- * @param {boolean} open — هل المودال مفتوح حالياً (لتفعيل التحميل والكاش)
+ * @param {boolean} open
  * @param {{ uid?: string, id?: string }} [actorUser]
  * @param {{ typeId?: string, values?: Record<string, any> } | null} [seed]
- *   عند تمريره ولحظة فتح المودال (انتقال open → true) يَفرض اختيار النوع
- *   ويزرع القيم الابتدائية (يُستخدم في وضع التعديل لسجل قائم).
+ * @param {string | null} [pageId] — عند التمرير تُعرض فقط الأنواع المسموح بها لهذه الصفحة
  */
-export function useExplorationForm(open, actorUser, seed = null) {
+export function useExplorationForm(open, actorUser, seed = null, pageId = null) {
   const [explorationTypes, setExplorationTypes] = useState([]);
   const [typesLoading, setTypesLoading] = useState(false);
   const [selectedTypeId, setSelectedTypeId] = useState('');
   const [fieldValues, setFieldValues] = useState({});
-  /** يلتقط seed لحظة فتح المودال ثم يُهمَل بعد التطبيق */
   const pendingSeedRef = useRef(null);
+
+  const visibleExplorationTypes = useMemo(
+    () =>
+      filterExplorationTypesForPage(explorationTypes, pageId, {
+        alwaysIncludeIds: seed?.typeId ? [seed.typeId] : [],
+      }),
+    [explorationTypes, pageId, seed?.typeId]
+  );
 
   const selectedType = useMemo(
     () => explorationTypes.find((t) => t.id === selectedTypeId) || null,
@@ -68,9 +69,6 @@ export function useExplorationForm(open, actorUser, seed = null) {
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
       setExplorationTypes(rows);
-      if (rows.length > 0) {
-        setSelectedTypeId((curr) => curr || rows[0].id);
-      }
     } finally {
       setTypesLoading(false);
     }
@@ -81,15 +79,26 @@ export function useExplorationForm(open, actorUser, seed = null) {
       pendingSeedRef.current = null;
       return;
     }
-    // التقاط seed لحظة الفتح فقط
     pendingSeedRef.current = seed ? { ...seed } : null;
     if (seed?.typeId) {
       setSelectedTypeId(seed.typeId);
     }
     loadTypesOnce();
-    // intentionally omitting `seed` from deps to lock seed at the moment of opening
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, loadTypesOnce]);
+
+  useEffect(() => {
+    if (!open || typesLoading || explorationTypes.length === 0) return;
+    if (seed?.typeId) return;
+    const visible = filterExplorationTypesForPage(explorationTypes, pageId);
+    if (visible.length === 0) {
+      if (selectedTypeId) setSelectedTypeId('');
+      return;
+    }
+    if (!selectedTypeId || !visible.some((t) => t.id === selectedTypeId)) {
+      setSelectedTypeId(visible[0].id);
+    }
+  }, [open, typesLoading, explorationTypes, pageId, selectedTypeId, seed?.typeId]);
 
   useEffect(() => {
     if (!open) return;
@@ -112,7 +121,9 @@ export function useExplorationForm(open, actorUser, seed = null) {
 
   const reset = useCallback(() => {
     setFieldValues({});
-  }, []);
+    const visible = filterExplorationTypesForPage(explorationTypes, pageId);
+    setSelectedTypeId(visible[0]?.id || '');
+  }, [explorationTypes, pageId]);
 
   const validate = useCallback(
     () => validateFieldValues(schemaFields, fieldValues),
@@ -124,10 +135,6 @@ export function useExplorationForm(open, actorUser, seed = null) {
     [schemaFields, fieldValues]
   );
 
-  /**
-   * يرجع قيمة أول حقل في المخطط مصدره من مجموعة بيانات المنصة المحددة
-   * (مثل 'governorates' أو 'regions'... إلخ). يعيد سلسلة فارغة إن لم يوجد.
-   */
   const getValueBySource = useCallback(
     (sourceId) => {
       if (!sourceId) return '';
@@ -140,9 +147,6 @@ export function useExplorationForm(open, actorUser, seed = null) {
     [schemaFields, fieldValues]
   );
 
-  /**
-   * يرجع قيمة أول حقل من نوع معيّن (text, email, tel, password, number...).
-   */
   const getValueByType = useCallback(
     (fieldType) => {
       if (!fieldType) return '';
@@ -154,12 +158,6 @@ export function useExplorationForm(open, actorUser, seed = null) {
     [schemaFields, fieldValues]
   );
 
-  /**
-   * يحاول استخراج اسم عرض ملائم من حقول الاستكشاف:
-   * 1) أول حقل نصي ملصقه/معرّفه يحتوي إحدى كلمات الاسم
-   * 2) أول حقل نصي به قيمة
-   * 3) قيمة احتياطية (مثلاً اسم نوع الاستكشاف)
-   */
   const deriveDisplayName = useCallback(
     (fallback = '') => {
       const matched = schemaFields.find(
@@ -182,6 +180,7 @@ export function useExplorationForm(open, actorUser, seed = null) {
 
   return {
     explorationTypes,
+    visibleExplorationTypes,
     typesLoading,
     selectedTypeId,
     setSelectedTypeId,
@@ -197,5 +196,6 @@ export function useExplorationForm(open, actorUser, seed = null) {
     getValueBySource,
     getValueByType,
     deriveDisplayName,
+    pageId,
   };
 }

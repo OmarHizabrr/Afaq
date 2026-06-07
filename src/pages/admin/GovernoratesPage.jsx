@@ -40,7 +40,7 @@ const GovernoratesPage = () => {
   /* مودال «الإضافة من نموذج الاستكشاف» — يعرض حقول الاستكشاف فقط */
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
-  const expForm = useExplorationForm(isExploringAdding, actorUser);
+  const expForm = useExplorationForm(isExploringAdding, actorUser, null, PERMISSION_PAGE_IDS.governorates);
 
   const openExplorationModal = () => {
     setIsExploringAdding(true);
@@ -309,6 +309,7 @@ const GovernoratesPage = () => {
             actorUser={actorUser}
             storageUserId={storageUserId}
             heading="حقول نموذج الاستكشاف"
+            currentPageId={PERMISSION_PAGE_IDS.governorates}
           />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
             <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>

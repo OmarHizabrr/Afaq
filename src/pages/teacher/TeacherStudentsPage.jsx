@@ -36,7 +36,7 @@ const TeacherStudentsPage = ({ user }) => {
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
   const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
-  const expForm = useExplorationForm(isExploringAdding, user);
+  const expForm = useExplorationForm(isExploringAdding, user, null, 'teacher_students');
 
   const reloadStudents = useCallback(async () => {
     if (!activeSchoolId) return;
@@ -439,6 +439,7 @@ const TeacherStudentsPage = ({ user }) => {
             actorUser={user}
             storageUserId={actorId}
             heading="حقول نموذج الاستكشاف"
+            currentPageId="teacher_students"
           />
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "1rem" }}>
             <button type="button" className="google-btn" style={{ width: "auto", marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>

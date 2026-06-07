@@ -52,7 +52,7 @@ const SchoolsPage = () => {
   const [donorName, setDonorName] = useState('');
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
-  const expForm = useExplorationForm(isExploringAdding, actorUser);
+  const expForm = useExplorationForm(isExploringAdding, actorUser, null, PERMISSION_PAGE_IDS.schools);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -363,6 +363,7 @@ const SchoolsPage = () => {
             actorUser={actorUser}
             storageUserId={storageUserId}
             heading="حقول نموذج الاستكشاف"
+            currentPageId={PERMISSION_PAGE_IDS.schools}
           />
 
           <div className="schools-form__actions" style={{ marginTop: '1rem' }}>

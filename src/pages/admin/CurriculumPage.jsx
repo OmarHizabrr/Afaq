@@ -27,7 +27,7 @@ const CurriculumPage = () => {
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
   const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
-  const expForm = useExplorationForm(isExploringAdding, actorUser);
+  const expForm = useExplorationForm(isExploringAdding, actorUser, null, PERMISSION_PAGE_IDS.curriculum);
   const [confirmConfig, setConfirmConfig] = useState(null);
   
   // Expanded state for the accordion
@@ -307,6 +307,7 @@ const CurriculumPage = () => {
             actorUser={actorUser}
             storageUserId={storageUserId}
             heading="حقول نموذج الاستكشاف"
+            currentPageId={PERMISSION_PAGE_IDS.curriculum}
           />
           <div className="curriculum-modal-actions" style={{ marginTop: '1rem' }}>
             <button type="button" className="google-btn curriculum-modal-actions__btn" onClick={() => setIsExploringAdding(false)}>

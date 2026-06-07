@@ -1,11 +1,16 @@
 import React from 'react';
+import { Compass } from 'lucide-react';
 import AppSelect from './AppSelect';
 import ExplorationDynamicFieldBlock from './ExplorationDynamicFieldBlock';
+import { getTargetPageLabel } from '../utils/explorationTargetPages';
+import './ExplorationFormSection.css';
+
+const TYPE_CARD_THRESHOLD = 8;
 
 /**
  * قسم قابل لإعادة الاستخدام داخل أي مودال «إضافة من نموذج الاستكشاف»:
- * - منتقي نوع الاستكشاف
- * - بطاقة الحقول الديناميكية (variant=sheet) مع دعم الخيارات من بيانات المنصة
+ * - منتقي نوع الاستكشاف (بطاقات على الشاشات الصغيرة أو قائمة عند كثرة الأنواع)
+ * - بطاقة الحقول الديناميكية (variant=sheet)
  *
  * يستلم controller الناتج من `useExplorationForm`.
  */
@@ -16,9 +21,10 @@ const ExplorationFormSection = ({
   className,
   heading = 'حقول النموذج',
   hideTypeSelect = false,
+  currentPageId = null,
 }) => {
   const {
-    explorationTypes,
+    visibleExplorationTypes,
     typesLoading,
     selectedTypeId,
     setSelectedTypeId,
@@ -30,6 +36,9 @@ const ExplorationFormSection = ({
     setDynamicValue,
   } = controller;
 
+  const useTypeCards = visibleExplorationTypes.length > 0 && visibleExplorationTypes.length <= TYPE_CARD_THRESHOLD;
+  const pageHint = currentPageId ? getTargetPageLabel(currentPageId) : '';
+
   return (
     <div className={`exploration-form-section ${className || ''}`.trim()}>
       {!hideTypeSelect && (
@@ -38,9 +47,36 @@ const ExplorationFormSection = ({
             <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
               جاري تحميل أنواع الاستكشاف…
             </div>
-          ) : explorationTypes.length === 0 ? (
-            <div className="app-alert app-alert--warning" style={{ marginBottom: '0.75rem' }}>
-              لا توجد أنواع استكشاف معرَّفة. أضف نوعاً من «أنواع الاستكشاف» قبل استخدام هذا النموذج.
+          ) : visibleExplorationTypes.length === 0 ? (
+            <div className="exploration-form-section__empty" style={{ marginBottom: '0.75rem' }}>
+              <p className="exploration-form-section__empty-title">لا توجد أنواع متاحة لهذه الصفحة</p>
+              <p className="exploration-form-section__empty-text">
+                {pageHint
+                  ? `لا يوجد نموذج استكشاف مخصّص لصفحة «${pageHint}». راجع «أنواع الاستكشاف» وحدّد الصفحات المسموحة للنموذج، أو أنشئ نوعاً جديداً.`
+                  : 'لا توجد أنواع استكشاف معرَّفة. أضف نوعاً من «أنواع الاستكشاف» قبل استخدام هذا النموذج.'}
+              </p>
+            </div>
+          ) : useTypeCards ? (
+            <div className="app-field app-field--grow" style={{ marginBottom: '0.85rem' }}>
+              <label className="app-label">نوع الاستكشاف</label>
+              <div className="exploration-form-section__type-grid" role="listbox" aria-label="نوع الاستكشاف">
+                {visibleExplorationTypes.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="option"
+                    aria-selected={selectedTypeId === t.id}
+                    className={`exploration-form-section__type-card ${selectedTypeId === t.id ? 'exploration-form-section__type-card--active' : ''}`}
+                    onClick={() => setSelectedTypeId(t.id)}
+                  >
+                    <Compass size={18} aria-hidden />
+                    <span>{t.name || t.id}</span>
+                  </button>
+                ))}
+              </div>
+              {selectedType?.description && (
+                <p className="exploration-form-section__type-desc">{selectedType.description}</p>
+              )}
             </div>
           ) : (
             <div className="app-field app-field--grow" style={{ marginBottom: '0.85rem' }}>
@@ -50,16 +86,14 @@ const ExplorationFormSection = ({
                 value={selectedTypeId}
                 onChange={(e) => setSelectedTypeId(e.target.value)}
               >
-                {explorationTypes.map((t) => (
+                {visibleExplorationTypes.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name || t.id}
                   </option>
                 ))}
               </AppSelect>
               {selectedType?.description && (
-                <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  {selectedType.description}
-                </p>
+                <p className="exploration-form-section__type-desc">{selectedType.description}</p>
               )}
             </div>
           )}
@@ -68,11 +102,7 @@ const ExplorationFormSection = ({
 
       {schemaFields.length > 0 && (
         <>
-          {heading && (
-            <h3 className="exploration-form-section__heading" style={{ margin: '0 0 0.5rem' }}>
-              {heading}
-            </h3>
-          )}
+          {heading && <h3 className="exploration-form-section__heading">{heading}</h3>}
           {optionCachesLoading && (
             <p style={{ margin: '0 0 8px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               جاري تحميل قوائم البيانات من المنصة…

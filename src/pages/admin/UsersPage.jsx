@@ -66,7 +66,7 @@ const UsersPage = () => {
   const [isExploringAdding, setIsExploringAdding] = useState(false);
   const [expSaving, setExpSaving] = useState(false);
   const [viewingExplorationOf, setViewingExplorationOf] = useState(null);
-  const expForm = useExplorationForm(isExploringAdding, actorUser);
+  const expForm = useExplorationForm(isExploringAdding, actorUser, null, PERMISSION_PAGE_IDS.users);
 
   const canAssignSystemAdmin =
     actorUser?.role === SYSTEM_ADMIN_ROLE || actorUser?.role === 'admin';
@@ -509,6 +509,7 @@ const UsersPage = () => {
               actorUser={actorUser}
               storageUserId={storageUserId}
               heading="حقول نموذج الاستكشاف"
+              currentPageId={PERMISSION_PAGE_IDS.users}
             />
             <div className="users-modal__actions">
               <BusyButton

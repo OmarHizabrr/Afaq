@@ -17,6 +17,7 @@ import {
 } from '../../utils/explorationDynamicFields';
 import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
 import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
+import { filterExplorationTypesForPage } from '../../utils/explorationTargetPages';
 
 const defaultForm = () => ({
   explorationTypeId: '',
@@ -74,12 +75,25 @@ const ExplorationsPage = () => {
   const [search, setSearch] = useState('');
 
   const [explorations, setExplorations] = useState([]);
-  const [types, setTypes] = useState([]);
+  const [allExplorationTypes, setAllExplorationTypes] = useState([]);
   const [form, setForm] = useState(defaultForm());
 
+  const types = useMemo(
+    () => filterExplorationTypesForPage(allExplorationTypes, PERMISSION_PAGE_IDS.explorations),
+    [allExplorationTypes]
+  );
+
+  const modalTypes = useMemo(
+    () =>
+      filterExplorationTypesForPage(allExplorationTypes, PERMISSION_PAGE_IDS.explorations, {
+        alwaysIncludeIds: [editingItem?.explorationTypeId, form.explorationTypeId].filter(Boolean),
+      }),
+    [allExplorationTypes, editingItem?.explorationTypeId, form.explorationTypeId]
+  );
+
   const selectedType = useMemo(
-    () => types.find((t) => t.id === form.explorationTypeId) || null,
-    [types, form.explorationTypeId]
+    () => allExplorationTypes.find((t) => t.id === form.explorationTypeId) || null,
+    [allExplorationTypes, form.explorationTypeId]
   );
 
   const schemaFields = useMemo(
@@ -123,11 +137,11 @@ const ExplorationsPage = () => {
       const expDocs = await api.getDocuments(api.getExplorationsCollection());
       const typeDocs = await api.getDocuments(api.getExplorationTypesCollection());
 
-      const typeRows = typeDocs
+      const typeRowsRaw = typeDocs
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
 
-      const typeMap = new Map(typeRows.map((t) => [t.id, t.name || '']));
+      const typeMap = new Map(typeRowsRaw.map((t) => [t.id, t.name || '']));
 
       const scope = pageDataScope(PERMISSION_PAGE_IDS.explorations);
       let allowedVillageIds = null;
@@ -159,7 +173,7 @@ const ExplorationsPage = () => {
         }))
         .sort((a, b) => new Date(b.explorationDate || b.createdAt || 0) - new Date(a.explorationDate || a.createdAt || 0));
 
-      setTypes(typeRows);
+      setAllExplorationTypes(typeRowsRaw);
       setExplorations(expRows);
     } catch (err) {
       console.error(err);
@@ -208,7 +222,7 @@ const ExplorationsPage = () => {
   };
 
   const openEditModal = (item) => {
-    const t = types.find((x) => x.id === item.explorationTypeId);
+    const t = allExplorationTypes.find((x) => x.id === item.explorationTypeId);
     const sch = normalizeSchemaFields(t?.schemaFields || t?.fields || []);
 
     if (sch.length > 0) {
@@ -249,7 +263,7 @@ const ExplorationsPage = () => {
   };
 
   const onExplorationTypeChange = (nextTypeId) => {
-    const t = types.find((x) => x.id === nextTypeId);
+    const t = modalTypes.find((x) => x.id === nextTypeId) || allExplorationTypes.find((x) => x.id === nextTypeId);
     const sch = normalizeSchemaFields(t?.schemaFields || t?.fields || []);
     setForm((prev) => ({
       ...prev,
@@ -273,7 +287,7 @@ const ExplorationsPage = () => {
       return;
     }
 
-    const type = types.find((t) => t.id === form.explorationTypeId);
+    const type = allExplorationTypes.find((t) => t.id === form.explorationTypeId);
     const sch = normalizeSchemaFields(type?.schemaFields || type?.fields || []);
 
     if (sch.length > 0) {
@@ -487,17 +501,17 @@ const ExplorationsPage = () => {
                   onChange={(e) => onExplorationTypeChange(e.target.value)}
                   required
                 >
-                  {types.length === 0 ? (
-                    <option value="">لا توجد أنواع — أضف نوعاً من «أنواع الاستكشاف»</option>
+                  {modalTypes.length === 0 ? (
+                    <option value="">لا توجد أنواع لهذه الصفحة — راجع «أنواع الاستكشاف»</option>
                   ) : (
-                    types.map((t) => (
+                    modalTypes.map((t) => (
                       <option key={t.id} value={t.id}>
                         {t.name}
                       </option>
                     ))
                   )}
                 </AppSelect>
-                {types.length > 0 && (
+                {modalTypes.length > 0 && (
                   <p className="exploration-modal-type-card__hint">
                     يُحدَّد النوع أولاً (الافتراضي: أول نوع في القائمة). عند اختيار نوع يُحمَّل القالب فوراً دون خطوة
                     إضافية.

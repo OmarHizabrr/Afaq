@@ -1,0 +1,102 @@
+/* قسم نموذج الاستكشاف — منتقي النوع والحقول (متوافق مع الموبايل) */
+
+.exploration-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.exploration-form-section__heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, inherit);
+}
+
+.exploration-form-section__type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
+  gap: 8px;
+  margin-bottom: 0.85rem;
+}
+
+.exploration-form-section__type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 12px;
+  min-height: 52px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border-color) 88%, transparent);
+  background: var(--panel-color);
+  color: var(--text-primary, inherit);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.exploration-form-section__type-card svg {
+  color: var(--accent-color);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.exploration-form-section__type-card span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.exploration-form-section__type-card:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent-color) 35%, var(--border-color));
+}
+
+.exploration-form-section__type-card--active {
+  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--border-color));
+  background: color-mix(in srgb, var(--accent-color) 10%, var(--panel-color));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-color) 18%, transparent);
+}
+
+.exploration-form-section__type-desc {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.exploration-form-section__empty {
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
+  background: color-mix(in srgb, var(--panel-color) 70%, var(--bg-color));
+  text-align: center;
+}
+
+.exploration-form-section__empty-title {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.exploration-form-section__empty-text {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+@media (max-width: 480px) {
+  .exploration-form-section__type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exploration-form-section__type-card {
+    flex-direction: row;
+    align-items: center;
+  }
+}
