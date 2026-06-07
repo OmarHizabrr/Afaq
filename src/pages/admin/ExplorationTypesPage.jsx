@@ -9,6 +9,7 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
 import ExplorationTargetPagesPicker from '../../components/ExplorationTargetPagesPicker';
+import ExplorationTypePreviewModal from '../../components/ExplorationTypePreviewModal';
 import {
   EXPLORATION_FIELD_TYPE_GROUPS,
   EXPLORATION_FIELD_TYPE_LABEL_MAP,
@@ -58,6 +59,7 @@ const ExplorationTypesPage = () => {
   const [schemaFields, setSchemaFields] = useState([]);
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [viewingType, setViewingType] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [previewValues, setPreviewValues] = useState({});
@@ -636,6 +638,14 @@ const ExplorationTypesPage = () => {
                   )}
                 </div>
                 <div className="exploration-type-card__actions">
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    title="معاينة الحقول"
+                    onClick={() => setViewingType(item)}
+                  >
+                    <Eye size={16} color="var(--accent-color)" />
+                  </button>
                   {can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_edit') && (
                     <button type="button" className="icon-btn" title="تعديل" onClick={() => startEdit(item)}>
                       <Edit2 size={16} />
@@ -657,6 +667,26 @@ const ExplorationTypesPage = () => {
           })}
         </div>
       )}
+
+      <ExplorationTypePreviewModal
+        open={!!viewingType}
+        type={viewingType}
+        onClose={() => setViewingType(null)}
+        actorUser={actorUser}
+        storageUserId={storageUserId}
+        canEdit={can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_edit')}
+        canDelete={can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_delete')}
+        onEdit={() => {
+          const item = viewingType;
+          setViewingType(null);
+          if (item) startEdit(item);
+        }}
+        onDelete={() => {
+          const item = viewingType;
+          setViewingType(null);
+          if (item) setPendingDelete({ id: item.id, name: item.name });
+        }}
+      />
 
       <ConfirmDialog
         open={!!pendingDelete}
