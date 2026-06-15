@@ -1792,6 +1792,21 @@ html:not(.light-mode) .nav-link.active {
   gap: 1rem;
 }
 
+.daily-prep-page--embedded {
+  padding-bottom: 0;
+  gap: 1rem;
+}
+
+.daily-prep-setup__teacher {
+  margin-bottom: 1rem;
+}
+
+.daily-prep-setup__teacher-name {
+  margin: 0.35rem 0 0;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
 .report-daily-edit__title {
   font-size: 1.2rem;
   margin: 0 0 1rem;
