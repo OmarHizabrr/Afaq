@@ -1,10 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, Save, CheckCircle, XCircle, Users, School, BookOpen } from 'lucide-react';
+import { Calendar, Save, Users, School, BookOpen } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import CurriculumLessonPicker from '../../components/CurriculumLessonPicker';
+import usePermissions from '../../context/usePermissions';
+import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
+import {
+  DATA_SCOPE_ALL,
+  DATA_SCOPE_MEMBERSHIP,
+  filterSchoolsByScope,
+} from '../../utils/permissionDataScope';
+import { isSystemAdmin, skipsMembershipDataScopeLoading } from '../../utils/systemRoles';
+import {
+  ATTENDANCE_STATUSES,
+  applyAttendanceStatus,
+  attendanceSummaryText,
+  countByAttendanceStatus,
+  defaultAttendanceRecord,
+  isAttendancePresent,
+} from '../../utils/attendanceStatus';
 import { entriesToLegacyItems, summarizeCurriculumProgress } from '../../utils/curriculumProgress';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
@@ -51,8 +67,60 @@ const periodSaveLabel = (period) => {
   return 'اليومي';
 };
 
+/** مدير النظام / admin / نطاق بيانات «الكل» — يختار أي مدرسة */
+function canPickAnySchoolForPrep(user, pageDataScope) {
+  if (isSystemAdmin(user) || user?.role === 'admin') return true;
+  const prepScope = pageDataScope(PERMISSION_PAGE_IDS.daily_preparation);
+  const schoolsScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
+  return prepScope === DATA_SCOPE_ALL || schoolsScope === DATA_SCOPE_ALL;
+}
+
+async function resolveDailyPrepSchoolOptions(api, user, { pageDataScope, membershipGroupIds }) {
+  const prepScope = pageDataScope(PERMISSION_PAGE_IDS.daily_preparation);
+  const broadPick = canPickAnySchoolForPrep(user, pageDataScope);
+
+  const allSchoolDocs = await api.getCollectionGroupDocuments('schools');
+  const allRows = allSchoolDocs
+    .map((s) => ({
+      id: s.id,
+      name: (s.data()?.name || '').trim() || s.id,
+      villageId: s.data()?.villageId || s.ref.parent.parent?.id || '',
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+  if (broadPick) {
+    if (prepScope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds?.size > 0) {
+      return filterSchoolsByScope(allRows, membershipGroupIds, DATA_SCOPE_MEMBERSHIP);
+    }
+    return allRows;
+  }
+
+  const mirrorIds = await api.listUserSchoolIdsFromMirrors(user);
+  if (mirrorIds.length > 0) {
+    return mirrorIds
+      .map((id) => {
+        const row = allRows.find((s) => s.id === id);
+        return { id, name: row?.name || id };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  }
+
+  if (prepScope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds?.size > 0) {
+    return filterSchoolsByScope(allRows, membershipGroupIds, DATA_SCOPE_MEMBERSHIP);
+  }
+
+  return [];
+}
+
 const TeacherDailyLogPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
+  const perm = usePermissions();
+  const { ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const actor = actorUser || user;
+  const broadSchoolPick = useMemo(
+    () => canPickAnySchoolForPrep(actor, pageDataScope),
+    [actor, pageDataScope]
+  );
   const [curriculumList, setCurriculumList] = useState([]);
   const [schoolOptions, setSchoolOptions] = useState([]);
   const [students, setStudents] = useState([]);
@@ -68,6 +136,7 @@ const TeacherDailyLogPage = ({ user }) => {
 
   const [prepPeriod, setPrepPeriod] = useState('weekly');
   const [prepDate, setPrepDate] = useState(formatDateInput());
+  const [prepNotes, setPrepNotes] = useState('');
 
   const activeSchool = useMemo(
     () => schoolOptions.find((o) => o.id === activeSchoolId),
@@ -79,38 +148,48 @@ const TeacherDailyLogPage = ({ user }) => {
     [prepPeriod, prepDate]
   );
 
-  const presentCount = trackingData.filter((s) => s.isPresent).length;
+  const statusCounts = useMemo(() => countByAttendanceStatus(trackingData), [trackingData]);
+  const presentCount = (statusCounts.present || 0) + (statusCounts.late || 0);
 
   useEffect(() => {
+    if (!ready) return;
+    const prepScope = pageDataScope(PERMISSION_PAGE_IDS.daily_preparation);
+    const needsMembership =
+      !skipsMembershipDataScopeLoading(actor) &&
+      prepScope === DATA_SCOPE_MEMBERSHIP;
+    if (needsMembership && membershipLoading) return;
+
     let cancelled = false;
     (async () => {
       setBootLoading(true);
       setError('');
       try {
         const api = FirestoreApi.Api;
-        const ids = await api.listUserSchoolIdsFromMirrors(user);
-        if (cancelled) return;
-        if (!ids.length) {
-          setError('الحساب غير مرتبط بمدرسة. اطلب من الإدارة تعيينك في مدرسة من صفحة تفاصيل المدرسة.');
-          setSchoolOptions([]);
-          setActiveSchoolId('');
-          return;
-        }
-        const [allSchools, docsCur] = await Promise.all([
-          api.getCollectionGroupDocuments('schools'),
+        const [options, docsCur] = await Promise.all([
+          resolveDailyPrepSchoolOptions(api, actor, { pageDataScope, membershipGroupIds }),
           api.getDocuments(api.getCurriculumCollection()),
         ]);
         if (cancelled) return;
-        const options = ids.map((id) => {
-          const doc = allSchools.find((s) => s.id === id);
-          const name = (doc?.data()?.name || '').trim() || id;
-          return { id, name };
-        });
+
+        if (!options.length) {
+          if (broadSchoolPick) {
+            setError('لا توجد مدارس مسجلة في النظام حالياً.');
+          } else {
+            setError(
+              'الحساب غير مرتبط بمدرسة. اطلب من الإدارة تعيينك في مدرسة من صفحة تفاصيل المدرسة.'
+            );
+          }
+          setSchoolOptions([]);
+          setActiveSchoolId('');
+          setCurriculumList(docsCur.map((d) => ({ id: d.id, ...d.data() })));
+          return;
+        }
+
         setSchoolOptions(options);
         setCurriculumList(docsCur.map((d) => ({ id: d.id, ...d.data() })));
         const key = teacherSchoolStorageKey(actorId);
         let sid = (key && localStorage.getItem(key)) || '';
-        if (!sid || !ids.includes(sid)) sid = ids[0];
+        if (!sid || !options.some((o) => o.id === sid)) sid = options[0].id;
         setActiveSchoolId(sid);
       } catch (err) {
         console.error(err);
@@ -122,7 +201,15 @@ const TeacherDailyLogPage = ({ user }) => {
     return () => {
       cancelled = true;
     };
-  }, [user, actorId]);
+  }, [
+    ready,
+    actor,
+    actorId,
+    pageDataScope,
+    membershipGroupIds,
+    membershipLoading,
+    broadSchoolPick,
+  ]);
 
   useEffect(() => {
     if (!activeSchoolId) {
@@ -142,13 +229,12 @@ const TeacherDailyLogPage = ({ user }) => {
         const stData = docsStu.map((d) => ({ id: d.id, ...d.data() }));
         setStudents(stData);
         setTrackingData(
-          stData.map((s) => ({
-            studentId: s.id,
-            name: s.displayName || s.studentName || s.name || 'طالب',
-            isPresent: true,
-            memorization: '',
-            review: '',
-          }))
+          stData.map((s) =>
+            defaultAttendanceRecord({
+              studentId: s.id,
+              name: s.displayName || s.studentName || s.name || 'طالب',
+            })
+          )
         );
       } catch (err) {
         console.error(err);
@@ -177,19 +263,18 @@ const TeacherDailyLogPage = ({ user }) => {
     );
   };
 
+  const handleStatusChange = (studentId, status) => {
+    setTrackingData((prev) =>
+      prev.map((item) => (item.studentId === studentId ? applyAttendanceStatus(item, status) : item))
+    );
+  };
+
   const markAllPresent = () => {
-    setTrackingData((prev) => prev.map((item) => ({ ...item, isPresent: true })));
+    setTrackingData((prev) => prev.map((item) => applyAttendanceStatus(item, 'present')));
   };
 
   const markAllAbsent = () => {
-    setTrackingData((prev) =>
-      prev.map((item) => ({
-        ...item,
-        isPresent: false,
-        memorization: '',
-        review: '',
-      }))
-    );
+    setTrackingData((prev) => prev.map((item) => applyAttendanceStatus(item, 'absent')));
   };
 
   const handleSaveLog = async () => {
@@ -220,7 +305,7 @@ const TeacherDailyLogPage = ({ user }) => {
       const logId = api.getNewId('teacher_daily_logs');
       const logRef = api.getTeacherDailyLogDoc(actorId, logId);
 
-      const totalPresent = trackingData.filter((s) => s.isPresent).length;
+      const totalPresent = trackingData.filter((s) => isAttendancePresent(s)).length;
       const progressSummary = summarizeCurriculumProgress(curriculumEntries, prepDate);
       const primary = progressSummary[0] || {};
       const allLessons = curriculumEntries.flatMap((e) =>
@@ -246,7 +331,13 @@ const TeacherDailyLogPage = ({ user }) => {
         totalStudents: trackingData.length,
         totalPresent,
         totalAbsent: trackingData.length - totalPresent,
-        records: trackingData,
+        attendanceSummary: attendanceSummaryText(trackingData),
+        prepNotes: prepNotes.trim(),
+        records: trackingData.map((r) => ({
+          ...r,
+          attendanceStatus: r.attendanceStatus || (r.isPresent ? 'present' : 'absent'),
+          isPresent: isAttendancePresent(r),
+        })),
         timestamp: new Date().toISOString(),
       };
 
@@ -270,7 +361,11 @@ const TeacherDailyLogPage = ({ user }) => {
         icon={Calendar}
         iconColor="var(--success-color)"
         title="التحضير"
-        subtitle="اختر المدرسة والفترة والمواد — ثم سجّل حضور الطلاب"
+        subtitle={
+          broadSchoolPick
+            ? 'اختر أي مدرسة من القائمة — ثم الفترة والمواد وسجّل الحضور'
+            : 'اختر المدرسة والفترة والمواد — ثم سجّل حضور الطلاب'
+        }
       />
 
       {error && <div className="app-alert app-alert--error daily-prep-page__alert">{error}</div>}
@@ -284,16 +379,18 @@ const TeacherDailyLogPage = ({ user }) => {
 
         <div className="daily-prep-setup__school">
           <label className="app-label" htmlFor="daily-prep-school">
-            المدرسة
+            {broadSchoolPick ? 'اختر المدرسة' : 'المدرسة'}
           </label>
           {schoolOptions.length === 0 ? (
-            <p className="daily-prep-setup__hint">لا توجد مدارس مرتبطة بحسابك.</p>
+            <p className="daily-prep-setup__hint">
+              {broadSchoolPick ? 'لا توجد مدارس متاحة.' : 'لا توجد مدارس مرتبطة بحسابك.'}
+            </p>
           ) : (
             <AppSelect
               id="daily-prep-school"
+              searchable={broadSchoolPick || schoolOptions.length > 6}
               value={activeSchoolId}
               onChange={handleActiveSchoolChange}
-              disabled={schoolOptions.length === 1 && false}
             >
               {schoolOptions.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -301,6 +398,11 @@ const TeacherDailyLogPage = ({ user }) => {
                 </option>
               ))}
             </AppSelect>
+          )}
+          {broadSchoolPick && schoolOptions.length > 0 && (
+            <p className="daily-prep-setup__hint daily-prep-setup__hint--info">
+              صلاحية شاملة: يمكنك تسجيل التحضير لأي مدرسة في النظام.
+            </p>
           )}
         </div>
 
@@ -350,7 +452,7 @@ const TeacherDailyLogPage = ({ user }) => {
             </span>
             {!studentsLoading && trackingData.length > 0 && (
               <span className="daily-prep-summary-bar__present">
-                الحاضرون: {presentCount} / {trackingData.length}
+                {attendanceSummaryText(trackingData)}
               </span>
             )}
           </div>
@@ -389,7 +491,7 @@ const TeacherDailyLogPage = ({ user }) => {
               <Users size={18} /> سجل الحضور ({trackingData.length} طالب)
             </h3>
             <span className="daily-prep-attendance__count">
-              الحاضرون: {presentCount} / {trackingData.length}
+              حاضر/متأخر: {presentCount} / {trackingData.length}
             </span>
             <div className="teacher-daily-bulk daily-prep-attendance__bulk">
               <button
@@ -410,56 +512,86 @@ const TeacherDailyLogPage = ({ user }) => {
             <table className="md-table daily-prep-table">
               <thead>
                 <tr>
-                  <th>الحالة</th>
+                  <th>حالة الحضور</th>
                   <th>اسم الطالب</th>
                   <th>مقدار الحفظ</th>
                   <th>مقدار المراجعة</th>
+                  <th>ملاحظة</th>
                 </tr>
               </thead>
               <tbody>
-                {trackingData.map((record) => (
-                  <tr key={record.studentId} className={record.isPresent ? '' : 'md-table__row--absent'}>
-                    <td className="daily-prep-table__status">
-                      <button
-                        type="button"
-                        onClick={() => handleTrackingChange(record.studentId, 'isPresent', !record.isPresent)}
-                        className="daily-prep-table__toggle"
-                        title={record.isPresent ? 'تسجيل غياب' : 'تسجيل حضور'}
+                {trackingData.map((record) => {
+                  const present = isAttendancePresent(record);
+                  const status = record.attendanceStatus || (present ? 'present' : 'absent');
+                  return (
+                  <tr
+                    key={record.studentId}
+                    className={`daily-prep-table__row daily-prep-table__row--${status}${present ? '' : ' md-table__row--absent'}`}
+                  >
+                    <td className="daily-prep-table__status-cell">
+                      <AppSelect
+                        value={status}
+                        onChange={(e) => handleStatusChange(record.studentId, e.target.value)}
+                        className={`daily-prep-status-select daily-prep-status-select--${status}`}
                       >
-                        {record.isPresent ? (
-                          <CheckCircle size={24} color="var(--success-color)" />
-                        ) : (
-                          <XCircle size={24} color="var(--danger-color)" />
-                        )}
-                      </button>
+                        {ATTENDANCE_STATUSES.map((s) => (
+                          <option key={s.value} value={s.value}>
+                            {s.label}
+                          </option>
+                        ))}
+                      </AppSelect>
                     </td>
-                    <td className={`daily-prep-table__name${record.isPresent ? '' : ' daily-prep-table__name--absent'}`}>
+                    <td className={`daily-prep-table__name${present ? '' : ' daily-prep-table__name--absent'}`}>
                       {record.name}
                     </td>
                     <td>
                       <input
                         type="text"
                         className="app-input daily-prep-table__input daily-prep-table__input--mem"
-                        placeholder={record.isPresent ? 'مثال: صفحة 10' : 'غائب'}
+                        placeholder={present ? 'مثال: صفحة 10' : '—'}
                         value={record.memorization}
                         onChange={(e) => handleTrackingChange(record.studentId, 'memorization', e.target.value)}
-                        disabled={!record.isPresent}
+                        disabled={!present}
                       />
                     </td>
                     <td>
                       <input
                         type="text"
                         className="app-input daily-prep-table__input daily-prep-table__input--rev"
-                        placeholder={record.isPresent ? 'مثال: جزء عم' : 'غائب'}
+                        placeholder={present ? 'مثال: جزء عم' : '—'}
                         value={record.review}
                         onChange={(e) => handleTrackingChange(record.studentId, 'review', e.target.value)}
-                        disabled={!record.isPresent}
+                        disabled={!present}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        className="app-input daily-prep-table__input"
+                        placeholder="ملاحظة على الطالب..."
+                        value={record.note || ''}
+                        onChange={(e) => handleTrackingChange(record.studentId, 'note', e.target.value)}
                       />
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
+          </div>
+
+          <div className="daily-prep-session-notes">
+            <label className="app-label" htmlFor="prep-session-notes">
+              ملاحظات عامة على التحضير
+            </label>
+            <textarea
+              id="prep-session-notes"
+              className="app-input daily-prep-session-notes__input"
+              rows={3}
+              placeholder="اكتب أي ملاحظات تريد إرفاقها مع هذا التحضير..."
+              value={prepNotes}
+              onChange={(e) => setPrepNotes(e.target.value)}
+            />
           </div>
 
           <div className="daily-prep-attendance__footer">

@@ -26,6 +26,7 @@ import StarRatingInput from '../../components/StarRatingInput';
 import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
 import { prepPeriodLabel, formatDailyLogSubjects } from '../../utils/reportLabels';
+import { attendanceStatusLabel, isAttendancePresent } from '../../utils/attendanceStatus';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -649,6 +650,16 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 )}
               </p>
             )}
+            {report.attendanceSummary && (
+              <p style={{ margin: '0 0 0.75rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                ملخص الحضور: <strong>{report.attendanceSummary}</strong>
+              </p>
+            )}
+            {report.prepNotes && (
+              <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+                <strong>ملاحظات التحضير:</strong> {report.prepNotes}
+              </div>
+            )}
             {Array.isArray(report.curriculumProgressSummary) && report.curriculumProgressSummary.length > 0 && (
               <div className="curriculum-picker__summary" style={{ marginBottom: '1rem' }}>
                 {report.curriculumProgressSummary.map((p) => (
@@ -667,27 +678,29 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                       <th>الحالة</th>
                       <th>الحفظ</th>
                       <th>المراجعة</th>
+                      <th>ملاحظة</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {report.records?.map((r) => (
-                      <tr key={r.studentId} className={!r.isPresent ? 'md-table__row--absent' : ''}>
+                    {report.records?.map((r) => {
+                      const present = isAttendancePresent(r);
+                      const label = attendanceStatusLabel(r);
+                      return (
+                      <tr key={r.studentId} className={!present ? 'md-table__row--absent' : ''}>
                         <td style={{ fontWeight: 600 }}>{r.name}</td>
                         <td>
-                          {r.isPresent ? (
-                            <span style={{ color: 'var(--success-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                              <CheckCircle2 size={14} /> حاضر
-                            </span>
-                          ) : (
-                            <span style={{ color: 'var(--danger-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                              <XCircle size={14} /> غائب
-                            </span>
-                          )}
+                          <span
+                            className={`daily-prep-status-badge daily-prep-status-badge--${r.attendanceStatus || (present ? 'present' : 'absent')}`}
+                          >
+                            {label}
+                          </span>
                         </td>
                         <td>{r.memorization || '—'}</td>
                         <td>{r.review || '—'}</td>
+                        <td>{r.note || '—'}</td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

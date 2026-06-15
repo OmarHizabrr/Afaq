@@ -34,9 +34,24 @@ import { exportSchoolReportExcel, exportSchoolReportPdf } from '../../utils/scho
 import { openGoogleMaps } from '../../utils/maps';
 import ReportPrintPreviewModal from '../../components/ReportPrintPreviewModal';
 import { buildSchoolReportBodyHtml } from '../../utils/schoolReportHtml';
+import EvalSelectWithOther from '../../components/EvalSelectWithOther';
+import {
+  EVAL_QUALITY_OPTIONS,
+  EVAL_YES_NO_OPTIONS,
+  SCHOOL_EVAL_FIELDS,
+  parseEvalFromStored,
+  resolveEvalValue,
+} from '../../utils/reportEvalOptions';
 
 const DAY_OPTIONS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-const QUALITY_OPTIONS = ['ممتاز', 'جيد جدا', 'جيد', 'مقبول', 'ضعيف'];
+
+const emptyEvalOthers = () => ({
+  studentLevelOther: '',
+  curriculumProgressOther: '',
+  schoolEvaluationOther: '',
+  teacherEvaluationOther: '',
+  marketDoneOther: '',
+});
 
 const formatDateInput = (d = new Date()) => {
   const yyyy = d.getFullYear();
@@ -113,6 +128,7 @@ const SchoolReportPage = () => {
     gpsLocation: null,
     mediaUrls: [],
     mediaFiles: [],
+    ...emptyEvalOthers(),
   });
 
   const loadData = useCallback(async () => {
@@ -189,6 +205,21 @@ const SchoolReportPage = () => {
             if (t.teacherId) teacherPhoneMap[t.teacherId] = t.phone || '';
           });
           setEditingMeta({ id: rep.id, ownerId: rep.ownerId || ownerIdParam });
+          const sl = rep.studentLevelChoice != null
+            ? { value: rep.studentLevelChoice, other: rep.studentLevelOther || '' }
+            : parseEvalFromStored(rep.studentLevel, EVAL_QUALITY_OPTIONS);
+          const cp = rep.curriculumProgressChoice != null
+            ? { value: rep.curriculumProgressChoice, other: rep.curriculumProgressOther || '' }
+            : parseEvalFromStored(rep.curriculumProgress, EVAL_QUALITY_OPTIONS);
+          const se = rep.schoolEvaluationChoice != null
+            ? { value: rep.schoolEvaluationChoice, other: rep.schoolEvaluationOther || '' }
+            : parseEvalFromStored(rep.schoolEvaluation, EVAL_QUALITY_OPTIONS);
+          const te = rep.teacherEvaluationChoice != null
+            ? { value: rep.teacherEvaluationChoice, other: rep.teacherEvaluationOther || '' }
+            : parseEvalFromStored(rep.teacherEvaluation, EVAL_QUALITY_OPTIONS);
+          const md = rep.marketDoneChoice != null
+            ? { value: rep.marketDoneChoice, other: rep.marketDoneOther || '' }
+            : parseEvalFromStored(rep.marketDone, EVAL_YES_NO_OPTIONS);
           setForm({
             reportTitle: rep.reportTitle || 'تقرير إشراف على المدارس',
             teacherIds,
@@ -206,11 +237,16 @@ const SchoolReportPage = () => {
               rep.presentCount ??
               Math.max(Number(rep.totalStudents ?? detailedStudents.length) - (rep.absentStudents || []).length, 0),
             absenceReview: rep.absenceReview || '',
-            studentLevel: rep.studentLevel || 'جيد',
-            curriculumProgress: rep.curriculumProgress || 'جيد',
-            schoolEvaluation: rep.schoolEvaluation || 'جيد',
-            teacherEvaluation: rep.teacherEvaluation || 'جيد',
-            marketDone: rep.marketDone || '',
+            studentLevel: sl.value || 'جيد',
+            studentLevelOther: sl.other,
+            curriculumProgress: cp.value || 'جيد',
+            curriculumProgressOther: cp.other,
+            schoolEvaluation: se.value || 'جيد',
+            schoolEvaluationOther: se.other,
+            teacherEvaluation: te.value || 'جيد',
+            teacherEvaluationOther: te.other,
+            marketDone: md.value,
+            marketDoneOther: md.other,
             mealsCount: rep.mealsCount ?? '',
             supervisorName: rep.supervisorName || actorUser?.displayName || '',
             projectsOfficerName: rep.projectsOfficerName || '',
@@ -264,6 +300,7 @@ const SchoolReportPage = () => {
           gpsLocation: null,
           mediaUrls: [],
           mediaFiles: [],
+          ...emptyEvalOthers(),
         });
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -386,15 +423,25 @@ const SchoolReportPage = () => {
         absentStudents: students
           .filter((s) => form.absentStudentIds.includes(s.id))
           .map((s) => ({ studentId: s.id, studentName: s.displayName || '' })),
-        studentLevel: form.studentLevel,
-        curriculumProgress: form.curriculumProgress,
+        studentLevel: resolveEvalValue(form.studentLevel, form.studentLevelOther),
+        curriculumProgress: resolveEvalValue(form.curriculumProgress, form.curriculumProgressOther),
         lessonCoverage: legacyLessonCoverage,
         curriculumItems,
         curriculumEntries: form.curriculumEntries,
         curriculumProgressSummary: progressSummary,
-        schoolEvaluation: form.schoolEvaluation,
-        teacherEvaluation: form.teacherEvaluation,
-        marketDone: form.marketDone,
+        schoolEvaluation: resolveEvalValue(form.schoolEvaluation, form.schoolEvaluationOther),
+        teacherEvaluation: resolveEvalValue(form.teacherEvaluation, form.teacherEvaluationOther),
+        marketDone: resolveEvalValue(form.marketDone, form.marketDoneOther),
+        studentLevelChoice: form.studentLevel,
+        studentLevelOther: form.studentLevelOther,
+        curriculumProgressChoice: form.curriculumProgress,
+        curriculumProgressOther: form.curriculumProgressOther,
+        schoolEvaluationChoice: form.schoolEvaluation,
+        schoolEvaluationOther: form.schoolEvaluationOther,
+        teacherEvaluationChoice: form.teacherEvaluation,
+        teacherEvaluationOther: form.teacherEvaluationOther,
+        marketDoneChoice: form.marketDone,
+        marketDoneOther: form.marketDoneOther,
         mealsCount: Number(form.mealsCount || 0),
         teachers: selectedTeachers.map((t) => ({
           teacherId: t.id,
@@ -449,12 +496,12 @@ const SchoolReportPage = () => {
     absenceReview: form.absenceReview,
     supervisorName: form.supervisorName,
     projectsOfficerName: form.projectsOfficerName,
-    marketDone: form.marketDone,
+    marketDone: resolveEvalValue(form.marketDone, form.marketDoneOther),
     mealsCount: form.mealsCount,
-    studentLevel: form.studentLevel,
-    curriculumProgress: form.curriculumProgress,
-    schoolEvaluation: form.schoolEvaluation,
-    teacherEvaluation: form.teacherEvaluation,
+    studentLevel: resolveEvalValue(form.studentLevel, form.studentLevelOther),
+    curriculumProgress: resolveEvalValue(form.curriculumProgress, form.curriculumProgressOther),
+    schoolEvaluation: resolveEvalValue(form.schoolEvaluation, form.schoolEvaluationOther),
+    teacherEvaluation: resolveEvalValue(form.teacherEvaluation, form.teacherEvaluationOther),
     notes: form.notes,
     curriculumItems: entriesToLegacyItems(form.curriculumEntries),
     curriculumProgressSummary: progressSummary,
@@ -665,26 +712,26 @@ const SchoolReportPage = () => {
           <section className="surface-card school-report-section">
             <h3 className="school-report-section__title">التقييمات والملاحظات</h3>
             <div className="report-field-grid report-field-grid--2">
-              {[
-                ['studentLevel', 'مستوى الطلاب'],
-                ['curriculumProgress', 'السير على المنهج'],
-                ['schoolEvaluation', 'تقييم المدرسة'],
-                ['teacherEvaluation', 'تقييم المدرس'],
-              ].map(([key, label]) => (
+              {SCHOOL_EVAL_FIELDS.map(({ key, label }) => (
                 <ReportField key={key} label={label}>
-                  <AppSelect searchable value={form[key]} onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}>
-                    {QUALITY_OPTIONS.map((q) => (
-                      <option key={q} value={q}>{q}</option>
-                    ))}
-                  </AppSelect>
+                  <EvalSelectWithOther
+                    value={form[key]}
+                    otherValue={form[`${key}Other`]}
+                    onChange={(val) => setForm((p) => ({ ...p, [key]: val }))}
+                    onOtherChange={(val) => setForm((p) => ({ ...p, [`${key}Other`]: val }))}
+                    options={EVAL_QUALITY_OPTIONS}
+                  />
                 </ReportField>
               ))}
               <ReportField label="تعمل السوق؟">
-                <AppSelect searchable value={form.marketDone} onChange={(e) => setForm((p) => ({ ...p, marketDone: e.target.value }))}>
-                  <option value="">غير محدد</option>
-                  <option value="نعم">نعم</option>
-                  <option value="لا">لا</option>
-                </AppSelect>
+                <EvalSelectWithOther
+                  value={form.marketDone}
+                  otherValue={form.marketDoneOther}
+                  onChange={(val) => setForm((p) => ({ ...p, marketDone: val }))}
+                  onOtherChange={(val) => setForm((p) => ({ ...p, marketDoneOther: val }))}
+                  options={EVAL_YES_NO_OPTIONS}
+                  placeholder="اكتب وصفاً عن السوق..."
+                />
               </ReportField>
               <ReportField label="عدد الوجبات">
                 <input className="app-input" type="number" min="0" value={form.mealsCount} onChange={(e) => setForm((p) => ({ ...p, mealsCount: e.target.value }))} />
