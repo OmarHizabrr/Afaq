@@ -1792,6 +1792,49 @@ html:not(.light-mode) .nav-link.active {
   gap: 1rem;
 }
 
+.report-daily-edit__title {
+  font-size: 1.2rem;
+  margin: 0 0 1rem;
+}
+
+.report-daily-edit__meta {
+  margin-bottom: 1.25rem;
+}
+
+.report-daily-edit__curriculum {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.report-daily-edit__curriculum-hint {
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+
+.report-daily-edit__summary {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.report-daily-edit__table-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.report-daily-edit__table {
+  min-width: unset;
+}
+
+.report-daily-edit__table .daily-prep-table__input {
+  min-width: 0;
+  width: 100%;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.5rem;
+}
+
 .report-json-input {
   font-family: var(--font-latin), monospace;
   font-size: 0.82rem;

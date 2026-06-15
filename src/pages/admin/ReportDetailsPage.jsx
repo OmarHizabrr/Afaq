@@ -26,9 +26,17 @@ import StarRatingInput from '../../components/StarRatingInput';
 import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
 import { prepPeriodLabel, formatDailyLogSubjects } from '../../utils/reportLabels';
-import { attendanceStatusLabel, isAttendancePresent } from '../../utils/attendanceStatus';
+import {
+  ATTENDANCE_STATUSES,
+  attendanceStatusLabel,
+  attendanceSummaryText,
+  applyAttendanceStatus,
+  isAttendancePresent,
+  normalizeAttendanceStatus,
+} from '../../utils/attendanceStatus';
 import { enrichDailyPrepReport } from '../../utils/enrichDailyPrepReport';
 import AttendanceStatusIcon from '../../components/AttendanceStatusIcon';
+import AppSelect from '../../components/AppSelect';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -43,6 +51,12 @@ const TYPE_LABELS = {
   daily: 'تحضير يومي',
   weekly: 'تقرير أسبوعي'
 };
+
+const PREP_PERIOD_OPTIONS = [
+  { value: 'weekly', label: 'أسبوعي' },
+  { value: 'daily', label: 'يومي' },
+  { value: 'monthly', label: 'شهري' },
+];
 
 const ReportDetailsPage = ({ viewerUser = null }) => {
   const { id } = useParams();
@@ -125,8 +139,17 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         date: report.date || '',
         schoolName: report.schoolName || '',
         teacherName: report.teacherName || '',
-        totalPresent: report.totalPresent ?? '',
-        totalStudents: report.totalStudents ?? ''
+        prepPeriod: report.prepPeriod || 'weekly',
+        periodStart: report.periodStart || report.date || '',
+        periodEnd: report.periodEnd || report.date || '',
+        prepNotes: report.prepNotes || '',
+        records: (report.records || []).map((r) => ({
+          ...r,
+          attendanceStatus: normalizeAttendanceStatus(r),
+          note: r.note || '',
+          memorization: r.memorization || '',
+          review: r.review || '',
+        })),
       });
     } else if (report.type === 'weekly') {
       setWeeklyEdit({
@@ -167,12 +190,31 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
           villageRating: clampVisitRatingSave(visitEdit.villageRating),
         };
       } else if (report.type === 'daily') {
+        const records = (dailyEdit.records || []).map((r) => ({
+          ...r,
+          attendanceStatus: r.attendanceStatus || normalizeAttendanceStatus(r),
+          isPresent: isAttendancePresent(r),
+        }));
+        const totalPresent = records.filter((r) => isAttendancePresent(r)).length;
+        const periodStart = dailyEdit.periodStart || dailyEdit.date;
+        const periodEnd = dailyEdit.periodEnd || dailyEdit.date;
         data = {
           date: dailyEdit.date,
           schoolName: dailyEdit.schoolName,
           teacherName: dailyEdit.teacherName,
-          totalPresent: Number(dailyEdit.totalPresent) || 0,
-          totalStudents: Number(dailyEdit.totalStudents) || 0
+          prepPeriod: dailyEdit.prepPeriod || 'weekly',
+          periodStart,
+          periodEnd,
+          periodLabel:
+            periodStart && periodEnd && periodStart !== periodEnd
+              ? `${periodStart} — ${periodEnd}`
+              : periodStart || dailyEdit.date,
+          prepNotes: (dailyEdit.prepNotes || '').trim(),
+          records,
+          totalStudents: records.length,
+          totalPresent,
+          totalAbsent: records.length - totalPresent,
+          attendanceSummary: attendanceSummaryText(records),
         };
       } else if (report.type === 'weekly') {
         let reportData = {};
@@ -235,6 +277,17 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       return <CheckCircle size={16} color="var(--success-color)" />;
     }
     return <XCircle size={16} color="var(--danger-color)" />;
+  };
+
+  const handleDailyRecordChange = (studentId, field, value) => {
+    setDailyEdit((s) => ({
+      ...s,
+      records: (s.records || []).map((r) => {
+        if (r.studentId !== studentId) return r;
+        if (field === 'attendanceStatus') return applyAttendanceStatus(r, value);
+        return { ...r, [field]: value };
+      }),
+    }));
   };
 
   if (loading) {
@@ -456,53 +509,178 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         )}
 
         {editMode && isAdmin && report.type === 'daily' && (
-          <div className="report-edit-form">
-            <label className="app-field app-field--grow">
-              <span className="app-label">التاريخ</span>
-              <input
-                type="text"
-                value={dailyEdit.date}
-                onChange={(e) => setDailyEdit((s) => ({ ...s, date: e.target.value }))}
-                className="app-input"
-              />
-            </label>
-            <label className="app-field app-field--grow">
-              <span className="app-label">المدرسة</span>
-              <input
-                type="text"
-                value={dailyEdit.schoolName}
-                onChange={(e) => setDailyEdit((s) => ({ ...s, schoolName: e.target.value }))}
-                className="app-input"
-              />
-            </label>
-            <label className="app-field app-field--grow">
-              <span className="app-label">اسم المعلم</span>
-              <input
-                type="text"
-                value={dailyEdit.teacherName}
-                onChange={(e) => setDailyEdit((s) => ({ ...s, teacherName: e.target.value }))}
-                className="app-input"
-              />
-            </label>
-            <div className="report-edit-form__two-cols">
+          <div className="report-daily-edit">
+            <h3 className="report-daily-edit__title">
+              تعديل سجل التحضير ({prepPeriodLabel(dailyEdit.prepPeriod)})
+            </h3>
+
+            <div className="report-edit-form report-daily-edit__meta">
+              <div className="report-edit-form__two-cols">
+                <label className="app-field app-field--grow">
+                  <span className="app-label">تاريخ التسجيل</span>
+                  <input
+                    type="date"
+                    value={dailyEdit.date || ''}
+                    onChange={(e) => setDailyEdit((s) => ({ ...s, date: e.target.value }))}
+                    className="app-input"
+                  />
+                </label>
+                <label className="app-field app-field--grow">
+                  <span className="app-label">نوع الفترة</span>
+                  <AppSelect
+                    value={dailyEdit.prepPeriod || 'weekly'}
+                    onChange={(e) => setDailyEdit((s) => ({ ...s, prepPeriod: e.target.value }))}
+                  >
+                    {PREP_PERIOD_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </AppSelect>
+                </label>
+              </div>
+              <div className="report-edit-form__two-cols">
+                <label className="app-field app-field--grow">
+                  <span className="app-label">بداية الفترة</span>
+                  <input
+                    type="date"
+                    value={dailyEdit.periodStart || ''}
+                    onChange={(e) => setDailyEdit((s) => ({ ...s, periodStart: e.target.value }))}
+                    className="app-input"
+                  />
+                </label>
+                <label className="app-field app-field--grow">
+                  <span className="app-label">نهاية الفترة</span>
+                  <input
+                    type="date"
+                    value={dailyEdit.periodEnd || ''}
+                    onChange={(e) => setDailyEdit((s) => ({ ...s, periodEnd: e.target.value }))}
+                    className="app-input"
+                  />
+                </label>
+              </div>
+              <div className="report-edit-form__two-cols">
+                <label className="app-field app-field--grow">
+                  <span className="app-label">المدرسة</span>
+                  <input
+                    type="text"
+                    value={dailyEdit.schoolName || ''}
+                    onChange={(e) => setDailyEdit((s) => ({ ...s, schoolName: e.target.value }))}
+                    className="app-input"
+                  />
+                </label>
+                <label className="app-field app-field--grow">
+                  <span className="app-label">اسم المعلم</span>
+                  <input
+                    type="text"
+                    value={dailyEdit.teacherName || ''}
+                    onChange={(e) => setDailyEdit((s) => ({ ...s, teacherName: e.target.value }))}
+                    className="app-input"
+                  />
+                </label>
+              </div>
               <label className="app-field app-field--grow">
-                <span className="app-label">حاضر</span>
-                <input
-                  type="number"
-                  value={dailyEdit.totalPresent}
-                  onChange={(e) => setDailyEdit((s) => ({ ...s, totalPresent: e.target.value }))}
-                  className="app-input"
+                <span className="app-label">ملاحظات التحضير</span>
+                <textarea
+                  value={dailyEdit.prepNotes || ''}
+                  onChange={(e) => setDailyEdit((s) => ({ ...s, prepNotes: e.target.value }))}
+                  rows={3}
+                  className="app-textarea"
+                  placeholder="ملاحظات عامة على الجلسة..."
                 />
               </label>
-              <label className="app-field app-field--grow">
-                <span className="app-label">إجمالي الطلاب</span>
-                <input
-                  type="number"
-                  value={dailyEdit.totalStudents}
-                  onChange={(e) => setDailyEdit((s) => ({ ...s, totalStudents: e.target.value }))}
-                  className="app-input"
-                />
-              </label>
+            </div>
+
+            {formatDailyLogSubjects(report) && (
+              <p className="report-daily-edit__curriculum">
+                المواد: <strong>{formatDailyLogSubjects(report)}</strong>
+                <span className="report-daily-edit__curriculum-hint"> (للعرض فقط — يُعدَّل من صفحة التحضير)</span>
+              </p>
+            )}
+
+            {Array.isArray(dailyEdit.records) && dailyEdit.records.length > 0 && (
+              <p className="report-daily-edit__summary">
+                ملخص الحضور: <strong>{attendanceSummaryText(dailyEdit.records)}</strong>
+              </p>
+            )}
+
+            <div className="surface-card report-daily-edit__table-wrap">
+              <div className="md-table-scroll">
+                <table className="md-table report-daily-edit__table">
+                  <thead>
+                    <tr>
+                      <th>الحالة</th>
+                      <th>اسم الطالب</th>
+                      <th>الحفظ</th>
+                      <th>المراجعة</th>
+                      <th>ملاحظة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(dailyEdit.records || []).map((r) => {
+                      const status = r.attendanceStatus || normalizeAttendanceStatus(r);
+                      const present = isAttendancePresent(r);
+                      return (
+                        <tr key={r.studentId} className={!present ? 'md-table__row--absent' : ''}>
+                          <td className="daily-prep-table__status-cell">
+                            <div className="daily-prep-status-cell">
+                              <AttendanceStatusIcon status={status} size={18} />
+                              <AppSelect
+                                value={status}
+                                onChange={(e) =>
+                                  handleDailyRecordChange(r.studentId, 'attendanceStatus', e.target.value)
+                                }
+                                className={`daily-prep-status-select daily-prep-status-select--${status}`}
+                                aria-label={`حالة ${r.name}`}
+                              >
+                                {ATTENDANCE_STATUSES.map((s) => (
+                                  <option key={s.value} value={s.value}>
+                                    {s.label}
+                                  </option>
+                                ))}
+                              </AppSelect>
+                            </div>
+                          </td>
+                          <td style={{ fontWeight: 600 }}>{r.name}</td>
+                          <td>
+                            <input
+                              type="text"
+                              value={r.memorization || ''}
+                              disabled={!present}
+                              onChange={(e) =>
+                                handleDailyRecordChange(r.studentId, 'memorization', e.target.value)
+                              }
+                              className="app-input daily-prep-table__input daily-prep-table__input--mem"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={r.review || ''}
+                              disabled={!present}
+                              onChange={(e) =>
+                                handleDailyRecordChange(r.studentId, 'review', e.target.value)
+                              }
+                              className="app-input daily-prep-table__input daily-prep-table__input--rev"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={r.note || ''}
+                              onChange={(e) =>
+                                handleDailyRecordChange(r.studentId, 'note', e.target.value)
+                              }
+                              className="app-input daily-prep-table__input"
+                              placeholder="ملاحظة..."
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
