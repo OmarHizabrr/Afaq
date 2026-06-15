@@ -27,6 +27,8 @@ import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
 import { prepPeriodLabel, formatDailyLogSubjects } from '../../utils/reportLabels';
 import { attendanceStatusLabel, isAttendancePresent } from '../../utils/attendanceStatus';
+import { enrichDailyPrepReport } from '../../utils/enrichDailyPrepReport';
+import AttendanceStatusIcon from '../../components/AttendanceStatusIcon';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -82,7 +84,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       const daily = allDaily.find((r) => r.id === id);
       if (daily) {
         const ownerId = daily.ref.parent.parent.id;
-        setReport({ id, ...daily.data(), type: 'daily', _ownerId: ownerId });
+        const raw = { id, ...daily.data(), type: 'daily', _ownerId: ownerId };
+        const enriched = await enrichDailyPrepReport(api, raw, ownerId);
+        setReport(enriched);
         return;
       }
       const allWeekly = await api.getCollectionGroupDocuments('teacher_reports');
@@ -692,6 +696,11 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                           <span
                             className={`daily-prep-status-badge daily-prep-status-badge--${r.attendanceStatus || (present ? 'present' : 'absent')}`}
                           >
+                            <AttendanceStatusIcon
+                              status={r.attendanceStatus || (present ? 'present' : 'absent')}
+                              size={16}
+                              className="daily-prep-status-badge__icon"
+                            />
                             {label}
                           </span>
                         </td>

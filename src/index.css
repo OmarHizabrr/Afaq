@@ -3473,6 +3473,9 @@ html:not(.light-mode) .nav-link.active {
 }
 
 .prep-period-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
   color: var(--text-primary);
@@ -3482,6 +3485,11 @@ html:not(.light-mode) .nav-link.active {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.prep-period-chip__icon {
+  flex-shrink: 0;
+  opacity: 0.85;
 }
 
 .prep-period-chip:hover {
@@ -3542,6 +3550,55 @@ html:not(.light-mode) .nav-link.active {
   margin-top: 0.5rem;
   color: var(--md-primary);
   font-size: 0.82rem;
+}
+
+.daily-prep-school-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.65rem;
+}
+
+.daily-prep-school-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.daily-prep-school-card:hover {
+  border-color: var(--success-color);
+}
+
+.daily-prep-school-card--active {
+  border-color: var(--success-color);
+  background: color-mix(in srgb, var(--success-color) 12%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--success-color) 35%, transparent);
+}
+
+.daily-prep-school-card__icon {
+  color: var(--success-color);
+}
+
+.daily-prep-status-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.daily-prep-session-notes__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .daily-prep-setup__period {
@@ -3678,7 +3735,9 @@ html:not(.light-mode) .nav-link.active {
 .daily-prep-status-select--traveling { border-color: var(--border-color); opacity: 0.9; }
 
 .daily-prep-status-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
   font-size: 0.78rem;

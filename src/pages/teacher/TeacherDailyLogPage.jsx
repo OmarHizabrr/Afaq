@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, Save, Users, School, BookOpen } from 'lucide-react';
+import { Calendar, Save, Users, School, BookOpen, CalendarDays, CalendarRange, StickyNote } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import CurriculumLessonPicker from '../../components/CurriculumLessonPicker';
+import AttendanceStatusIcon from '../../components/AttendanceStatusIcon';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
-import {
-  DATA_SCOPE_ALL,
-  DATA_SCOPE_MEMBERSHIP,
-  filterSchoolsByScope,
-} from '../../utils/permissionDataScope';
-import { isSystemAdmin, skipsMembershipDataScopeLoading } from '../../utils/systemRoles';
+import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
+import { skipsMembershipDataScopeLoading } from '../../utils/systemRoles';
+import { canPickAnySchoolForPrep, resolveDailyPrepSchoolOptions } from '../../utils/dailyPrepSchools';
 import {
   ATTENDANCE_STATUSES,
   applyAttendanceStatus,
@@ -56,9 +54,9 @@ const getPeriodRange = (period, referenceDate = new Date()) => {
 };
 
 const PREP_PERIOD_OPTIONS = [
-  { value: 'weekly', label: 'أسبوعي', hint: 'الافتراضي — تسجيل أسبوع كامل' },
-  { value: 'daily', label: 'يومي', hint: 'تحضير يوم واحد' },
-  { value: 'monthly', label: 'شهري', hint: 'ملخص الشهر' },
+  { value: 'weekly', label: 'أسبوعي', hint: 'الافتراضي — تسجيل أسبوع كامل', Icon: CalendarDays },
+  { value: 'daily', label: 'يومي', hint: 'تحضير يوم واحد', Icon: Calendar },
+  { value: 'monthly', label: 'شهري', hint: 'ملخص الشهر', Icon: CalendarRange },
 ];
 
 const periodSaveLabel = (period) => {
@@ -67,60 +65,23 @@ const periodSaveLabel = (period) => {
   return 'اليومي';
 };
 
-/** مدير النظام / admin / نطاق بيانات «الكل» — يختار أي مدرسة */
-function canPickAnySchoolForPrep(user, pageDataScope) {
-  if (isSystemAdmin(user) || user?.role === 'admin') return true;
-  const prepScope = pageDataScope(PERMISSION_PAGE_IDS.daily_preparation);
-  const schoolsScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
-  return prepScope === DATA_SCOPE_ALL || schoolsScope === DATA_SCOPE_ALL;
-}
-
-async function resolveDailyPrepSchoolOptions(api, user, { pageDataScope, membershipGroupIds }) {
-  const prepScope = pageDataScope(PERMISSION_PAGE_IDS.daily_preparation);
-  const broadPick = canPickAnySchoolForPrep(user, pageDataScope);
-
-  const allSchoolDocs = await api.getCollectionGroupDocuments('schools');
-  const allRows = allSchoolDocs
-    .map((s) => ({
-      id: s.id,
-      name: (s.data()?.name || '').trim() || s.id,
-      villageId: s.data()?.villageId || s.ref.parent.parent?.id || '',
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-
-  if (broadPick) {
-    if (prepScope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds?.size > 0) {
-      return filterSchoolsByScope(allRows, membershipGroupIds, DATA_SCOPE_MEMBERSHIP);
-    }
-    return allRows;
-  }
-
-  const mirrorIds = await api.listUserSchoolIdsFromMirrors(user);
-  if (mirrorIds.length > 0) {
-    return mirrorIds
-      .map((id) => {
-        const row = allRows.find((s) => s.id === id);
-        return { id, name: row?.name || id };
-      })
-      .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-  }
-
-  if (prepScope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds?.size > 0) {
-    return filterSchoolsByScope(allRows, membershipGroupIds, DATA_SCOPE_MEMBERSHIP);
-  }
-
-  return [];
-}
-
 const TeacherDailyLogPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
   const perm = usePermissions();
-  const { ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
+  const { ready, pageDataScope, membershipLoading, actorUser } = perm;
   const actor = actorUser || user;
   const broadSchoolPick = useMemo(
     () => canPickAnySchoolForPrep(actor, pageDataScope),
     [actor, pageDataScope]
   );
+
+  const pickSchool = (sid) => {
+    setActiveSchoolId(sid);
+    const key = teacherSchoolStorageKey(actorId);
+    if (key && sid) localStorage.setItem(key, sid);
+    setCurriculumEntries([]);
+    setSuccess('');
+  };
   const [curriculumList, setCurriculumList] = useState([]);
   const [schoolOptions, setSchoolOptions] = useState([]);
   const [students, setStudents] = useState([]);
@@ -166,7 +127,7 @@ const TeacherDailyLogPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         const [options, docsCur] = await Promise.all([
-          resolveDailyPrepSchoolOptions(api, actor, { pageDataScope, membershipGroupIds }),
+          resolveDailyPrepSchoolOptions(api, actor, { pageDataScope }),
           api.getDocuments(api.getCurriculumCollection()),
         ]);
         if (cancelled) return;
@@ -206,7 +167,6 @@ const TeacherDailyLogPage = ({ user }) => {
     actor,
     actorId,
     pageDataScope,
-    membershipGroupIds,
     membershipLoading,
     broadSchoolPick,
   ]);
@@ -249,12 +209,7 @@ const TeacherDailyLogPage = ({ user }) => {
   }, [activeSchoolId]);
 
   const handleActiveSchoolChange = (e) => {
-    const sid = e.target.value;
-    setActiveSchoolId(sid);
-    const key = teacherSchoolStorageKey(actorId);
-    if (key && sid) localStorage.setItem(key, sid);
-    setCurriculumEntries([]);
-    setSuccess('');
+    pickSchool(e.target.value);
   };
 
   const handleTrackingChange = (studentId, field, value) => {
@@ -363,8 +318,8 @@ const TeacherDailyLogPage = ({ user }) => {
         title="التحضير"
         subtitle={
           broadSchoolPick
-            ? 'اختر أي مدرسة من القائمة — ثم الفترة والمواد وسجّل الحضور'
-            : 'اختر المدرسة والفترة والمواد — ثم سجّل حضور الطلاب'
+            ? 'صلاحية شاملة — اختر أي مدرسة ثم سجّل التحضير'
+            : 'المدارس المعيّنة لك فقط — اختر المدرسة والفترة والمواد'
         }
       />
 
@@ -383,25 +338,46 @@ const TeacherDailyLogPage = ({ user }) => {
           </label>
           {schoolOptions.length === 0 ? (
             <p className="daily-prep-setup__hint">
-              {broadSchoolPick ? 'لا توجد مدارس متاحة.' : 'لا توجد مدارس مرتبطة بحسابك.'}
+              {broadSchoolPick ? 'لا توجد مدارس مسجلة في النظام.' : 'لا توجد مدارس معيّنة لحسابك. اطلب من الإدارة تعيينك في مدرسة.'}
             </p>
-          ) : (
+          ) : broadSchoolPick || schoolOptions.length > 5 ? (
             <AppSelect
               id="daily-prep-school"
-              searchable={broadSchoolPick || schoolOptions.length > 6}
+              searchable
               value={activeSchoolId}
               onChange={handleActiveSchoolChange}
             >
               {schoolOptions.map((o) => (
                 <option key={o.id} value={o.id}>
-                  {o.name}
+                  🏫 {o.name}
                 </option>
               ))}
             </AppSelect>
+          ) : (
+            <div className="daily-prep-school-grid" role="listbox" aria-label="اختيار المدرسة">
+              {schoolOptions.map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  role="option"
+                  aria-selected={activeSchoolId === o.id}
+                  className={`daily-prep-school-card${activeSchoolId === o.id ? ' daily-prep-school-card--active' : ''}`}
+                  onClick={() => pickSchool(o.id)}
+                >
+                  <School size={22} className="daily-prep-school-card__icon" />
+                  <span>{o.name}</span>
+                </button>
+              ))}
+            </div>
           )}
           {broadSchoolPick && schoolOptions.length > 0 && (
             <p className="daily-prep-setup__hint daily-prep-setup__hint--info">
-              صلاحية شاملة: يمكنك تسجيل التحضير لأي مدرسة في النظام.
+              نطاق بيانات «الكل» لصفحة التحضير — تظهر جميع المدارس.
+            </p>
+          )}
+          {!broadSchoolPick && schoolOptions.length > 0 && (
+            <p className="daily-prep-setup__hint">
+              تظهر المدارس التي عُيّنت لك فقط عبر عضوية المدرسة.
             </p>
           )}
         </div>
@@ -409,7 +385,9 @@ const TeacherDailyLogPage = ({ user }) => {
         <div className="daily-prep-setup__period">
           <span className="app-label">نوع الفترة</span>
           <div className="prep-period-chips" role="group" aria-label="نوع فترة التحضير">
-            {PREP_PERIOD_OPTIONS.map((o) => (
+            {PREP_PERIOD_OPTIONS.map((o) => {
+              const Icon = o.Icon;
+              return (
               <button
                 key={o.value}
                 type="button"
@@ -417,9 +395,11 @@ const TeacherDailyLogPage = ({ user }) => {
                 onClick={() => setPrepPeriod(o.value)}
                 title={o.hint}
               >
+                <Icon size={16} className="prep-period-chip__icon" />
                 {o.label}
               </button>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -529,17 +509,21 @@ const TeacherDailyLogPage = ({ user }) => {
                     className={`daily-prep-table__row daily-prep-table__row--${status}${present ? '' : ' md-table__row--absent'}`}
                   >
                     <td className="daily-prep-table__status-cell">
-                      <AppSelect
-                        value={status}
-                        onChange={(e) => handleStatusChange(record.studentId, e.target.value)}
-                        className={`daily-prep-status-select daily-prep-status-select--${status}`}
-                      >
-                        {ATTENDANCE_STATUSES.map((s) => (
-                          <option key={s.value} value={s.value}>
-                            {s.label}
-                          </option>
-                        ))}
-                      </AppSelect>
+                      <div className="daily-prep-status-cell">
+                        <AttendanceStatusIcon status={status} size={20} />
+                        <AppSelect
+                          value={status}
+                          onChange={(e) => handleStatusChange(record.studentId, e.target.value)}
+                          className={`daily-prep-status-select daily-prep-status-select--${status}`}
+                          aria-label={`حالة ${record.name}`}
+                        >
+                          {ATTENDANCE_STATUSES.map((s) => (
+                            <option key={s.value} value={s.value}>
+                              {s.label}
+                            </option>
+                          ))}
+                        </AppSelect>
+                      </div>
                     </td>
                     <td className={`daily-prep-table__name${present ? '' : ' daily-prep-table__name--absent'}`}>
                       {record.name}
@@ -581,8 +565,8 @@ const TeacherDailyLogPage = ({ user }) => {
           </div>
 
           <div className="daily-prep-session-notes">
-            <label className="app-label" htmlFor="prep-session-notes">
-              ملاحظات عامة على التحضير
+            <label className="app-label daily-prep-session-notes__label" htmlFor="prep-session-notes">
+              <StickyNote size={16} /> ملاحظات عامة على التحضير
             </label>
             <textarea
               id="prep-session-notes"

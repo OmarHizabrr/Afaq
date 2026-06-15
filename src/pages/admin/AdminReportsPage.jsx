@@ -9,18 +9,16 @@ import {
   Search,
   Filter,
   Trash2,
-  CheckCircle2,
-  XCircle,
   Printer,
 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
-import MapLocationOpen from '../../components/MapLocationOpen';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
 import { formatVisitRatingLabel } from '../../utils/visitRating';
 import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath, formatDailyLogSubjects } from '../../utils/reportLabels';
+import { enrichDailyPrepReportsBatch } from '../../utils/enrichDailyPrepReport';
 
 const TAB_LABELS = {
   daily: 'التحضير',
@@ -82,7 +80,6 @@ const AdminReportsPage = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedReport, setSelectedReport] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSchool, setFilterSchool] = useState('');
 
@@ -140,6 +137,10 @@ const AdminReportsPage = () => {
           new Date(b.date || b.submissionDate || b.timestamp) -
           new Date(a.date || a.submissionDate || a.timestamp)
       );
+
+      if (tab === 'daily') {
+        data = await enrichDailyPrepReportsBatch(api, data);
+      }
 
       setReports(data);
     } catch (err) {
@@ -225,20 +226,6 @@ const AdminReportsPage = () => {
       console.error(err);
       setError('فشل حذف التقرير.');
     }
-  };
-
-  const renderStatus = (val) => {
-    if (val === true || val === 'isActive')
-      return (
-        <span style={{ color: 'var(--success-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-          <CheckCircle2 size={14} /> منجز
-        </span>
-      );
-    return (
-      <span style={{ color: 'var(--danger-color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-        <XCircle size={14} /> لم ينجز
-      </span>
-    );
   };
 
   const periodLabel =
@@ -449,7 +436,7 @@ const AdminReportsPage = () => {
                   <p className="admin-reports-list__meta-label">ملخص النشاط</p>
                   <p className="admin-reports-list__summary">
                     {activeTab === 'daily'
-                      ? `${prepPeriodLabel(rpt.prepPeriod)} • حضور ${rpt.totalPresent}/${rpt.totalStudents}${formatDailyLogSubjects(rpt) ? ` • ${formatDailyLogSubjects(rpt)}` : rpt.lessonName ? ` • ${rpt.lessonName}` : ''}`
+                      ? `${prepPeriodLabel(rpt.prepPeriod)} • ${rpt.attendanceSummary || `حضور ${rpt.totalPresent ?? '—'}/${rpt.totalStudents ?? '—'}`}${formatDailyLogSubjects(rpt) ? ` • ${formatDailyLogSubjects(rpt)}` : rpt.lessonName ? ` • ${rpt.lessonName}` : ''}${rpt.prepNotes ? ' • ملاحظات' : ''}`
                       : activeTab === 'weekly'
                         ? 'تقرير أعمال أسبوعي'
                         : activeTab === 'school'
@@ -491,125 +478,6 @@ const AdminReportsPage = () => {
             </div>
             );
           })}
-        </div>
-      )}
-
-      {selectedReport && (
-        <div
-          className="modal-overlay no-print"
-          style={{ background: 'rgba(0,0,0,0.75)' }}
-          onClick={() => setSelectedReport(null)}
-        >
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setSelectedReport(null)}
-              style={{
-                position: 'absolute',
-                top: '1.5rem',
-                left: '1.5rem',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              إغلاق (X)
-            </button>
-            <h2 style={{ marginBottom: '1.5rem' }}>تفاصيل التقرير</h2>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '1rem',
-                borderBottom: '1px solid var(--border-color)',
-                paddingBottom: '1rem',
-                marginBottom: '1.5rem',
-              }}
-            >
-              <div>
-                <strong>المعرف:</strong> {selectedReport.teacherId || selectedReport.supervisorId}
-              </div>
-              <div>
-                <strong>المدرسة:</strong> {selectedReport.schoolName || 'مدرسة غير محددة'}
-              </div>
-              <div>
-                <strong>المادة:</strong> {selectedReport.subjectName || '-'}
-              </div>
-              <div>
-                <strong>الأسبوع:</strong> {selectedReport.week || '-'}
-              </div>
-            </div>
-
-            {activeTab === 'daily' && (
-              <div className="md-table-scroll">
-                <table className="md-table" style={{ minWidth: 'unset' }}>
-                  <thead>
-                    <tr>
-                      <th>الطالب</th>
-                      <th>حفظ</th>
-                      <th>مراجعة</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedReport.records?.map((r) => (
-                      <tr key={r.studentId} className={!r.isPresent ? 'md-table__row--absent' : ''}>
-                        <td>
-                          {r.name} {!r.isPresent && '(غائب)'}
-                        </td>
-                        <td>{r.memorization}</td>
-                        <td>{r.review}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {activeTab === 'weekly' && (
-              <div>
-                {selectedReport.reportData &&
-                  Object.entries(selectedReport.reportData).map(([key, val]) => (
-                    <div
-                      key={key}
-                      style={{
-                        marginBottom: '1rem',
-                        padding: '1rem',
-                        background: 'var(--bg-color)',
-                        borderRadius: '8px',
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <strong>{key}</strong>
-                        {renderStatus(val.isActive)}
-                      </div>
-                      <p style={{ margin: 0, fontSize: '0.9rem' }}>{val.details || 'لا توجد ملاحظات إضافية'}</p>
-                    </div>
-                  ))}
-              </div>
-            )}
-
-            {activeTab === 'visits' && (
-              <div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-                  <div style={{ background: 'var(--bg-color)', padding: '1rem', borderRadius: '8px' }}>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>تقييم المدرس</p>
-                    <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{formatVisitRatingLabel(selectedReport.teacherRating)}</p>
-                  </div>
-                  <div style={{ background: 'var(--bg-color)', padding: '1rem', borderRadius: '8px' }}>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>تقييم القرية</p>
-                    <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{formatVisitRatingLabel(selectedReport.villageRating)}</p>
-                  </div>
-                </div>
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <MapLocationOpen gpsLocation={selectedReport.gpsLocation} label="الموقع الجغرافي (GPS)" subtitle="غير متوفر" />
-                </div>
-                <strong>ملاحظات المشرف:</strong>
-                <p style={{ background: 'var(--bg-color)', padding: '1rem', borderRadius: '8px', minHeight: '60px' }}>{selectedReport.generalNotes}</p>
-              </div>
-            )}
-          </div>
         </div>
       )}
     </div>
