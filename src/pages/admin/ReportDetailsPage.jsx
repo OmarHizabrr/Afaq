@@ -25,6 +25,7 @@ import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissio
 import StarRatingInput from '../../components/StarRatingInput';
 import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
+import { prepPeriodLabel } from '../../utils/reportLabels';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -67,8 +68,13 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       const allVisits = await api.getCollectionGroupDocuments('reports');
       const visit = allVisits.find((r) => r.id === id);
       if (visit) {
-        const ownerId = visit.ref.parent.parent.id;
-        setReport({ id, ...visit.data(), type: 'visit', _ownerId: ownerId });
+        const data = visit.data() || {};
+        const ownerId = visit.ref.parent.parent?.id || '';
+        if (data.reportType === 'school_supervision' && data.schoolId) {
+          navigate(`/schools/${data.schoolId}/report/${id}?ownerId=${ownerId}`, { replace: true });
+          return;
+        }
+        setReport({ id, ...data, type: 'visit', _ownerId: ownerId });
         return;
       }
       const allDaily = await api.getCollectionGroupDocuments('teacher_daily_logs');
@@ -92,7 +98,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, navigate]);
 
   useEffect(() => {
     loadReport();
@@ -254,10 +260,17 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   }
 
   const dateDisplay =
-    report.timestamp?.split('T')[0] ||
-    report.date ||
-    (report.submissionDate && String(report.submissionDate).split('T')[0]) ||
-    '—';
+    report.type === 'daily' && report.periodLabel
+      ? report.periodLabel
+      : report.timestamp?.split('T')[0] ||
+        report.date ||
+        (report.submissionDate && String(report.submissionDate).split('T')[0]) ||
+        '—';
+
+  const typeLabel =
+    report.type === 'daily'
+      ? `تحضير ${prepPeriodLabel(report.prepPeriod)}`
+      : TYPE_LABELS[report.type] || report.type;
 
   return (
     <div className="report-details-page">
@@ -383,7 +396,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 }}
               >
                 <Info size={18} />
-                <strong style={{ fontSize: '1.1rem' }}>{TYPE_LABELS[report.type] || report.type}</strong>
+                <strong style={{ fontSize: '1.1rem' }}>{typeLabel}</strong>
               </div>
             </div>
           </div>
@@ -623,7 +636,19 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
         {report.type === 'daily' && !editMode && (
           <div>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>سجل الحضور والغياب اليومي</h3>
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
+              سجل التحضير ({prepPeriodLabel(report.prepPeriod)})
+            </h3>
+            {(report.subjectName || report.week || report.lessonName) && (
+              <p style={{ margin: '0 0 1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                {report.subjectName && <>المادة: <strong>{report.subjectName}</strong></>}
+                {report.week && <> • الأسبوع: <strong>{report.week}</strong></>}
+                {report.lessonName && <> • الدرس: <strong>{report.lessonName}</strong></>}
+                {report.periodStart && report.periodEnd && report.periodStart !== report.periodEnd && (
+                  <> • الفترة: <strong>{report.periodStart} — {report.periodEnd}</strong></>
+                )}
+              </p>
+            )}
             <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
               <div className="md-table-scroll">
                 <table className="md-table" style={{ minWidth: 'unset' }}>

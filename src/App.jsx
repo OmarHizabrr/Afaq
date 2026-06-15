@@ -17,6 +17,9 @@ import SettingsPage from './pages/common/SettingsPage';
 import NotificationsPage from './pages/common/NotificationsPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
 import SchoolDetailsPage from './pages/admin/SchoolDetailsPage';
+import SchoolReportPage from './pages/admin/SchoolReportPage';
+import SchoolComprehensiveReportPage from './pages/admin/SchoolComprehensiveReportPage';
+import TeacherDailyLogPage from './pages/teacher/TeacherDailyLogPage';
 import RegionDetailsPage from './pages/admin/RegionDetailsPage';
 import UserDetailsPage from './pages/admin/UserDetailsPage';
 import ReportDetailsPage from './pages/admin/ReportDetailsPage';
@@ -27,6 +30,7 @@ import { NotificationsBadgeProvider } from './context/NotificationsBadgeContext'
 import PermissionsProvider from './context/PermissionsProvider';
 import SiteContentProvider from './context/SiteContentProvider';
 import PageGuard from './routes/PageGuard';
+import DailyPrepGuard from './routes/DailyPrepGuard';
 import AdminUserTypesPage from './pages/admin/AdminUserTypesPage';
 import AdminBrandingPage from './pages/admin/AdminBrandingPage';
 import AdminSiteCopyPage from './pages/admin/AdminSiteCopyPage';
@@ -42,7 +46,7 @@ const ProtectedRoute = ({ user, children }) => {
 };
 
 const HomePageResolver = () => {
-  const { ready, hasPermissionProfile, canAccessPage } = usePermissions();
+  const { ready, hasPermissionProfile, canAccessPage, actorUser } = usePermissions();
   if (!ready) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
@@ -50,10 +54,23 @@ const HomePageResolver = () => {
       </div>
     );
   }
-  if (!hasPermissionProfile || !canAccessPage(PERMISSION_PAGE_IDS.dashboard)) {
+  if (canAccessPage(PERMISSION_PAGE_IDS.dashboard)) {
+    return <DashboardPage />;
+  }
+  const role = actorUser?.role || '';
+  if (
+    role === 'teacher' ||
+    canAccessPage(PERMISSION_PAGE_IDS.daily_preparation)
+  ) {
+    return <Navigate to="/daily-preparation" replace />;
+  }
+  if (canAccessPage(PERMISSION_PAGE_IDS.reports)) {
+    return <Navigate to="/reports" replace />;
+  }
+  if (!hasPermissionProfile) {
     return <NoPermissionsPage />;
   }
-  return <DashboardPage />;
+  return <NoPermissionsPage />;
 };
 
 function App() {
@@ -113,7 +130,11 @@ function App() {
           <Route path="curriculum" element={<PageGuard pageId={PERMISSION_PAGE_IDS.curriculum}><CurriculumPage /></PageGuard>} />
           <Route path="reports" element={<PageGuard pageId={PERMISSION_PAGE_IDS.reports}><AdminReportsPage /></PageGuard>} />
           <Route path="reports/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.reports}><ReportDetailsPage viewerUser={user} /></PageGuard>} />
+          <Route path="daily-preparation" element={<DailyPrepGuard><TeacherDailyLogPage user={user} /></DailyPrepGuard>} />
           <Route path="schools/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolDetailsPage /></PageGuard>} />
+          <Route path="schools/:id/report" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolReportPage /></PageGuard>} />
+          <Route path="schools/:id/report/:reportId" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolReportPage /></PageGuard>} />
+          <Route path="schools/:id/comprehensive-report" element={<PageGuard pageId={PERMISSION_PAGE_IDS.schools}><SchoolComprehensiveReportPage /></PageGuard>} />
           <Route path="regions/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.regions}><RegionDetailsPage /></PageGuard>} />
           <Route path="users/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.users}><UserDetailsPage viewerUser={user} /></PageGuard>} />
           <Route path="students/:id" element={<PageGuard pageId={PERMISSION_PAGE_IDS.students_management}><StudentDetailsPage /></PageGuard>} />
@@ -128,7 +149,7 @@ function App() {
         </Route>
 
         <Route path="/supervisor/*" element={<Navigate to="/" replace />} />
-        <Route path="/teacher/*" element={<Navigate to="/" replace />} />
+        <Route path="/teacher/*" element={<Navigate to="/daily-preparation" replace />} />
         <Route path="/student/*" element={<Navigate to="/" replace />} />
 
         <Route

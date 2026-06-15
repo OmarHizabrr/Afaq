@@ -7,6 +7,42 @@ import BusyButton from '../../components/BusyButton';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
+const formatDateInput = (d = new Date()) => {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const getPeriodRange = (period, referenceDate = new Date()) => {
+  const d = new Date(referenceDate);
+  if (period === 'daily') {
+    const date = formatDateInput(d);
+    return { start: date, end: date, label: date };
+  }
+  if (period === 'weekly') {
+    const day = d.getDay();
+    const start = new Date(d);
+    start.setDate(d.getDate() - day);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    const startStr = formatDateInput(start);
+    const endStr = formatDateInput(end);
+    return { start: startStr, end: endStr, label: `${startStr} — ${endStr}` };
+  }
+  const start = new Date(d.getFullYear(), d.getMonth(), 1);
+  const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  const startStr = formatDateInput(start);
+  const endStr = formatDateInput(end);
+  return { start: startStr, end: endStr, label: `${startStr} — ${endStr}` };
+};
+
+const PREP_PERIOD_OPTIONS = [
+  { value: 'weekly', label: 'أسبوعي (افتراضي)' },
+  { value: 'daily', label: 'يومي' },
+  { value: 'monthly', label: 'شهري' },
+];
+
 const TeacherDailyLogPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
   const [students, setStudents] = useState([]);
@@ -18,7 +54,8 @@ const TeacherDailyLogPage = ({ user }) => {
   const [success, setSuccess] = useState('');
   const [activeSchoolId, setActiveSchoolId] = useState('');
 
-  // Form selections
+  const [prepPeriod, setPrepPeriod] = useState('weekly');
+  const [prepDate, setPrepDate] = useState(formatDateInput());
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [selectedWeek, setSelectedWeek] = useState('');
   
@@ -141,6 +178,8 @@ const TeacherDailyLogPage = ({ user }) => {
   const selectedSubjectData = getSelectedSubject();
   const availableWeeks = selectedSubjectData?.weeks || [];
 
+  const periodRange = getPeriodRange(prepPeriod, prepDate ? new Date(prepDate) : new Date());
+
   const handleSaveLog = async () => {
     if (!selectedSubjectId || !selectedWeek) {
       setError('يرجى اختيار المادة وتحديد الدرس/الأسبوع أولاً');
@@ -160,8 +199,6 @@ const TeacherDailyLogPage = ({ user }) => {
       const logId = api.getNewId('teacher_daily_logs');
       const logRef = api.getTeacherDailyLogDoc(actorId, logId);
       
-      const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-      
       // Compute Totals
       const totalPresent = trackingData.filter(s => s.isPresent).length;
       const totalAbsent = trackingData.length - totalPresent;
@@ -176,10 +213,14 @@ const TeacherDailyLogPage = ({ user }) => {
       const logPayload = {
         teacherId: actorId,
         schoolId,
-        date: today,
+        date: periodRange.end,
+        periodStart: periodRange.start,
+        periodEnd: periodRange.end,
+        periodLabel: periodRange.label,
+        prepPeriod,
         subjectId: selectedSubjectId,
         subjectName: selectedSubjectData.name,
-        week: selectedWeek, // The week number 1..50
+        week: selectedWeek,
         lessonName: availableWeeks.find(w => w.week.toString() === selectedWeek.toString())?.lesson || '',
         totalStudents: trackingData.length,
         totalPresent,
@@ -192,7 +233,7 @@ const TeacherDailyLogPage = ({ user }) => {
         data: logPayload
       });
 
-      setSuccess('تم حفظ التحضير اليومي بنجاح!');
+      setSuccess(`تم حفظ التحضير ${prepPeriod === 'weekly' ? 'الأسبوعي' : prepPeriod === 'monthly' ? 'الشهري' : 'اليومي'} بنجاح!`);
       
       // Optionally reset but keep students present since teachers might just review them
       // We will clear the memorization/review inputs though
@@ -225,12 +266,12 @@ const TeacherDailyLogPage = ({ user }) => {
       <PageHeader
         icon={Calendar}
         iconColor="var(--success-color)"
-        title="التحضير اليومي"
-        subtitle="تسجيل الحضور والغياب والإنجاز اليومي"
+        title="التحضير"
+        subtitle="تسجيل الحضور والغياب والإنجاز — افتراضياً أسبوعياً"
       />
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
-      {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
 
       {schoolOptions.length > 1 && activeSchoolId && (
         <div className="surface-card" style={{ padding: '1rem 1.25rem', marginBottom: '1rem' }}>
@@ -247,9 +288,45 @@ const TeacherDailyLogPage = ({ user }) => {
         </div>
       )}
 
+      {/* فترة التحضير */}
+      <div className="surface-card prep-period-card">
+        <h3 className="prep-period-card__title">فترة التحضير</h3>
+        <div className="prep-period-chips" role="group" aria-label="نوع فترة التحضير">
+          {PREP_PERIOD_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              className={`prep-period-chip${prepPeriod === o.value ? ' prep-period-chip--active' : ''}`}
+              onClick={() => setPrepPeriod(o.value)}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+        <div className="prep-period-card__fields">
+          <div>
+            <label className="app-label">
+              {prepPeriod === 'daily' ? 'تاريخ اليوم' : prepPeriod === 'weekly' ? 'أي يوم ضمن الأسبوع' : 'أي يوم ضمن الشهر'}
+            </label>
+            <input
+              type="date"
+              className="app-input"
+              value={prepDate}
+              onChange={(e) => setPrepDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="app-label">الفترة المحسوبة</label>
+            <input className="app-input prep-period-card__range" value={periodRange.label} readOnly />
+          </div>
+        </div>
+      </div>
+
       {/* Curriculum Selection Card */}
       <div className="surface-card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
-        <h3 style={{ marginTop: 0, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>خط سير الحلقة لليوم</h3>
+        <h3 style={{ marginTop: 0, marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
+          {prepPeriod === 'weekly' ? 'خط سير الحلقة للأسبوع' : prepPeriod === 'monthly' ? 'خط سير الحلقة للشهر' : 'خط سير الحلقة لليوم'}
+        </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المادة</label>
@@ -369,7 +446,7 @@ const TeacherDailyLogPage = ({ user }) => {
               >
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                   <Save size={18} style={{ marginLeft: 8 }} />
-                  حفظ التحضير اليومي
+                  حفظ التحضير {prepPeriod === 'weekly' ? 'الأسبوعي' : prepPeriod === 'monthly' ? 'الشهري' : 'اليومي'}
                 </span>
               </BusyButton>
           </div>

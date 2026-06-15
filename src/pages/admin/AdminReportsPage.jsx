@@ -20,11 +20,13 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
 import { formatVisitRatingLabel } from '../../utils/visitRating';
+import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath } from '../../utils/reportLabels';
 
 const TAB_LABELS = {
-  daily: 'التحضير اليومي',
+  daily: 'التحضير',
   weekly: 'التقارير الأسبوعية',
   visits: 'زيارات المشرفين',
+  school: 'تقارير المدارس',
 };
 
 const PRESET_KEYS = [
@@ -118,14 +120,20 @@ const AdminReportsPage = () => {
       let collectionName = '';
       if (tab === 'daily') collectionName = 'teacher_daily_logs';
       else if (tab === 'weekly') collectionName = 'teacher_reports';
-      else if (tab === 'visits') collectionName = 'reports';
+      else if (tab === 'visits' || tab === 'school') collectionName = 'reports';
 
       const docs = await api.getCollectionGroupDocuments(collectionName);
-      const data = docs.map((d) => ({
+      let data = docs.map((d) => ({
         id: d.id,
         _ownerId: d.ref.parent.parent?.id || '',
         ...d.data(),
       }));
+
+      if (tab === 'visits') {
+        data = data.filter((r) => !isSchoolSupervisionReport(r));
+      } else if (tab === 'school') {
+        data = data.filter((r) => isSchoolSupervisionReport(r));
+      }
 
       data.sort(
         (a, b) =>
@@ -168,8 +176,8 @@ const AdminReportsPage = () => {
       if (ready && scope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds.size > 0) {
         const enriched = {
           ...r,
-          teacherId: r.teacherId || (activeTab !== 'visits' ? r._ownerId : ''),
-          supervisorId: r.supervisorId || (activeTab === 'visits' ? r._ownerId : r.supervisorId),
+          teacherId: r.teacherId || (activeTab === 'daily' || activeTab === 'weekly' ? r._ownerId : ''),
+          supervisorId: r.supervisorId || (activeTab === 'visits' || activeTab === 'school' ? r._ownerId : r.supervisorId),
         };
         if (!reportMatchesScope(enriched, membershipGroupIds, actorId, scope)) return false;
       }
@@ -197,7 +205,7 @@ const AdminReportsPage = () => {
     const api = FirestoreApi.Api;
     const oid = rpt._ownerId;
     if (!oid || !rpt.id) return null;
-    if (activeTab === 'visits') return api.getSupervisorReportDoc(oid, rpt.id);
+    if (activeTab === 'visits' || activeTab === 'school') return api.getSupervisorReportDoc(oid, rpt.id);
     if (activeTab === 'daily') return api.getTeacherDailyLogDoc(oid, rpt.id);
     if (activeTab === 'weekly') return api.getTeacherReportDoc(oid, rpt.id);
     return null;
@@ -264,7 +272,14 @@ const AdminReportsPage = () => {
           onClick={() => setActiveTab('daily')}
           className={`admin-reports-tabs__btn ${activeTab === 'daily' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <Calendar size={18} style={{ marginLeft: '6px' }} /> التحضير اليومي
+          <Calendar size={18} style={{ marginLeft: '6px' }} /> التحضير
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('school')}
+          className={`admin-reports-tabs__btn ${activeTab === 'school' ? 'admin-reports-tabs__btn--active' : ''}`}
+        >
+          <FileText size={18} style={{ marginLeft: '6px' }} /> تقارير المدارس
         </button>
         <button
           type="button"
@@ -367,17 +382,38 @@ const AdminReportsPage = () => {
         <div className="empty-state empty-state--lg">لا توجد تقارير مطابقة للفترة أو الفلاتر الحالية.</div>
       ) : (
         <div className="admin-reports-list">
-          {filteredReports.map((rpt) => (
-            <div key={`${rpt._ownerId}-${rpt.id}`} className="surface-card report-row-card">
+          {filteredReports.map((rpt) => {
+            const openReport = () => {
+              if (!can(PERMISSION_PAGE_IDS.reports, 'report_view')) return;
+              const schoolPath = activeTab === 'school' ? schoolReportViewPath(rpt) : null;
+              if (schoolPath) navigate(schoolPath);
+              else navigate(`/reports/${rpt.id}`);
+            };
+            return (
+            <div
+              key={`${rpt._ownerId}-${rpt.id}`}
+              className={`surface-card report-row-card${can(PERMISSION_PAGE_IDS.reports, 'report_view') ? ' report-row-card--clickable' : ''}`}
+              onClick={openReport}
+              onKeyDown={(e) => {
+                if (can(PERMISSION_PAGE_IDS.reports, 'report_view') && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault();
+                  openReport();
+                }
+              }}
+              role={can(PERMISSION_PAGE_IDS.reports, 'report_view') ? 'button' : undefined}
+              tabIndex={can(PERMISSION_PAGE_IDS.reports, 'report_view') ? 0 : undefined}
+            >
               <div
                 className="report-row-card__accent"
                 style={{
                   background:
-                    activeTab === 'visits'
-                      ? 'var(--md-primary)'
-                      : activeTab === 'weekly'
+                    activeTab === 'school'
+                      ? '#8b5cf6'
+                      : activeTab === 'visits'
                         ? 'var(--md-primary)'
-                        : 'var(--success-color)',
+                        : activeTab === 'weekly'
+                          ? 'var(--md-primary)'
+                          : 'var(--success-color)',
                 }}
               />
 
@@ -385,11 +421,18 @@ const AdminReportsPage = () => {
                 <div className="admin-reports-list__meta-block">
                   <p className="admin-reports-list__meta-label">التاريخ</p>
                   <p className="admin-reports-list__meta-value">
-                    {rpt.date || rpt.submissionDate?.split('T')[0] || rpt.timestamp?.split('T')[0]}
+                    {rpt.date || rpt.periodLabel || rpt.submissionDate?.split('T')[0] || rpt.timestamp?.split('T')[0]}
+                    {activeTab === 'daily' && rpt.periodStart && rpt.periodEnd && rpt.periodStart !== rpt.periodEnd && (
+                      <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                        {rpt.periodStart} — {rpt.periodEnd}
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="admin-reports-list__meta-block">
-                  <p className="admin-reports-list__meta-label">{activeTab === 'visits' ? 'المشرف' : 'المعلم'}</p>
+                  <p className="admin-reports-list__meta-label">
+                    {activeTab === 'visits' || activeTab === 'school' ? 'المشرف' : 'المعلم'}
+                  </p>
                   <p className="admin-reports-list__meta-value">
                     {rpt.supervisorName ||
                       rpt.teacherName ||
@@ -406,10 +449,12 @@ const AdminReportsPage = () => {
                   <p className="admin-reports-list__meta-label">ملخص النشاط</p>
                   <p className="admin-reports-list__summary">
                     {activeTab === 'daily'
-                      ? `الحضور: ${rpt.totalPresent}/${rpt.totalStudents}`
+                      ? `${prepPeriodLabel(rpt.prepPeriod)} • حضور ${rpt.totalPresent}/${rpt.totalStudents}${rpt.lessonName ? ` • ${rpt.lessonName}` : ''}`
                       : activeTab === 'weekly'
                         ? 'تقرير أعمال أسبوعي'
-                        : `تقييم الأداء: ${formatVisitRatingLabel(rpt.teacherRating)}`}
+                        : activeTab === 'school'
+                          ? `${rpt.reportTitle || 'تقرير إشراف'} • حضور ${rpt.presentCount ?? '-'}/${rpt.totalStudents ?? '-'}`
+                          : `تقييم الأداء: ${formatVisitRatingLabel(rpt.teacherRating)}`}
                   </p>
                 </div>
               </div>
@@ -417,7 +462,12 @@ const AdminReportsPage = () => {
                 {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
                   <button
                     type="button"
-                    onClick={() => navigate(`/reports/${rpt.id}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const schoolPath = activeTab === 'school' ? schoolReportViewPath(rpt) : null;
+                      if (schoolPath) navigate(schoolPath);
+                      else navigate(`/reports/${rpt.id}`);
+                    }}
                     title="عرض التفاصيل الكاملة"
                     className="icon-btn admin-reports-list__view-btn"
                   >
@@ -428,7 +478,10 @@ const AdminReportsPage = () => {
                   <button
                     type="button"
                     className="icon-btn admin-reports-list__delete-btn"
-                    onClick={() => handleDeleteReportRow(rpt)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteReportRow(rpt);
+                    }}
                     title="حذف التقرير"
                   >
                     <Trash2 size={20} />
@@ -436,7 +489,8 @@ const AdminReportsPage = () => {
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

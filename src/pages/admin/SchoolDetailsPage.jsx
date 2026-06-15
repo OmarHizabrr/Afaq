@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2, Plus, Printer, Edit2, RotateCcw, Save, Square, CheckSquare } from 'lucide-react';
+import { School, Users, FileText, ChevronRight, UserPlus, Info, Search, X, Check, Trash2, Plus, Printer, Edit2, RotateCcw, BarChart3 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import BusyButton from '../../components/BusyButton';
-import AppSelect from '../../components/AppSelect';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
+import { buildSchoolReportPrintDocument } from '../../utils/schoolReportHtml';
 
 const schoolLevelSubtitle = (sl) =>
   sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
@@ -33,36 +33,6 @@ const ASSIGN_ROLE_FILTER_ORDER = [
 ];
 
 const userRoleLabel = (role) => USER_ROLE_LABELS[role] || role || 'مستخدم';
-const DAY_OPTIONS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-const QUALITY_OPTIONS = ['ممتاز', 'جيد جدا', 'جيد', 'مقبول', 'ضعيف'];
-
-const formatDateInput = (d = new Date()) => {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-};
-
-const formatTimeInput = (d = new Date()) => {
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  return `${hh}:${mm}`;
-};
-
-const safeHtml = (value) =>
-  String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-
-const ReportField = ({ label, children }) => (
-  <label className="report-field">
-    <span className="report-field__label">{label}</span>
-    {children}
-  </label>
-);
 
 const SchoolDetailsPage = () => {
     const { id } = useParams();
@@ -83,58 +53,14 @@ const SchoolDetailsPage = () => {
     const [assigning, setAssigning] = useState(false);
     const [assignError, setAssignError] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
-    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = usePermissions();
-    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-    const [reportSaving, setReportSaving] = useState(false);
-    const [reportError, setReportError] = useState('');
-    const [reportSuccess, setReportSuccess] = useState('');
-    const [schoolReports, setSchoolReports] = useState([]);
-    const [curriculumList, setCurriculumList] = useState([]);
+    const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
     const [reportWorkingId, setReportWorkingId] = useState('');
     const [reportQuery, setReportQuery] = useState('');
     const [reportDateFrom, setReportDateFrom] = useState('');
     const [reportDateTo, setReportDateTo] = useState('');
-    const [editingReportMeta, setEditingReportMeta] = useState(null);
-    const [geoDefaults, setGeoDefaults] = useState({
-      villageName: '',
-      regionName: '',
-      governorateName: '',
-      country: '',
-    });
-    const [reportForm, setReportForm] = useState({
-      reportTitle: 'تقرير إشراف على المدارس',
-      teacherIds: [],
-      teacherPhoneMap: {},
-      village: '',
-      groupName: '',
-      day: DAY_OPTIONS[new Date().getDay()],
-      date: formatDateInput(),
-      governorate: '',
-      country: '',
-      arrivalTime: formatTimeInput(),
-      departureTime: '',
-      totalStudents: 0,
-      presentCount: 0,
-      absenceReview: '',
-      studentLevel: 'جيد',
-      curriculumProgress: 'جيد',
-      quran: '',
-      aqeedah: '',
-      fiqh: '',
-      hadith: '',
-      seerah: '',
-      noorAlBayan: '',
-      schoolEvaluation: 'جيد',
-      teacherEvaluation: 'جيد',
-      marketDone: '',
-      mealsCount: '',
-      supervisorName: '',
-      projectsOfficerName: '',
-      notes: '',
-      absentStudentIds: [],
-      starAwards: [],
-      curriculumBySubjectId: {},
-    });
+    const [reportError, setReportError] = useState('');
+    const [reportSuccess, setReportSuccess] = useState('');
+    const [schoolReports, setSchoolReports] = useState([]);
 
     const fetchSchoolDetails = useCallback(async () => {
         if (!id) return;
@@ -151,21 +77,6 @@ const SchoolDetailsPage = () => {
             const schoolData = { id: schDoc.id, ...schDoc.data() };
             setSchool(schoolData);
 
-            const allVillages = await api.getCollectionGroupDocuments('villages');
-            const allRegions = await api.getCollectionGroupDocuments('regions');
-            const allGovernorates = await api.getDocuments(api.getGovernoratesCollection());
-            const villageDoc = allVillages.find((v) => v.id === schoolData.villageId);
-            const resolvedRegionId = schoolData.regionId || villageDoc?.data()?.regionId || '';
-            const regionDoc = allRegions.find((r) => r.id === resolvedRegionId);
-            const govId = regionDoc?.data()?.govId || '';
-            const govDoc = allGovernorates.find((g) => g.id === govId);
-            setGeoDefaults({
-              villageName: villageDoc?.data()?.villageName || schoolData.villageName || '',
-              regionName: regionDoc?.data()?.name || '',
-              governorateName: govDoc?.data()?.name || schoolData.governorate || '',
-              country: govDoc?.data()?.country || schoolData.country || '',
-            });
-
             // 2. Fetch Members (Teachers / Students)
             const membersRef = api.getGroupMembersCollection(id);
             const membersDocs = await api.getDocuments(membersRef);
@@ -175,8 +86,6 @@ const SchoolDetailsPage = () => {
             const usersDocs = await api.getDocuments(api.getUsersCollection());
             const users = usersDocs.map(u => ({ id: u.id, ...u.data() }));
             setAllUsers(users);
-            const curriculumDocs = await api.getDocuments(api.getCurriculumCollection());
-            setCurriculumList(curriculumDocs.map((d) => ({ id: d.id, ...d.data() })));
 
             const userMap = {};
             users.forEach(u => userMap[u.id] = u);
@@ -199,7 +108,7 @@ const SchoolDetailsPage = () => {
             // 4. Fetch school reports
             const allReports = await api.getCollectionGroupDocuments('reports');
             const reportRows = allReports
-              .filter((r) => (r.data()?.schoolId || '') === id)
+              .filter((r) => (r.data()?.schoolId || '') === id && r.data()?.reportType === 'school_supervision')
               .map((r) => ({
                 id: r.id,
                 ownerId: r.ref.parent.parent?.id || '',
@@ -381,63 +290,6 @@ const SchoolDetailsPage = () => {
       }
     };
 
-    const openReportModal = useCallback(() => {
-      const now = new Date();
-      const teacherRows = staff.filter((u) => u.role === 'teacher');
-      const defaultTeacherIds = teacherRows[0]?.id ? [teacherRows[0].id] : [];
-      const teacherPhoneMap = teacherRows.reduce((acc, t) => {
-        acc[t.id] = t.phoneNumber || '';
-        return acc;
-      }, {});
-      const defaultStars = students.slice(0, 5).map((s, idx) => ({
-        studentId: s.id,
-        name: s.displayName || '',
-        stars: Math.max(1, 5 - idx),
-      }));
-      const curriculumBySubjectId = {};
-      curriculumList.forEach((subj) => {
-        curriculumBySubjectId[subj.id] = '';
-      });
-      setReportForm({
-        reportTitle: 'تقرير إشراف على المدارس',
-        teacherIds: defaultTeacherIds,
-        teacherPhoneMap,
-        village: geoDefaults.villageName || school.villageName || school.village || '',
-        groupName: school.name || '',
-        day: DAY_OPTIONS[now.getDay()],
-        date: formatDateInput(now),
-        governorate: geoDefaults.governorateName || school.governorate || '',
-        country: geoDefaults.country || school.country || '',
-        arrivalTime: formatTimeInput(now),
-        departureTime: '',
-        totalStudents: students.length,
-        presentCount: students.length,
-        absenceReview: '',
-        studentLevel: 'جيد',
-        curriculumProgress: 'جيد',
-        quran: '',
-        aqeedah: '',
-        fiqh: '',
-        hadith: '',
-        seerah: '',
-        noorAlBayan: '',
-        schoolEvaluation: 'جيد',
-        teacherEvaluation: 'جيد',
-        marketDone: '',
-        mealsCount: '',
-        supervisorName: actorUser?.displayName || '',
-        projectsOfficerName: '',
-        notes: '',
-        absentStudentIds: [],
-        starAwards: defaultStars,
-        curriculumBySubjectId,
-      });
-      setReportError('');
-      setReportSuccess('');
-      setEditingReportMeta(null);
-      setIsReportModalOpen(true);
-    }, [staff, students, school, actorUser, geoDefaults, curriculumList]);
-
     useEffect(() => {
       if (!school?.id) return;
       if (loading) return;
@@ -445,186 +297,8 @@ const SchoolDetailsPage = () => {
       const shouldCompose = qp.get('composeReport') === '1';
       if (!shouldCompose) return;
       if (!can(PERMISSION_PAGE_IDS.schools, 'school_report_create')) return;
-      openReportModal();
-      navigate(`/schools/${id}`, { replace: true });
-    }, [location.search, school, loading, can, navigate, id, openReportModal]);
-
-    const openEditReportModal = (rep) => {
-      const teacherPhoneMap = {};
-      const teacherIds = [];
-      (rep.teachers || []).forEach((t) => {
-        if (t.teacherId) teacherIds.push(t.teacherId);
-        if (t.teacherId) teacherPhoneMap[t.teacherId] = t.phone || '';
-      });
-      const curriculumBySubjectId = {};
-      if (Array.isArray(rep.curriculumItems) && rep.curriculumItems.length > 0) {
-        rep.curriculumItems.forEach((it) => {
-          if (it.subjectId) curriculumBySubjectId[it.subjectId] = it.content || '';
-        });
-      } else {
-        curriculumList.forEach((subj) => {
-          const nm = String(subj.name || '').trim();
-          const legacy = rep.lessonCoverage || {};
-          curriculumBySubjectId[subj.id] = legacy[nm] || '';
-        });
-      }
-      setReportForm({
-        reportTitle: rep.reportTitle || 'تقرير إشراف على المدارس',
-        teacherIds,
-        teacherPhoneMap,
-        village: rep.villageName || '',
-        groupName: rep.groupName || rep.schoolName || '',
-        day: rep.dayName || DAY_OPTIONS[new Date().getDay()],
-        date: rep.date || formatDateInput(),
-        governorate: rep.governorate || '',
-        country: rep.country || '',
-        arrivalTime: rep.arrivalTime || '',
-        departureTime: rep.departureTime || '',
-        totalStudents: rep.totalStudents ?? students.length,
-        presentCount: rep.presentCount ?? Math.max(Number(rep.totalStudents ?? students.length) - Number((rep.absentStudents || []).length), 0),
-        absenceReview: rep.absenceReview || '',
-        studentLevel: rep.studentLevel || 'جيد',
-        curriculumProgress: rep.curriculumProgress || 'جيد',
-        quran: rep.lessonCoverage?.quran || '',
-        aqeedah: rep.lessonCoverage?.aqeedah || '',
-        fiqh: rep.lessonCoverage?.fiqh || '',
-        hadith: rep.lessonCoverage?.hadith || '',
-        seerah: rep.lessonCoverage?.seerah || '',
-        noorAlBayan: rep.lessonCoverage?.noorAlBayan || '',
-        schoolEvaluation: rep.schoolEvaluation || 'جيد',
-        teacherEvaluation: rep.teacherEvaluation || 'جيد',
-        marketDone: rep.marketDone || '',
-        mealsCount: rep.mealsCount ?? '',
-        supervisorName: rep.supervisorName || actorUser?.displayName || '',
-        projectsOfficerName: rep.projectsOfficerName || '',
-        notes: rep.notes || '',
-        absentStudentIds: (rep.absentStudents || []).map((s) => s.studentId).filter(Boolean),
-        starAwards: rep.starAwards || [],
-        curriculumBySubjectId,
-      });
-      setEditingReportMeta({ id: rep.id, ownerId: rep.ownerId });
-      setReportError('');
-      setReportSuccess('');
-      setIsReportModalOpen(true);
-    };
-
-    const updateReportAbsences = useCallback((nextAbsentIds) => {
-      setReportForm((p) => {
-        const total = Number(p.totalStudents || 0);
-        return {
-          ...p,
-          absentStudentIds: nextAbsentIds,
-          presentCount: Math.max(total - nextAbsentIds.length, 0),
-        };
-      });
-    }, []);
-
-    const toggleAllAbsentStudents = useCallback(() => {
-      const allIds = students.map((s) => s.id);
-      const allSelected = allIds.length > 0 && reportForm.absentStudentIds.length === allIds.length;
-      updateReportAbsences(allSelected ? [] : allIds);
-    }, [students, reportForm.absentStudentIds.length, updateReportAbsences]);
-
-    const toggleTeacherSelection = (teacherId) => {
-      setReportForm((prev) => {
-        const exists = prev.teacherIds.includes(teacherId);
-        const nextTeacherIds = exists
-          ? prev.teacherIds.filter((idVal) => idVal !== teacherId)
-          : [...prev.teacherIds, teacherId];
-        return { ...prev, teacherIds: nextTeacherIds };
-      });
-    };
-
-    const handleSaveSchoolReport = async () => {
-      if (reportSaving) return;
-      if (!reportForm.teacherIds.length) {
-        setReportError('يرجى اختيار معلم واحد على الأقل.');
-        return;
-      }
-      setReportSaving(true);
-      setReportError('');
-      setReportSuccess('');
-      try {
-        const api = FirestoreApi.Api;
-        const actorId = actorUser?.uid || actorUser?.id || 'school-admin';
-        const reportId = editingReportMeta?.id || api.getNewId('reports');
-        const ownerId = editingReportMeta?.ownerId || actorId;
-        const selectedTeachers = staff.filter((t) => reportForm.teacherIds.includes(t.id));
-        const teachersPayload = selectedTeachers.map((t) => ({
-          teacherId: t.id,
-          teacherName: t.displayName || '',
-          phone: reportForm.teacherPhoneMap[t.id] || t.phoneNumber || '',
-        }));
-        const absentStudents = students
-          .filter((s) => reportForm.absentStudentIds.includes(s.id))
-          .map((s) => ({ studentId: s.id, studentName: s.displayName || '' }));
-        const curriculumItems = curriculumList.map((subj) => ({
-          subjectId: subj.id,
-          subjectName: subj.name || subj.id,
-          content: reportForm.curriculumBySubjectId?.[subj.id] || '',
-        }));
-        const legacyLessonCoverage = {};
-        curriculumItems.forEach((it) => {
-          legacyLessonCoverage[it.subjectName] = it.content;
-        });
-
-        const payload = {
-          reportType: 'school_supervision',
-          reportTitle: reportForm.reportTitle,
-          supervisorId: actorId,
-          supervisorName: reportForm.supervisorName || actorUser?.displayName || '',
-          schoolId: id,
-          schoolName: school.name || '',
-          regionId: school.regionId || '',
-          villageId: school.villageId || '',
-          villageName: reportForm.village || '',
-          groupName: reportForm.groupName || '',
-          dayName: reportForm.day,
-          date: reportForm.date,
-          governorate: reportForm.governorate || '',
-          country: reportForm.country || '',
-          arrivalTime: reportForm.arrivalTime || '',
-          departureTime: reportForm.departureTime || '',
-          totalStudents: Number(reportForm.totalStudents || 0),
-          presentCount: Number(reportForm.presentCount || 0),
-          absentCount: Math.max(
-            0,
-            Number(reportForm.totalStudents || 0) - Number(reportForm.presentCount || 0)
-          ),
-          absenceReview: reportForm.absenceReview || '',
-          absentStudents,
-          studentLevel: reportForm.studentLevel || '',
-          curriculumProgress: reportForm.curriculumProgress || '',
-          lessonCoverage: legacyLessonCoverage,
-          curriculumItems,
-          schoolEvaluation: reportForm.schoolEvaluation || '',
-          teacherEvaluation: reportForm.teacherEvaluation || '',
-          marketDone: reportForm.marketDone || '',
-          mealsCount: Number(reportForm.mealsCount || 0),
-          teachers: teachersPayload,
-          starAwards: reportForm.starAwards,
-          projectsOfficerName: reportForm.projectsOfficerName || '',
-          notes: reportForm.notes || '',
-          timestamp: new Date().toISOString(),
-        };
-
-        await api.setData({
-          docRef: api.getSupervisorReportDoc(ownerId, reportId),
-          data: payload,
-          userData: actorUser || {},
-        });
-
-        setReportSuccess(editingReportMeta ? 'تم تحديث التقرير بنجاح.' : 'تم حفظ تقرير المدرسة بنجاح.');
-        setIsReportModalOpen(false);
-        setEditingReportMeta(null);
-        await fetchSchoolDetails();
-      } catch (err) {
-        console.error(err);
-        setReportError('تعذر حفظ التقرير حالياً.');
-      } finally {
-        setReportSaving(false);
-      }
-    };
+      navigate(`/schools/${id}/report`, { replace: true });
+    }, [location.search, school, loading, can, navigate, id]);
 
     const handleDeleteSchoolReport = async (reportItem) => {
       if (!reportItem?.id || !reportItem?.ownerId || reportWorkingId) return;
@@ -646,154 +320,10 @@ const SchoolDetailsPage = () => {
     };
 
     const handlePrintSchoolReport = (rep) => {
-      const teachers = Array.isArray(rep.teachers) ? rep.teachers : [];
-      const absentStudents = Array.isArray(rep.absentStudents) ? rep.absentStudents : [];
-      const starAwards = Array.isArray(rep.starAwards) ? rep.starAwards : [];
-      const lessons = rep.lessonCoverage || {};
-      const curriculumItems = Array.isArray(rep.curriculumItems)
-        ? rep.curriculumItems
-        : Object.entries(lessons).map(([subjectName, content], idx) => ({
-            subjectId: String(idx),
-            subjectName,
-            content,
-          }));
-
-      const teachersHtml =
-        teachers.length > 0
-          ? teachers
-              .map(
-                (t, idx) =>
-                  `<tr><td>${idx + 1}</td><td>${safeHtml(t.teacherName || '-')}</td><td>${safeHtml(
-                    t.phone || '-'
-                  )}</td></tr>`
-              )
-              .join('')
-          : '<tr><td colspan="3">لا يوجد معلمون محددون</td></tr>';
-
-      const absentHtml =
-        absentStudents.length > 0
-          ? absentStudents
-              .map((s, idx) => `<tr><td>${idx + 1}</td><td>${safeHtml(s.studentName || '-')}</td></tr>`)
-              .join('')
-          : '<tr><td colspan="2">لا يوجد غياب محدد</td></tr>';
-
-      const starsHtml =
-        starAwards.length > 0
-          ? starAwards
-              .map(
-                (s, idx) =>
-                  `<tr><td>${idx + 1}</td><td>${safeHtml(s.name || '-')}</td><td>${safeHtml(
-                    s.stars || '-'
-                  )}</td></tr>`
-              )
-              .join('')
-          : '<tr><td colspan="3">لا توجد بيانات نجوم</td></tr>';
-
-      const curriculumRowsHtml =
-        curriculumItems.length > 0
-          ? curriculumItems
-              .map(
-                (it) =>
-                  `<tr><th>${safeHtml(it.subjectName || '-')}</th><td>${safeHtml(it.content || '-')}</td></tr>`
-              )
-              .join('')
-          : '<tr><td colspan="2">لا توجد مواد مضافة</td></tr>';
-
-      const html = `<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <title>${safeHtml(rep.reportTitle || 'تقرير إشراف مدرسة')}</title>
-  <style>
-    body { font-family: Tahoma, Arial, sans-serif; margin: 24px; color: #111827; }
-    h1, h2, h3 { margin: 0 0 10px; }
-    .title { text-align: center; margin-bottom: 18px; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin-bottom: 16px; }
-    .item { border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px; }
-    .label { font-size: 12px; color: #6b7280; margin-bottom: 3px; }
-    .value { font-size: 14px; font-weight: 600; }
-    .section { margin-top: 16px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border: 1px solid #d1d5db; padding: 8px; font-size: 13px; text-align: right; vertical-align: top; }
-    th { background: #f3f4f6; }
-    .notes { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; min-height: 64px; white-space: pre-wrap; }
-    @media print { body { margin: 10mm; } .no-print { display: none; } }
-  </style>
-</head>
-<body>
-  <div class="title">
-    <h1>${safeHtml(rep.reportTitle || 'تقرير إشراف على المدارس')}</h1>
-    <div>${safeHtml(rep.schoolName || school?.name || '-')}</div>
-  </div>
-  <div class="grid">
-    <div class="item"><div class="label">المدرسة</div><div class="value">${safeHtml(rep.schoolName || '-')}</div></div>
-    <div class="item"><div class="label">القرية</div><div class="value">${safeHtml(rep.villageName || '-')}</div></div>
-    <div class="item"><div class="label">اليوم</div><div class="value">${safeHtml(rep.dayName || '-')}</div></div>
-    <div class="item"><div class="label">التاريخ</div><div class="value">${safeHtml(rep.date || rep.timestamp?.split('T')[0] || '-')}</div></div>
-    <div class="item"><div class="label">المحافظة</div><div class="value">${safeHtml(rep.governorate || '-')}</div></div>
-    <div class="item"><div class="label">الدولة</div><div class="value">${safeHtml(rep.country || '-')}</div></div>
-    <div class="item"><div class="label">وقت الحضور</div><div class="value">${safeHtml(rep.arrivalTime || '-')}</div></div>
-    <div class="item"><div class="label">وقت المغادرة</div><div class="value">${safeHtml(rep.departureTime || '-')}</div></div>
-    <div class="item"><div class="label">عدد الطلاب المسجلين</div><div class="value">${safeHtml(rep.totalStudents ?? '-')}</div></div>
-    <div class="item"><div class="label">عدد الحضور</div><div class="value">${safeHtml(rep.presentCount ?? '-')}</div></div>
-    <div class="item"><div class="label">مراجعة الغياب</div><div class="value">${safeHtml(rep.absenceReview || '-')}</div></div>
-    <div class="item"><div class="label">المشرف</div><div class="value">${safeHtml(rep.supervisorName || '-')}</div></div>
-    <div class="item"><div class="label">مسؤول المشاريع</div><div class="value">${safeHtml(rep.projectsOfficerName || '-')}</div></div>
-    <div class="item"><div class="label">تعمل السوق</div><div class="value">${safeHtml(rep.marketDone || '-')}</div></div>
-    <div class="item"><div class="label">عدد الوجبات</div><div class="value">${safeHtml(rep.mealsCount ?? '-')}</div></div>
-    <div class="item"><div class="label">مستوى الطلاب</div><div class="value">${safeHtml(rep.studentLevel || '-')}</div></div>
-    <div class="item"><div class="label">نسبة السير على المنهج</div><div class="value">${safeHtml(rep.curriculumProgress || '-')}</div></div>
-    <div class="item"><div class="label">تقييم المدرسة</div><div class="value">${safeHtml(rep.schoolEvaluation || '-')}</div></div>
-    <div class="item"><div class="label">تقييم المدرس</div><div class="value">${safeHtml(rep.teacherEvaluation || '-')}</div></div>
-  </div>
-
-  <div class="section">
-    <h3>المعلمون</h3>
-    <table>
-      <thead><tr><th>#</th><th>اسم المعلم</th><th>رقم الهاتف</th></tr></thead>
-      <tbody>${teachersHtml}</tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <h3>المقررات والمتابعة العلمية</h3>
-    <table>
-      <tbody>
-        ${curriculumRowsHtml}
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <h3>الطلاب الغائبون</h3>
-    <table>
-      <thead><tr><th>#</th><th>اسم الطالب</th></tr></thead>
-      <tbody>${absentHtml}</tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <h3>النجوم للطلاب المجتهدين</h3>
-    <table>
-      <thead><tr><th>#</th><th>الطالب</th><th>عدد النجوم</th></tr></thead>
-      <tbody>${starsHtml}</tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <h3>ملاحظات</h3>
-    <div class="notes">${safeHtml(rep.notes || '-')}</div>
-  </div>
-
-  <script>
-    window.onload = () => {
-      window.print();
-      setTimeout(() => window.close(), 200);
-    };
-  </script>
-</body>
-</html>`;
-
+      const html = buildSchoolReportPrintDocument({
+        ...rep,
+        schoolName: rep.schoolName || school?.name,
+      });
       const w = window.open('', '_blank', 'width=1000,height=700');
       if (!w) {
         setReportError('تعذر فتح نافذة الطباعة. تأكد من السماح بالنوافذ المنبثقة.');
@@ -802,49 +332,6 @@ const SchoolDetailsPage = () => {
       w.document.open();
       w.document.write(html);
       w.document.close();
-    };
-
-    const buildDraftPrintableReport = () => {
-      const selectedTeachers = staff.filter((t) => reportForm.teacherIds.includes(t.id));
-      const curriculumItems = curriculumList.map((subj) => ({
-        subjectId: subj.id,
-        subjectName: subj.name || subj.id,
-        content: reportForm.curriculumBySubjectId?.[subj.id] || '',
-      }));
-      return {
-        reportTitle: reportForm.reportTitle || 'تقرير إشراف على المدارس',
-        schoolName: school?.name || '',
-        villageName: reportForm.village,
-        dayName: reportForm.day,
-        date: reportForm.date,
-        governorate: reportForm.governorate,
-        country: reportForm.country,
-        arrivalTime: reportForm.arrivalTime,
-        departureTime: reportForm.departureTime,
-        totalStudents: Number(reportForm.totalStudents || 0),
-        presentCount: Number(reportForm.presentCount || 0),
-        absenceReview: reportForm.absenceReview,
-        supervisorName: reportForm.supervisorName,
-        projectsOfficerName: reportForm.projectsOfficerName,
-        marketDone: reportForm.marketDone,
-        mealsCount: Number(reportForm.mealsCount || 0),
-        studentLevel: reportForm.studentLevel,
-        curriculumProgress: reportForm.curriculumProgress,
-        schoolEvaluation: reportForm.schoolEvaluation,
-        teacherEvaluation: reportForm.teacherEvaluation,
-        lessonCoverage: {},
-        curriculumItems,
-        teachers: selectedTeachers.map((t) => ({
-          teacherId: t.id,
-          teacherName: t.displayName || '',
-          phone: reportForm.teacherPhoneMap[t.id] || t.phoneNumber || '',
-        })),
-        absentStudents: students
-          .filter((s) => reportForm.absentStudentIds.includes(s.id))
-          .map((s) => ({ studentId: s.id, studentName: s.displayName || '' })),
-        starAwards: reportForm.starAwards || [],
-        notes: reportForm.notes,
-      };
     };
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
@@ -938,10 +425,16 @@ const SchoolDetailsPage = () => {
               subtitle={schoolLevelSubtitle(school.schoolLevel)}
             >
               {can(PERMISSION_PAGE_IDS.schools, 'school_report_create') && (
-                <button type="button" className="google-btn google-btn--toolbar" onClick={openReportModal}>
-                  <Plus size={16} />
-                  <span>إضافة تقرير</span>
-                </button>
+                <>
+                  <button type="button" className="google-btn google-btn--toolbar" onClick={() => navigate(`/schools/${id}/report`)}>
+                    <Plus size={16} />
+                    <span>إضافة تقرير</span>
+                  </button>
+                  <button type="button" className="google-btn google-btn--toolbar" onClick={() => navigate(`/schools/${id}/comprehensive-report`)}>
+                    <BarChart3 size={16} />
+                    <span>تقرير شامل</span>
+                  </button>
+                </>
               )}
             </PageHeader>
             {reportError && (
@@ -1145,12 +638,12 @@ const SchoolDetailsPage = () => {
                       </div>
                       <div style={{ display: 'flex', gap: 6 }}>
                         {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
-                          <button type="button" className="icon-btn" title="فتح التقرير" onClick={() => navigate(`/reports/${rep.id}`)}>
+                          <button type="button" className="icon-btn" title="فتح التقرير" onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}`)}>
                             <Info size={16} />
                           </button>
                         )}
                         {can(PERMISSION_PAGE_IDS.reports, 'report_edit') && (
-                          <button type="button" className="icon-btn" title="تعديل التقرير" onClick={() => openEditReportModal(rep)}>
+                          <button type="button" className="icon-btn" title="تعديل التقرير" onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}`)}>
                             <Edit2 size={16} />
                           </button>
                         )}
@@ -1276,194 +769,6 @@ const SchoolDetailsPage = () => {
                         </div>
                     </div>
                 </div>
-            )}
-            {isReportModalOpen && (
-              <div className="modal-overlay" onClick={() => setIsReportModalOpen(false)}>
-                <div className="surface-card surface-card--lg school-details-assign-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="school-details-assign-modal__head">
-                    <h3 style={{ margin: 0 }}>{editingReportMeta ? 'تعديل تقرير إشراف المدرسة' : 'إضافة تقرير إشراف للمدرسة'}</h3>
-                    <button type="button" onClick={() => setIsReportModalOpen(false)} className="icon-btn">
-                      <X size={20} />
-                    </button>
-                  </div>
-                  <div style={{ display: 'grid', gap: '0.75rem', maxHeight: '68vh', overflowY: 'auto', paddingInlineEnd: '0.25rem' }}>
-                    <div className="report-field-grid report-field-grid--2">
-                      <ReportField label="عنوان التقرير">
-                        <input className="app-input" value={reportForm.reportTitle} onChange={(e) => setReportForm((p) => ({ ...p, reportTitle: e.target.value }))} placeholder="عنوان التقرير" />
-                      </ReportField>
-                      <ReportField label="اسم المدرسة/الجروب">
-                        <input className="app-input" value={reportForm.groupName} onChange={(e) => setReportForm((p) => ({ ...p, groupName: e.target.value }))} placeholder="اسم المدرسة/الجروب" />
-                      </ReportField>
-                    </div>
-                    <div className="app-alert app-alert--info" style={{ margin: 0 }}>
-                      اختيار المعلمين (يمكن اختيار أكثر من معلم) + تعديل أرقام الهاتف.
-                    </div>
-                    {staff.filter((s) => s.role === 'teacher').map((t) => (
-                      <div key={t.id} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr 1fr', gap: '0.5rem', alignItems: 'center' }}>
-                        <label style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                          <input type="checkbox" checked={reportForm.teacherIds.includes(t.id)} onChange={() => toggleTeacherSelection(t.id)} />
-                          <span>{t.displayName}</span>
-                        </label>
-                        <input className="app-input" type="tel" inputMode="numeric" value={reportForm.teacherPhoneMap[t.id] || ''} onChange={(e) => setReportForm((p) => ({ ...p, teacherPhoneMap: { ...p.teacherPhoneMap, [t.id]: e.target.value } }))} placeholder="رقم هاتف المعلم" />
-                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{t.phoneNumber ? `المسجل: ${t.phoneNumber}` : 'لا يوجد رقم مسجل'}</span>
-                      </div>
-                    ))}
-                    <div className="app-alert app-alert--info" style={{ margin: 0 }}>
-                      الحقول الجغرافية تُجلب تلقائيا من: المدرسة ← القرية ← المنطقة ← المحافظة.
-                    </div>
-                    <div className="report-field-grid report-field-grid--2">
-                      <ReportField label="القرية"><input className="app-input" value={reportForm.village} readOnly placeholder="القرية" /></ReportField>
-                      <ReportField label="المنطقة"><input className="app-input" value={geoDefaults.regionName} readOnly placeholder="المنطقة" /></ReportField>
-                      <ReportField label="المحافظة"><input className="app-input" value={reportForm.governorate} readOnly placeholder="المحافظة" /></ReportField>
-                      <ReportField label="الدولة"><input className="app-input" value={reportForm.country} readOnly placeholder="الدولة" /></ReportField>
-                      <ReportField label="اليوم">
-                        <AppSelect searchable value={reportForm.day} onChange={(e) => setReportForm((p) => ({ ...p, day: e.target.value }))}>
-                          {DAY_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
-                        </AppSelect>
-                      </ReportField>
-                      <ReportField label="التاريخ"><input className="app-input" type="date" value={reportForm.date} onChange={(e) => setReportForm((p) => ({ ...p, date: e.target.value }))} /></ReportField>
-                      <ReportField label="وقت الحضور"><input className="app-input" type="time" value={reportForm.arrivalTime} onChange={(e) => setReportForm((p) => ({ ...p, arrivalTime: e.target.value }))} /></ReportField>
-                      <ReportField label="وقت المغادرة"><input className="app-input" type="time" value={reportForm.departureTime} onChange={(e) => setReportForm((p) => ({ ...p, departureTime: e.target.value }))} /></ReportField>
-                      <ReportField label="عدد الطلاب المسجلين">
-                        <input
-                          className="app-input"
-                          type="number"
-                          min="0"
-                          value={reportForm.totalStudents}
-                          onChange={(e) =>
-                            setReportForm((p) => {
-                              const total = Math.max(Number(e.target.value || 0), 0);
-                              return {
-                                ...p,
-                                totalStudents: total,
-                                presentCount: Math.max(total - p.absentStudentIds.length, 0),
-                              };
-                            })
-                          }
-                          placeholder="عدد الطلاب المسجلين"
-                        />
-                      </ReportField>
-                      <ReportField label="عدد الحضور (تلقائي)">
-                        <input className="app-input" type="number" min="0" value={reportForm.presentCount} readOnly placeholder="عدد الحضور" />
-                      </ReportField>
-                    </div>
-                    <input className="app-input" value={reportForm.absenceReview} onChange={(e) => setReportForm((p) => ({ ...p, absenceReview: e.target.value }))} placeholder="مراجعة الغياب" />
-                    <div className="app-alert app-alert--info" style={{ margin: 0 }}>تعليم الغائبين من طلاب المدرسة الموجودة في النظام:</div>
-                    <button
-                      type="button"
-                      className={`icon-btn ${students.length > 0 && reportForm.absentStudentIds.length === students.length ? 'icon-btn--active' : ''}`}
-                      title={students.length > 0 && reportForm.absentStudentIds.length === students.length ? 'إلغاء تحديد الكل' : 'تحديد الكل كغائب'}
-                      onClick={toggleAllAbsentStudents}
-                      style={{ width: 'fit-content', minWidth: 42, paddingInline: 12, gap: 8 }}
-                    >
-                      {students.length > 0 && reportForm.absentStudentIds.length === students.length ? <CheckSquare size={16} /> : <Square size={16} />}
-                      <span style={{ fontSize: '0.85rem' }}>
-                        {students.length > 0 && reportForm.absentStudentIds.length === students.length ? 'إلغاء تحديد الكل' : 'تحديد الكل'}
-                      </span>
-                    </button>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: '0.5rem' }}>
-                      {students.map((s) => (
-                        <label key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                          <input
-                            type="checkbox"
-                            checked={reportForm.absentStudentIds.includes(s.id)}
-                            onChange={(e) => {
-                              const next = e.target.checked
-                                ? [...new Set([...reportForm.absentStudentIds, s.id])]
-                                : reportForm.absentStudentIds.filter((idVal) => idVal !== s.id);
-                              updateReportAbsences(next);
-                            }}
-                          />
-                          <span>{s.displayName}</span>
-                        </label>
-                      ))}
-                    </div>
-                    <div className="report-field-grid report-field-grid--2">
-                      <ReportField label="مستوى الطلاب">
-                        <AppSelect searchable value={reportForm.studentLevel} onChange={(e) => setReportForm((p) => ({ ...p, studentLevel: e.target.value }))}>
-                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                        </AppSelect>
-                      </ReportField>
-                      <ReportField label="السير على المنهج">
-                        <AppSelect searchable value={reportForm.curriculumProgress} onChange={(e) => setReportForm((p) => ({ ...p, curriculumProgress: e.target.value }))}>
-                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                        </AppSelect>
-                      </ReportField>
-                      <ReportField label="تقييم المدرسة">
-                        <AppSelect searchable value={reportForm.schoolEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, schoolEvaluation: e.target.value }))}>
-                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                        </AppSelect>
-                      </ReportField>
-                      <ReportField label="تقييم المدرس">
-                        <AppSelect searchable value={reportForm.teacherEvaluation} onChange={(e) => setReportForm((p) => ({ ...p, teacherEvaluation: e.target.value }))}>
-                          {QUALITY_OPTIONS.map((q) => <option key={q} value={q}>{q}</option>)}
-                        </AppSelect>
-                      </ReportField>
-                      <ReportField label="تعمل السوق؟">
-                        <AppSelect searchable value={reportForm.marketDone} onChange={(e) => setReportForm((p) => ({ ...p, marketDone: e.target.value }))}>
-                          <option value="">غير محدد</option>
-                          <option value="نعم">نعم</option>
-                          <option value="لا">لا</option>
-                        </AppSelect>
-                      </ReportField>
-                      <ReportField label="عدد الوجبات"><input className="app-input" type="number" min="0" value={reportForm.mealsCount} onChange={(e) => setReportForm((p) => ({ ...p, mealsCount: e.target.value }))} placeholder="عدد الوجبات" /></ReportField>
-                      <ReportField label="المشرف"><input className="app-input" value={reportForm.supervisorName} onChange={(e) => setReportForm((p) => ({ ...p, supervisorName: e.target.value }))} placeholder="المشرف" /></ReportField>
-                      <ReportField label="مسؤول المشاريع"><input className="app-input" value={reportForm.projectsOfficerName} onChange={(e) => setReportForm((p) => ({ ...p, projectsOfficerName: e.target.value }))} placeholder="مسؤول المشاريع" /></ReportField>
-                    </div>
-                    <div className="app-alert app-alert--info" style={{ margin: 0 }}>
-                      مواد التقرير (من المناهج `curriculum`):
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      {curriculumList.map((subj) => (
-                        <input
-                          key={subj.id}
-                          className="app-input"
-                          value={reportForm.curriculumBySubjectId?.[subj.id] || ''}
-                          onChange={(e) =>
-                            setReportForm((p) => ({
-                              ...p,
-                              curriculumBySubjectId: {
-                                ...(p.curriculumBySubjectId || {}),
-                                [subj.id]: e.target.value,
-                              },
-                            }))
-                          }
-                          placeholder={`${subj.name || subj.id}`}
-                        />
-                      ))}
-                    </div>
-                    <textarea className="app-input" style={{ minHeight: '80px' }} value={reportForm.notes} onChange={(e) => setReportForm((p) => ({ ...p, notes: e.target.value }))} placeholder="ملاحظات إضافية" />
-                  </div>
-                  <div className="school-details-assign-modal__toolbar" style={{ marginTop: '0.75rem' }}>
-                    <button type="button" className="google-btn" style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }} onClick={() => setIsReportModalOpen(false)}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <X size={14} /> إلغاء
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className="google-btn"
-                      style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }}
-                      onClick={() => handlePrintSchoolReport(buildDraftPrintableReport())}
-                    >
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <Printer size={14} aria-hidden /> معاينة/طباعة قبل الحفظ
-                      </span>
-                    </button>
-                    <BusyButton
-                      type="button"
-                      className="google-btn google-btn--filled"
-                      style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }}
-                      busy={reportSaving}
-                      onClick={handleSaveSchoolReport}
-                    >
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <Save size={14} /> {editingReportMeta ? 'حفظ التعديلات' : 'حفظ التقرير'}
-                      </span>
-                    </BusyButton>
-                  </div>
-                </div>
-              </div>
             )}
         </div>
     );

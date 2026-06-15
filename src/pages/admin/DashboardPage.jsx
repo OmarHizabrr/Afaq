@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye, CalendarDays } from 'lucide-react';
+import { Users, Map, School, FileText, UserCheck, Home, Activity, Eye, CalendarDays, HeartHandshake } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
@@ -13,11 +13,24 @@ import {
   loadPeerUserIdsForGroups,
   reportMatchesScope,
 } from '../../utils/permissionDataScope';
+import { normalizeMuslimCategory, MUSLIM_CATEGORY_BORN } from '../../services/villageStudentEnrollment';
+import {
+  activityBadgeLabel,
+  isSchoolSupervisionReport,
+  schoolReportViewPath,
+} from '../../utils/reportLabels';
 
-const StatCard = ({ title, value, icon, color, loading }) => {
+const StatCard = ({ title, value, icon, color, loading, onClick, hint }) => {
   const IconComponent = icon;
+  const interactive = Boolean(onClick);
+  const Tag = interactive ? 'button' : 'div';
   return (
-  <div className="surface-card surface-card--lg dashboard-stat-card">
+  <Tag
+    type={interactive ? 'button' : undefined}
+    className={`surface-card surface-card--lg dashboard-stat-card${interactive ? ' dashboard-stat-card--clickable' : ''}`}
+    onClick={onClick}
+    title={hint}
+  >
     <div
       className="dashboard-stat-card__icon-wrap"
       style={{ background: `linear-gradient(135deg, ${color}20, ${color}40)`, color, boxShadow: `0 8px 16px -4px ${color}30` }}
@@ -30,7 +43,7 @@ const StatCard = ({ title, value, icon, color, loading }) => {
         {loading ? '...' : value}
       </h3>
     </div>
-  </div>
+  </Tag>
   );
 };
 
@@ -39,6 +52,7 @@ const DashboardPage = () => {
   const perm = usePermissions();
   const {
     can,
+    canAccessPage,
     ready,
     pageDataScope,
     membershipGroupIds,
@@ -52,7 +66,8 @@ const DashboardPage = () => {
     regions: 0,
     schools: 0,
     teachers: 0,
-    students: 0
+    students: 0,
+    newConverts: 0,
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,12 +78,13 @@ const DashboardPage = () => {
       const scope = pageDataScope(PERMISSION_PAGE_IDS.dashboard);
       const actorId = actorUser?.uid || actorUser?.id || '';
 
-      const [usersDocs, regionsDocs, villagesDocs, schoolsDocs, studentsDocs] = await Promise.all([
+      const [usersDocs, regionsDocs, villagesDocs, schoolsDocs, studentsDocs, newMuslimsDocs] = await Promise.all([
         api.getDocuments(api.getUsersCollection()),
         api.getCollectionGroupDocuments('regions'),
         api.getCollectionGroupDocuments('villages'),
         api.getCollectionGroupDocuments('schools'),
         api.getCollectionGroupDocuments('students'),
+        api.getDocuments(api.getNewMuslimsCollection()),
       ]);
 
       const usersWithId = usersDocs.map((d) => ({ id: d.id, ...d.data() }));
@@ -110,6 +126,14 @@ const DashboardPage = () => {
         teachersN = users.filter((u) => u.role === 'teacher' && (peerIds.has(u.id) || u.id === actorId)).length;
       }
 
+      const scopedVillageIds = new Set(villagesRows.map((v) => v.id));
+      const convertsScoped = newMuslimsDocs.filter((d) => {
+        const data = d.data() || {};
+        if (normalizeMuslimCategory(data.muslimCategory) === MUSLIM_CATEGORY_BORN) return false;
+        if (scope === DATA_SCOPE_MEMBERSHIP) return scopedVillageIds.has(data.villageId || '');
+        return true;
+      });
+
       setStats({
         villages: villagesRows.length,
         supervisors: supervisorsN,
@@ -117,6 +141,7 @@ const DashboardPage = () => {
         regions: regionsRows.length,
         schools: schoolsRows.length,
         students: studentsScoped.length,
+        newConverts: convertsScoped.length,
       });
 
       const [visitDocs, logsDocs] = await Promise.all([
@@ -125,15 +150,28 @@ const DashboardPage = () => {
       ]);
 
       const activities = [
-        ...visitDocs.map((d) => {
-          const data = d.data() || {};
-          return {
-            id: d.id,
-            type: 'visit',
-            _ownerId: d.ref.parent.parent?.id || '',
-            ...data,
-          };
-        }),
+        ...visitDocs
+          .filter((d) => !isSchoolSupervisionReport(d.data() || {}))
+          .map((d) => {
+            const data = d.data() || {};
+            return {
+              id: d.id,
+              type: 'visit',
+              _ownerId: d.ref.parent.parent?.id || '',
+              ...data,
+            };
+          }),
+        ...visitDocs
+          .filter((d) => isSchoolSupervisionReport(d.data() || {}))
+          .map((d) => {
+            const data = d.data() || {};
+            return {
+              id: d.id,
+              type: 'school',
+              _ownerId: d.ref.parent.parent?.id || '',
+              ...data,
+            };
+          }),
         ...logsDocs.map((d) => {
           const data = d.data() || {};
           return {
@@ -149,7 +187,7 @@ const DashboardPage = () => {
         scope === DATA_SCOPE_MEMBERSHIP && membershipGroupIds.size > 0
           ? activities.filter((act) => {
               const enriched =
-                act.type === 'visit'
+                act.type === 'visit' || act.type === 'school'
                   ? {
                       ...act,
                       supervisorId: act.supervisorId || act._ownerId,
@@ -180,6 +218,24 @@ const DashboardPage = () => {
     fetchStats();
   }, [ready, membershipLoading, fetchStats, pageDataScope]);
 
+  const statNav = (pageId, path, hint) =>
+    canAccessPage(pageId) ? { onClick: () => navigate(path), hint } : {};
+
+  const canViewActivity = (act) => {
+    if (act.type === 'school') {
+      return can(PERMISSION_PAGE_IDS.schools, 'school_view') || can(PERMISSION_PAGE_IDS.reports, 'report_view');
+    }
+    if (act.type === 'daily') {
+      return can(PERMISSION_PAGE_IDS.reports, 'report_view') || can(PERMISSION_PAGE_IDS.daily_preparation, 'daily_prep_view');
+    }
+    return can(PERMISSION_PAGE_IDS.reports, 'report_view');
+  };
+
+  const activityPath = (act) => {
+    if (act.type === 'school') return schoolReportViewPath({ ...act, ownerId: act._ownerId });
+    return `/reports/${act.id}`;
+  };
+
   return (
     <div>
       <PageHeader title="لوحة التحكم الرئيسية" subtitle="نظرة عامة على الإحصائيات الحيوية للمنصة" />
@@ -192,12 +248,13 @@ const DashboardPage = () => {
 
       {/* Stats Grid */}
       <div className="dashboard-stats-grid">
-        <StatCard title="المشرفين" value={stats.supervisors} icon={Users} color="#10b981" loading={loading} />
-        <StatCard title="القرى" value={stats.villages} icon={Home} color="#ec4899" loading={loading} />
-        <StatCard title="المناطق" value={stats.regions} icon={Map} color="#3b82f6" loading={loading} />
-        <StatCard title="المدارس" value={stats.schools} icon={School} color="#f59e0b" loading={loading} />
-        <StatCard title="المدرسين" value={stats.teachers} icon={FileText} color="#8b5cf6" loading={loading} />
-        <StatCard title="إجمالي الطلاب" value={stats.students} icon={UserCheck} color="var(--success-color)" loading={loading} />
+        <StatCard title="المشرفين" value={stats.supervisors} icon={Users} color="#10b981" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
+        <StatCard title="القرى" value={stats.villages} icon={Home} color="#ec4899" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض القرى')} />
+        <StatCard title="المناطق" value={stats.regions} icon={Map} color="#3b82f6" loading={loading} {...statNav(PERMISSION_PAGE_IDS.regions, '/regions', 'عرض المناطق')} />
+        <StatCard title="المدارس" value={stats.schools} icon={School} color="#f59e0b" loading={loading} {...statNav(PERMISSION_PAGE_IDS.schools, '/schools', 'عرض المدارس')} />
+        <StatCard title="المدرسين" value={stats.teachers} icon={FileText} color="#8b5cf6" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
+        <StatCard title="إجمالي الطلاب" value={stats.students} icon={UserCheck} color="var(--success-color)" loading={loading} {...statNav(PERMISSION_PAGE_IDS.students_management, '/students-management', 'إدارة الطلاب')} />
+        <StatCard title="المهتدون الجدد" value={stats.newConverts} icon={HeartHandshake} color="#ec4899" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض سجل المهتدين في القرى')} />
       </div>
 
       {/* Recent Activity Section */}
@@ -205,6 +262,11 @@ const DashboardPage = () => {
         <div className="dashboard-activity-card__head">
             <Activity size={24} color="var(--accent-color)" />
             <h2 className="dashboard-activity-card__title">أحدث النشاطات الميدانية</h2>
+            {canAccessPage(PERMISSION_PAGE_IDS.reports) && (
+              <button type="button" className="google-btn dashboard-activity-card__all" onClick={() => navigate('/reports')}>
+                عرض كل التقارير
+              </button>
+            )}
         </div>
 
         {loading ? (
@@ -213,33 +275,58 @@ const DashboardPage = () => {
             <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>لا توجد نشاطات مسجلة مؤخراً.</p>
         ) : (
             <div className="dashboard-activity-grid">
-                {recentActivity.map((act) => (
-                    <div key={act.id} className="dashboard-activity-item">
+                {recentActivity.map((act) => {
+                  const badgeLabel = activityBadgeLabel(act.type, act);
+                  const badgeColor =
+                    act.type === 'school' ? '#8b5cf6' : act.type === 'visit' ? '#3b82f6' : 'var(--success-color)';
+                  const viewPath = activityPath(act);
+                  const clickable = canViewActivity(act) && viewPath;
+                  const openActivity = () => {
+                    if (clickable) navigate(viewPath);
+                  };
+                  return (
+                    <div
+                      key={`${act.type}-${act.id}`}
+                      className={`dashboard-activity-item${clickable ? ' dashboard-activity-item--clickable' : ''}`}
+                      role={clickable ? 'button' : undefined}
+                      tabIndex={clickable ? 0 : undefined}
+                      onClick={openActivity}
+                      onKeyDown={(e) => {
+                        if (clickable && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault();
+                          openActivity();
+                        }
+                      }}
+                    >
                         <div
                           className="dashboard-activity-item__badge"
                           style={{
-                            background: act.type === 'visit' ? '#3b82f620' : 'var(--success-color)20',
-                            color: act.type === 'visit' ? '#3b82f6' : 'var(--success-color)',
+                            background: `${badgeColor}20`,
+                            color: badgeColor,
                           }}
                         >
-                            {act.type === 'visit' ? 'زيارة ميدانية' : 'تحضير يومي'}
+                            {badgeLabel}
                         </div>
                         <h4 className="dashboard-activity-item__school">{act.schoolName || 'مدرسة غير محددة'}</h4>
                         <p className="dashboard-activity-item__author">
                            بواسطة: {act.supervisorName || act.teacherName || 'عضو غير معروف'}
                         </p>
+                        {act.type === 'daily' && act.lessonName && (
+                          <p className="dashboard-activity-item__extra">{act.lessonName}</p>
+                        )}
                         <div className="dashboard-activity-item__footer">
                            <p className="dashboard-activity-item__date">
-                              <CalendarDays size={14} /> {act.date || act.timestamp?.split('T')[0]}
+                              <CalendarDays size={14} /> {act.date || act.periodLabel || act.timestamp?.split('T')[0]}
                            </p>
-                           {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
-                             <button onClick={() => navigate(`/reports/${act.id}`)} className="icon-btn" title="عرض التفاصيل">
+                           {clickable && (
+                             <span className="dashboard-activity-item__view" title="عرض التفاصيل">
                                 <Eye size={16} color="var(--accent-color)" />
-                             </button>
+                             </span>
                            )}
                         </div>
                     </div>
-                ))}
+                  );
+                })}
             </div>
         )}
       </div>

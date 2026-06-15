@@ -10,6 +10,7 @@ export const PERMISSION_PAGE_IDS = {
   exploration_bridge: 'exploration_bridge',
   curriculum: 'curriculum',
   reports: 'reports',
+  daily_preparation: 'daily_preparation',
   users: 'users',
   students_management: 'students_management',
   notifications: 'notifications',
@@ -140,6 +141,16 @@ export const PERMISSION_PAGES = [
       { id: 'report_view', label: 'عرض تقرير' },
       { id: 'report_edit', label: 'تعديل تقرير' },
       { id: 'report_delete', label: 'حذف تقرير' },
+    ],
+  },
+  {
+    id: PERMISSION_PAGE_IDS.daily_preparation,
+    path: '/daily-preparation',
+    label: 'التحضير',
+    supportsDataScope: true,
+    actions: [
+      { id: 'daily_prep_submit', label: 'تسجيل التحضير' },
+      { id: 'daily_prep_view', label: 'عرض سجلات التحضير' },
     ],
   },
   {

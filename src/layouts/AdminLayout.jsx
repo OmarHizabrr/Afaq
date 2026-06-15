@@ -23,7 +23,8 @@ import {
   Palette,
   FileText,
   Compass,
-  Tags
+  Tags,
+  CalendarDays,
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
@@ -80,6 +81,7 @@ const AdminLayout = ({ user }) => {
     { name: 'الاستكشاف', icon: Compass, path: '/explorations', pageId: PERMISSION_PAGE_IDS.explorations },
     { name: 'المنَاهِج', icon: BookOpen, path: '/curriculum', pageId: PERMISSION_PAGE_IDS.curriculum },
     { name: 'التقارير', icon: ClipboardList, path: '/reports', pageId: PERMISSION_PAGE_IDS.reports },
+    { name: 'التحضير', icon: CalendarDays, path: '/daily-preparation', pageId: PERMISSION_PAGE_IDS.daily_preparation },
     { name: str('layout.nav_users', 'المستخدمين'), icon: Users, path: '/users', pageId: PERMISSION_PAGE_IDS.users },
     { name: 'إدارة الطلاب', icon: GraduationCap, path: '/students-management', pageId: PERMISSION_PAGE_IDS.students_management },
     { name: str('layout.nav_notifications', 'الإشعارات'), icon: Bell, path: '/notifications', pageId: PERMISSION_PAGE_IDS.notifications },
@@ -89,7 +91,17 @@ const AdminLayout = ({ user }) => {
     { name: 'النصوص الثابتة', icon: FileText, path: '/admin/site-copy', pageId: PERMISSION_PAGE_IDS.admin_site_copy },
     { name: 'أنواع الاستكشاف', icon: Tags, path: '/admin/exploration-types', pageId: PERMISSION_PAGE_IDS.exploration_types },
   ];
-  const visibleNavItems = navItems.filter((item) => !item.pageId || canAccessPage(item.pageId));
+  const visibleNavItems = navItems.filter((item) => {
+    if (!item.pageId) return true;
+    if (item.pageId === PERMISSION_PAGE_IDS.daily_preparation) {
+      return (
+        canAccessPage(PERMISSION_PAGE_IDS.daily_preparation) ||
+        canAccessPage(PERMISSION_PAGE_IDS.reports) ||
+        user?.role === 'teacher'
+      );
+    }
+    return canAccessPage(item.pageId);
+  });
 
   const closeSidebar = () => {
     if (window.innerWidth <= 768) setIsSidebarOpen(false);
