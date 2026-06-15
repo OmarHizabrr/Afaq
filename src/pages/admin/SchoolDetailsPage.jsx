@@ -7,7 +7,9 @@ import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
-import { buildSchoolReportPrintDocument } from '../../utils/schoolReportHtml';
+import { buildSchoolReportBodyHtml } from '../../utils/schoolReportHtml';
+import { exportSchoolReportExcel, exportSchoolReportPdf } from '../../utils/schoolReportExport';
+import ReportPrintPreviewModal from '../../components/ReportPrintPreviewModal';
 
 const schoolLevelSubtitle = (sl) =>
   sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
@@ -61,6 +63,8 @@ const SchoolDetailsPage = () => {
     const [reportError, setReportError] = useState('');
     const [reportSuccess, setReportSuccess] = useState('');
     const [schoolReports, setSchoolReports] = useState([]);
+    const [printPreviewRep, setPrintPreviewRep] = useState(null);
+    const [printPdfExporting, setPrintPdfExporting] = useState(false);
 
     const fetchSchoolDetails = useCallback(async () => {
         if (!id) return;
@@ -320,18 +324,10 @@ const SchoolDetailsPage = () => {
     };
 
     const handlePrintSchoolReport = (rep) => {
-      const html = buildSchoolReportPrintDocument({
+      setPrintPreviewRep({
         ...rep,
         schoolName: rep.schoolName || school?.name,
       });
-      const w = window.open('', '_blank', 'width=1000,height=700');
-      if (!w) {
-        setReportError('تعذر فتح نافذة الطباعة. تأكد من السماح بالنوافذ المنبثقة.');
-        return;
-      }
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
     };
 
     if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
@@ -648,7 +644,7 @@ const SchoolDetailsPage = () => {
                           </button>
                         )}
                         {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
-                          <button type="button" className="icon-btn" title="طباعة التقرير" onClick={() => handlePrintSchoolReport(rep)}>
+                          <button type="button" className="icon-btn" title="معاينة وطباعة التقرير" onClick={() => handlePrintSchoolReport(rep)}>
                             <Printer size={16} />
                           </button>
                         )}
@@ -770,6 +766,23 @@ const SchoolDetailsPage = () => {
                     </div>
                 </div>
             )}
+            <ReportPrintPreviewModal
+              open={Boolean(printPreviewRep)}
+              onClose={() => setPrintPreviewRep(null)}
+              title="معاينة تقرير المدرسة"
+              bodyHtml={printPreviewRep ? buildSchoolReportBodyHtml(printPreviewRep) : ''}
+              pdfExporting={printPdfExporting}
+              onDownloadPdf={async () => {
+                if (!printPreviewRep) return;
+                setPrintPdfExporting(true);
+                try {
+                  await exportSchoolReportPdf(printPreviewRep);
+                } finally {
+                  setPrintPdfExporting(false);
+                }
+              }}
+              onDownloadExcel={() => printPreviewRep && exportSchoolReportExcel(printPreviewRep)}
+            />
         </div>
     );
 };

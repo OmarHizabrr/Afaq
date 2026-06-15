@@ -20,7 +20,7 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
 import { formatVisitRatingLabel } from '../../utils/visitRating';
-import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath } from '../../utils/reportLabels';
+import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath, formatDailyLogSubjects } from '../../utils/reportLabels';
 
 const TAB_LABELS = {
   daily: 'التحضير',
@@ -449,7 +449,7 @@ const AdminReportsPage = () => {
                   <p className="admin-reports-list__meta-label">ملخص النشاط</p>
                   <p className="admin-reports-list__summary">
                     {activeTab === 'daily'
-                      ? `${prepPeriodLabel(rpt.prepPeriod)} • حضور ${rpt.totalPresent}/${rpt.totalStudents}${rpt.lessonName ? ` • ${rpt.lessonName}` : ''}`
+                      ? `${prepPeriodLabel(rpt.prepPeriod)} • حضور ${rpt.totalPresent}/${rpt.totalStudents}${formatDailyLogSubjects(rpt) ? ` • ${formatDailyLogSubjects(rpt)}` : rpt.lessonName ? ` • ${rpt.lessonName}` : ''}`
                       : activeTab === 'weekly'
                         ? 'تقرير أعمال أسبوعي'
                         : activeTab === 'school'

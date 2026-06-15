@@ -25,7 +25,7 @@ import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissio
 import StarRatingInput from '../../components/StarRatingInput';
 import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
-import { prepPeriodLabel } from '../../utils/reportLabels';
+import { prepPeriodLabel, formatDailyLogSubjects } from '../../utils/reportLabels';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -639,15 +639,24 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
               سجل التحضير ({prepPeriodLabel(report.prepPeriod)})
             </h3>
-            {(report.subjectName || report.week || report.lessonName) && (
+            {(formatDailyLogSubjects(report) || report.periodStart) && (
               <p style={{ margin: '0 0 1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                {report.subjectName && <>المادة: <strong>{report.subjectName}</strong></>}
-                {report.week && <> • الأسبوع: <strong>{report.week}</strong></>}
-                {report.lessonName && <> • الدرس: <strong>{report.lessonName}</strong></>}
+                {formatDailyLogSubjects(report) && (
+                  <>المواد: <strong>{formatDailyLogSubjects(report)}</strong></>
+                )}
                 {report.periodStart && report.periodEnd && report.periodStart !== report.periodEnd && (
                   <> • الفترة: <strong>{report.periodStart} — {report.periodEnd}</strong></>
                 )}
               </p>
+            )}
+            {Array.isArray(report.curriculumProgressSummary) && report.curriculumProgressSummary.length > 0 && (
+              <div className="curriculum-picker__summary" style={{ marginBottom: '1rem' }}>
+                {report.curriculumProgressSummary.map((p) => (
+                  <span key={p.subjectId} className="curriculum-picker__badge curriculum-picker__badge--track">
+                    {p.subjectName}: {p.label}
+                  </span>
+                ))}
+              </div>
             )}
             <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
               <div className="md-table-scroll">

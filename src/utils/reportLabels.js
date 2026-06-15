@@ -28,3 +28,23 @@ export function schoolReportViewPath(report) {
   const ownerId = report._ownerId || report.ownerId || report.supervisorId || '';
   return `/schools/${report.schoolId}/report/${report.id}${ownerId ? `?ownerId=${ownerId}` : ''}`;
 }
+
+/** عرض مواد التحضير (متعدد أو مفرد) */
+export function formatDailyLogSubjects(log) {
+  if (!log) return '';
+  if (Array.isArray(log.curriculumEntries) && log.curriculumEntries.length > 0) {
+    return log.curriculumEntries
+      .map((e) => {
+        const weeks = (e.selectedWeeks || []).join('، ');
+        return weeks ? `${e.subjectName} (أسبوع ${weeks})` : e.subjectName;
+      })
+      .join(' | ');
+  }
+  if (log.subjectName) {
+    const parts = [log.subjectName];
+    if (log.week) parts.push(`أسبوع ${log.week}`);
+    if (log.lessonName) parts.push(log.lessonName);
+    return parts.join(' • ');
+  }
+  return '';
+}

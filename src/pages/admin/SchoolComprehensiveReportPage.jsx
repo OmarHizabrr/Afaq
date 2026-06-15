@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { ChevronRight, FileDown, FileSpreadsheet, School, Users, FileText, MapPin, BookOpen } from 'lucide-react';
+import { ChevronRight, FileDown, FileSpreadsheet, School, Users, FileText, MapPin, BookOpen, Printer } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import BusyButton from '../../components/BusyButton';
@@ -9,11 +9,15 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 import { normalizeMuslimCategory, MUSLIM_CATEGORY_BORN } from '../../services/villageStudentEnrollment';
 import { exportComprehensiveExcel, exportComprehensivePdf } from '../../utils/schoolReportExport';
+import { buildComprehensiveReportBodyHtml } from '../../utils/schoolReportHtml';
+import ReportPrintPreviewModal from '../../components/ReportPrintPreviewModal';
+import { formatDailyLogSubjects } from '../../utils/reportLabels';
 
 const SchoolComprehensiveReportPage = () => {
   const { id: schoolId } = useParams();
   const navigate = useNavigate();
   const [pdfExporting, setPdfExporting] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
@@ -107,6 +111,9 @@ const SchoolComprehensiveReportPage = () => {
         subtitle={data.schoolName}
       >
         <div className="school-report-page__toolbar">
+          <button type="button" className="google-btn" onClick={() => setPreviewOpen(true)}>
+            <Printer size={16} /> معاينة
+          </button>
           <BusyButton
             type="button"
             className="google-btn"
@@ -221,7 +228,9 @@ const SchoolComprehensiveReportPage = () => {
                       {l.periodLabel ? ` (${l.periodLabel})` : ''}
                       {' '}• حاضرون {l.totalPresent}/{l.totalStudents}
                     </p>
-                    {l.lessonName && <span className="comprehensive-report-tag">{l.lessonName}</span>}
+                    {(formatDailyLogSubjects(l) || l.lessonName) && (
+                      <span className="comprehensive-report-tag">{formatDailyLogSubjects(l) || l.lessonName}</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -229,6 +238,23 @@ const SchoolComprehensiveReportPage = () => {
           )}
         </section>
       </div>
+
+      <ReportPrintPreviewModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title="معاينة التقرير الشامل"
+        bodyHtml={buildComprehensiveReportBodyHtml(exportData)}
+        pdfExporting={pdfExporting}
+        onDownloadPdf={async () => {
+          setPdfExporting(true);
+          try {
+            await exportComprehensivePdf(exportData);
+          } finally {
+            setPdfExporting(false);
+          }
+        }}
+        onDownloadExcel={() => exportComprehensiveExcel(exportData)}
+      />
     </div>
   );
 };

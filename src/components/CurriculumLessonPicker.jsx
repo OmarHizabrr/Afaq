@@ -86,6 +86,18 @@ const CurriculumLessonPicker = ({ curriculumList = [], entries = [], onChange, r
                 </option>
               ))}
             </AppSelect>
+            <div className="curriculum-picker__quick-add">
+              {availableSubjects.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className="curriculum-picker__quick-chip"
+                  onClick={() => addSubject(s.id)}
+                >
+                  <Plus size={12} /> {s.name}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@ import {
   FileSpreadsheet,
   Eye,
   Clock,
+  Printer,
 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
@@ -31,6 +32,8 @@ import {
 } from '../../utils/curriculumProgress';
 import { exportSchoolReportExcel, exportSchoolReportPdf } from '../../utils/schoolReportExport';
 import { openGoogleMaps } from '../../utils/maps';
+import ReportPrintPreviewModal from '../../components/ReportPrintPreviewModal';
+import { buildSchoolReportBodyHtml } from '../../utils/schoolReportHtml';
 
 const DAY_OPTIONS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 const QUALITY_OPTIONS = ['ممتاز', 'جيد جدا', 'جيد', 'مقبول', 'ضعيف'];
@@ -72,6 +75,7 @@ const SchoolReportPage = () => {
   const [locating, setLocating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [pdfExporting, setPdfExporting] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [geoDefaults, setGeoDefaults] = useState({ villageName: '', regionName: '', governorateName: '', country: '' });
@@ -490,6 +494,9 @@ const SchoolReportPage = () => {
         subtitle={school.name}
       >
         <div className="school-report-page__toolbar">
+          <button type="button" className="google-btn" onClick={() => setPreviewOpen(true)}>
+            <Printer size={16} /> معاينة
+          </button>
           <BusyButton
             type="button"
             className="google-btn"
@@ -769,6 +776,23 @@ const SchoolReportPage = () => {
           </div>
         </aside>
       </div>
+
+      <ReportPrintPreviewModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title="معاينة تقرير المدرسة"
+        bodyHtml={buildSchoolReportBodyHtml(buildExportable())}
+        pdfExporting={pdfExporting}
+        onDownloadPdf={async () => {
+          setPdfExporting(true);
+          try {
+            await exportSchoolReportPdf(buildExportable());
+          } finally {
+            setPdfExporting(false);
+          }
+        }}
+        onDownloadExcel={() => exportSchoolReportExcel(buildExportable())}
+      />
     </div>
   );
 };

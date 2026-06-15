@@ -166,10 +166,13 @@ export function buildComprehensiveReportBodyHtml(data) {
 
   const prepRows = (data.dailyLogs || [])
     .slice(0, 40)
-    .map(
-      (l) =>
-        `<tr><td>${safeHtml(l.date)}</td><td>${safeHtml(l.subjectName || '-')}</td><td>${safeHtml(l.prepPeriod === 'weekly' ? 'أسبوعي' : l.prepPeriod === 'monthly' ? 'شهري' : 'يومي')}</td><td>${safeHtml(l.totalPresent)}/${safeHtml(l.totalStudents)}</td></tr>`
-    )
+    .map((l) => {
+      const subjects =
+        Array.isArray(l.curriculumEntries) && l.curriculumEntries.length > 0
+          ? l.curriculumEntries.map((e) => e.subjectName).join('، ')
+          : l.subjectName || '-';
+      return `<tr><td>${safeHtml(l.date)}</td><td>${safeHtml(subjects)}</td><td>${safeHtml(l.prepPeriod === 'weekly' ? 'أسبوعي' : l.prepPeriod === 'monthly' ? 'شهري' : 'يومي')}</td><td>${safeHtml(l.totalPresent)}/${safeHtml(l.totalStudents)}</td></tr>`;
+    })
     .join('');
 
   return `
