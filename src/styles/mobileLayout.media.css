@@ -3,6 +3,11 @@
     display: flex;
   }
 
+  .admin-layout--mobile-nav .page-content:has(.notifications-page--chat-thread) {
+    padding: 0;
+    overflow: hidden;
+  }
+
   .topbar__brand {
     display: block;
   }

@@ -19,12 +19,15 @@ export function isPushConfigured() {
 
 export async function isPushMessagingSupported() {
   if (typeof Notification === 'undefined') return false;
-  if (!isPushConfigured()) return false;
   try {
     return await isSupported();
   } catch {
     return false;
   }
+}
+
+export function isBrowserNotificationSupported() {
+  return typeof Notification !== 'undefined';
 }
 
 async function getMessagingInstance() {

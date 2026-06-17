@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   getNotificationPermission,
+  isBrowserNotificationSupported,
   isPushConfigured,
   isPushMessagingSupported,
   registerPushMessaging,
@@ -24,15 +25,16 @@ function isDismissed() {
 
 export default function usePushNotifications(user) {
   const [permission, setPermission] = useState(getNotificationPermission());
-  const [supported, setSupported] = useState(false);
+  const [fcmSupported, setFcmSupported] = useState(false);
   const [dismissed, setDismissed] = useState(isDismissed);
   const [busy, setBusy] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const browserSupported = isBrowserNotificationSupported();
 
   useEffect(() => {
     let active = true;
     isPushMessagingSupported().then((ok) => {
-      if (active) setSupported(ok);
+      if (active) setFcmSupported(ok);
     });
     return () => {
       active = false;
@@ -41,23 +43,36 @@ export default function usePushNotifications(user) {
 
   useEffect(() => {
     if (!user || permission !== 'granted') return;
+    if (!isPushConfigured() || !fcmSupported) return;
     registerPushMessaging(user).then((result) => {
       if (result.ok) setRegistered(true);
     });
-  }, [user, permission]);
+  }, [user, permission, fcmSupported]);
 
   const enable = useCallback(async () => {
     if (!user) return { ok: false, reason: 'no-user' };
     setBusy(true);
     try {
-      const result = await requestAndRegisterPush(user);
-      setPermission(getNotificationPermission());
-      if (result.ok) setRegistered(true);
-      return result;
+      if (isPushConfigured() && fcmSupported) {
+        const result = await requestAndRegisterPush(user);
+        setPermission(getNotificationPermission());
+        if (result.ok) setRegistered(true);
+        return result;
+      }
+
+      if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+        const next = await Notification.requestPermission();
+        setPermission(next);
+        return { ok: next === 'granted', permission: next, reason: next === 'granted' ? 'granted' : 'denied' };
+      }
+
+      const current = getNotificationPermission();
+      setPermission(current);
+      return { ok: current === 'granted', permission: current };
     } finally {
       setBusy(false);
     }
-  }, [user]);
+  }, [user, fcmSupported]);
 
   const dismiss = useCallback(() => {
     try {
@@ -69,17 +84,9 @@ export default function usePushNotifications(user) {
   }, []);
 
   const canPrompt =
-    Boolean(user) &&
-    supported &&
-    isPushConfigured() &&
-    permission === 'default' &&
-    !dismissed;
+    Boolean(user) && browserSupported && permission === 'default' && !dismissed;
 
-  const needsEnable =
-    Boolean(user) &&
-    supported &&
-    isPushConfigured() &&
-    permission === 'default';
+  const needsEnable = Boolean(user) && browserSupported && permission === 'default';
 
   return {
     canPrompt,
@@ -89,7 +96,8 @@ export default function usePushNotifications(user) {
     busy,
     enable,
     dismiss,
-    supported,
+    supported: browserSupported,
+    fcmSupported,
     configured: isPushConfigured(),
   };
 }
