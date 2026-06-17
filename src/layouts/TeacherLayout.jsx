@@ -18,6 +18,7 @@ import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
 import BottomTabBar from '../components/BottomTabBar';
 import InstallAppBanner from '../components/InstallAppBanner';
+import PushNotificationBanner from '../components/PushNotificationBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
@@ -175,6 +176,7 @@ const TeacherLayout = ({ user }) => {
         </main>
 
         <InstallAppBanner />
+        <PushNotificationBanner user={user} />
         {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={openSidebar} /> : null}
       </div>
     </div>

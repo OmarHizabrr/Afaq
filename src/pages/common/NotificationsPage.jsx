@@ -10,6 +10,7 @@ import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import UnifiedMessageCard from '../../components/UnifiedMessageCard';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
+import usePushNotifications from '../../hooks/usePushNotifications';
 import { getUserProfilePath } from '../../utils/profileLinks';
 
 const ROLE_LABELS = {
@@ -61,6 +62,7 @@ const NotificationsPage = ({ user }) => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const isNarrow = useMediaQuery(MOBILE_QUERY);
   const [chatMobileMode, setChatMobileMode] = useState('list');
+  const { needsEnable: needsPushEnable, busy: pushBusy, enable: enablePush } = usePushNotifications(user);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -414,6 +416,23 @@ const NotificationsPage = ({ user }) => {
         )}
         </div>
       </PageHeader>
+
+      {needsPushEnable && (
+        <div className="notifications-push-prompt" role="region" aria-label="تفعيل الإشعارات">
+          <div className="notifications-push-prompt__text">
+            <strong>فعّل إشعارات الجهاز</strong>
+            <span>لتصلك المحادثات والتنبيهات فوراً حتى عند إغلاق التطبيق</span>
+          </div>
+          <button
+            type="button"
+            className="btn-md btn-md--primary"
+            onClick={enablePush}
+            disabled={pushBusy}
+          >
+            {pushBusy ? 'جاري التفعيل…' : 'تفعيل الآن'}
+          </button>
+        </div>
+      )}
 
       {activeTab === 'notifications' ? (
         <div className="notif-list-stack">

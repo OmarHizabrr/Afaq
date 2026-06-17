@@ -12,6 +12,7 @@ import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
 import BottomTabBar from '../components/BottomTabBar';
 import InstallAppBanner from '../components/InstallAppBanner';
+import PushNotificationBanner from '../components/PushNotificationBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import usePermissions from '../context/usePermissions';
 import useSiteContent from '../context/useSiteContent';
@@ -183,6 +184,7 @@ const AdminLayout = ({ user }) => {
         </main>
 
         <InstallAppBanner />
+        <PushNotificationBanner user={user} />
         {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={openSidebar} /> : null}
       </div>
     </div>

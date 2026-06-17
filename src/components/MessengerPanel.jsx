@@ -363,7 +363,7 @@ const MessengerPanel = ({
                   return (
                     <div
                       key={m.id}
-                      className={`messenger-msg-row ${mine ? 'messenger-msg-row--mine' : ''} ${item.isFirstInGroup ? 'messenger-msg-row--first' : ''} ${showAvatar ? 'messenger-msg-row--show-avatar' : ''}`}
+                      className={`messenger-msg-row ${mine ? 'messenger-msg-row--outgoing' : 'messenger-msg-row--incoming'} ${item.isFirstInGroup ? 'messenger-msg-row--first' : ''} ${showAvatar ? 'messenger-msg-row--show-avatar' : ''}`}
                       onTouchStart={(e) => handleTouchStart(e, m)}
                       onTouchEnd={(e) => handleTouchEnd(e, m)}
                     >

@@ -8,9 +8,28 @@ const MAX_TOKENS = 8;
 let messagingInstance = null;
 let foregroundHandlerAttached = false;
 
+export function getNotificationPermission() {
+  if (typeof Notification === 'undefined') return 'unsupported';
+  return Notification.permission;
+}
+
+export function isPushConfigured() {
+  return Boolean(VAPID_KEY);
+}
+
+export async function isPushMessagingSupported() {
+  if (typeof Notification === 'undefined') return false;
+  if (!isPushConfigured()) return false;
+  try {
+    return await isSupported();
+  } catch {
+    return false;
+  }
+}
+
 async function getMessagingInstance() {
   if (messagingInstance) return messagingInstance;
-  const supported = await isSupported();
+  const supported = await isPushMessagingSupported();
   if (!supported) return null;
   messagingInstance = getMessaging(app);
   return messagingInstance;
@@ -21,9 +40,6 @@ async function getMessagingServiceWorkerRegistration() {
   return navigator.serviceWorker.register('/firebase-messaging-sw.js');
 }
 
-/**
- * حفظ رمز FCM على مستند المستخدم لاستخدامه من Cloud Functions.
- */
 async function persistFcmToken(userId, token) {
   const api = FirestoreApi.Api;
   const userRef = api.getUserDoc(userId);
@@ -50,28 +66,34 @@ function attachForegroundHandler(messaging) {
         body,
         icon: '/icon-512.png',
         data: payload.data || {},
+        dir: 'rtl',
+        lang: 'ar',
       });
     }
   });
 }
 
 /**
- * تسجيل الإشعارات الفورية بعد تسجيل الدخول.
+ * طلب السماح ثم تسجيل FCM — يُستدعى من زر واضح للمستخدم.
  */
-export async function registerPushMessaging(user) {
+export async function requestAndRegisterPush(user) {
   const userId = user?.uid || user?.id;
-  if (!userId) return { ok: false, reason: 'no-user' };
-  if (!VAPID_KEY) return { ok: false, reason: 'missing-vapid' };
+  if (!userId) return { ok: false, reason: 'no-user', permission: getNotificationPermission() };
+  if (!isPushConfigured()) return { ok: false, reason: 'missing-vapid', permission: getNotificationPermission() };
 
   try {
     const messaging = await getMessagingInstance();
-    if (!messaging) return { ok: false, reason: 'unsupported' };
+    if (!messaging) {
+      return { ok: false, reason: 'unsupported', permission: getNotificationPermission() };
+    }
 
     if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       const permission = await Notification.requestPermission();
-      if (permission !== 'granted') return { ok: false, reason: 'denied' };
+      if (permission !== 'granted') {
+        return { ok: false, reason: 'denied', permission };
+      }
     } else if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
-      return { ok: false, reason: 'denied' };
+      return { ok: false, reason: 'denied', permission: Notification.permission };
     }
 
     const swReg = await getMessagingServiceWorkerRegistration();
@@ -80,13 +102,25 @@ export async function registerPushMessaging(user) {
       serviceWorkerRegistration: swReg,
     });
 
-    if (!token) return { ok: false, reason: 'no-token' };
+    if (!token) {
+      return { ok: false, reason: 'no-token', permission: getNotificationPermission() };
+    }
 
     await persistFcmToken(userId, token);
     attachForegroundHandler(messaging);
-    return { ok: true, token };
+    return { ok: true, token, permission: 'granted' };
   } catch (err) {
-    console.warn('registerPushMessaging', err);
-    return { ok: false, reason: 'error', err };
+    console.warn('requestAndRegisterPush', err);
+    return { ok: false, reason: 'error', permission: getNotificationPermission(), err };
   }
+}
+
+/**
+ * تسجيل FCM إذا كان الإذن ممنوحاً مسبقاً (بدون نافذة طلب جديدة).
+ */
+export async function registerPushMessaging(user) {
+  if (getNotificationPermission() !== 'granted') {
+    return { ok: false, reason: 'not-granted', permission: getNotificationPermission() };
+  }
+  return requestAndRegisterPush(user);
 }

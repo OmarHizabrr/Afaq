@@ -9,10 +9,11 @@ export function useNotificationsRealtime(user) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const requestBrowserPermission = useCallback(async () => {
-    if (typeof Notification === 'undefined') return 'unsupported';
-    const p = await Notification.requestPermission();
-    return p;
-  }, []);
+    if (!user) return 'unsupported';
+    const { requestAndRegisterPush } = await import('../services/pushMessaging');
+    const result = await requestAndRegisterPush(user);
+    return result.permission || (typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
+  }, [user]);
 
   useEffect(() => {
     if (!actorId) return undefined;

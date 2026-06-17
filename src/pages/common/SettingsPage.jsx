@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import BusyButton from '../../components/BusyButton';
 import InstallAppSection from '../../components/InstallAppSection';
+import PushNotificationSection from '../../components/PushNotificationSection';
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
@@ -88,6 +89,7 @@ const SettingsPage = () => {
       {error && <div className="app-alert app-alert--error settings-alert">{error}</div>}
 
       <InstallAppSection />
+      <PushNotificationSection user={user} />
 
       {/* Theme Settings */}
       <div className="surface-card surface-card--lg settings-theme-card">

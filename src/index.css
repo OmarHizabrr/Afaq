@@ -4380,6 +4380,67 @@ button.village-details-schools-item:hover {
   gap: 8px;
 }
 
+.settings-push-card {
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.settings-push-card__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+}
+
+.settings-push-card__hint {
+  margin: 0 0 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.settings-push-card__status {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+}
+
+.settings-push-card__status--ok {
+  color: var(--md-success, #2e7d32);
+}
+
+.settings-push-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notifications-push-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--md-primary) 25%, var(--border-color));
+  background: color-mix(in srgb, var(--md-primary) 6%, var(--panel-color));
+}
+
+.notifications-push-prompt__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.notifications-push-prompt__text strong {
+  color: var(--text-primary);
+}
+
 .settings-theme-card {
   padding: 2rem;
   margin-bottom: 2rem;
