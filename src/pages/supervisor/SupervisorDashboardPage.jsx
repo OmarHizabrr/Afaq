@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CheckCircle, FileText, Activity, Layers, School, ChevronRight, MapPin, Bell, Settings } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import PortalFeaturedAction from '../../components/PortalFeaturedAction';
 import PortalQuickActions from '../../components/PortalQuickActions';
 
 const StatCard = ({ title, value, icon: Icon, tone, loading }) => (
@@ -91,6 +92,16 @@ const SupervisorDashboardPage = ({ user }) => {
       <PageHeader
         title={<span className="page-header-accent--primary">لوحة المشرف الميداني</span>}
         subtitle="إحصائيات زياراتك ونشاطاتك في المناطق التابعة لك"
+      />
+
+      <PortalFeaturedAction
+        to="/supervisor/visit"
+        icon={MapPin}
+        title="زيارة ميدانية جديدة"
+        subtitle="سجّل زيارتك وارفع تقريرك الميداني بسرعة"
+        badge="وصول سريع"
+        tone="primary"
+        secondaryAction={{ path: '/supervisor/history', label: 'عرض سجل الزيارات السابقة', icon: FileText }}
       />
 
       <PortalQuickActions

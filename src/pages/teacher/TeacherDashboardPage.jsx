@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, Calendar, FileText, Activity, School, ChevronRight, Bell } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import PortalFeaturedAction from '../../components/PortalFeaturedAction';
 import PortalQuickActions from '../../components/PortalQuickActions';
 
 const StatCard = ({ title, value, icon: Icon, tone, loading }) => (
@@ -95,6 +96,25 @@ const TeacherDashboardPage = ({ user }) => {
           <School size={18} color="var(--success-color)" />
           <span className="portal-school-chip__label">{stats.schoolName}</span>
         </div>
+      </div>
+
+      <div className="portal-featured-actions-row">
+        <PortalFeaturedAction
+          to="/teacher/daily-log"
+          icon={Calendar}
+          title="التحضير اليومي"
+          subtitle="سجّل حضور وغياب طلابك اليوم"
+          badge="وصول سريع"
+          tone="success"
+        />
+        <PortalFeaturedAction
+          to="/teacher/weekly-report"
+          icon={FileText}
+          title="تقرير المدرسة"
+          subtitle="ارفع تقريرك الأسبوعي للمدرسة"
+          badge="وصول سريع"
+          tone="primary"
+        />
       </div>
 
       <PortalQuickActions
