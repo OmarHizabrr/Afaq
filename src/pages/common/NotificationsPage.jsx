@@ -337,7 +337,9 @@ const NotificationsPage = ({ user }) => {
   if (loadingUsers) return <div className="loading-spinner page-loading-lg" />;
 
   return (
-    <div className={`notifications-page${isNarrow ? ' notifications-page--mobile' : ''}`}>
+    <div
+      className={`notifications-page${isNarrow ? ' notifications-page--mobile' : ''}${activeTab === 'chats' ? ' notifications-page--chat-focus' : ''}${activeTab === 'chats' && isNarrow && chatMobileMode === 'thread' ? ' notifications-page--chat-thread' : ''}`}
+    >
       <PageHeader
         icon={Bell}
         iconBox
@@ -461,6 +463,10 @@ const NotificationsPage = ({ user }) => {
             replyTo={replyTo}
             setReplyTo={setReplyTo}
             onEditMessage={handleEditMessage}
+            onNewChat={() => {
+              setIsNewChatOpen(true);
+              setChatRoleFilter('all');
+            }}
           />
         </div>
       )}

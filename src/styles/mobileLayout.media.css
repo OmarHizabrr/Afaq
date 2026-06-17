@@ -212,18 +212,6 @@
     flex-wrap: wrap;
   }
 
-  .messenger-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .messenger-col--hidden-sm {
-    display: none !important;
-  }
-
-  .messenger-back-sm {
-    display: flex;
-  }
-
   .page-content {
     padding: 16px;
     padding-inline-start: max(16px, env(safe-area-inset-start, 0px));
