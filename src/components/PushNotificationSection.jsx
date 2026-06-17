@@ -9,10 +9,7 @@ const PushNotificationSection = ({ user }) => {
   const [tokenCount, setTokenCount] = useState(null);
   const userId = user?.uid || user?.id;
 
-  const canShowDiagnostics = useMemo(() => {
-    const role = user?.role;
-    return role === 'admin' || role === 'system_admin';
-  }, [user?.role]);
+  const canShowDiagnostics = useMemo(() => true, []);
 
   useEffect(() => {
     let active = true;
@@ -61,7 +58,7 @@ const PushNotificationSection = ({ user }) => {
         )}
         {canShowDiagnostics && (
           <p className="settings-push-card__hint">
-            التشخيص: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
+            الحالة: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
             {tokenCount == null ? '—' : tokenCount}
           </p>
         )}
@@ -101,7 +98,7 @@ const PushNotificationSection = ({ user }) => {
       </button>
       {canShowDiagnostics && (
         <p className="settings-push-card__hint" style={{ marginTop: '10px' }}>
-          التشخيص: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
+          الحالة: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
           {tokenCount == null ? '—' : tokenCount}
         </p>
       )}
