@@ -217,43 +217,45 @@ const GovernoratesPage = () => {
   };
 
   return (
-    <div>
+    <div className="governorates-page geo-page">
       <PageHeader icon={Map} title="إدارة المحافظات">
         {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
             <Plus size={18} />
-            <span>إضافة محافظة</span>
+            <span className="geo-toolbar__long">إضافة محافظة</span>
+            <span className="geo-toolbar__short">إضافة</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') &&
           explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={openExplorationModal}>
             <Compass size={18} />
-            <span>إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__short">استكشاف</span>
           </button>
         )}
       </PageHeader>
 
       {showScopeNotice && ready && pageDataScope(PERMISSION_PAGE_IDS.governorates) === DATA_SCOPE_MEMBERSHIP && (
-        <div className="app-alert app-alert--info" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+        <div className="app-alert app-alert--info app-alert--dismissible geo-page-alert">
           <span>عرض محدود: المحافظات الظاهرة مرتبطة بمناطق مجموعاتك (عضوية منطقة أو ما يترتب عليها).</span>
-          <button type="button" className="icon-btn" title="إغلاق" onClick={() => setShowScopeNotice(false)} style={{ width: 28, height: 28 }}>
+          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setShowScopeNotice(false)}>
             <X size={14} />
           </button>
         </div>
       )}
       {error && (
-        <div className="app-alert app-alert--error" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+        <div className="app-alert app-alert--error app-alert--dismissible geo-page-alert">
           <span>{error}</span>
-          <button type="button" className="icon-btn" title="إغلاق" onClick={() => setError('')} style={{ width: 28, height: 28 }}>
+          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setError('')}>
             <X size={14} />
           </button>
         </div>
       )}
       {success && (
-        <div className="app-alert app-alert--success" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+        <div className="app-alert app-alert--success app-alert--dismissible geo-page-alert">
           <span>{success}</span>
-          <button type="button" className="icon-btn" title="إغلاق" onClick={() => setSuccess('')} style={{ width: 28, height: 28 }}>
+          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setSuccess('')}>
             <X size={14} />
           </button>
         </div>
@@ -265,32 +267,30 @@ const GovernoratesPage = () => {
         title={isEditing ? 'تعديل المحافظة' : 'إضافة محافظة'}
         onClose={() => { setIsAdding(false); setIsEditing(null); setGovName(''); setGovCountry(''); }}
       >
-        <form onSubmit={isEditing ? handleEdit : handleAdd}>
+        <form onSubmit={isEditing ? handleEdit : handleAdd} className="geo-form">
           <input 
             type="text" 
             placeholder="اسم المحافظة (مثال: صنعاء)"
             value={govName}
             onChange={(e) => setGovName(e.target.value)}
             autoFocus
-            className="app-input"
-            style={{ marginBottom: '1rem' }}
+            className="app-input geo-form__field"
           />
           <input
             type="text"
             placeholder="الدولة (مثال: MALAWI)"
             value={govCountry}
             onChange={(e) => setGovCountry(e.target.value)}
-            className="app-input"
-            style={{ marginBottom: '1rem' }}
+            className="app-input geo-form__field"
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <div className="modal-footer-actions">
+            <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
+              <span className="modal-footer-actions__btn-inner">
                 <X size={14} aria-hidden /> إلغاء
               </span>
             </button>
-            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled modal-footer-actions__btn">
+              <span className="modal-footer-actions__btn-inner">
                 <Save size={14} aria-hidden /> {isEditing ? 'تحديث' : 'حفظ'}
               </span>
             </BusyButton>
@@ -311,11 +311,11 @@ const GovernoratesPage = () => {
             heading="حقول نموذج الاستكشاف"
             currentPageId={PERMISSION_PAGE_IDS.governorates}
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>
+          <div className="modal-footer-actions modal-footer-actions--spaced">
+            <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsExploringAdding(false)}>
               إلغاء
             </button>
-            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled modal-footer-actions__btn">
               حفظ المحافظة
             </BusyButton>
           </div>
@@ -324,7 +324,7 @@ const GovernoratesPage = () => {
 
       {/* Governorates List */}
       {loading ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        <div className="loading-spinner page-loading" />
       ) : governorates.length === 0 ? (
         <div className="empty-state">
           لا توجد محافظات مضافة حتى الآن.
@@ -332,20 +332,20 @@ const GovernoratesPage = () => {
       ) : (
         <div className="entity-grid">
           {governorates.map(gov => (
-            <div key={gov.id} className="surface-card surface-card--entity">
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{gov.name}</h3>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ID: {gov.id.substring(0,8)}...</span>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 4 }}>
+            <div key={gov.id} className="surface-card surface-card--entity geo-entity-card">
+              <div className="geo-entity-card__body">
+                <h3 className="geo-entity-card__title">{gov.name}</h3>
+                <span className="geo-entity-card__id">ID: {gov.id.substring(0,8)}...</span>
+                <div className="geo-entity-card__meta">
                   الدولة: {gov.country || 'غير محددة'}
                 </div>
-                <div style={{ marginTop: 6 }}>
+                <div className="geo-entity-card__badge">
                   {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
                     <ExplorationBadge record={gov} onClick={() => setViewingExplorationOf(gov)} />
                   )}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="geo-entity-card__actions">
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_view') && (
                   <button type="button" className="icon-btn" onClick={() => navigate(`/governorates/${gov.id}`)} title="عرض التفاصيل">
                     <Eye size={16} color="var(--accent-color)" />

@@ -89,7 +89,7 @@ const ExplorationDataModal = ({
       {editing ? (
         <>
           {error && (
-            <div className="app-alert app-alert--error" style={{ marginBottom: '0.75rem' }}>{error}</div>
+            <div className="app-alert app-alert--error geo-page-alert geo-page-alert--tight">{error}</div>
           )}
           <ExplorationFormSection
             controller={expForm}
@@ -98,26 +98,24 @@ const ExplorationDataModal = ({
             heading="حقول نموذج الاستكشاف"
             hideTypeSelect
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+          <div className="exploration-modal-footer">
             <button
               type="button"
-              className="google-btn"
-              style={{ width: 'auto', marginTop: 0 }}
+              className="google-btn exploration-modal-footer__btn"
               onClick={() => { setEditing(false); setError(''); }}
               disabled={saving}
             >
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span className="exploration-modal-footer__btn-inner">
                 <X size={14} aria-hidden /> إلغاء
               </span>
             </button>
             <BusyButton
               type="button"
               busy={saving}
-              className="google-btn google-btn--filled"
-              style={{ width: 'auto', marginTop: 0 }}
+              className="google-btn google-btn--filled exploration-modal-footer__btn"
               onClick={handleSave}
             >
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span className="exploration-modal-footer__btn-inner">
                 <Save size={14} aria-hidden /> حفظ التعديلات
               </span>
             </BusyButton>
@@ -130,23 +128,21 @@ const ExplorationDataModal = ({
             explorationTypeName={record?.explorationTypeName}
             explorationFieldValues={record?.explorationFieldValues}
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+          <div className="exploration-modal-footer">
             {canSwitchToEdit && (
               <button
                 type="button"
-                className="google-btn"
-                style={{ width: 'auto', marginTop: 0 }}
+                className="google-btn exploration-modal-footer__btn"
                 onClick={() => setEditing(true)}
               >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span className="exploration-modal-footer__btn-inner">
                   <Edit2 size={14} aria-hidden /> تعديل بيانات النموذج
                 </span>
               </button>
             )}
             <button
               type="button"
-              className="google-btn"
-              style={{ width: 'auto', marginTop: 0 }}
+              className="google-btn exploration-modal-footer__btn"
               onClick={onClose}
             >
               إغلاق

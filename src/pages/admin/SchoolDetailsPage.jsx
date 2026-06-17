@@ -8,8 +8,10 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 import { buildSchoolReportBodyHtml } from '../../utils/schoolReportHtml';
-import { exportSchoolReportExcel, exportSchoolReportPdf } from '../../utils/schoolReportExport';
-import ReportPrintPreviewModal from '../../components/ReportPrintPreviewModal';
+import { normalizeSchoolReportForDisplay } from '../../utils/schoolReportStars';
+import { schoolReportSummaryLine } from '../../utils/reportLabels';
+import { loadSchoolReportExport } from '../../utils/loadSchoolReportExport';
+import LazyReportPrintPreviewModal from '../../components/LazyReportPrintPreviewModal';
 
 const schoolLevelSubtitle = (sl) =>
   sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
@@ -324,13 +326,15 @@ const SchoolDetailsPage = () => {
     };
 
     const handlePrintSchoolReport = (rep) => {
-      setPrintPreviewRep({
-        ...rep,
-        schoolName: rep.schoolName || school?.name,
-      });
+      setPrintPreviewRep(
+        normalizeSchoolReportForDisplay({
+          ...rep,
+          schoolName: rep.schoolName || school?.name,
+        })
+      );
     };
 
-    if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+    if (loading) return <div className="loading-spinner page-loading-lg" />;
     if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
 
     const schoolScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
@@ -381,9 +385,9 @@ const SchoolDetailsPage = () => {
       return acc;
     }, {});
 
-    const renderStatCard = (label, value, IconComponent, color) => (
+    const renderStatCard = (label, value, IconComponent, tone) => (
       <div className="surface-card school-details-stat-card">
-          <div className="school-details-stat-card__icon" style={{ background: `${color}15`, color }}>
+          <div className={`school-details-stat-card__icon stat-tone--${tone}`}>
               <IconComponent size={24} />
           </div>
           <div>
@@ -407,71 +411,55 @@ const SchoolDetailsPage = () => {
     });
 
     return (
-        <div className="school-details-page">
+        <div className="school-details-page portal-page">
             <PageHeader
               topRow={
                 <div className="school-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/schools')}>
                     <ChevronRight size={20} aria-hidden /> إدارة المدارس
                   </button>
-                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                  <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>مدرسة: <span style={{ color: 'var(--md-primary)' }}>{school.name}</span></>}
+              title={<>مدرسة: <span className="page-header-accent">{school.name}</span></>}
               subtitle={schoolLevelSubtitle(school.schoolLevel)}
             >
               {can(PERMISSION_PAGE_IDS.schools, 'school_report_create') && (
                 <>
                   <button type="button" className="google-btn google-btn--toolbar" onClick={() => navigate(`/schools/${id}/report`)}>
                     <Plus size={16} />
-                    <span>إضافة تقرير</span>
+                    <span className="school-details-toolbar__long">إضافة تقرير</span>
+                    <span className="school-details-toolbar__short">تقرير</span>
                   </button>
                   <button type="button" className="google-btn google-btn--toolbar" onClick={() => navigate(`/schools/${id}/comprehensive-report`)}>
                     <BarChart3 size={16} />
-                    <span>تقرير شامل</span>
+                    <span className="school-details-toolbar__long">تقرير شامل</span>
+                    <span className="school-details-toolbar__short">شامل</span>
                   </button>
                 </>
               )}
             </PageHeader>
             {reportError && (
-              <div
-                className="app-alert app-alert--error"
-                style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
-              >
+              <div className="app-alert app-alert--error app-alert--dismissible school-details-page-alert">
                 <span>{reportError}</span>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  title="إغلاق"
-                  onClick={() => setReportError('')}
-                  style={{ width: 28, height: 28 }}
-                >
+                <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setReportError('')}>
                   <X size={14} />
                 </button>
               </div>
             )}
             {reportSuccess && (
-              <div
-                className="app-alert app-alert--success"
-                style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
-              >
+              <div className="app-alert app-alert--success app-alert--dismissible school-details-page-alert">
                 <span>{reportSuccess}</span>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  title="إغلاق"
-                  onClick={() => setReportSuccess('')}
-                  style={{ width: 28, height: 28 }}
-                >
+                <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setReportSuccess('')}>
                   <X size={14} />
                 </button>
               </div>
             )}
 
             <div className="school-details-stats-row">
-                {renderStatCard('إجمالي الطلاب', students.length, Users, '#f59e0b')}
-                {renderStatCard('الكادر التعليمي', staff.length, School, 'var(--success-color)')}
-                {renderStatCard('التقارير الميدانية', schoolReports.length, FileText, 'var(--accent-color)')}
+                {renderStatCard('إجمالي الطلاب', students.length, Users, 'amber')}
+                {renderStatCard('الكادر التعليمي', staff.length, School, 'success')}
+                {renderStatCard('التقارير الميدانية', schoolReports.length, FileText, 'accent')}
             </div>
 
             <div className="school-details-grid">
@@ -498,18 +486,9 @@ const SchoolDetailsPage = () => {
                         </div>
                     </div>
                     {assignError && (
-                      <div
-                        className="app-alert app-alert--error school-details-panel__empty"
-                        style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
-                      >
+                      <div className="app-alert app-alert--error app-alert--dismissible school-details-page-alert">
                         <span>{assignError}</span>
-                        <button
-                          type="button"
-                          className="icon-btn"
-                          title="إغلاق"
-                          onClick={() => setAssignError('')}
-                          style={{ width: 28, height: 28 }}
-                        >
+                        <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setAssignError('')}>
                           <X size={14} />
                         </button>
                       </div>
@@ -523,7 +502,7 @@ const SchoolDetailsPage = () => {
                                     <h4 className="school-details-member-item__name">{t.displayName}</h4>
                                     <p className="school-details-member-item__sub">{t.email}</p>
                                  </div>
-                                 <div style={{ display: 'flex', gap: 6 }}>
+                                 <div className="school-details-member-item__actions">
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
                                    <button type="button" onClick={() => navigate(`/users/${t.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
                                  )}
@@ -570,7 +549,7 @@ const SchoolDetailsPage = () => {
                                     <h4 className="school-details-member-item__name">{s.displayName}</h4>
                                     <p className="school-details-member-item__sub">{s.phoneNumber || 'لا يوجد هاتف'}</p>
                                  </div>
-                                 <div style={{ display: 'flex', gap: 6 }}>
+                                 <div className="school-details-member-item__actions">
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
                                    <button type="button" onClick={() => navigate(`/students/${s.id}`)} className="icon-btn" title="عرض ملف الطالب"><Info size={16}/></button>
                                  )}
@@ -587,13 +566,13 @@ const SchoolDetailsPage = () => {
                 </div>
             </div>
 
-            <div className="surface-card surface-card--lg school-details-panel" style={{ marginTop: '1rem' }}>
+            <div className="surface-card surface-card--lg school-details-panel school-details-panel--reports">
               <div className="school-details-panel__head">
                 <h2 className="school-details-panel__title">
                   <FileText size={18} color="var(--accent-color)" /> تقارير المدرسة
                 </h2>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <div className="school-details-report-filters">
                 <input
                   className="app-input"
                   placeholder="بحث بالعنوان/المشرف/التاريخ..."
@@ -604,15 +583,15 @@ const SchoolDetailsPage = () => {
                 <input className="app-input" type="date" value={reportDateTo} onChange={(e) => setReportDateTo(e.target.value)} />
                 <button
                   type="button"
-                  className="google-btn"
+                  className="google-btn school-details-report-filters__clear"
                   onClick={() => {
                     setReportQuery('');
                     setReportDateFrom('');
                     setReportDateTo('');
                   }}
                 >
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <RotateCcw size={14} /> مسح
+                  <span className="btn-inner btn-inner--sm">
+                    <RotateCcw size={14} aria-hidden /> مسح
                   </span>
                 </button>
               </div>
@@ -629,10 +608,10 @@ const SchoolDetailsPage = () => {
                       <div className="school-details-member-item__body">
                         <h4 className="school-details-member-item__name">{rep.reportTitle || 'تقرير إشراف مدرسة'}</h4>
                         <p className="school-details-member-item__sub">
-                          {rep.date || rep.timestamp?.split('T')[0] || '-'} • المشرف: {rep.supervisorName || 'غير محدد'} • الحضور: {rep.presentCount ?? '-'} / {rep.totalStudents ?? '-'}
+                          {rep.date || rep.timestamp?.split('T')[0] || '-'} • المشرف: {rep.supervisorName || 'غير محدد'} • {schoolReportSummaryLine(rep)}
                         </p>
                       </div>
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div className="school-details-member-item__actions">
                         {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
                           <button type="button" className="icon-btn" title="فتح التقرير" onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}`)}>
                             <Info size={16} />
@@ -671,7 +650,7 @@ const SchoolDetailsPage = () => {
                 <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                     <div className="surface-card surface-card--lg school-details-assign-modal" onClick={e => e.stopPropagation()}>
                         <div className="school-details-assign-modal__head">
-                            <h3 style={{ margin: 0 }}>تعيين عضو للمدرسة</h3>
+                            <h3 className="school-details-assign-modal__title">تعيين عضو للمدرسة</h3>
                             <button onClick={() => setIsModalOpen(false)} className="icon-btn"><X size={20}/></button>
                         </div>
 
@@ -685,7 +664,7 @@ const SchoolDetailsPage = () => {
                               className="app-input school-details-assign-modal__search-input"
                             />
                         </div>
-                        <div className="role-filter-bar" style={{ marginBottom: '0.75rem' }}>
+                        <div className="role-filter-bar school-details-assign-modal__filters">
                           {ASSIGN_ROLE_FILTER_ORDER.map((rid) => (
                             <button
                               key={rid}
@@ -706,25 +685,23 @@ const SchoolDetailsPage = () => {
                         <div className="school-details-assign-modal__toolbar">
                           <BusyButton
                             type="button"
-                            className="google-btn google-btn--filled"
-                            style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }}
+                            className="google-btn google-btn--filled school-details-assign-modal__toolbar-btn"
                             disabled={selectedIds.length === 0}
                             busy={assigning}
                             onClick={handleAssignSelected}
                           >
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                              <Check size={14} /> تعيين المحددين
+                            <span className="btn-inner btn-inner--sm">
+                              <Check size={14} aria-hidden /> تعيين المحددين
                             </span>
                           </BusyButton>
                           <button
                             type="button"
-                            className="google-btn"
-                            style={{ width: 'auto', minHeight: '38px', padding: '0 14px' }}
+                            className="google-btn school-details-assign-modal__toolbar-btn"
                             onClick={() => setSelectedIds([])}
                             disabled={selectedIds.length === 0}
                           >
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                              <X size={14} /> إلغاء التحديد
+                            <span className="btn-inner btn-inner--sm">
+                              <X size={14} aria-hidden /> إلغاء التحديد
                             </span>
                           </button>
                         </div>
@@ -756,7 +733,7 @@ const SchoolDetailsPage = () => {
                                       busy={assigning}
                                       className="google-btn google-btn--filled school-details-assign-modal__assign-btn"
                                     >
-                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                      <span className="btn-inner btn-inner--sm">
                                         <Check size={14} aria-hidden /> تعيين
                                       </span>
                                     </BusyButton>
@@ -766,7 +743,7 @@ const SchoolDetailsPage = () => {
                     </div>
                 </div>
             )}
-            <ReportPrintPreviewModal
+            <LazyReportPrintPreviewModal
               open={Boolean(printPreviewRep)}
               onClose={() => setPrintPreviewRep(null)}
               title="معاينة تقرير المدرسة"
@@ -776,12 +753,17 @@ const SchoolDetailsPage = () => {
                 if (!printPreviewRep) return;
                 setPrintPdfExporting(true);
                 try {
+                  const { exportSchoolReportPdf } = await loadSchoolReportExport();
                   await exportSchoolReportPdf(printPreviewRep);
                 } finally {
                   setPrintPdfExporting(false);
                 }
               }}
-              onDownloadExcel={() => printPreviewRep && exportSchoolReportExcel(printPreviewRep)}
+              onDownloadExcel={async () => {
+                if (!printPreviewRep) return;
+                const { exportSchoolReportExcel } = await loadSchoolReportExport();
+                exportSchoolReportExcel(printPreviewRep);
+              }}
             />
         </div>
     );

@@ -12,9 +12,11 @@ import ExplorationFormSection from '../../components/ExplorationFormSection';
 import ExplorationBadge from '../../components/ExplorationBadge';
 import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
+import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 
 const CurriculumPage = () => {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery(MOBILE_QUERY);
   const { can, actorUser, explorationBridgeAllowed } = usePermissions();
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [subjects, setSubjects] = useState([]);
@@ -239,7 +241,7 @@ const CurriculumPage = () => {
   };
 
   return (
-    <div>
+    <div className={`curriculum-page${isMobile && expandedId ? ' curriculum-page--editing' : ''}`}>
       <PageHeader
         icon={BookOpen}
         title="إدارة المناهج الأساسية"
@@ -261,7 +263,8 @@ const CurriculumPage = () => {
             }}
           >
             <Compass size={18} />
-            <span>إضافة من الاستكشاف</span>
+            <span className="curriculum-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="curriculum-toolbar__short">استكشاف</span>
           </button>
         )}
       </PageHeader>
@@ -282,8 +285,7 @@ const CurriculumPage = () => {
             value={newSubjectName}
             onChange={(e) => setNewSubjectName(e.target.value)}
             autoFocus
-            className="app-input"
-            style={{ marginBottom: '1rem' }}
+            className="app-input curriculum-modal__input"
           />
           <div className="curriculum-modal-actions">
             <button type="button" className="google-btn curriculum-modal-actions__btn" onClick={() => setIsAdding(false)}>
@@ -309,7 +311,7 @@ const CurriculumPage = () => {
             heading="حقول نموذج الاستكشاف"
             currentPageId={PERMISSION_PAGE_IDS.curriculum}
           />
-          <div className="curriculum-modal-actions" style={{ marginTop: '1rem' }}>
+          <div className="curriculum-modal-actions curriculum-modal-actions--spaced">
             <button type="button" className="google-btn curriculum-modal-actions__btn" onClick={() => setIsExploringAdding(false)}>
               إلغاء
             </button>
@@ -322,7 +324,7 @@ const CurriculumPage = () => {
 
       {/* List of Subjects */}
       {loading && !isAdding && !editingSubject ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        <div className="loading-spinner page-loading"></div>
       ) : subjects.length === 0 ? (
         <div className="empty-state">
           لا توجد مناهج مضافة. ابدأ بإضافة مواد الخطة السنوية.
@@ -336,11 +338,6 @@ const CurriculumPage = () => {
               <div
                 key={subject.id}
                 className={`surface-card accordion-item ${isExpanded ? 'accordion-item--open' : ''}`}
-                style={{
-                  borderWidth: 1,
-                  borderStyle: 'solid',
-                  borderColor: isExpanded ? 'var(--md-primary)' : 'var(--border-color)',
-                }}
               >
                 {/* Header (Accordion Clickable) */}
                 <div
@@ -425,7 +422,7 @@ const CurriculumPage = () => {
                           onClick={handleSaveCurriculum}
                           busy={loading}
                         >
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <span className="btn-inner btn-inner--sm">
                             <Save size={18} aria-hidden />
                             حفظ التوزيع
                           </span>
@@ -451,7 +448,7 @@ const CurriculumPage = () => {
                     </div>
                     
                     {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
-                      <div className="curriculum-editor__footer">
+                      <div className="curriculum-editor__footer curriculum-editor__footer--desktop">
                         <BusyButton
                           type="button"
                           className="google-btn curriculum-editor__save-btn curriculum-editor__save-btn--final"
@@ -467,6 +464,21 @@ const CurriculumPage = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {isMobile && expandedId && editingSubject && can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
+        <div className="curriculum-mobile-save-bar">
+          <span className="curriculum-mobile-save-bar__label">{editingSubjectName || editingSubject.name}</span>
+          <BusyButton
+            type="button"
+            className="google-btn google-btn--filled curriculum-editor__save-btn"
+            onClick={handleSaveCurriculum}
+            busy={loading}
+          >
+            <Save size={18} aria-hidden />
+            حفظ
+          </BusyButton>
         </div>
       )}
 

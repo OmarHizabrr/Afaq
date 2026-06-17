@@ -1,0 +1,124 @@
+@media (max-width: 768px) {
+  .bottom-tab-bar {
+    display: flex;
+  }
+
+  .topbar__brand {
+    display: block;
+  }
+
+  .admin-layout--mobile-nav .page-content {
+    padding-bottom: calc(
+      var(--bottom-tab-height) + var(--install-banner-height) + 24px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .admin-layout--mobile-nav .mobile-menu-btn {
+    display: none;
+  }
+
+  .daily-prep-desktop-only {
+    display: none !important;
+  }
+
+  .daily-prep-mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 12px 12px;
+  }
+
+  .daily-prep-mobile-save-bar,
+  .curriculum-mobile-save-bar,
+  .teacher-weekly-mobile-save-bar {
+    display: flex;
+  }
+
+  .daily-prep-page--has-mobile-save,
+  .curriculum-page--has-mobile-save,
+  .teacher-weekly-page--has-mobile-save {
+    padding-bottom: calc(var(--bottom-tab-height) + 56px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .daily-prep-setup__dates,
+  .daily-prep-school-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-prep-school-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .daily-prep-attendance__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .daily-prep-attendance__bulk,
+  .daily-prep-attendance__bulk .google-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .settings-theme-card__options {
+    flex-direction: column;
+  }
+
+  .settings-install-card,
+  .settings-theme-card,
+  .settings-profile-form {
+    padding: 1.25rem;
+  }
+
+  .google-btn--toolbar {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .role-filter-bar,
+  .users-role-filter-bar {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .role-filter-bar::-webkit-scrollbar,
+  .users-role-filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .role-filter-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .surface-card--entity {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .surface-card--entity > div:last-child {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .messenger-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .messenger-col--hidden-sm {
+    display: none !important;
+  }
+
+  .messenger-back-sm {
+    display: flex;
+  }
+}

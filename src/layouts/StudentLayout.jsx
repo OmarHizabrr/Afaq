@@ -1,20 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  User, 
-  LogOut, 
-  Menu, 
+import React, { useState, useEffect, useMemo } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Home,
+  User,
+  LogOut,
   Bell,
   Award,
   Settings,
   ChevronLeft,
   ChevronRight,
   Sun,
-  Moon
+  Moon,
+  X,
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
+import BottomTabBar from '../components/BottomTabBar';
+import InstallAppBanner from '../components/InstallAppBanner';
+import ScrollToTop from '../components/ScrollToTop';
+import { getPortalMobileTabs } from '../utils/mobileNavTabs';
+import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
+
+const STUDENT_MENU_ITEMS = [
+  { icon: Home, label: 'الرئيسية', shortName: 'الرئيسية', path: '/student', end: true },
+  { icon: Award, label: 'نتائجي', shortName: 'نتائجي', path: '/student/results' },
+  { icon: Bell, label: 'الإشعارات', shortName: 'الإشعارات', path: '/student/notifications' },
+  { icon: User, label: 'ملفي', shortName: 'ملفي', path: '/student/profile' },
+  { icon: Settings, label: 'الإعدادات', shortName: 'الإعدادات', path: '/student/settings' },
+];
 
 const StudentLayout = ({ user }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -26,11 +39,29 @@ const StudentLayout = ({ user }) => {
   );
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useMediaQuery(MOBILE_QUERY);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.remove('light-mode');
     else document.documentElement.classList.add('light-mode');
   }, [isDarkMode]);
+
+  useEffect(() => {
+    if (!isMobile) setSidebarOpen(false);
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false);
+  }, [location.pathname, isMobile]);
+
+  useEffect(() => {
+    if (!isMobile || !isSidebarOpen) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isMobile, isSidebarOpen]);
 
   const toggleTheme = () => {
     const nextDark = !isDarkMode;
@@ -55,95 +86,92 @@ const StudentLayout = ({ user }) => {
     }
   };
 
-  const menuItems = [
-    { icon: Home, label: 'الرئيسية', path: '/student' },
-    { icon: Award, label: 'نتائجي واختباراتي', path: '/student/results' },
-    { icon: Bell, label: 'الإشعارات والتنبيهات', path: '/student/notifications' },
-    { icon: User, label: 'ملفي الشخصي', path: '/student/profile' },
-    { icon: Settings, label: 'الإعدادات', path: '/student/settings' },
-  ];
+  const menuItems = STUDENT_MENU_ITEMS;
+  const mobileTabs = useMemo(() => getPortalMobileTabs(menuItems, 'student'), [menuItems]);
 
   const closeSidebar = () => {
     if (window.innerWidth <= 1024) setSidebarOpen(false);
   };
 
+  const openSidebar = () => setSidebarOpen(true);
+
   return (
-    <div className={`admin-layout ${isSidebarOpen ? 'mobile-open' : ''}`} dir="rtl">
-      {/* Sidebar Overlay for Mobile */}
+    <div
+      className={`admin-layout ${isSidebarOpen ? 'mobile-open' : ''} ${isMobile ? 'admin-layout--mobile-nav' : ''}`}
+      dir="rtl"
+    >
       {isSidebarOpen && (
-        <div 
-          onClick={closeSidebar}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }}
-        />
+        <div className="sidebar-overlay" onClick={closeSidebar} aria-hidden />
       )}
 
-      {/* Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
-        <div className="sidebar-header" style={{ padding: '1rem 12px 1.25rem', textAlign: 'center', flexWrap: 'wrap' }}>
+        <div className="sidebar-header sidebar-header--student">
           {!isCollapsed && (
-            <div style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
-              <div style={{ 
-                width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-muted)', 
-                margin: '0 auto 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                border: '2px solid var(--md-primary)',
-                overflow: 'hidden'
-              }}>
-                <img 
-                  src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'Student')}&background=1a73e8&color=fff`} 
-                  alt="" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            <div className="sidebar-header__profile">
+              <div className="sidebar-student-avatar">
+                <img
+                  src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'Student')}&background=1a73e8&color=fff`}
+                  alt=""
+                  className="sidebar-student-avatar__img"
                 />
               </div>
-              <h3 className="sidebar-brand-title" style={{ fontSize: '1rem' }}>{user?.displayName?.split(/\s+/)[0] || 'طالب'}</h3>
+              <h3 className="sidebar-brand-title sidebar-brand-title--student">{user?.displayName?.split(/\s+/)[0] || 'طالب'}</h3>
             </div>
           )}
 
-          <button 
-             className="desktop-collapse-btn" 
-             onClick={toggleSidebarCollapse}
-             title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
-           >
-             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-           </button>
+          <button
+            className="desktop-collapse-btn"
+            onClick={toggleSidebarCollapse}
+            title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+          >
+            {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          </button>
+
+          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(false)}>
+            <X size={24} />
+          </button>
         </div>
 
-        <nav className="sidebar-nav" style={{ padding: '1.5rem 1rem', gap: '8px' }}>
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link 
-                key={item.path} 
-                to={item.path} 
-                className={`nav-link ${isActive ? 'active' : ''}`}
-                onClick={closeSidebar}
-              >
-                <item.icon size={20} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+        <nav className="sidebar-nav sidebar-nav--spaced">
+          {menuItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.end}
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              onClick={closeSidebar}
+            >
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
         </nav>
 
-        <div className="sidebar-footer" style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-          <div className="nav-link" onClick={handleLogout} style={{ color: 'var(--danger-color)', cursor: 'pointer' }}>
+        <div className="sidebar-footer">
+          <div className="nav-link nav-link--danger" onClick={handleLogout}>
             <LogOut size={20} />
             <span>تسجيل الخروج</span>
           </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <div className="main-content">
-        {/* Top Header */}
         <header className="topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
-              <Menu size={24} />
-            </button>
-            <h2 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800 }}>آفاق <span style={{ color: 'var(--accent-color)' }}>التعليمية</span></h2>
+          <div className="topbar__lead">
+            {isMobile ? (
+              <div className="topbar__brand">
+                <span className="topbar__brand-title">
+                  آفاق <span className="student-topbar-title__accent">التعليمية</span>
+                </span>
+              </div>
+            ) : (
+              <h2 className="student-topbar-title">
+                آفاق <span className="student-topbar-title__accent">التعليمية</span>
+              </h2>
+            )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="topbar__actions topbar__actions--tight">
             <button type="button" className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -151,10 +179,13 @@ const StudentLayout = ({ user }) => {
           </div>
         </header>
 
-        {/* Dynamic Page Content */}
         <main className="page-content">
+          <ScrollToTop />
           <Outlet />
         </main>
+
+        <InstallAppBanner />
+        {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={openSidebar} /> : null}
       </div>
     </div>
   );

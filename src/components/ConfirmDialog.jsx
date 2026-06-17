@@ -29,13 +29,9 @@ const ConfirmDialog = ({
           </BusyButton>
           <BusyButton
             type="button"
-            className="btn-md"
+            className={`btn-md confirm-dialog__confirm${danger ? ' confirm-dialog__confirm--danger' : ''}`}
             onClick={onConfirm}
             busy={loading}
-            style={{
-              background: danger ? 'var(--danger-color)' : 'var(--md-primary)',
-              color: '#fff',
-            }}
           >
             {confirmLabel}
           </BusyButton>

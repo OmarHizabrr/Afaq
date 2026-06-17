@@ -20,7 +20,7 @@ import {
   schoolReportViewPath,
 } from '../../utils/reportLabels';
 
-const StatCard = ({ title, value, icon, color, loading, onClick, hint }) => {
+const StatCard = ({ title, value, icon, tone, loading, onClick, hint }) => {
   const IconComponent = icon;
   const interactive = Boolean(onClick);
   const Tag = interactive ? 'button' : 'div';
@@ -31,10 +31,7 @@ const StatCard = ({ title, value, icon, color, loading, onClick, hint }) => {
     onClick={onClick}
     title={hint}
   >
-    <div
-      className="dashboard-stat-card__icon-wrap"
-      style={{ background: `linear-gradient(135deg, ${color}20, ${color}40)`, color, boxShadow: `0 8px 16px -4px ${color}30` }}
-    >
+    <div className={`dashboard-stat-card__icon-wrap stat-tone--${tone}`}>
       <IconComponent size={34} />
     </div>
     <div className="dashboard-stat-card__body">
@@ -237,24 +234,24 @@ const DashboardPage = () => {
   };
 
   return (
-    <div>
+    <div className="dashboard-page">
       <PageHeader title="لوحة التحكم الرئيسية" subtitle="نظرة عامة على الإحصائيات الحيوية للمنصة" />
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.dashboard) === DATA_SCOPE_MEMBERSHIP && (
-        <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+        <div className="app-alert app-alert--info dashboard-page-alert">
           عرض محدود: الإحصائيات والنشاط الظاهران مرتبطان بمجموعاتك فقط.
         </div>
       )}
 
       {/* Stats Grid */}
       <div className="dashboard-stats-grid">
-        <StatCard title="المشرفين" value={stats.supervisors} icon={Users} color="#10b981" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
-        <StatCard title="القرى" value={stats.villages} icon={Home} color="#ec4899" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض القرى')} />
-        <StatCard title="المناطق" value={stats.regions} icon={Map} color="#3b82f6" loading={loading} {...statNav(PERMISSION_PAGE_IDS.regions, '/regions', 'عرض المناطق')} />
-        <StatCard title="المدارس" value={stats.schools} icon={School} color="#f59e0b" loading={loading} {...statNav(PERMISSION_PAGE_IDS.schools, '/schools', 'عرض المدارس')} />
-        <StatCard title="المدرسين" value={stats.teachers} icon={FileText} color="#8b5cf6" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
-        <StatCard title="إجمالي الطلاب" value={stats.students} icon={UserCheck} color="var(--success-color)" loading={loading} {...statNav(PERMISSION_PAGE_IDS.students_management, '/students-management', 'إدارة الطلاب')} />
-        <StatCard title="المهتدون الجدد" value={stats.newConverts} icon={HeartHandshake} color="#ec4899" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض سجل المهتدين في القرى')} />
+        <StatCard title="المشرفين" value={stats.supervisors} icon={Users} tone="emerald" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
+        <StatCard title="القرى" value={stats.villages} icon={Home} tone="pink" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض القرى')} />
+        <StatCard title="المناطق" value={stats.regions} icon={Map} tone="blue" loading={loading} {...statNav(PERMISSION_PAGE_IDS.regions, '/regions', 'عرض المناطق')} />
+        <StatCard title="المدارس" value={stats.schools} icon={School} tone="amber" loading={loading} {...statNav(PERMISSION_PAGE_IDS.schools, '/schools', 'عرض المدارس')} />
+        <StatCard title="المدرسين" value={stats.teachers} icon={FileText} tone="purple" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
+        <StatCard title="إجمالي الطلاب" value={stats.students} icon={UserCheck} tone="success" loading={loading} {...statNav(PERMISSION_PAGE_IDS.students_management, '/students-management', 'إدارة الطلاب')} />
+        <StatCard title="المهتدون الجدد" value={stats.newConverts} icon={HeartHandshake} tone="pink" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض سجل المهتدين في القرى')} />
       </div>
 
       {/* Recent Activity Section */}
@@ -270,15 +267,14 @@ const DashboardPage = () => {
         </div>
 
         {loading ? (
-            <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+            <div className="loading-spinner page-loading" />
         ) : recentActivity.length === 0 ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>لا توجد نشاطات مسجلة مؤخراً.</p>
+            <p className="dashboard-activity-empty">لا توجد نشاطات مسجلة مؤخراً.</p>
         ) : (
             <div className="dashboard-activity-grid">
                 {recentActivity.map((act) => {
                   const badgeLabel = activityBadgeLabel(act.type, act);
-                  const badgeColor =
-                    act.type === 'school' ? '#8b5cf6' : act.type === 'visit' ? '#3b82f6' : 'var(--success-color)';
+                  const badgeTone = act.type === 'school' ? 'school' : act.type === 'visit' ? 'visit' : 'daily';
                   const viewPath = activityPath(act);
                   const clickable = canViewActivity(act) && viewPath;
                   const openActivity = () => {
@@ -298,13 +294,7 @@ const DashboardPage = () => {
                         }
                       }}
                     >
-                        <div
-                          className="dashboard-activity-item__badge"
-                          style={{
-                            background: `${badgeColor}20`,
-                            color: badgeColor,
-                          }}
-                        >
+                        <div className={`dashboard-activity-item__badge activity-badge--${badgeTone}`}>
                             {badgeLabel}
                         </div>
                         <h4 className="dashboard-activity-item__school">{act.schoolName || 'مدرسة غير محددة'}</h4>

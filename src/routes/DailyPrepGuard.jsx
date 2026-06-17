@@ -9,7 +9,7 @@ export default function DailyPrepGuard({ children }) {
 
   if (!ready) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+      <div className="route-loading">
         <div className="loading-spinner" />
       </div>
     );

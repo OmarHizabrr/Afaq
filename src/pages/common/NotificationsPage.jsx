@@ -9,6 +9,7 @@ import RecipientUserCard from '../../components/RecipientUserCard';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import UnifiedMessageCard from '../../components/UnifiedMessageCard';
+import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 import { getUserProfilePath } from '../../utils/profileLinks';
 
 const ROLE_LABELS = {
@@ -58,16 +59,8 @@ const NotificationsPage = ({ user }) => {
   const markAllRunningRef = useRef(false);
   const [createChatBusy, setCreateChatBusy] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(true);
-  const [isNarrow, setIsNarrow] = useState(false);
+  const isNarrow = useMediaQuery(MOBILE_QUERY);
   const [chatMobileMode, setChatMobileMode] = useState('list');
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)');
-    const fn = () => setIsNarrow(mq.matches);
-    fn();
-    mq.addEventListener('change', fn);
-    return () => mq.removeEventListener('change', fn);
-  }, []);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -341,30 +334,33 @@ const NotificationsPage = ({ user }) => {
   };
 
   if (!actorId) return null;
-  if (loadingUsers) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+  if (loadingUsers) return <div className="loading-spinner page-loading-lg" />;
 
   return (
-    <div className="notifications-page">
+    <div className={`notifications-page${isNarrow ? ' notifications-page--mobile' : ''}`}>
       <PageHeader
         icon={Bell}
         iconBox
         title="مركز الإشعارات والتنبيهات"
-        subtitle="تحديث فوري للإشعارات والمحادثات"
+        subtitle={isNarrow ? undefined : 'تحديث فوري للإشعارات والمحادثات'}
       >
-        <button
-          type="button"
-          className={`btn-md ${activeTab === 'notifications' ? 'btn-md--primary' : 'btn-md--outline'}`}
-          onClick={() => setActiveTab('notifications')}
-        >
-          <Bell size={16} /> الإشعارات
-        </button>
-        <button
-          type="button"
-          className={`btn-md ${activeTab === 'chats' ? 'btn-md--primary' : 'btn-md--outline'}`}
-          onClick={() => setActiveTab('chats')}
-        >
-          <MessageCircle size={16} /> المحادثات
-        </button>
+        <div className="notifications-page__tabs">
+          <button
+            type="button"
+            className={`btn-md ${activeTab === 'notifications' ? 'btn-md--primary' : 'btn-md--outline'}`}
+            onClick={() => setActiveTab('notifications')}
+          >
+            <Bell size={16} /> الإشعارات
+          </button>
+          <button
+            type="button"
+            className={`btn-md ${activeTab === 'chats' ? 'btn-md--primary' : 'btn-md--outline'}`}
+            onClick={() => setActiveTab('chats')}
+          >
+            <MessageCircle size={16} /> المحادثات
+          </button>
+        </div>
+        <div className="notifications-page__toolbar">
         {recipients.length > 0 && (
           <button type="button" className="btn-md btn-md--outline" onClick={() => { setIsNewChatOpen(true); setChatRoleFilter('all'); }}>
             <Users size={16} /> محادثة جديدة
@@ -380,14 +376,15 @@ const NotificationsPage = ({ user }) => {
             تعليم الكل كمقروء
           </BusyButton>
         )}
+        </div>
       </PageHeader>
 
       {activeTab === 'notifications' ? (
         <div className="notif-list-stack">
           {notifications.length === 0 ? (
-            <div className="surface-card surface-card--lg" style={{ textAlign: 'center', padding: '5rem' }}>
-              <Bell size={48} style={{ opacity: 0.1, marginBottom: '1rem' }} />
-              <p style={{ color: 'var(--text-secondary)' }}>لا توجد إشعارات جديدة بانتظارك.</p>
+            <div className="surface-card surface-card--lg notifications-page__empty">
+              <Bell size={48} className="notifications-page__empty-icon" aria-hidden />
+              <p className="notifications-page__empty-text">لا توجد إشعارات جديدة بانتظارك.</p>
             </div>
           ) : (
             notifications.map((n) => (
@@ -409,19 +406,10 @@ const NotificationsPage = ({ user }) => {
                       <img
                         src={n.fromUserPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(n.fromUserName || 'User')}`}
                         alt=""
-                        style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border-color)' }}
+                        className="notif-sender-avatar"
                       />
-                      <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{n.fromUserName || 'مرسل غير معروف'}</span>
-                      <span
-                        style={{
-                          fontSize: '0.75rem',
-                          color: 'var(--text-secondary)',
-                          background: 'var(--bg-color)',
-                          padding: '2px 8px',
-                          borderRadius: '999px',
-                          border: '1px solid var(--border-color)',
-                        }}
-                      >
+                      <span className="notif-sender-name">{n.fromUserName || 'مرسل غير معروف'}</span>
+                      <span className="notif-sender-role">
                         {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || 'بدون دور'}
                       </span>
                     </>
@@ -429,14 +417,13 @@ const NotificationsPage = ({ user }) => {
                   body={n.body}
                   timestamp={
                     <>
-                      <Calendar size={14} style={{ flexShrink: 0 }} /> {n.createdAt ? new Date(n.createdAt).toLocaleString('ar-EG') : '-'}
+                      <Calendar size={14} className="notif-timestamp-icon" aria-hidden /> {n.createdAt ? new Date(n.createdAt).toLocaleString('ar-EG') : '-'}
                     </>
                   }
                   footer={
                     <button
                       type="button"
-                      className="btn-md btn-md--outline"
-                      style={{ minHeight: 32, fontSize: '0.8rem' }}
+                      className="btn-md btn-md--outline btn-md--compact"
                       onClick={(e) => {
                         e.stopPropagation();
                         openReply(n);
@@ -479,27 +466,25 @@ const NotificationsPage = ({ user }) => {
       )}
 
       <FormModal open={isComposeOpen} title="إرسال إشعار جديد" onClose={() => setIsComposeOpen(false)}>
-        <form onSubmit={handleSend}>
+        <form onSubmit={handleSend} className="notifications-modal-form">
           <label className="app-label">المستلمون</label>
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <div className="notifications-modal__pick-toolbar">
             <button
               type="button"
-              className="btn-md btn-md--outline"
-              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              className="btn-md btn-md--outline btn-md--compact"
               onClick={() => setSelectedRecipientIds(composeRecipients.map((u) => u.id))}
             >
               تحديد الكل
             </button>
             <button
               type="button"
-              className="btn-md btn-md--outline"
-              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              className="btn-md btn-md--outline btn-md--compact"
               onClick={() => setSelectedRecipientIds([])}
             >
               إلغاء التحديد
             </button>
           </div>
-          <div className="role-filter-bar" style={{ marginBottom: '0.5rem' }}>
+          <div className="role-filter-bar notifications-modal__filters">
             {RECIPIENT_ROLE_FILTER_ORDER.map((rid) => (
               <button
                 key={`compose-${rid}`}
@@ -511,7 +496,7 @@ const NotificationsPage = ({ user }) => {
               </button>
             ))}
           </div>
-          <div className="modal-scroll-box" style={{ maxHeight: 320, marginBottom: '0.75rem' }}>
+          <div className="modal-scroll-box notifications-modal__scroll">
             {composeRecipients.map((u) => (
               <RecipientUserCard
                 key={u.id}
@@ -529,24 +514,23 @@ const NotificationsPage = ({ user }) => {
             ))}
           </div>
           <label className="app-label">نوع الرسالة</label>
-          <AppSelect className="app-select" value={type} onChange={(e) => setType(e.target.value)} style={{ marginBottom: '0.75rem' }}>
+          <AppSelect className="app-select notifications-modal__field" value={type} onChange={(e) => setType(e.target.value)}>
             <option value="info">معلومة</option>
             <option value="success">نجاح</option>
             <option value="warning">تنبيه</option>
           </AppSelect>
           <label className="app-label">العنوان</label>
-          <input className="app-input" value={title} onChange={(e) => setTitle(e.target.value)} style={{ marginBottom: '0.75rem' }} />
+          <input className="app-input notifications-modal__field" value={title} onChange={(e) => setTitle(e.target.value)} />
           <label className="app-label">المحتوى</label>
-          <textarea className="app-textarea" value={body} onChange={(e) => setBody(e.target.value)} style={{ marginBottom: '1rem' }} />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsComposeOpen(false)}>
+          <textarea className="app-textarea notifications-modal__field notifications-modal__field--last" value={body} onChange={(e) => setBody(e.target.value)} />
+          <div className="modal-footer-actions">
+            <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsComposeOpen(false)}>
               إلغاء
             </button>
             <BusyButton
               type="submit"
               busy={sending}
-              className="google-btn google-btn--filled"
-              style={{ width: 'auto', marginTop: 0 }}
+              className="google-btn google-btn--filled modal-footer-actions__btn"
             >
               إرسال
             </BusyButton>
@@ -555,29 +539,27 @@ const NotificationsPage = ({ user }) => {
       </FormModal>
 
       <FormModal open={isNewChatOpen} title="إنشاء محادثة" onClose={() => setIsNewChatOpen(false)}>
-        <form onSubmit={createConversation}>
+        <form onSubmit={createConversation} className="notifications-modal-form">
           <label className="app-label">العنوان (اختياري للجروب)</label>
-          <input className="app-input" value={newChatTitle} onChange={(e) => setNewChatTitle(e.target.value)} style={{ marginBottom: '0.75rem' }} />
+          <input className="app-input notifications-modal__field" value={newChatTitle} onChange={(e) => setNewChatTitle(e.target.value)} />
           <label className="app-label">الأعضاء</label>
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <div className="notifications-modal__pick-toolbar">
             <button
               type="button"
-              className="btn-md btn-md--outline"
-              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              className="btn-md btn-md--outline btn-md--compact"
               onClick={() => setNewChatUsers(chatRecipients.map((u) => u.id))}
             >
               تحديد الكل
             </button>
             <button
               type="button"
-              className="btn-md btn-md--outline"
-              style={{ minHeight: 32, fontSize: '0.8rem' }}
+              className="btn-md btn-md--outline btn-md--compact"
               onClick={() => setNewChatUsers([])}
             >
               إلغاء التحديد
             </button>
           </div>
-          <div className="role-filter-bar" style={{ marginBottom: '0.5rem' }}>
+          <div className="role-filter-bar notifications-modal__filters">
             {RECIPIENT_ROLE_FILTER_ORDER.map((rid) => (
               <button
                 key={`chat-${rid}`}
@@ -589,7 +571,7 @@ const NotificationsPage = ({ user }) => {
               </button>
             ))}
           </div>
-          <div className="modal-scroll-box" style={{ maxHeight: 320, marginBottom: '1rem' }}>
+          <div className="modal-scroll-box notifications-modal__scroll notifications-modal__scroll--lg">
             {chatRecipients.map((u) => (
               <RecipientUserCard
                 key={u.id}
@@ -606,15 +588,14 @@ const NotificationsPage = ({ user }) => {
               />
             ))}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsNewChatOpen(false)}>
+          <div className="modal-footer-actions">
+            <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsNewChatOpen(false)}>
               إلغاء
             </button>
             <BusyButton
               type="submit"
               busy={createChatBusy}
-              className="google-btn google-btn--filled"
-              style={{ width: 'auto', marginTop: 0 }}
+              className="google-btn google-btn--filled modal-footer-actions__btn"
             >
               بدء المحادثة
             </BusyButton>

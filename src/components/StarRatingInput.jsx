@@ -8,18 +8,19 @@ import { Star } from 'lucide-react';
  * @param {string} [props.label]
  * @param {string} [props.className]
  */
-const StarRatingInput = ({ value, onChange, label, className = '', style }) => {
+const StarRatingInput = ({ value, onChange, label, className = '', style, compact = false }) => {
   const v = Math.min(5, Math.max(0, Math.round(Number(value) || 0)));
+  const starSize = compact ? 22 : 28;
 
   return (
-    <div className={className} style={style}>
+    <div className={`star-rating-input ${compact ? 'star-rating-input--compact' : ''} ${className}`.trim()} style={style}>
       {label ? (
-        <span className="app-label" style={{ display: 'block', marginBottom: 8 }}>
+        <span className="app-label star-rating-input__label">
           {label}
         </span>
       ) : null}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-        <div role="group" aria-label={label || 'تقييم بالنجوم'} style={{ display: 'flex', gap: 4 }}>
+      <div className="star-rating-input__row">
+        <div role="group" aria-label={label || 'تقييم بالنجوم'} className="star-rating-input__stars">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -30,7 +31,7 @@ const StarRatingInput = ({ value, onChange, label, className = '', style }) => {
               onClick={() => onChange(star)}
             >
               <Star
-                size={28}
+                size={starSize}
                 strokeWidth={1.75}
                 fill={star <= v ? '#f59e0b' : 'transparent'}
                 color="#f59e0b"
@@ -38,7 +39,7 @@ const StarRatingInput = ({ value, onChange, label, className = '', style }) => {
             </button>
           ))}
         </div>
-        <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+        <span className="star-rating-input__value">
           {v}/5
         </span>
       </div>

@@ -43,10 +43,10 @@ const SupervisorHistoryPage = ({ user }) => {
     fetchMyReports();
   }, [supervisorId]);
 
-  if (loading) return <div className="loading-spinner" style={{ margin: '3rem auto' }}></div>;
+  if (loading) return <div className="loading-spinner page-loading-md" />;
 
   return (
-    <div>
+    <div className="portal-page supervisor-history-page">
       <PageHeader
         icon={History}
         iconColor="var(--md-primary)"
@@ -54,30 +54,27 @@ const SupervisorHistoryPage = ({ user }) => {
         subtitle="مراجعة التقارير والتقييمات التي قمت برفعها سابقاً"
       />
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem' }}>{error}</div>}
+      {error && <div className="app-alert app-alert--error portal-page-alert">{error}</div>}
 
       {reports.length === 0 ? (
-        <div className="surface-card" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)', borderRadius: '16px' }}>
-          لا توجد زيارات مسجلة باسمك حتى الآن. ابدأ بأول زيارة من شاشة "تسجيل زيارة ميدانية".
+        <div className="surface-card portal-empty-card">
+          لا توجد زيارات مسجلة باسمك حتى الآن. ابدأ بأول زيارة من شاشة &quot;تسجيل زيارة ميدانية&quot;.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+        <div className="portal-history-grid">
           {reports.map((rpt) => (
-            <div key={rpt.id} className="surface-card" style={{ 
-              padding: '1.5rem', borderRadius: '16px',
-              position: 'relative'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div key={rpt.id} className="surface-card portal-history-card">
+              <div className="portal-history-card__head">
+                <span className="portal-history-card__date">
                   <Calendar size={14} /> {rpt.timestamp?.split('T')[0]}
                 </span>
-                <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--md-primary)' }}>
-                  <Star size={14} inline style={{ marginBottom: '-2px' }} /> {formatVisitRatingLabel(rpt.teacherRating)}
+                <span className="portal-history-card__rating">
+                  <Star size={14} className="portal-history-card__star" /> {formatVisitRatingLabel(rpt.teacherRating)}
                 </span>
               </div>
-              
-              <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>{rpt.schoolName}</h3>
-              <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+
+              <h3 className="portal-history-card__school">{rpt.schoolName}</h3>
+              <p className="portal-history-card__subject">
                 {rpt.subjectName} - أسبوع {rpt.week}
               </p>
 
@@ -95,23 +92,22 @@ const SupervisorHistoryPage = ({ user }) => {
                 </button>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    {rpt.mediaUrls?.length || 0} مرفقات
-                 </div>
-                 <button 
-                  className="icon-btn" 
+              <div className="portal-history-card__footer">
+                <div className="portal-history-card__attachments">
+                  {rpt.mediaUrls?.length || 0} مرفقات
+                </div>
+                <button
+                  type="button"
+                  className="google-btn portal-history-card__view-btn"
                   onClick={() => navigate(`/supervisor/reports/${rpt.id}`)}
-                  style={{ background: 'var(--md-primary)', color: 'var(--md-on-primary)', borderRadius: '8px', padding: '6px 12px', fontSize: '0.85rem', width: 'auto' }}
                 >
-                  <Eye size={16} style={{ marginLeft: '4px' }} /> عرض التفاصيل
+                  <Eye size={16} /> عرض التفاصيل
                 </button>
               </div>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 };

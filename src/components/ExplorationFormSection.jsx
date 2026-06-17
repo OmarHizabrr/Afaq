@@ -44,11 +44,11 @@ const ExplorationFormSection = ({
       {!hideTypeSelect && (
         <>
           {typesLoading ? (
-            <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+            <div className="app-alert app-alert--info exploration-form-section__alert">
               جاري تحميل أنواع الاستكشاف…
             </div>
           ) : visibleExplorationTypes.length === 0 ? (
-            <div className="exploration-form-section__empty" style={{ marginBottom: '0.75rem' }}>
+            <div className="exploration-form-section__empty">
               <p className="exploration-form-section__empty-title">لا توجد أنواع متاحة لهذه الصفحة</p>
               <p className="exploration-form-section__empty-text">
                 {pageHint
@@ -57,7 +57,7 @@ const ExplorationFormSection = ({
               </p>
             </div>
           ) : useTypeCards ? (
-            <div className="app-field app-field--grow" style={{ marginBottom: '0.85rem' }}>
+            <div className="app-field app-field--grow exploration-form-section__type-field">
               <label className="app-label">نوع الاستكشاف</label>
               <div className="exploration-form-section__type-grid" role="listbox" aria-label="نوع الاستكشاف">
                 {visibleExplorationTypes.map((t) => (
@@ -79,7 +79,7 @@ const ExplorationFormSection = ({
               )}
             </div>
           ) : (
-            <div className="app-field app-field--grow" style={{ marginBottom: '0.85rem' }}>
+            <div className="app-field app-field--grow exploration-form-section__type-field">
               <label className="app-label">نوع الاستكشاف</label>
               <AppSelect
                 searchable
@@ -104,7 +104,7 @@ const ExplorationFormSection = ({
         <>
           {heading && <h3 className="exploration-form-section__heading">{heading}</h3>}
           {optionCachesLoading && (
-            <p style={{ margin: '0 0 8px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            <p className="exploration-form-section__loading-hint">
               جاري تحميل قوائم البيانات من المنصة…
             </p>
           )}

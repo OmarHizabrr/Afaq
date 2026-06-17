@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AuthService, { ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE } from '../services/authService';
-import { Phone, Lock, LogIn, Eye, EyeOff } from 'lucide-react';
+import { Phone, Lock, LogIn, Eye, EyeOff, Download, Share } from 'lucide-react';
 import BusyButton from '../components/BusyButton';
+import useInstallPrompt from '../hooks/useInstallPrompt';
 
 const GoogleIcon = () => (
   <svg className="google-icon" viewBox="0 0 48 48">
@@ -20,6 +21,7 @@ const LoginPage = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const { canPrompt, iosHint, hasNativePrompt, promptInstall, installed } = useInstallPrompt();
 
   useEffect(() => {
     try {
@@ -77,9 +79,9 @@ const LoginPage = () => {
       <div className="glow-orb"></div>
       
       <div className="login-card">
-        <header style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-          <h1 className="logo-text" style={{ fontSize: 'clamp(2rem, 6vw, 3rem)' }}>آفاق</h1>
-          <p className="tagline" style={{ margin: 0 }}>منصة تعليمية — نفس وضوح وتجربة أدوات Google</p>
+        <header className="login-card__header">
+          <h1 className="logo-text">آفاق</h1>
+          <p className="tagline">منصة تعليمية — نفس وضوح وتجربة أدوات Google</p>
         </header>
 
         <section className="entry-dialog login-entry-dialog">
@@ -131,7 +133,7 @@ const LoginPage = () => {
             </div>
 
             <BusyButton type="submit" className="google-btn google-btn--filled" busy={loadingCustom}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <span className="btn-inner">
                 <LogIn size={20} />
                 تسجيل الدخول
               </span>
@@ -145,7 +147,7 @@ const LoginPage = () => {
           </div>
 
           <BusyButton type="button" className="google-btn" onClick={handleGoogleLogin} busy={loadingGoogle}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            <span className="btn-inner">
               <GoogleIcon />
               <span>المتابعة باستخدام Google</span>
             </span>
@@ -154,14 +156,30 @@ const LoginPage = () => {
           <p className="app-alert app-alert--info login-form__hint">
             يتم تفعيل الصلاحيات فقط بعد تحديد نوع الصلاحيات من المدير.
           </p>
+
+          {canPrompt && !installed ? (
+            <div className="login-install-hint">
+              {hasNativePrompt ? (
+                <button type="button" className="login-install-hint__btn" onClick={promptInstall}>
+                  <Download size={16} />
+                  ثبّت تطبيق آفاق على جهازك
+                </button>
+              ) : iosHint ? (
+                <p className="login-install-hint__text">
+                  <Share size={14} aria-hidden />
+                  للتثبيت: شارك ← «إضافة إلى الشاشة الرئيسية»
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </section>
 
-        <p style={{ marginTop: '1.75rem', color: 'var(--text-secondary)', fontSize: '0.75rem', textAlign: 'center', lineHeight: 1.5 }}>
+        <p className="login-card__legal">
           بالدخول، أنت توافق على شروط الاستخدام وسياسة الخصوصية لمؤسسة آفاق.
         </p>
       </div>
 
-      <footer style={{ position: 'absolute', bottom: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+      <footer className="login-page-footer">
         منصة آفاق التعليمية
       </footer>
     </main>

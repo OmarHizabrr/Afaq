@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Users, Plus, Edit2, Trash2, UserPlus, Eye, Compass } from "lucide-react";
 import FirestoreApi from "../../services/firestoreApi";
 import PageHeader from "../../components/PageHeader";
@@ -10,6 +10,7 @@ import BusyButton from "../../components/BusyButton";
 import ExplorationFormSection from "../../components/ExplorationFormSection";
 import ExplorationBadge from "../../components/ExplorationBadge";
 import ExplorationDataModal from "../../components/ExplorationDataModal";
+import TeacherStudentCard from "../../components/TeacherStudentCard";
 import { useExplorationForm } from "../../hooks/useExplorationForm";
 import usePermissions from "../../context/usePermissions";
 import { EXPLORATION_BRIDGE_ACTION_IDS } from "../../config/permissionRegistry";
@@ -18,6 +19,7 @@ const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "
 
 const TeacherStudentsPage = ({ user }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { explorationBridgeAllowed } = usePermissions();
   const actorId = user?.uid || user?.id;
   const [students, setStudents] = useState([]);
@@ -250,6 +252,16 @@ const TeacherStudentsPage = ({ user }) => {
     setStudentAge(student.age || "");
   };
 
+  useEffect(() => {
+    const editStudent = location.state?.editStudent;
+    if (!editStudent || !schoolReady) return;
+    setIsEditing(editStudent);
+    setIsAdding(true);
+    setStudentName(editStudent.studentName || '');
+    setStudentAge(editStudent.age || '');
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.state?.editStudent, schoolReady, location.pathname, navigate]);
+
   const handleDelete = async (id) => {
     if (!activeSchoolId) return;
     try {
@@ -277,22 +289,19 @@ const TeacherStudentsPage = ({ user }) => {
 
   if (!schoolReady) {
     return (
-      <div className="loading-spinner" style={{ margin: "4rem auto" }}></div>
+      <div className="loading-spinner page-loading-lg"></div>
     );
   }
 
   if (!activeSchoolId) {
     return (
-      <div
-        className="surface-card"
-        style={{ padding: "2rem", textAlign: "center", borderRadius: "12px" }}
-      >
-        <h2 style={{ color: "var(--danger-color)" }}>تنبيه إداري</h2>
-        <p style={{ color: "var(--text-secondary)" }}>
+      <div className="surface-card portal-alert-card">
+        <h2 className="portal-alert-card__title">تنبيه إداري</h2>
+        <p className="portal-alert-card__text">
           حساب المعلم الخاص بك غير مرتبط بأي مدرسة في النظام (لا في الملف ولا في
           مرآة Mygroup).
         </p>
-        <p style={{ color: "var(--text-secondary)" }}>
+        <p className="portal-alert-card__text">
           يرجى التواصل مع مدير النظام أو مشرف المنطقة لتعيين مدرسة لك.
         </p>
       </div>
@@ -300,7 +309,7 @@ const TeacherStudentsPage = ({ user }) => {
   }
 
   return (
-    <div>
+    <div className="teacher-students-page portal-page">
       <PageHeader
         icon={Users}
         iconColor="var(--success-color)"
@@ -310,8 +319,7 @@ const TeacherStudentsPage = ({ user }) => {
         <>
           <button
             type="button"
-            className="google-btn google-btn--filled google-btn--toolbar"
-            style={{ background: "var(--success-color)", color: "#fff" }}
+            className="google-btn google-btn--filled google-btn--toolbar google-btn--success"
             onClick={() => {
               setIsAdding(true);
               setIsEditing(null);
@@ -320,7 +328,8 @@ const TeacherStudentsPage = ({ user }) => {
             }}
           >
             <UserPlus size={18} />
-            <span>إضافة دارس جديد</span>
+            <span className="portal-toolbar__long">إضافة دارس جديد</span>
+            <span className="portal-toolbar__short">إضافة</span>
           </button>
           {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
             <button
@@ -329,31 +338,26 @@ const TeacherStudentsPage = ({ user }) => {
               onClick={() => setIsExploringAdding(true)}
             >
               <Compass size={18} />
-              <span>إضافة من الاستكشاف</span>
+              <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
+              <span className="portal-toolbar__short">استكشاف</span>
             </button>
           )}
         </>
       </PageHeader>
 
       {error && (
-        <div
-          className="app-alert app-alert--error"
-          style={{ marginBottom: "1rem" }}
-        >
+        <div className="app-alert app-alert--error portal-page-alert">
           {error}
         </div>
       )}
       {success && (
-        <div
-          className="app-alert app-alert--success"
-          style={{ marginBottom: "1rem" }}
-        >
+        <div className="app-alert app-alert--success portal-page-alert">
           {success}
         </div>
       )}
 
       {schoolOptions.length > 1 && activeSchoolId && (
-        <div className="surface-card" style={{ padding: "1rem 1.25rem", marginBottom: "1rem" }}>
+        <div className="surface-card portal-filter-card teacher-students-page__filter">
           <label className="app-label">المدرسة</label>
           <AppSelect
             className="app-select"
@@ -384,8 +388,7 @@ const TeacherStudentsPage = ({ user }) => {
             onChange={(e) => setStudentName(e.target.value)}
             required
             autoFocus
-            className="app-input"
-            style={{ marginBottom: "0.75rem" }}
+            className="app-input portal-form-field--spaced"
           />
           <label className="app-label">السن</label>
           <input
@@ -393,20 +396,12 @@ const TeacherStudentsPage = ({ user }) => {
             placeholder="السن"
             value={studentAge}
             onChange={(e) => setStudentAge(e.target.value)}
-            className="app-input"
-            style={{ marginBottom: "1rem" }}
+            className="app-input portal-form-field--spaced-lg"
           />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "0.75rem",
-            }}
-          >
+          <div className="portal-form-footer portal-form-footer--modal">
             <button
               type="button"
-              className="google-btn"
-              style={{ width: "auto", marginTop: 0 }}
+              className="google-btn google-btn--inline"
               onClick={() => setIsAdding(false)}
             >
               إلغاء
@@ -414,13 +409,7 @@ const TeacherStudentsPage = ({ user }) => {
             <BusyButton
               type="submit"
               busy={loading}
-              className="google-btn google-btn--filled"
-              style={{
-                width: "auto",
-                marginTop: 0,
-                background: "var(--success-color)",
-                color: "#fff",
-              }}
+              className="google-btn google-btn--filled google-btn--inline google-btn--success"
             >
               {isEditing ? "تحديث" : "حفظ"}
             </BusyButton>
@@ -441,15 +430,14 @@ const TeacherStudentsPage = ({ user }) => {
             heading="حقول نموذج الاستكشاف"
             currentPageId="teacher_students"
           />
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "1rem" }}>
-            <button type="button" className="google-btn" style={{ width: "auto", marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>
+          <div className="portal-form-footer portal-form-footer--modal">
+            <button type="button" className="google-btn google-btn--inline" onClick={() => setIsExploringAdding(false)}>
               إلغاء
             </button>
             <BusyButton
               type="submit"
               busy={expSaving}
-              className="google-btn google-btn--filled"
-              style={{ width: "auto", marginTop: 0, background: "var(--success-color)", color: "#fff" }}
+              className="google-btn google-btn--filled google-btn--inline google-btn--success"
             >
               حفظ
             </BusyButton>
@@ -459,109 +447,90 @@ const TeacherStudentsPage = ({ user }) => {
 
       {/* List */}
       {loading && !isAdding ? (
-        <div className="loading-spinner" style={{ margin: "2rem auto" }}></div>
+        <div className="loading-spinner page-loading"></div>
       ) : students.length === 0 ? (
         <div className="empty-state">
           لم تقم بإضافة أي دارس حتى الآن. ابدأ بإضافة طلاب حلقتك.
         </div>
       ) : (
-        <div
-          className="surface-card"
-          style={{ borderRadius: "12px", overflow: "hidden" }}
-        >
-          <div className="md-table-scroll">
-            <table className="md-table" style={{ minWidth: "unset" }}>
-              <thead>
-                <tr>
-                  <th>الاسم</th>
-                  <th style={{ width: "100px" }}>السن</th>
-                  <th style={{ width: "120px", textAlign: "center" }}>
-                    إجراءات
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((student) => (
-                  <tr key={student.id}>
-                    <td
-                      style={{
-                        padding: "16px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "36px",
-                          height: "36px",
-                          borderRadius: "50%",
-                          background: "var(--success-color)",
-                          color: "#fff",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {student.studentName.charAt(0)}
-                      </div>
-                      <span>{student.studentName}</span>
-                      {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
-                        <ExplorationBadge
-                          record={student}
-                          onClick={() => setViewingExplorationOf(student)}
-                        />
-                      )}
-                    </td>
-                    <td style={{ padding: "16px" }}>{student.age || "-"}</td>
-                    <td
-                      style={{
-                        padding: "16px",
-                        textAlign: "center",
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <button
-                        className="icon-btn"
-                        onClick={() =>
-                          navigate(`/teacher/students/${student.id}`)
-                        }
-                        title="عرض الملف الشخصي"
-                        style={{ display: "inline-flex" }}
-                      >
-                        <Eye size={18} color="var(--accent-color)" />
-                      </button>
-                      <button
-                        className="icon-btn"
-                        onClick={() => handleEditClick(student)}
-                        title="تعديل"
-                        style={{ display: "inline-flex" }}
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        className="icon-btn"
-                        onClick={() =>
-                          setPendingDelete({
-                            id: student.id,
-                            name: student.studentName,
-                          })
-                        }
-                        title="حذف"
-                        style={{ display: "inline-flex" }}
-                      >
-                        <Trash2 size={18} color="var(--danger-color)" />
-                      </button>
-                    </td>
+        <>
+          <div className="surface-card portal-table-wrap teacher-students-desktop-only">
+            <div className="md-table-scroll">
+              <table className="md-table portal-table">
+                <thead>
+                  <tr>
+                    <th>الاسم</th>
+                    <th className="portal-table__col-narrow">السن</th>
+                    <th className="portal-table__col-actions">إجراءات</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {students.map((student) => (
+                    <tr key={student.id}>
+                      <td className="portal-table__name-cell">
+                        <div className="teacher-student-avatar">
+                          {student.studentName.charAt(0)}
+                        </div>
+                        <span>{student.studentName}</span>
+                        {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
+                          <ExplorationBadge
+                            record={student}
+                            onClick={() => setViewingExplorationOf(student)}
+                          />
+                        )}
+                      </td>
+                      <td className="portal-table__cell-pad">{student.age || "-"}</td>
+                      <td className="portal-table__cell-actions">
+                        <button
+                          className="icon-btn"
+                          onClick={() =>
+                            navigate(`/teacher/students/${student.id}`)
+                          }
+                          title="عرض الملف الشخصي"
+                        >
+                          <Eye size={18} color="var(--accent-color)" />
+                        </button>
+                        <button
+                          className="icon-btn"
+                          onClick={() => handleEditClick(student)}
+                          title="تعديل"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          className="icon-btn"
+                          onClick={() =>
+                            setPendingDelete({
+                              id: student.id,
+                              name: student.studentName,
+                            })
+                          }
+                          title="حذف"
+                        >
+                          <Trash2 size={18} color="var(--danger-color)" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          <div className="teacher-students-mobile-only">
+            {students.map((student) => (
+              <TeacherStudentCard
+                key={student.id}
+                student={student}
+                showExplorationBadge={explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view)}
+                onView={(id) => navigate(`/teacher/students/${id}`)}
+                onEdit={handleEditClick}
+                onDelete={(s) => setPendingDelete({ id: s.id, name: s.studentName })}
+                onExplorationView={setViewingExplorationOf}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       <ConfirmDialog

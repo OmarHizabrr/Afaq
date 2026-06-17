@@ -122,7 +122,7 @@ export default function AdminUserTypesPage({ user }) {
   };
 
   return (
-    <div>
+    <div className={`admin-user-types-page${selectedId ? ' admin-user-types-page--has-mobile-save' : ''}`}>
       <PageHeader
         title="أنواع المستخدمين والصلاحيات"
         subtitle="أنشئ نوعاً، ثم فعّل الصفحات والإجراءات التي تظهر له."
@@ -168,7 +168,7 @@ export default function AdminUserTypesPage({ user }) {
                   className="app-input"
                 />
               </label>
-              <div className="admin-user-types-content__actions">
+              <div className="admin-user-types-content__actions admin-user-types-content__actions--desktop">
                 <BusyButton type="button" className="google-btn google-btn--filled" onClick={save} busy={saving}>
                   حفظ النوع
                 </BusyButton>
@@ -207,11 +207,11 @@ export default function AdminUserTypesPage({ user }) {
                         </div>
                       )}
                       {pageAllowed && pg.supportsDataScope && (
-                        <div className="admin-user-types-page-card__scope" style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
-                          <span className="app-label" style={{ display: 'block', marginBottom: 6 }}>
+                        <div className="admin-user-types-page-card__scope">
+                          <span className="app-label admin-user-types-page-card__scope-label">
                             نطاق عرض البيانات في هذه الصفحة
                           </span>
-                          <label className="admin-user-types-page-card__action-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <label className="admin-user-types-page-card__action-item admin-user-types-page-card__scope-item">
                             <input
                               type="radio"
                               name={`data-scope-${pg.id}`}
@@ -220,7 +220,7 @@ export default function AdminUserTypesPage({ user }) {
                             />
                             كل السجلات (عرض شامل)
                           </label>
-                          <label className="admin-user-types-page-card__action-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <label className="admin-user-types-page-card__action-item admin-user-types-page-card__scope-item">
                             <input
                               type="radio"
                               name={`data-scope-${pg.id}`}
@@ -239,6 +239,30 @@ export default function AdminUserTypesPage({ user }) {
           )}
         </section>
       </div>
+
+      {selectedId ? (
+        <div className="admin-user-types-mobile-save-bar">
+          <BusyButton
+            type="button"
+            className="google-btn google-btn--filled admin-user-types-mobile-save-bar__btn"
+            onClick={save}
+            busy={saving}
+          >
+            حفظ النوع
+          </BusyButton>
+          {selected ? (
+            <BusyButton
+              type="button"
+              className="icon-btn admin-user-types-mobile-save-bar__delete"
+              onClick={remove}
+              title="حذف النوع"
+              busy={saving}
+            >
+              <Trash2 size={18} color="var(--danger-color)" />
+            </BusyButton>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import AuthService from '../../services/authService';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import BusyButton from '../../components/BusyButton';
+import InstallAppSection from '../../components/InstallAppSection';
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
@@ -76,7 +77,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="settings-page">
+    <div className="settings-page settings-page--has-mobile-save">
       <PageHeader icon={Settings} title="إعدادات النظام والملف الشخصي" />
 
       {success && (
@@ -85,6 +86,8 @@ const SettingsPage = () => {
         </div>
       )}
       {error && <div className="app-alert app-alert--error settings-alert">{error}</div>}
+
+      <InstallAppSection />
 
       {/* Theme Settings */}
       <div className="surface-card surface-card--lg settings-theme-card">
@@ -182,16 +185,30 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        <div className="settings-profile-form__actions">
+        <div className="settings-profile-form__actions settings-profile-form__actions--desktop">
           <BusyButton
             type="submit"
             busy={loading}
-            className="google-btn google-btn--filled google-btn--toolbar settings-profile-form__save-btn"
+            className="google-btn google-btn--filled google-btn--toolbar settings-profile-form__save-btn settings-profile-form__save-btn--desktop"
           >
             حفظ التعديلات
           </BusyButton>
         </div>
       </form>
+
+      <div className="admin-settings-mobile-save-bar">
+        <BusyButton
+          type="button"
+          busy={loading}
+          className="google-btn google-btn--filled admin-settings-mobile-save-bar__btn"
+          onClick={(e) => {
+            const form = e.currentTarget.closest('.settings-page')?.querySelector('.settings-profile-form');
+            form?.requestSubmit();
+          }}
+        >
+          حفظ التعديلات
+        </BusyButton>
+      </div>
     </div>
   );
 };

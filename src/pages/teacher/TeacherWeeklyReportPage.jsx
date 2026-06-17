@@ -4,47 +4,37 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
+import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
 const ReportItem = ({ title, fieldPath, state, onChange }) => {
+  const isActive = state[fieldPath]?.isActive || false;
+
   return (
-    <div className="surface-card" style={{
-      padding: '1.5rem',
-      marginBottom: '1rem'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: state[fieldPath]?.isActive ? '1rem' : '0' }}>
-        <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{title}</h3>
-        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-          <div style={{ position: 'relative', width: '50px', height: '26px', background: state[fieldPath]?.isActive ? 'var(--success-color)' : 'var(--border-color)', borderRadius: '13px', transition: 'all 0.3s' }}>
-            <div style={{ position: 'absolute', top: '3px', [state[fieldPath]?.isActive ? 'left' : 'right']: '3px', width: '20px', height: '20px', background: '#fff', borderRadius: '50%', transition: 'all 0.3s' }}></div>
-          </div>
-          <input 
-            type="checkbox" 
-            checked={state[fieldPath]?.isActive || false}
+    <div className="surface-card teacher-weekly-item">
+      <div className={`teacher-weekly-item__head${isActive ? ' teacher-weekly-item__head--open' : ''}`}>
+        <h3 className="teacher-weekly-item__title">{title}</h3>
+        <label className="app-switch">
+          <input
+            type="checkbox"
+            className="app-switch__input"
+            checked={isActive}
             onChange={(e) => onChange(fieldPath, 'isActive', e.target.checked)}
-            style={{ display: 'none' }}
           />
+          <span className={`app-switch__track${isActive ? ' app-switch__track--on' : ''}`}>
+            <span className="app-switch__thumb" />
+          </span>
         </label>
       </div>
 
-      {state[fieldPath]?.isActive && (
-        <div>
-          <textarea 
+      {isActive && (
+        <div className="teacher-weekly-item__body">
+          <textarea
+            className="app-input teacher-weekly-item__textarea"
             placeholder="اكتب التفاصيل والملاحظات هنا..."
             value={state[fieldPath]?.details || ''}
             onChange={(e) => onChange(fieldPath, 'details', e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-color)',
-              color: 'var(--text-primary)',
-              minHeight: '80px',
-              resize: 'vertical',
-              fontSize: '0.95rem'
-            }}
           />
         </div>
       )}
@@ -53,6 +43,7 @@ const ReportItem = ({ title, fieldPath, state, onChange }) => {
 };
 
 const TeacherWeeklyReportPage = ({ user }) => {
+  const isMobile = useMediaQuery(MOBILE_QUERY);
   const actorId = user?.uid || user?.id;
   const [schoolOptions, setSchoolOptions] = useState([]);
   const [activeSchoolId, setActiveSchoolId] = useState('');
@@ -66,7 +57,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
     adultEducation: { isActive: false, details: '' },
     mosqueLesson: { isActive: false, details: '' },
     marriageContract: { isActive: false, details: '' },
-    others: { isActive: false, details: '' }
+    others: { isActive: false, details: '' },
   };
 
   const [reportState, setReportState] = useState(initialReportState);
@@ -103,9 +94,9 @@ const TeacherWeeklyReportPage = ({ user }) => {
   }, [user, actorId]);
 
   const handleStateChange = (field, key, value) => {
-    setReportState(prev => ({
+    setReportState((prev) => ({
       ...prev,
-      [field]: { ...prev[field], [key]: value }
+      [field]: { ...prev[field], [key]: value },
     }));
   };
 
@@ -118,7 +109,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
       setLoading(true);
       setError('');
       setSuccess('');
-      
+
       const api = FirestoreApi.Api;
       const schoolId = activeSchoolId || (await api.resolveUserSchoolId(user));
       if (!schoolId) {
@@ -137,13 +128,12 @@ const TeacherWeeklyReportPage = ({ user }) => {
           teacherId: actorId,
           schoolId,
           submissionDate: today,
-          reportData: reportState
-        }
+          reportData: reportState,
+        },
       });
 
       setSuccess('تم حفظ رفع التقرير الأسبوعي بنجاح! جزاك الله خيراً.');
       setReportState(initialReportState);
-
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء حفظ التقرير الأسبوعي');
@@ -153,7 +143,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <div className={`portal-page teacher-weekly-page${isMobile ? ' teacher-weekly-page--mobile-save' : ''}`}>
       <PageHeader
         icon={FileText}
         iconColor="var(--success-color)"
@@ -161,11 +151,11 @@ const TeacherWeeklyReportPage = ({ user }) => {
         subtitle="توثيق النشاطات الدعوية والمجتمعية"
       />
 
-      {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
-      {success && <div style={{ color: 'var(--success-color)', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error teacher-weekly-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success teacher-weekly-alert">{success}</div>}
 
       {schoolOptions.length > 1 && activeSchoolId && (
-        <div className="surface-card" style={{ padding: '1rem 1.25rem', marginBottom: '1rem' }}>
+        <div className="surface-card teacher-weekly-school-card">
           <label className="app-label">المدرسة المرتبطة بالتقرير</label>
           <AppSelect
             className="app-select"
@@ -186,28 +176,46 @@ const TeacherWeeklyReportPage = ({ user }) => {
         </div>
       )}
 
+      <div className="teacher-weekly-list">
       <ReportItem title="خطبة الجمعة" fieldPath="fridaySermon" state={reportState} onChange={handleStateChange} />
       <ReportItem title="دعوة غير المسلمين" fieldPath="dawah" state={reportState} onChange={handleStateChange} />
       <ReportItem title="تعليم الكبار" fieldPath="adultEducation" state={reportState} onChange={handleStateChange} />
       <ReportItem title="دروس أسبوعية في المسجد" fieldPath="mosqueLesson" state={reportState} onChange={handleStateChange} />
       <ReportItem title="عقود الزواج" fieldPath="marriageContract" state={reportState} onChange={handleStateChange} />
       <ReportItem title="أعمال وأنشطة أخرى" fieldPath="others" state={reportState} onChange={handleStateChange} />
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2rem' }}>
-        <BusyButton
-          type="button"
-          className="google-btn"
-          onClick={handleSaveReport}
-          busy={loading}
-          style={{ width: '100%', maxWidth: '300px', background: 'var(--success-color)', color: '#fff', padding: '16px' }}
-        >
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <Save size={20} style={{ marginLeft: 8 }} />
-            رفع التقرير النهائي
-          </span>
-        </BusyButton>
       </div>
 
+      {!isMobile && (
+        <div className="teacher-weekly-save">
+          <BusyButton
+            type="button"
+            className="google-btn teacher-weekly-save__btn"
+            onClick={handleSaveReport}
+            busy={loading}
+          >
+            <span className="teacher-weekly-save__btn-inner">
+              <Save size={20} aria-hidden />
+              رفع التقرير النهائي
+            </span>
+          </BusyButton>
+        </div>
+      )}
+
+      {isMobile && (
+        <div className="teacher-weekly-mobile-save-bar">
+          <BusyButton
+            type="button"
+            className="google-btn google-btn--filled teacher-weekly-save__btn teacher-weekly-mobile-save-bar__btn"
+            onClick={handleSaveReport}
+            busy={loading}
+          >
+            <span className="teacher-weekly-save__btn-inner">
+              <Save size={18} aria-hidden />
+              رفع التقرير
+            </span>
+          </BusyButton>
+        </div>
+      )}
     </div>
   );
 };

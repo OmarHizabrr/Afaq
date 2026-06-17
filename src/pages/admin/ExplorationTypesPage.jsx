@@ -270,7 +270,7 @@ const ExplorationTypesPage = () => {
   };
 
   return (
-    <div>
+    <div className="exploration-types-page">
       <PageHeader icon={Tags} title="إدارة أنواع الاستكشاف">
         {can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_add') && (
           <button
@@ -282,13 +282,14 @@ const ExplorationTypesPage = () => {
             }}
           >
             <Plus size={18} />
-            <span>إضافة نوع</span>
+            <span className="exploration-types-toolbar__long">إضافة نوع</span>
+            <span className="exploration-types-toolbar__short">إضافة</span>
           </button>
         )}
       </PageHeader>
 
-      {error && <div className="app-alert app-alert--error">{error}</div>}
-      {success && <div className="app-alert app-alert--success">{success}</div>}
+      {error && <div className="app-alert app-alert--error exploration-types-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success exploration-types-alert">{success}</div>}
 
       <FormModal
         open={isAdding || !!isEditing}
@@ -308,11 +309,10 @@ const ExplorationTypesPage = () => {
           />
           <label className="app-label">وصف مختصر</label>
           <textarea
-            className="app-input"
+            className="app-input exploration-type-form__textarea"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="تفاصيل إضافية عن النوع (اختياري)"
-            style={{ minHeight: '72px' }}
           />
 
           <ExplorationTargetPagesPicker value={allowedPageIds} onChange={setAllowedPageIds} />
@@ -335,7 +335,7 @@ const ExplorationTypesPage = () => {
               )}
             </div>
             {schemaFields.length === 0 ? (
-              <div className="empty-state" style={{ padding: '1rem' }}>
+              <div className="empty-state exploration-type-editor__empty">
                 لا توجد حقول مخصصة بعد. اضغط «إضافة حقل» أو احفظ النوع بلا حقول لاستخدام النموذج الافتراضي.
               </div>
             ) : (
@@ -488,8 +488,7 @@ const ExplorationTypesPage = () => {
                         <div className="exploration-type-editor__options-span">
                           <label className="app-label">الخيارات (سطر لكل خيار)</label>
                           <textarea
-                            className="app-input"
-                            style={{ minHeight: 88 }}
+                            className="app-input exploration-type-editor__options-textarea"
                             value={row.optionsText}
                             onChange={(e) => updateSchemaRow(index, { optionsText: e.target.value })}
                             placeholder={'الخيار الأول\nالخيار الثاني'}
@@ -591,14 +590,14 @@ const ExplorationTypesPage = () => {
           </div>
 
           <div className="exploration-type-editor__actions">
-            <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={clearForm}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <X size={14} /> إلغاء
+            <button type="button" className="google-btn exploration-type-editor__action-btn" onClick={clearForm}>
+              <span className="exploration-type-editor__btn-inner">
+                <X size={14} aria-hidden /> إلغاء
               </span>
             </button>
-            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled" style={{ width: 'auto' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <Save size={14} /> حفظ
+            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled exploration-type-editor__action-btn">
+              <span className="exploration-type-editor__btn-inner">
+                <Save size={14} aria-hidden /> حفظ
               </span>
             </BusyButton>
           </div>
@@ -606,7 +605,7 @@ const ExplorationTypesPage = () => {
       </FormModal>
 
       {loading ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }} />
+        <div className="loading-spinner page-loading" />
       ) : types.length === 0 ? (
         <div className="empty-state">لا توجد أنواع استكشاف مضافة حتى الآن.</div>
       ) : (

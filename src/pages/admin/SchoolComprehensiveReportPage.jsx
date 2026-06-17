@@ -8,10 +8,11 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 import { normalizeMuslimCategory, MUSLIM_CATEGORY_BORN } from '../../services/villageStudentEnrollment';
-import { exportComprehensiveExcel, exportComprehensivePdf } from '../../utils/schoolReportExport';
+import { loadSchoolReportExport } from '../../utils/loadSchoolReportExport';
 import { buildComprehensiveReportBodyHtml } from '../../utils/schoolReportHtml';
-import ReportPrintPreviewModal from '../../components/ReportPrintPreviewModal';
-import { formatDailyLogSubjects } from '../../utils/reportLabels';
+import LazyReportPrintPreviewModal from '../../components/LazyReportPrintPreviewModal';
+import { formatDailyLogSubjects, schoolReportSummaryLine } from '../../utils/reportLabels';
+import { normalizeSchoolReportForDisplay } from '../../utils/schoolReportStars';
 
 const SchoolComprehensiveReportPage = () => {
   const { id: schoolId } = useParams();
@@ -82,7 +83,7 @@ const SchoolComprehensiveReportPage = () => {
     load();
   }, [load]);
 
-  if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }} />;
+  if (loading) return <div className="loading-spinner page-loading-lg" />;
   if (!data) return <div className="empty-state">المدرسة غير موجودة</div>;
 
   const schoolScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
@@ -93,14 +94,14 @@ const SchoolComprehensiveReportPage = () => {
   const exportData = {
     schoolName: data.schoolName,
     villageName: data.villageName,
-    schoolReports: data.schoolReports,
+    schoolReports: data.schoolReports.map(normalizeSchoolReportForDisplay),
     fieldVisits: data.fieldVisits,
     dailyLogs: data.dailyLogs,
     newConvertsCount: data.newConvertsCount,
   };
 
   return (
-    <div className="comprehensive-report-page">
+    <div className="comprehensive-report-page portal-page">
       <PageHeader
         topRow={
           <button type="button" className="page-nav-back" onClick={() => navigate(`/schools/${schoolId}`)}>
@@ -111,16 +112,19 @@ const SchoolComprehensiveReportPage = () => {
         subtitle={data.schoolName}
       >
         <div className="school-report-page__toolbar">
-          <button type="button" className="google-btn" onClick={() => setPreviewOpen(true)}>
-            <Printer size={16} /> معاينة
+          <button type="button" className="google-btn google-btn--toolbar" onClick={() => setPreviewOpen(true)}>
+            <Printer size={16} />
+            <span className="portal-toolbar__long">معاينة</span>
+            <span className="portal-toolbar__short">معاينة</span>
           </button>
           <BusyButton
             type="button"
-            className="google-btn"
+            className="google-btn google-btn--toolbar"
             busy={pdfExporting}
             onClick={async () => {
               setPdfExporting(true);
               try {
+                const { exportComprehensivePdf } = await loadSchoolReportExport();
                 await exportComprehensivePdf(exportData);
               } finally {
                 setPdfExporting(false);
@@ -129,12 +133,20 @@ const SchoolComprehensiveReportPage = () => {
           >
             <FileDown size={16} /> PDF
           </BusyButton>
-          <button type="button" className="google-btn" onClick={() => exportComprehensiveExcel(exportData)}>
+          <button
+            type="button"
+            className="google-btn google-btn--toolbar"
+            onClick={async () => {
+              const { exportComprehensiveExcel } = await loadSchoolReportExport();
+              exportComprehensiveExcel(exportData);
+            }}
+          >
             <FileSpreadsheet size={16} /> Excel
           </button>
           {can(PERMISSION_PAGE_IDS.schools, 'school_report_create') && (
-            <button type="button" className="google-btn google-btn--filled" onClick={() => navigate(`/schools/${schoolId}/report`)}>
-              إضافة تقرير جديد
+            <button type="button" className="google-btn google-btn--filled google-btn--toolbar" onClick={() => navigate(`/schools/${schoolId}/report`)}>
+              <span className="portal-toolbar__long">إضافة تقرير جديد</span>
+              <span className="portal-toolbar__short">تقرير جديد</span>
             </button>
           )}
         </div>
@@ -182,7 +194,7 @@ const SchoolComprehensiveReportPage = () => {
                 <div key={r.id} className="comprehensive-report-row">
                   <div>
                     <strong>{r.reportTitle || 'تقرير إشراف'}</strong>
-                    <p>{r.date || r.timestamp?.split('T')[0]} • {r.supervisorName} • حضور {r.presentCount}/{r.totalStudents}</p>
+                    <p>{r.date || r.timestamp?.split('T')[0]} • {r.supervisorName} • {schoolReportSummaryLine(r)}</p>
                     {r.absenceReview && <span className="comprehensive-report-tag">مراجعة الغياب: {r.absenceReview}</span>}
                   </div>
                   <button type="button" className="google-btn" onClick={() => navigate(`/schools/${schoolId}/report/${r.id}?ownerId=${r.supervisorId || ''}`)}>
@@ -239,7 +251,7 @@ const SchoolComprehensiveReportPage = () => {
         </section>
       </div>
 
-      <ReportPrintPreviewModal
+      <LazyReportPrintPreviewModal
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
         title="معاينة التقرير الشامل"
@@ -248,12 +260,16 @@ const SchoolComprehensiveReportPage = () => {
         onDownloadPdf={async () => {
           setPdfExporting(true);
           try {
+            const { exportComprehensivePdf } = await loadSchoolReportExport();
             await exportComprehensivePdf(exportData);
           } finally {
             setPdfExporting(false);
           }
         }}
-        onDownloadExcel={() => exportComprehensiveExcel(exportData)}
+        onDownloadExcel={async () => {
+          const { exportComprehensiveExcel } = await loadSchoolReportExport();
+          exportComprehensiveExcel(exportData);
+        }}
       />
     </div>
   );

@@ -292,48 +292,49 @@ const UsersPage = () => {
   };
 
   return (
-    <div>
+    <div className="users-page portal-page">
       <PageHeader
         icon={Shield}
         title="إدارة المستخدمين والصلاحيات"
         subtitle="عرض جميع الحسابات بما فيها الطلاب ومدير النظام. تعديل نوع الصلاحيات من هنا؛ الربط بالمدارس والمناطق من صفحات تلك المجموعات."
       >
-        {ready && pageDataScope(PERMISSION_PAGE_IDS.users) === DATA_SCOPE_MEMBERSHIP && (
-          <div className="app-alert app-alert--info users-alert" style={{ gridColumn: '1 / -1', marginBottom: 0 }}>
-            عرض محدود: تظهر حسابات الأعضاء في مجموعاتك معك فقط (بالإضافة إلى حسابك).
-          </div>
-        )}
         {(can(PERMISSION_PAGE_IDS.users, 'user_edit_role') || can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')) && (
           <>
             <button
               type="button"
               className="google-btn google-btn--toolbar"
-              style={{ width: 'auto' }}
               onClick={() => {
                 setIsAddUserOpen(true);
                 setError('');
               }}
             >
               <UserPlus size={18} />
-              <span>إضافة مستخدم</span>
+              <span className="portal-toolbar__long">إضافة مستخدم</span>
+              <span className="portal-toolbar__short">إضافة</span>
             </button>
             {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
               <button
                 type="button"
                 className="google-btn google-btn--toolbar"
-                style={{ width: 'auto' }}
                 onClick={() => {
                   setIsExploringAdding(true);
                   setError('');
                 }}
               >
                 <Compass size={18} />
-                <span>إضافة من الاستكشاف</span>
+                <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
+                <span className="portal-toolbar__short">استكشاف</span>
               </button>
             )}
           </>
         )}
       </PageHeader>
+
+      {ready && pageDataScope(PERMISSION_PAGE_IDS.users) === DATA_SCOPE_MEMBERSHIP && (
+        <div className="app-alert app-alert--info users-alert">
+          عرض محدود: تظهر حسابات الأعضاء في مجموعاتك معك فقط (بالإضافة إلى حسابك).
+        </div>
+      )}
 
       {error && <div className="app-alert app-alert--error users-alert">{error}</div>}
       <div className="role-filter-bar users-role-filter-bar">
@@ -350,7 +351,7 @@ const UsersPage = () => {
       </div>
 
       {loading && !editingUser ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        <div className="loading-spinner page-loading"></div>
       ) : (
         <div className="users-grid">
           {visibleUsers.map(user => (
@@ -500,7 +501,7 @@ const UsersPage = () => {
               </button>
             </div>
 
-            <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+            <div className="app-alert app-alert--info geo-page-alert geo-page-alert--tight">
               يحتاج النموذج إلى حقول من نوع: نص (للاسم)، هاتف، كلمة مرور. ويمكن إضافة بريد إلكتروني وحقل مصدره
               «ملفات الصلاحيات» اختيارياً.
             </div>
@@ -632,8 +633,7 @@ const UsersPage = () => {
             <div className="users-modal__actions">
               <button
                 type="button"
-                className="google-btn"
-                style={{ width: 'auto' }}
+                className="google-btn users-modal__action-btn"
                 onClick={() => {
                   setIsAddUserOpen(false);
                   resetAddUserForm();

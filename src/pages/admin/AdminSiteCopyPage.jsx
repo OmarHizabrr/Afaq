@@ -36,7 +36,7 @@ export default function AdminSiteCopyPage({ user }) {
   };
 
   return (
-    <div>
+    <div className="admin-site-copy-page">
       <PageHeader
         title="النصوص الثابتة"
         subtitle="عدّل النصوص الثابتة للواجهة بدون تغيير الكود."

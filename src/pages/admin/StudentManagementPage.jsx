@@ -11,6 +11,7 @@ import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
 import ExplorationBadge from '../../components/ExplorationBadge';
 import ExplorationDataModal from '../../components/ExplorationDataModal';
+import StudentManagementStudentCard from '../../components/StudentManagementStudentCard';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import {
   DATA_SCOPE_MEMBERSHIP,
@@ -438,7 +439,7 @@ const StudentManagementPage = () => {
   }, [students, query, schoolFilter, regionFilter]);
 
   return (
-    <div>
+    <div className="portal-page">
       <PageHeader
         icon={GraduationCap}
         title="الطلاب"
@@ -455,7 +456,9 @@ const StudentManagementPage = () => {
               if (sorted.length) setFormSchoolIds([sorted[0].id]);
             }}
           >
-            <Plus size={16} /> إضافة طالب
+            <Plus size={16} />
+            <span className="portal-toolbar__long">إضافة طالب</span>
+            <span className="portal-toolbar__short">إضافة</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.students_management, 'student_management_add') &&
@@ -465,7 +468,9 @@ const StudentManagementPage = () => {
             className="google-btn google-btn--toolbar"
             onClick={() => setIsExploringAdding(true)}
           >
-            <Compass size={16} /> إضافة من الاستكشاف
+            <Compass size={16} />
+            <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="portal-toolbar__short">استكشاف</span>
           </button>
         )}
       </PageHeader>
@@ -501,11 +506,12 @@ const StudentManagementPage = () => {
       </div>
 
       {loading ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        <div className="loading-spinner page-loading"></div>
       ) : filtered.length === 0 ? (
         <div className="empty-state">لا يوجد طلاب مطابقون للفلاتر الحالية.</div>
       ) : (
-        <div className="surface-card student-management-table-wrap">
+        <>
+        <div className="surface-card student-management-table-wrap student-management-desktop-only">
           <div className="md-table-scroll">
             <table className="md-table student-management-table">
               <thead>
@@ -514,7 +520,7 @@ const StudentManagementPage = () => {
                   <th>الارتباطات</th>
                   <th>عدد التحركات</th>
                   <th>آخر حركة</th>
-                  <th style={{ textAlign: 'center' }}>تفاصيل</th>
+                  <th className="student-management-table__col-center">تفاصيل</th>
                 </tr>
               </thead>
               <tbody>
@@ -530,7 +536,7 @@ const StudentManagementPage = () => {
                         <div>
                           <div className="student-management-student-cell__name">{s.displayName || 'بدون اسم'}</div>
                           <div className="student-management-student-cell__email">{s.email || 'بدون بريد'}</div>
-                          <div style={{ marginTop: 4 }}>
+                          <div className="student-management-student-cell__exploration">
                             {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
                               <ExplorationBadge record={s} onClick={() => setViewingExplorationOf(s)} />
                             )}
@@ -567,6 +573,22 @@ const StudentManagementPage = () => {
             </table>
           </div>
         </div>
+
+        <div className="student-management-mobile-only">
+          {filtered.map((s) => (
+            <StudentManagementStudentCard
+              key={s.id}
+              student={s}
+              canView={can(PERMISSION_PAGE_IDS.students_management, 'student_management_view_profile')}
+              canEdit={can(PERMISSION_PAGE_IDS.students_management, 'student_management_edit')}
+              explorationBridgeAllowed={explorationBridgeAllowed}
+              onView={(sid) => navigate(`/students/${sid}`)}
+              onEdit={openEdit}
+              onExplorationView={setViewingExplorationOf}
+            />
+          ))}
+        </div>
+        </>
       )}
 
       <FormModal
@@ -639,8 +661,8 @@ const StudentManagementPage = () => {
               placeholder="https://..."
             />
           </div>
-          <div className="app-field app-field--grow" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <div className="app-field app-field--grow app-field--checkbox-row">
+            <label className="app-checkbox-label">
               <input
                 type="checkbox"
                 checked={formAccountDisabled}
@@ -651,12 +673,12 @@ const StudentManagementPage = () => {
           </div>
           <div className="app-field app-field--grow">
             <label className="app-label">المدارس (قائمة الطلاب المسجلين — يمكن أكثر من مدرسة)</label>
-            <p style={{ fontSize: '0.85rem', opacity: 0.85, margin: '0 0 8px' }}>
+            <p className="app-form-hint">
               الافتراضي عند التعديل: مدارس الارتباط الحالية. يجب إبقاء مدرسة واحدة على الأقل إن وُجدت مدارس محددة.
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 14px' }}>
+            <div className="villages-school-checks">
               {sortedSchoolsCatalog.map((s) => (
-                <label key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.9rem' }}>
+                <label key={s.id} className="villages-school-checks__item">
                   <input
                     type="checkbox"
                     checked={formSchoolIds.includes(s.id)}
@@ -667,7 +689,7 @@ const StudentManagementPage = () => {
               ))}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
+          <div className="modal-footer-actions modal-footer-actions--spaced">
             <button type="button" className="google-btn" onClick={() => { setIsAddOpen(false); resetForm(); }}>إلغاء</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSaveStudent} busy={saving}>
               حفظ
@@ -683,20 +705,18 @@ const StudentManagementPage = () => {
         title="إضافة طالب من نموذج الاستكشاف"
       >
         <div className="app-form-grid">
-          <div className="app-alert app-alert--info" style={{ gridColumn: '1 / -1', margin: 0 }}>
+          <div className="app-alert app-alert--info">
             يحتاج النموذج إلى حقول من نوع: نص (للاسم)، هاتف، كلمة مرور — مع إمكانية إضافة بريد إلكتروني ورابط
             للصورة اختيارياً. ربط الطالب بالمدرسة يتم من صفحة المدرسة لاحقاً.
           </div>
-          <div style={{ gridColumn: '1 / -1' }}>
-            <ExplorationFormSection
+          <ExplorationFormSection
               controller={expForm}
               actorUser={actorUser}
               storageUserId={storageUserId}
               heading="حقول نموذج الاستكشاف"
               currentPageId={PERMISSION_PAGE_IDS.students_management}
-            />
-          </div>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8, gridColumn: '1 / -1' }}>
+          />
+          <div className="modal-footer-actions modal-footer-actions--spaced">
             <button type="button" className="google-btn" onClick={() => setIsExploringAdding(false)}>إلغاء</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleExplorationSaveStudent} busy={expSaving}>
               حفظ

@@ -258,7 +258,7 @@ const SchoolsPage = () => {
   };
 
   return (
-    <div>
+    <div className="schools-page geo-page">
       <PageHeader icon={School} title="إدارة المدارس">
         {can(PERMISSION_PAGE_IDS.schools, 'school_add') && (
           <button
@@ -275,7 +275,8 @@ const SchoolsPage = () => {
             }}
           >
             <Plus size={18} />
-            <span>إضافة مدرسة</span>
+            <span className="geo-toolbar__long">إضافة مدرسة</span>
+            <span className="geo-toolbar__short">إضافة</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.schools, 'school_add') &&
@@ -286,13 +287,14 @@ const SchoolsPage = () => {
             onClick={() => setIsExploringAdding(true)}
           >
             <Compass size={18} />
-            <span>إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__short">استكشاف</span>
           </button>
         )}
       </PageHeader>
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.schools) === DATA_SCOPE_MEMBERSHIP && (
-        <div className="app-alert app-alert--info schools-alert" style={{ marginBottom: '0.75rem' }}>
+        <div className="app-alert app-alert--info schools-alert geo-page-alert geo-page-alert--tight">
           عرض محدود: تظهر المدارس والقرى والمناطق المرتبطة بمجموعاتك فقط (عضوية مدرسة أو منطقة).
         </div>
       )}
@@ -355,7 +357,7 @@ const SchoolsPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd} className="schools-form">
-          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+          <div className="app-alert app-alert--info geo-page-alert geo-page-alert--tight">
             النموذج يحتاج حقلاً مصدره «القرى» لربط المدرسة بقريتها.
           </div>
           <ExplorationFormSection
@@ -366,7 +368,7 @@ const SchoolsPage = () => {
             currentPageId={PERMISSION_PAGE_IDS.schools}
           />
 
-          <div className="schools-form__actions" style={{ marginTop: '1rem' }}>
+          <div className="schools-form__actions schools-form__actions--spaced">
             <button type="button" onClick={() => setIsExploringAdding(false)} className="google-btn schools-form__action-btn">
               إلغاء
             </button>
@@ -379,7 +381,7 @@ const SchoolsPage = () => {
 
       {/* List */}
       {loading && !isAdding ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        <div className="loading-spinner page-loading" />
       ) : schools.length === 0 ? (
         <div className="empty-state">
           لا توجد مدارس مضافة حتى الآن.
@@ -395,7 +397,7 @@ const SchoolsPage = () => {
                   <span>النوع: {schoolLevelLabel(sch.schoolLevel)}</span>
                   {sch.donorName && <span className="schools-card__donor"><Handshake size={14} /> المتبرع: {sch.donorName}</span>}
                 </div>
-                <div style={{ marginTop: 6 }}>
+                <div className="geo-entity-card__badge">
                   {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
                     <ExplorationBadge record={sch} onClick={() => setViewingExplorationOf(sch)} />
                   )}

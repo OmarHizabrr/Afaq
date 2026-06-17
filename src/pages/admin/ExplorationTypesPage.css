@@ -250,6 +250,36 @@
   padding-top: 6px;
 }
 
+.exploration-type-form__textarea {
+  min-height: 72px;
+}
+
+.exploration-type-editor__empty {
+  padding: 1rem;
+}
+
+.exploration-type-editor__options-textarea {
+  min-height: 88px;
+}
+
+.exploration-type-editor__action-btn {
+  width: auto;
+}
+
+.exploration-type-editor__btn-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.exploration-types-alert {
+  margin-bottom: 0.75rem;
+}
+
+.exploration-types-toolbar__short {
+  display: none;
+}
+
 .modal-card.exploration-type-modal {
   max-height: min(92vh, 900px);
   overflow-y: auto;
@@ -539,6 +569,14 @@
   .exploration-type-card {
     flex-direction: row;
     align-items: flex-start;
+  }
+
+  .exploration-types-page .exploration-types-toolbar__long {
+    display: none;
+  }
+
+  .exploration-types-page .exploration-types-toolbar__short {
+    display: inline;
   }
 
   .modal-card.exploration-type-modal {

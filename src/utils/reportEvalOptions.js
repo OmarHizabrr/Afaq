@@ -26,9 +26,15 @@ export function parseEvalFromStored(stored, options = EVAL_QUALITY_OPTIONS) {
   return { value: EVAL_OTHER_VALUE, other: v };
 }
 
+export const SCHOOL_REPORT_PERIOD_OPTIONS = [
+  { value: 'monthly', label: 'شهري' },
+  { value: 'weekly', label: 'أسبوعي' },
+  { value: 'visit', label: 'زيارة ميدانية' },
+];
+
 export const SCHOOL_EVAL_FIELDS = [
-  { key: 'studentLevel', label: 'مستوى الطلاب' },
   { key: 'curriculumProgress', label: 'السير على المنهج' },
   { key: 'schoolEvaluation', label: 'تقييم المدرسة' },
-  { key: 'teacherEvaluation', label: 'تقييم المدرس' },
 ];
+
+export const DEFAULT_SCHOOL_MONTHLY_REPORT_TITLE = 'التقرير الشهري عن المدرسة';

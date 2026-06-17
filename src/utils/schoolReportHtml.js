@@ -23,12 +23,21 @@ export const safeHtml = (value) =>
 
 export { REPORT_STYLES };
 
+import { formatVisitRatingLabel } from './visitRating';
+import { schoolReportPeriodLabel } from './reportLabels';
+
+function formatStarsValue(stars) {
+  const n = Number(stars);
+  if (!Number.isFinite(n) || n <= 0) return '—';
+  return formatVisitRatingLabel(n);
+}
+
 function teachersRows(teachers) {
-  if (!teachers?.length) return '<tr><td colspan="3">لا يوجد معلمون محددون</td></tr>';
+  if (!teachers?.length) return '<tr><td colspan="4">لا يوجد معلمون محددون</td></tr>';
   return teachers
     .map(
       (t, idx) =>
-        `<tr><td>${idx + 1}</td><td>${safeHtml(t.teacherName || '-')}</td><td>${safeHtml(t.phone || '-')}</td></tr>`
+        `<tr><td>${idx + 1}</td><td>${safeHtml(t.teacherName || '-')}</td><td>${safeHtml(t.phone || '-')}</td><td>${safeHtml(formatStarsValue(t.stars))}</td></tr>`
     )
     .join('');
 }
@@ -41,11 +50,11 @@ function absentRows(absentStudents) {
 }
 
 function starsRows(starAwards) {
-  if (!starAwards?.length) return '<tr><td colspan="3">لا توجد بيانات نجوم</td></tr>';
+  if (!starAwards?.length) return '<tr><td colspan="3">لا توجد تقييمات نجوم للطلاب</td></tr>';
   return starAwards
     .map(
       (s, idx) =>
-        `<tr><td>${idx + 1}</td><td>${safeHtml(s.name || '-')}</td><td>${safeHtml(s.stars || '-')}</td></tr>`
+        `<tr><td>${idx + 1}</td><td>${safeHtml(s.name || '-')}</td><td>${safeHtml(formatStarsValue(s.stars))}</td></tr>`
     )
     .join('');
 }
@@ -88,14 +97,17 @@ function progressRows(summary) {
 }
 
 export function buildSchoolReportBodyHtml(rep) {
+  const periodLabel =
+    rep.reportPeriod === 'monthly' ? 'شهري' : rep.reportPeriod === 'weekly' ? 'أسبوعي' : rep.reportPeriod === 'visit' ? 'زيارة ميدانية' : '';
   return `
   <div class="title">
-    <h1>${safeHtml(rep.reportTitle || 'تقرير إشراف على المدارس')}</h1>
-    <div>${safeHtml(rep.schoolName || '-')}</div>
+    <h1>${safeHtml(rep.reportTitle || 'التقرير الشهري عن المدرسة')}</h1>
+    <div>${safeHtml(rep.schoolName || '-')}${periodLabel ? ` — ${periodLabel}` : ''}</div>
   </div>
   <div class="grid">
     <div class="item"><div class="label">المدرسة</div><div class="value">${safeHtml(rep.schoolName || '-')}</div></div>
     <div class="item"><div class="label">القرية</div><div class="value">${safeHtml(rep.villageName || '-')}</div></div>
+    <div class="item"><div class="label">نوع التقرير</div><div class="value">${safeHtml(periodLabel || '-')}</div></div>
     <div class="item"><div class="label">اليوم</div><div class="value">${safeHtml(rep.dayName || '-')}</div></div>
     <div class="item"><div class="label">التاريخ</div><div class="value">${safeHtml(rep.date || rep.timestamp?.split('T')[0] || '-')}</div></div>
     <div class="item"><div class="label">المحافظة</div><div class="value">${safeHtml(rep.governorate || '-')}</div></div>
@@ -109,14 +121,14 @@ export function buildSchoolReportBodyHtml(rep) {
     <div class="item"><div class="label">مسؤول المشاريع</div><div class="value">${safeHtml(rep.projectsOfficerName || '-')}</div></div>
     <div class="item"><div class="label">تعمل السوق</div><div class="value">${safeHtml(rep.marketDone || '-')}</div></div>
     <div class="item"><div class="label">عدد الوجبات</div><div class="value">${safeHtml(rep.mealsCount ?? '-')}</div></div>
-    <div class="item"><div class="label">مستوى الطلاب</div><div class="value">${safeHtml(rep.studentLevel || '-')}</div></div>
+    <div class="item"><div class="label">متوسط تقييم الطلاب</div><div class="value">${safeHtml(rep.studentLevel || '-')}</div></div>
     <div class="item"><div class="label">نسبة السير على المنهج</div><div class="value">${safeHtml(rep.curriculumProgress || '-')}</div></div>
     <div class="item"><div class="label">تقييم المدرسة</div><div class="value">${safeHtml(rep.schoolEvaluation || '-')}</div></div>
-    <div class="item"><div class="label">تقييم المدرس</div><div class="value">${safeHtml(rep.teacherEvaluation || '-')}</div></div>
+    <div class="item"><div class="label">تقييم المعلم (نجوم)</div><div class="value">${safeHtml(rep.teacherEvaluation || '-')}</div></div>
   </div>
   <div class="section">
-    <h3>المعلمون</h3>
-    <table><thead><tr><th>#</th><th>اسم المعلم</th><th>رقم الهاتف</th></tr></thead><tbody>${teachersRows(rep.teachers)}</tbody></table>
+    <h3>المعلمون وتقييمهم</h3>
+    <table><thead><tr><th>#</th><th>اسم المعلم</th><th>رقم الهاتف</th><th>التقييم</th></tr></thead><tbody>${teachersRows(rep.teachers)}</tbody></table>
   </div>
   <div class="section">
     <h3>المقررات والمتابعة العلمية</h3>
@@ -128,8 +140,8 @@ export function buildSchoolReportBodyHtml(rep) {
     <table><thead><tr><th>#</th><th>اسم الطالب</th></tr></thead><tbody>${absentRows(rep.absentStudents)}</tbody></table>
   </div>
   <div class="section">
-    <h3>النجوم للطلاب المجتهدين</h3>
-    <table><thead><tr><th>#</th><th>الطالب</th><th>عدد النجوم</th></tr></thead><tbody>${starsRows(rep.starAwards)}</tbody></table>
+    <h3>تقييم الطلاب بالنجوم</h3>
+    <table><thead><tr><th>#</th><th>الطالب</th><th>التقييم</th></tr></thead><tbody>${starsRows(rep.starAwards)}</tbody></table>
   </div>
   <div class="section">
     <h3>ملاحظات</h3>
@@ -156,6 +168,14 @@ export function buildSchoolReportPrintDocument(rep, { autoPrint = true } = {}) {
 }
 
 export function buildComprehensiveReportBodyHtml(data) {
+  const schoolReportRows = (data.schoolReports || [])
+    .slice(0, 40)
+    .map(
+      (r) =>
+        `<tr><td>${safeHtml(r.date || r.timestamp?.split('T')[0] || '-')}</td><td>${safeHtml(r.reportTitle || 'تقرير إشراف')}</td><td>${safeHtml(schoolReportPeriodLabel(r.reportPeriod) || '-')}</td><td>${safeHtml(r.supervisorName || '-')}</td><td>${safeHtml(r.presentCount)}/${safeHtml(r.totalStudents)}</td><td>${safeHtml(r.teacherEvaluation || '-')}</td><td>${safeHtml(r.studentLevel || '-')}</td></tr>`
+    )
+    .join('');
+
   const visitRows = (data.fieldVisits || [])
     .slice(0, 40)
     .map(
@@ -187,6 +207,11 @@ export function buildComprehensiveReportBodyHtml(data) {
     <div class="item"><div class="label">سجلات التحضير</div><div class="value">${safeHtml(data.dailyLogs?.length ?? 0)}</div></div>
     <div class="item"><div class="label">المهتدون الجدد</div><div class="value">${safeHtml(data.newConvertsCount ?? 0)}</div></div>
   </div>
+  ${
+    schoolReportRows
+      ? `<div class="section"><h3>تقارير إشراف المدرسة</h3><table><thead><tr><th>التاريخ</th><th>العنوان</th><th>النوع</th><th>المشرف</th><th>الحضور</th><th>تقييم المعلم</th><th>تقييم الطلاب</th></tr></thead><tbody>${schoolReportRows}</tbody></table></div>`
+      : ''
+  }
   ${
     visitRows
       ? `<div class="section"><h3>الزيارات الميدانية</h3><table><thead><tr><th>التاريخ</th><th>المشرف</th><th>المادة</th><th>الأسبوع</th></tr></thead><tbody>${visitRows}</tbody></table></div>`

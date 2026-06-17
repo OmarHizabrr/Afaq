@@ -215,13 +215,13 @@ export default function DailyPrepEditor({
       {!schoolId ? (
         <div className="empty-state">اختر مدرسة لعرض سجل الحضور.</div>
       ) : studentsLoading ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }} />
+        <div className="loading-spinner page-loading" />
       ) : records.length === 0 ? (
         <div className="empty-state">لا يوجد طلاب في هذه المدرسة.</div>
       ) : (
         <section className="surface-card daily-prep-attendance">
           <div className="daily-prep-attendance__head">
-            <h3 className="daily-prep-section__title" style={{ margin: 0 }}>
+            <h3 className="daily-prep-section__title daily-prep-section__title--flush">
               <Users size={18} /> سجل الحضور ({records.length} طالب)
             </h3>
             <span className="daily-prep-attendance__count">
@@ -230,8 +230,7 @@ export default function DailyPrepEditor({
             <div className="teacher-daily-bulk daily-prep-attendance__bulk">
               <button
                 type="button"
-                className="google-btn google-btn--filled"
-                style={{ background: 'var(--success-color)', color: '#fff' }}
+                className="google-btn google-btn--filled google-btn--success"
                 onClick={markAllPresent}
               >
                 <Users size={16} /> تحضير الجميع

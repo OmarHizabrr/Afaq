@@ -216,12 +216,13 @@ const RegionsPage = () => {
   };
 
   return (
-    <div>
+    <div className="regions-page geo-page">
       <PageHeader icon={MapPin} title="إدارة المناطق">
         {can(PERMISSION_PAGE_IDS.regions, 'region_add') && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
             <Plus size={18} />
-            <span>إضافة منطقة</span>
+            <span className="geo-toolbar__long">إضافة منطقة</span>
+            <span className="geo-toolbar__short">إضافة</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.regions, 'region_add') &&
@@ -232,18 +233,19 @@ const RegionsPage = () => {
             onClick={() => setIsExploringAdding(true)}
           >
             <Compass size={18} />
-            <span>إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__short">استكشاف</span>
           </button>
         )}
       </PageHeader>
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.regions) === DATA_SCOPE_MEMBERSHIP && (
-        <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+        <div className="app-alert app-alert--info geo-page-alert">
           عرض محدود: المناطق والمحافظات الظاهرة مرتبطة بمجموعاتك (عضوية منطقة أو ما يترتب عليها).
         </div>
       )}
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
-      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error geo-page-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success geo-page-alert">{success}</div>}
 
       {/* Add/Edit Modal */}
       <FormModal
@@ -251,12 +253,11 @@ const RegionsPage = () => {
         title={isEditing ? 'تعديل المنطقة' : 'إضافة منطقة'}
         onClose={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}
       >
-        <form onSubmit={isEditing ? handleEdit : handleAdd}>
+        <form onSubmit={isEditing ? handleEdit : handleAdd} className="geo-form">
           <AppSelect searchable
             value={selectedGovId}
             onChange={(e) => setSelectedGovId(e.target.value)}
-            className="app-select"
-            style={{ marginBottom: '0.75rem' }}
+            className="app-select geo-form__field geo-form__field--sm"
           >
             <option value="">-- اختر المحافظة --</option>
             {governorates.map(gov => (
@@ -269,14 +270,13 @@ const RegionsPage = () => {
             placeholder="اسم المنطقة (مثال: أزال)"
             value={regionName}
             onChange={(e) => setRegionName(e.target.value)}
-            className="app-input"
-            style={{ marginBottom: '1rem' }}
+            className="app-input geo-form__field"
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
+          <div className="modal-footer-actions">
+            <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
               إلغاء
             </button>
-            <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled modal-footer-actions__btn">
               {isEditing ? 'تحديث' : 'حفظ'}
             </BusyButton>
           </div>
@@ -289,7 +289,7 @@ const RegionsPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd}>
-          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+          <div className="app-alert app-alert--info geo-page-alert geo-page-alert--tight">
             النموذج يحتاج حقلاً مصدره «المحافظات» لربط المنطقة بالمحافظة الأم.
           </div>
           <ExplorationFormSection
@@ -299,11 +299,11 @@ const RegionsPage = () => {
             heading="حقول نموذج الاستكشاف"
             currentPageId={PERMISSION_PAGE_IDS.regions}
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
-            <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => setIsExploringAdding(false)}>
+          <div className="modal-footer-actions modal-footer-actions--spaced">
+            <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsExploringAdding(false)}>
               إلغاء
             </button>
-            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }}>
+            <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled modal-footer-actions__btn">
               حفظ المنطقة
             </BusyButton>
           </div>
@@ -312,7 +312,7 @@ const RegionsPage = () => {
 
       {/* Regions List */}
       {loading ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        <div className="loading-spinner page-loading" />
       ) : regions.length === 0 ? (
         <div className="empty-state">
           لا توجد مناطق مضافة حتى الآن.
@@ -320,20 +320,20 @@ const RegionsPage = () => {
       ) : (
         <div className="entity-grid entity-grid--md">
           {regions.map(region => (
-            <div key={region.id} className="surface-card surface-card--entity">
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', marginBottom: '4px' }}>{region.name}</h3>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                  <Map size={14} />
+            <div key={region.id} className="surface-card surface-card--entity geo-entity-card">
+              <div className="geo-entity-card__body">
+                <h3 className="geo-entity-card__title">{region.name}</h3>
+                <div className="geo-entity-card__location">
+                  <Map size={14} aria-hidden />
                   <span>المحافظة: {getGovName(region.govId)}</span>
                 </div>
-                <div style={{ marginTop: 6 }}>
+                <div className="geo-entity-card__badge">
                   {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
                     <ExplorationBadge record={region} onClick={() => setViewingExplorationOf(region)} />
                   )}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="geo-entity-card__actions">
                 {can(PERMISSION_PAGE_IDS.regions, 'region_view') && (
                   <button className="icon-btn" onClick={() => navigate(`/regions/${region.id}`)} title="عرض التفاصيل">
                     <Eye size={16} color="var(--accent-color)" />

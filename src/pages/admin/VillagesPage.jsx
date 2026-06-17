@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText, Settings2, Compass } from 'lucide-react';
+import { Plus, Edit2, Trash2, Home, UserPlus, X, Eye, Save, ChevronDown, ChevronUp, Users, FileText, Compass } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -10,6 +10,8 @@ import BusyButton from '../../components/BusyButton';
 import ExplorationFormSection from '../../components/ExplorationFormSection';
 import ExplorationBadge from '../../components/ExplorationBadge';
 import ExplorationDataModal from '../../components/ExplorationDataModal';
+import VillageDefaultSchoolPanel from '../../components/VillageDefaultSchoolPanel';
+import VillageSchoolCheckboxGroup from '../../components/VillageSchoolCheckboxGroup';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS, EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
@@ -714,7 +716,7 @@ const VillagesPage = () => {
   };
 
   return (
-    <div>
+    <div className="villages-page">
       <PageHeader icon={Home} title="إدارة القرى" subtitle="البيانات الديموغرافية والمجموعات">
         {can(PERMISSION_PAGE_IDS.villages, 'village_add') && (
           <button
@@ -747,7 +749,8 @@ const VillagesPage = () => {
             title="فتح نموذج استكشاف لإدخال قرية جديدة"
           >
             <Compass size={18} />
-            <span>إضافة من نموذج الاستكشاف</span>
+            <span className="villages-toolbar__long">إضافة من نموذج الاستكشاف</span>
+            <span className="villages-toolbar__short">استكشاف</span>
           </button>
         )}
       </PageHeader>
@@ -758,35 +761,17 @@ const VillagesPage = () => {
         </div>
       )}
       {error && (
-        <div
-          className="app-alert app-alert--error villages-alert"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
-        >
+        <div className="app-alert app-alert--error villages-alert app-alert--dismissible">
           <span>{error}</span>
-          <button
-            type="button"
-            className="icon-btn"
-            title="إغلاق"
-            onClick={() => setError('')}
-            style={{ width: 28, height: 28 }}
-          >
+          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setError('')}>
             <X size={14} />
           </button>
         </div>
       )}
       {success && (
-        <div
-          className="app-alert app-alert--success villages-alert"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
-        >
+        <div className="app-alert app-alert--success villages-alert app-alert--dismissible">
           <span>{success}</span>
-          <button
-            type="button"
-            className="icon-btn"
-            title="إغلاق"
-            onClick={() => setSuccess('')}
-            style={{ width: 28, height: 28 }}
-          >
+          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setSuccess('')}>
             <X size={14} />
           </button>
         </div>
@@ -854,28 +839,21 @@ const VillagesPage = () => {
           </div>
 
           {isEditing && (schoolsByVillage[isEditing.id] || []).length > 0 && (
-            <div className="app-field app-field--grow" style={{ marginBottom: '1rem' }}>
+            <div className="app-field app-field--grow villages-form__school-pick">
               <label className="app-label">مدارس القرية للتسجيل كطالب (قائمة الطلاب المسجلين في كل مدرسة)</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px', marginTop: 8 }}>
-                {(schoolsByVillage[isEditing.id] || []).map((sch) => (
-                  <label key={sch.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={villageModalSchoolIds.includes(sch.id)}
-                      onChange={() => toggleVillageModalSchool(sch.id)}
-                    />
-                    <span>{sch.name}</span>
-                  </label>
-                ))}
-              </div>
-              <p style={{ fontSize: '0.85rem', opacity: 0.85, marginTop: 8 }}>
+              <VillageSchoolCheckboxGroup
+                schools={schoolsByVillage[isEditing.id] || []}
+                selectedIds={villageModalSchoolIds}
+                onToggle={toggleVillageModalSchool}
+              />
+              <p className="villages-form__school-pick-hint">
                 الافتراضي أول مدرسة؛ يمكنك تحديد أكثر من مدرسة. يجب بقاء خيار واحد على الأقل.
               </p>
             </div>
           )}
 
           {isEditing && (schoolsByVillage[isEditing.id] || []).length === 0 && newMuslims.length > 0 && (
-            <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+            <div className="app-alert app-alert--info geo-page-alert">
               لا توجد مدارس مرتبطة بهذه القرية بعد. أضف مدرسة للقرية أولاً، أو سجّل المهتدين لاحقاً من بطاقة القرية بعد ربط المدارس.
             </div>
           )}
@@ -912,11 +890,16 @@ const VillagesPage = () => {
                   <span className="villages-form__new-muslims-name">
                     {m.name} — <span className="villages-form__new-muslims-type">{m.type}</span>
                     {' '}
-                    <span className="villages-form__new-muslims-type" style={{ opacity: 0.85 }}>
+                    <span className="villages-form__new-muslims-type villages-form__new-muslims-type--muted">
                       ({normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN ? 'مسلم قديم' : 'مهتد'})
                     </span>
                   </span>
-                  <X size={16} color="var(--danger-color)" style={{ cursor: 'pointer' }} onClick={() => removeMuslimFromList(index)} />
+                  <X
+                    size={16}
+                    color="var(--danger-color)"
+                    className="villages-form__new-muslims-remove"
+                    onClick={() => removeMuslimFromList(index)}
+                  />
                 </div>
               ))}
             </div>
@@ -945,7 +928,7 @@ const VillagesPage = () => {
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd} className="villages-form">
-          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+          <div className="app-alert app-alert--info geo-page-alert geo-page-alert--tight">
             النموذج يحتاج حقلاً مصدره «المناطق» لربط القرية بمنطقتها، وحقلاً نصياً للاسم.
           </div>
 
@@ -966,7 +949,7 @@ const VillagesPage = () => {
             <div className="villages-form__counter">الإجمالي: {expNewMuslims.length}</div>
           </div>
 
-          <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+          <div className="app-alert app-alert--info geo-page-alert geo-page-alert--tight">
             يتم تسجيل المهتدين/المسلمين القدامى كطلاب بعد إنشاء القرية. اربط المدارس بهذه القرية لتُسجَّل الأسماء فيها
             تلقائياً. عند عدم وجود مدرسة، تُسجَّل أسماؤهم كأفراد قرية فقط.
           </div>
@@ -1024,14 +1007,14 @@ const VillagesPage = () => {
                   <span className="villages-form__new-muslims-name">
                     {m.name} — <span className="villages-form__new-muslims-type">{m.type}</span>
                     {' '}
-                    <span className="villages-form__new-muslims-type" style={{ opacity: 0.85 }}>
+                    <span className="villages-form__new-muslims-type villages-form__new-muslims-type--muted">
                       ({normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN ? 'مسلم قديم' : 'مهتد'})
                     </span>
                   </span>
                   <X
                     size={16}
                     color="var(--danger-color)"
-                    style={{ cursor: 'pointer' }}
+                    className="villages-form__new-muslims-remove"
                     onClick={() => removeExpMuslimFromList(index)}
                   />
                 </div>
@@ -1060,7 +1043,7 @@ const VillagesPage = () => {
 
       {/* Villages List */}
       {loading && !isAdding ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }}></div>
+        <div className="loading-spinner page-loading"></div>
       ) : villages.length === 0 ? (
         <div className="empty-state">
           لا توجد قرى مضافة حتى الآن.
@@ -1109,23 +1092,8 @@ const VillagesPage = () => {
               
               <h3 className="villages-card__title">{vil.villageName}</h3>
               {!!defaultSchoolName && (
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    marginTop: '0.25rem',
-                    marginBottom: '0.35rem',
-                    padding: '0.25rem 0.55rem',
-                    borderRadius: 999,
-                    background: 'color-mix(in srgb, var(--accent-color) 14%, transparent)',
-                    color: 'var(--accent-color)',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                  }}
-                  title={`المدرسة الافتراضية: ${defaultSchoolName}`}
-                >
-                  <FileText size={12} />
+                <div className="villages-card__default-badge" title={`المدرسة الافتراضية: ${defaultSchoolName}`}>
+                  <FileText size={12} aria-hidden />
                   <span>الافتراضية: {defaultSchoolName}</span>
                 </div>
               )}
@@ -1140,109 +1108,41 @@ const VillagesPage = () => {
                 <div className="villages-card__stats-success">مهتدين (رجال): {convertsList.filter((m) => m.type === 'رجل').length}</div>
                 <div className="villages-card__stats-success">مهتدين (نساء): {convertsList.filter((m) => m.type === 'امرأة').length}</div>
                 <div className="villages-card__stats-success">مهتدين (أطفال): {convertsList.filter((m) => m.type === 'طفل').length}</div>
-                <div className="villages-card__stats-success" style={{ opacity: 0.95 }}>مسلمون قدامى (رجال): {bornList.filter((m) => m.type === 'رجل').length}</div>
-                <div className="villages-card__stats-success" style={{ opacity: 0.95 }}>مسلمون قدامى (نساء): {bornList.filter((m) => m.type === 'امرأة').length}</div>
-                <div className="villages-card__stats-success" style={{ opacity: 0.95 }}>مسلمون قدامى (أطفال): {bornList.filter((m) => m.type === 'طفل').length}</div>
+                <div className="villages-card__stats-success">مسلمون قدامى (رجال): {bornList.filter((m) => m.type === 'رجل').length}</div>
+                <div className="villages-card__stats-success">مسلمون قدامى (نساء): {bornList.filter((m) => m.type === 'امرأة').length}</div>
+                <div className="villages-card__stats-success">مسلمون قدامى (أطفال): {bornList.filter((m) => m.type === 'طفل').length}</div>
               </div>
 
               <div className="villages-card__meta">
                 <span>جروب: {vil.groupName || '-'}</span>
                 <span>LTI: {vil.ltiName || '-'}</span>
               </div>
-              <div style={{ marginTop: 6 }}>
+              <div className="villages-card__exploration">
                 {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
                   <ExplorationBadge record={vil} onClick={() => setViewingExplorationOf(vil)} />
                 )}
               </div>
-              <div
-                className="surface-card"
-                style={{
-                  marginTop: '0.85rem',
-                  padding: '0.75rem',
-                  borderRadius: '12px',
-                  display: 'grid',
-                  gap: '0.6rem',
-                }}
-              >
-                <strong style={{ fontSize: '0.92rem' }}>المدرسة الافتراضية للتقرير</strong>
-                {(schoolsByVillage[vil.id] || []).length === 0 ? (
-                  <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
-                    لا توجد مدارس مرتبطة بهذه القرية.
-                  </p>
-                ) : (
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                      gap: '0.5rem',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <AppSelect searchable
-                      value={defaultSchoolByVillage[vil.id] || ''}
-                      onChange={(e) =>
-                        setDefaultSchoolByVillage((prev) => ({ ...prev, [vil.id]: e.target.value }))
-                      }
-                    >
-                      {villageSchools.map((sch) => (
-                        <option key={sch.id} value={sch.id}>
-                          {sch.name}
-                        </option>
-                      ))}
-                    </AppSelect>
-                    {can(PERMISSION_PAGE_IDS.villages, 'village_default_school_set') && (
-                      <BusyButton
-                        type="button"
-                        className="google-btn"
-                        style={{ width: 'auto', minHeight: '38px', padding: '0 12px' }}
-                        busy={savingDefaultSchoolForVillageId === vil.id}
-                        onClick={() => handleSaveDefaultSchool(vil, defaultSchoolByVillage[vil.id])}
-                      >
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                          <Settings2 size={14} /> حفظ الافتراضي
-                        </span>
-                      </BusyButton>
-                    )}
-                    {can(PERMISSION_PAGE_IDS.villages, 'village_report_quick_add') && (
-                      <button
-                        type="button"
-                        className="google-btn google-btn--filled"
-                        style={{ width: '100%', minHeight: '38px', padding: '0 12px' }}
-                        disabled={!defaultSchoolByVillage[vil.id]}
-                        onClick={() => navigate(`/schools/${defaultSchoolByVillage[vil.id]}?composeReport=1`)}
-                        title={
-                          defaultSchoolByVillage[vil.id]
-                            ? 'إضافة تقرير للمدرسة الافتراضية'
-                            : 'لا توجد مدرسة افتراضية متاحة'
-                        }
-                      >
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                          <FileText size={14} /> إضافة تقرير المدرسة الافتراضية
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                )}
-                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  الافتراضي التلقائي هو أول مدرسة في القائمة، ويمكن تغييره يدويًا.
-                </p>
-                {!!defaultSchoolName && (
-                  <div
-                    className="app-alert app-alert--info"
-                    style={{ margin: 0, padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
-                  >
-                    المدرسة الافتراضية الحالية: <strong>{defaultSchoolName}</strong>
-                  </div>
-                )}
-              </div>
+
+              <VillageDefaultSchoolPanel
+                schools={villageSchools}
+                defaultSchoolId={defaultSchoolByVillage[vil.id] || ''}
+                currentSchoolName={defaultSchoolName}
+                onDefaultSchoolChange={(e) =>
+                  setDefaultSchoolByVillage((prev) => ({ ...prev, [vil.id]: e.target.value }))
+                }
+                onSaveDefault={() => handleSaveDefaultSchool(vil, defaultSchoolByVillage[vil.id])}
+                onAddReport={() => navigate(`/schools/${defaultSchoolByVillage[vil.id]}?composeReport=1`)}
+                saving={savingDefaultSchoolForVillageId === vil.id}
+                canSetDefault={can(PERMISSION_PAGE_IDS.villages, 'village_default_school_set')}
+                canAddReport={can(PERMISSION_PAGE_IDS.villages, 'village_report_quick_add')}
+              />
 
               {(can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') ||
                 can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') ||
                 can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_delete')) && (
                 <button
                   type="button"
-                  className="google-btn google-btn--toolbar"
-                  style={{ width: '100%', marginTop: '0.85rem' }}
+                  className="google-btn google-btn--toolbar villages-card__quick-toggle"
                   onClick={() => toggleQuickNewMuslims(vil.id)}
                 >
                   <UserPlus size={16} aria-hidden />
@@ -1254,7 +1154,8 @@ const VillagesPage = () => {
                   ) : (
                     <>
                       <ChevronDown size={16} aria-hidden />
-                      <span>مهتدون ومسلمون قدامى من البطاقة</span>
+                      <span className="villages-toolbar__long">مهتدون ومسلمون قدامى من البطاقة</span>
+                      <span className="villages-toolbar__short">سجل المهتدين</span>
                     </>
                   )}
                 </button>
@@ -1269,19 +1170,12 @@ const VillagesPage = () => {
                     يُسجَّل الشخص في المدارس المحددة ضمن قائمة الطلاب لكل مدرسة. الافتراضي أول مدرسة؛ يمكن اختيار أكثر من مدرسة.
                   </p>
                   {(schoolsByVillage[vil.id] || []).length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 14px', marginBottom: 10 }}>
-                      {(schoolsByVillage[vil.id] || []).map((sch) => (
-                        <label key={sch.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.9rem' }}>
-                          <input
-                            type="checkbox"
-                            checked={nmDraftSchoolIds.includes(sch.id)}
-                            onChange={() => toggleNmDraftSchool(sch.id)}
-                            disabled={nmSaving}
-                          />
-                          <span>{sch.name}</span>
-                        </label>
-                      ))}
-                    </div>
+                    <VillageSchoolCheckboxGroup
+                      schools={schoolsByVillage[vil.id] || []}
+                      selectedIds={nmDraftSchoolIds}
+                      onToggle={toggleNmDraftSchool}
+                      disabled={nmSaving}
+                    />
                   )}
                   <div className="villages-quick-panel__entry-row">
                     <input
@@ -1318,8 +1212,7 @@ const VillagesPage = () => {
                     {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
                       <button
                         type="button"
-                        className="google-btn google-btn--filled"
-                        style={{ marginTop: 0, width: 'auto', padding: '0 12px' }}
+                        className="google-btn google-btn--filled villages-quick-panel__add-btn"
                         disabled={nmSaving}
                         onClick={() => handleQuickAddNewMuslim(vil)}
                       >
@@ -1385,7 +1278,7 @@ const VillagesPage = () => {
                                     : ' · مهتد'}
                                 </span>
                               </span>
-                              <span style={{ display: 'flex', gap: '4px' }}>
+                              <span className="villages-quick-panel__item-actions">
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
                                   <button type="button" className="icon-btn" title="تعديل" disabled={nmSaving} onClick={() => startNmQuickEdit(m)}>
                                     <Edit2 size={16} />

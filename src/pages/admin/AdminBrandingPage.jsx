@@ -50,7 +50,7 @@ export default function AdminBrandingPage({ user }) {
   };
 
   return (
-    <div>
+    <div className="admin-branding-page admin-settings-page--has-mobile-save">
       <PageHeader
         title="هوية الموقع"
         subtitle="تعديل اسم المنصة والعنوان والنص الظاهر في رأس لوحة التحكم."
@@ -167,7 +167,23 @@ export default function AdminBrandingPage({ user }) {
           </div>
         </div>
 
-        <BusyButton type="button" className="google-btn google-btn--filled admin-settings-save-btn" onClick={onSave} busy={saving}>
+        <BusyButton
+          type="button"
+          className="google-btn google-btn--filled admin-settings-save-btn admin-settings-save-btn--desktop"
+          onClick={onSave}
+          busy={saving}
+        >
+          حفظ الهوية
+        </BusyButton>
+      </div>
+
+      <div className="admin-settings-mobile-save-bar">
+        <BusyButton
+          type="button"
+          className="google-btn google-btn--filled admin-settings-mobile-save-bar__btn"
+          onClick={onSave}
+          busy={saving}
+        >
           حفظ الهوية
         </BusyButton>
       </div>

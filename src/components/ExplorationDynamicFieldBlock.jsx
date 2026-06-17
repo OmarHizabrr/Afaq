@@ -153,7 +153,6 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
         width={360}
         height={140}
         className="exploration-signature-canvas"
-        style={{ width: '100%', maxWidth: 420, height: 140, touchAction: 'none', borderRadius: 8, border: '1px solid var(--border-color)' }}
         onMouseDown={start}
         onMouseMove={move}
         onMouseUp={end}
@@ -162,16 +161,16 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
         onTouchMove={move}
         onTouchEnd={end}
       />
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8, alignItems: 'center' }}>
-        <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={clearCanvas} disabled={disabled || uploading}>
+      <div className="exploration-signature-actions">
+        <button type="button" className="google-btn google-btn--inline" onClick={clearCanvas} disabled={disabled || uploading}>
           مسح اللوحة
         </button>
-        <button type="button" className="google-btn google-btn--filled" style={{ width: 'auto', marginTop: 0 }} onClick={handleUploadSignature} disabled={disabled || uploading}>
+        <button type="button" className="google-btn google-btn--filled google-btn--inline" onClick={handleUploadSignature} disabled={disabled || uploading}>
           {uploading ? 'جاري الرفع…' : storageUserId ? 'رفع التوقيع إلى التخزين' : 'حفظ التوقيع (محلي)'}
         </button>
       </div>
       {String(value || '').startsWith('http') && (
-        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '8px 0 0', wordBreak: 'break-all' }}>
+        <p className="exploration-signature-saved">
           رابط محفوظ: <a href={value} target="_blank" rel="noreferrer">فتح</a>
         </p>
       )}
@@ -229,8 +228,15 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
         <>
           {commonLabel}
           <textarea
-            className={`app-input ${variant === 'sheet' ? 'exploration-field-sheet__input exploration-field-sheet__input--multiline' : 'exploration-form-grid__full'}`}
-            style={{ minHeight: f.fieldType === 'rich_text' ? 120 : 72 }}
+            className={`app-input ${
+              variant === 'sheet'
+                ? `exploration-field-sheet__input exploration-field-sheet__input--multiline${
+                    f.fieldType === 'rich_text' ? ' exploration-field-sheet__input--multiline-rich' : ''
+                  }`
+                : `exploration-form-grid__full exploration-form-textarea--${
+                    f.fieldType === 'rich_text' ? 'rich' : 'md'
+                  }`
+            }`}
             placeholder={f.placeholder || ''}
             value={v ?? ''}
             onChange={(e) => onChange(f.id, e.target.value)}
@@ -266,16 +272,16 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           return wrap(
             <>
               {commonLabel}
-              <div className="exploration-field-sheet__range" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="exploration-field-sheet__range">
                 <input
                   type="range"
+                  className="exploration-field-sheet__range-input"
                   min={lo}
                   max={hi}
                   value={cur}
                   onChange={(e) => onChange(f.id, Number(e.target.value))}
-                  style={{ flex: 1 }}
                 />
-                <span style={{ minWidth: 36, fontVariantNumeric: 'tabular-nums' }}>{cur}</span>
+                <span className="exploration-field-sheet__range-value">{cur}</span>
               </div>
             </>
           );
@@ -289,7 +295,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           return wrap(
             <>
               {commonLabel}
-              <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+              <div className={`${variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} exploration-field-sheet__control-block--row`}>
                 {Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).map((star) => (
                   <button
                     key={star}
@@ -301,7 +307,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                     ★
                   </button>
                 ))}
-                <button type="button" className="google-btn" style={{ width: 'auto', marginTop: 0 }} onClick={() => onChange(f.id, '')}>
+                <button type="button" className="google-btn google-btn--inline" onClick={() => onChange(f.id, '')}>
                   إلغاء التقييم
                 </button>
               </div>
@@ -321,7 +327,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
         if (f.fieldType === 'date_range') {
           const pair = v && typeof v === 'object' ? v : { from: '', to: '' };
           return wrap(
-            <div className={variant === 'sheet' ? 'exploration-field-sheet__subgrid' : 'exploration-form-grid__full'} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div className={variant === 'sheet' ? 'exploration-field-sheet__subgrid' : 'exploration-form-grid__subgrid'}>
               <div>
                 <label className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__sublabel' : ''}`}>
                   {f.label} — من{f.required ? ' *' : ''}
@@ -370,9 +376,9 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           return wrap(
             <>
               {commonLabel}
-              <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px' }}>
+              <div className={`${variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} exploration-field-sheet__control-block--radio`}>
                 {pairs.map((opt) => (
-                  <label key={opt.value} className="exploration-field-sheet__choice" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                  <label key={opt.value} className="exploration-field-sheet__choice">
                     <input type="radio" name={`dyn-${f.id}`} checked={v === opt.value} onChange={() => onChange(f.id, opt.value)} />
                     {opt.label}
                   </label>
@@ -388,9 +394,9 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           return wrap(
             <>
               {commonLabel}
-              <div className={variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className={`${variant === 'sheet' ? 'exploration-field-sheet__control-block' : 'exploration-form-grid__full'} exploration-field-sheet__control-block--stack`}>
                 {pairs.map((opt) => (
-                  <label key={opt.value} className="exploration-field-sheet__choice" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <label key={opt.value} className="exploration-field-sheet__choice exploration-field-sheet__choice--stack">
                     <input
                       type="checkbox"
                       checked={arr.includes(opt.value)}
@@ -424,7 +430,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
 
         if (f.fieldType === 'checkbox') {
           return wrap(
-            <label className={`app-label exploration-form-grid__full${variant === 'sheet' ? ' exploration-field-sheet__row--toggle' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', margin: 0 }}>
+            <label className={`app-label exploration-form-grid__full exploration-field-sheet__checkbox-label${variant === 'sheet' ? ' exploration-field-sheet__row--toggle' : ''}`}>
               <input type="checkbox" checked={Boolean(v)} onChange={(e) => onChange(f.id, e.target.checked)} />
               {f.label}
               {f.required ? ' *' : ''}
@@ -434,8 +440,8 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
 
         if (f.fieldType === 'switch') {
           return wrap(
-            <div className={`exploration-form-grid__full${variant === 'sheet' ? ' exploration-field-sheet__row--toggle' : ''}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-              <span className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__label' : ''}`} style={{ margin: 0 }}>
+            <div className={`exploration-form-grid__full exploration-field-sheet__switch-row${variant === 'sheet' ? ' exploration-field-sheet__row--toggle' : ''}`}>
+              <span className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__label exploration-field-sheet__label--inline' : ''}`}>
                 {f.label}
                 {f.required ? ' *' : ''}
               </span>
@@ -490,25 +496,25 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                 }}
               />
               {!storageUserId && (
-                <p style={{ fontSize: '0.78rem', color: 'var(--danger-color)', margin: '4px 0 0' }}>تسجيل الدخول مطلوب لرفع الملفات.</p>
+                <p className="exploration-field-hint exploration-field-hint--danger">تسجيل الدخول مطلوب لرفع الملفات.</p>
               )}
               {uploadingFieldId === f.id && (
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '6px 0 0' }}>جاري الرفع إلى Firebase Storage…</p>
+                <p className="exploration-field-hint exploration-field-hint--upload">جاري الرفع إلى Firebase Storage…</p>
               )}
               {isHttp && (
-                <div style={{ marginTop: 10 }} className={variant === 'sheet' ? 'exploration-field-sheet__media' : 'exploration-form-grid__full'}>
+                <div className={`exploration-field-media ${variant === 'sheet' ? 'exploration-field-sheet__media' : 'exploration-form-grid__full'}`}>
                   {f.fieldType === 'image' && (
-                    <img src={strVal} alt="" style={{ maxWidth: '100%', maxHeight: 160, borderRadius: 8, border: '1px solid var(--border-color)' }} />
+                    <img src={strVal} alt="" className="exploration-field-media__img" />
                   )}
-                  {f.fieldType === 'video' && <video src={strVal} controls style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8 }} />}
-                  {f.fieldType === 'audio' && <audio src={strVal} controls style={{ width: '100%', marginTop: 6 }} />}
-                  <a href={strVal} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: 8, fontSize: '0.85rem' }}>
+                  {f.fieldType === 'video' && <video src={strVal} controls className="exploration-field-media__video" />}
+                  {f.fieldType === 'audio' && <audio src={strVal} controls className="exploration-field-media__audio" />}
+                  <a href={strVal} target="_blank" rel="noreferrer" className="exploration-field-media__link">
                     فتح الرابط / تحميل
                   </a>
                 </div>
               )}
               {isLegacyData && (
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '6px 0 0' }}>
+                <p className="exploration-field-hint">
                   يوجد مرفق قديم مخزّن داخل السجل (base64). يُفضّل إعادة الرفع ليُحفظ الرابط في Storage فقط.
                 </p>
               )}
@@ -520,7 +526,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
           return wrap(
             <>
               {commonLabel}
-              <input className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input exploration-field-sheet__input--color' : ''}`} type="color" value={v || '#000000'} onChange={(e) => onChange(f.id, e.target.value)} style={{ height: 44, padding: 4 }} />
+              <input className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input exploration-field-sheet__input--color exploration-field-sheet__input--color-pick' : ''}`} type="color" value={v || '#000000'} onChange={(e) => onChange(f.id, e.target.value)} />
             </>
           );
         }
@@ -528,7 +534,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
         if (f.fieldType === 'location') {
           const pair = v && typeof v === 'object' ? v : { lat: '', lng: '' };
           return wrap(
-            <div className={variant === 'sheet' ? 'exploration-field-sheet__subgrid' : 'exploration-form-grid__full'} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div className={variant === 'sheet' ? 'exploration-field-sheet__subgrid' : 'exploration-form-grid__subgrid'}>
               <div>
                 <label className={`app-label${variant === 'sheet' ? ' exploration-field-sheet__sublabel' : ''}`}>خط العرض (Lat){f.required ? ' *' : ''}</label>
                 <input

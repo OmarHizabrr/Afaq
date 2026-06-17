@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import StarRatingInput from '../../components/StarRatingInput';
 import BusyButton from '../../components/BusyButton';
+import SupervisorVisitStudentCard from '../../components/SupervisorVisitStudentCard';
 import { clampVisitRatingSave } from '../../utils/visitRating';
 
 const SupervisorVisitPage = ({ user }) => {
@@ -238,12 +239,10 @@ const SupervisorVisitPage = ({ user }) => {
     }
   };
 
-  const inputStyle = { padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-primary)', fontSize: '0.95rem', width: '100%', boxSizing: 'border-box' };
-
-  if (loading && assignedSchools.length === 0) return <div className="loading-spinner" style={{ margin: '3rem auto' }}></div>;
+  if (loading && assignedSchools.length === 0) return <div className="loading-spinner page-loading-md" />;
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <div className="portal-page portal-page--narrow supervisor-visit-page">
       <PageHeader
         icon={MapPin}
         iconColor="var(--md-primary)"
@@ -251,29 +250,28 @@ const SupervisorVisitPage = ({ user }) => {
         subtitle="توثيق تفصيلي لأداء المدارس مع الموقع الجغرافي"
       />
 
-      {error && <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }}>{error}</div>}
-      {success && <div className="app-alert app-alert--success" style={{ marginBottom: '1rem' }}>{success}</div>}
+      {error && <div className="app-alert app-alert--error portal-page-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success portal-page-alert">{success}</div>}
 
-      {/* Basic Info */}
-      <div className="surface-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>المدرسة المُزارة</label>
-            <AppSelect value={selectedSchoolId} onChange={(e) => setSelectedSchoolId(e.target.value)} style={inputStyle}>
+      <div className="surface-card visit-setup-card">
+        <div className="visit-setup-grid">
+          <div className="app-field">
+            <label className="app-label">المدرسة المُزارة</label>
+            <AppSelect value={selectedSchoolId} onChange={(e) => setSelectedSchoolId(e.target.value)} className="app-select">
               <option value="">-- اختر المدرسة --</option>
               {assignedSchools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </AppSelect>
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>المادة</label>
-            <AppSelect value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} style={inputStyle}>
+          <div className="app-field">
+            <label className="app-label">المادة</label>
+            <AppSelect value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="app-select">
               <option value="">-- اختر المادة --</option>
               {curriculumList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </AppSelect>
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>الدرس المدرج بالخطة</label>
-            <AppSelect value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} style={inputStyle} disabled={!selectedSubjectId}>
+          <div className="app-field">
+            <label className="app-label">الدرس المدرج بالخطة</label>
+            <AppSelect value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} className="app-select" disabled={!selectedSubjectId}>
               <option value="">-- اختر الدرس --</option>
               {availableWeeks.map(w => <option key={w.week} value={w.week}>أسبوع {w.week}: {w.lesson || '-'}</option>)}
             </AppSelect>
@@ -284,14 +282,13 @@ const SupervisorVisitPage = ({ user }) => {
       {selectedSchoolId && (
         <>
           {/* Students Cross-Check */}
-          <div className="surface-card" style={{ borderRadius: '12px', marginBottom: '1.5rem', overflow: 'hidden' }}>
-            <div className="md-table-panel__head" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>سجل الطلاب والتقييم الفردي</h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginInlineStart: 'auto' }}>
+          <div className="surface-card visit-students-card">
+            <div className="md-table-panel__head visit-students-card__head">
+              <h3 className="visit-students-card__title">سجل الطلاب والتقييم الفردي</h3>
+              <div className="visit-students-card__bulk">
                 <button
                   type="button"
-                  className="google-btn"
-                  style={{ fontSize: '0.85rem', padding: '8px 14px' }}
+                  className="google-btn google-btn--inline"
                   onClick={() =>
                     setTrackingData((prev) => prev.map((r) => ({ ...r, isPresent: true })))
                   }
@@ -300,8 +297,7 @@ const SupervisorVisitPage = ({ user }) => {
                 </button>
                 <button
                   type="button"
-                  className="google-btn"
-                  style={{ fontSize: '0.85rem', padding: '8px 14px' }}
+                  className="google-btn google-btn--inline"
                   onClick={() =>
                     setTrackingData((prev) =>
                       prev.map((r) => ({ ...r, isPresent: false, isTested: false, note: '' }))
@@ -312,72 +308,80 @@ const SupervisorVisitPage = ({ user }) => {
                 </button>
               </div>
             </div>
-            <div className="md-table-scroll">
-              <table className="md-table">
-                <thead>
-                  <tr>
-                    <th>تعديل الحالة</th>
-                    <th>اسم الطالب</th>
-                    <th style={{ textAlign: 'center' }}>اختبار الطالب</th>
-                    <th>ملاحظة التقييم (اختياري)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {trackingData.map((record) => (
-                    <tr
-                      key={record.studentId}
-                      className={
-                        !record.isPresent ? 'md-table__row--absent' : record.isTested ? 'md-table__row--tested' : ''
-                      }
-                    >
-                      <td style={{ padding: '12px 16px', width: '80px', textAlign: 'center' }}>
-                        <button 
-                          onClick={() => handleTrackingChange(record.studentId, 'isPresent', !record.isPresent)}
-                          style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-                          title={record.isPresent ? 'تعديل لغائب' : 'حاضر'}
-                        >
-                          {record.isPresent ? <CheckCircle size={24} color="var(--success-color)" /> : <XCircle size={24} color="var(--danger-color)" />}
-                        </button>
-                      </td>
-                      <td style={{ padding: '12px 16px', fontWeight: 500, color: record.isPresent ? 'inherit' : 'var(--text-secondary)', textDecoration: record.isPresent ? 'none' : 'line-through' }}>
-                        {record.name}
-                      </td>
-                      <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                         <button 
-                          onClick={() => handleTrackingChange(record.studentId, 'isTested', !record.isTested)}
-                          disabled={!record.isPresent}
-                          style={{ 
-                            background: record.isTested ? 'var(--md-primary)' : 'var(--bg-color)', 
-                            border: `1px solid ${record.isTested ? 'var(--md-primary)' : 'var(--border-color)'}`, 
-                            color: record.isTested ? 'var(--md-on-primary)' : 'var(--text-secondary)',
-                            padding: '4px 12px', borderRadius: '20px', cursor: record.isPresent ? 'pointer' : 'not-allowed',
-                            fontSize: '0.8rem', fontWeight: 600, opacity: record.isPresent ? 1 : 0.4
-                          }}
-                        >
-                          {record.isTested ? 'اختُبر' : 'اختبار'}
-                        </button>
-                      </td>
-                      <td style={{ padding: '8px 16px' }}>
-                        <input 
-                          type="text" 
-                          placeholder="ملاحظات قراءته..."
-                          value={record.note}
-                          onChange={(e) => handleTrackingChange(record.studentId, 'note', e.target.value)}
-                          disabled={!record.isPresent || !record.isTested}
-                          style={{ ...inputStyle, padding: '8px', opacity: (record.isPresent && record.isTested) ? 1 : 0.3 }}
-                        />
-                      </td>
+            <div className="visit-students-desktop-only">
+              <div className="md-table-scroll">
+                <table className="md-table">
+                  <thead>
+                    <tr>
+                      <th>تعديل الحالة</th>
+                      <th>اسم الطالب</th>
+                      <th className="visit-table__col-center">اختبار الطالب</th>
+                      <th>ملاحظة التقييم (اختياري)</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {trackingData.map((record) => (
+                      <tr
+                        key={record.studentId}
+                        className={
+                          !record.isPresent ? 'md-table__row--absent' : record.isTested ? 'md-table__row--tested' : ''
+                        }
+                      >
+                        <td className="visit-table__toggle-cell">
+                          <button
+                            type="button"
+                            onClick={() => handleTrackingChange(record.studentId, 'isPresent', !record.isPresent)}
+                            className="visit-table__toggle-btn"
+                            title={record.isPresent ? 'تعديل لغائب' : 'حاضر'}
+                          >
+                            {record.isPresent ? <CheckCircle size={24} color="var(--success-color)" /> : <XCircle size={24} color="var(--danger-color)" />}
+                          </button>
+                        </td>
+                        <td className={`visit-table__name-cell${record.isPresent ? '' : ' visit-table__name-cell--absent'}`}>
+                          {record.name}
+                        </td>
+                        <td className="visit-table__test-cell">
+                          <button
+                            type="button"
+                            onClick={() => handleTrackingChange(record.studentId, 'isTested', !record.isTested)}
+                            disabled={!record.isPresent}
+                            className={`visit-test-chip${record.isTested ? ' visit-test-chip--active' : ''}${!record.isPresent ? ' visit-test-chip--disabled' : ''}`}
+                          >
+                            {record.isTested ? 'اختُبر' : 'اختبار'}
+                          </button>
+                        </td>
+                        <td className="visit-table__note-cell">
+                          <input
+                            type="text"
+                            placeholder="ملاحظات قراءته..."
+                            value={record.note}
+                            onChange={(e) => handleTrackingChange(record.studentId, 'note', e.target.value)}
+                            disabled={!record.isPresent || !record.isTested}
+                            className={`app-input visit-note-input${record.isPresent && record.isTested ? '' : ' visit-note-input--disabled'}`}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="visit-students-mobile-only">
+              {trackingData.map((record) => (
+                <SupervisorVisitStudentCard
+                  key={record.studentId}
+                  record={record}
+                  onTrackingChange={handleTrackingChange}
+                />
+              ))}
             </div>
           </div>
 
           {/* Evaluations & Media */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem', alignItems: 'start' }}>
-            <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '12px' }}>
-              <h3 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="visit-eval-grid">
+            <div className="surface-card visit-panel-card">
+              <h3 className="visit-panel-card__title">
                 <Star size={20} color="#f59e0b" /> التقييم العام
               </h3>
               
@@ -385,23 +389,23 @@ const SupervisorVisitPage = ({ user }) => {
                 label="تقييم المدرّس (من 5 نجوم)"
                 value={teacherRating}
                 onChange={setTeacherRating}
-                style={{ marginBottom: '1rem' }}
+                className="visit-panel-card__field"
               />
 
               <StarRatingInput
                 label="التقييم العام للقرية (من 5 نجوم)"
                 value={villageRating}
                 onChange={setVillageRating}
-                style={{ marginBottom: '1rem' }}
+                className="visit-panel-card__field"
               />
 
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>الملاحظات والتوجيهات</label>
-              <textarea value={generalNotes} onChange={(e) => setGeneralNotes(e.target.value)} placeholder="اكتب رأيك العام عن الزيارة..." style={{...inputStyle, minHeight: '100px'}} />
+              <label className="app-label">الملاحظات والتوجيهات</label>
+              <textarea value={generalNotes} onChange={(e) => setGeneralNotes(e.target.value)} placeholder="اكتب رأيك العام عن الزيارة..." className="app-input app-textarea visit-textarea" />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '12px' }}>
-                <h3 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="visit-side-stack">
+              <div className="surface-card visit-panel-card">
+                <h3 className="visit-panel-card__title">
                   <Navigation size={20} color={gpsLocation ? 'var(--success-color)' : 'var(--danger-color)'} /> 
                   نطاق الزيارة (GPS)
                 </h3>
@@ -412,34 +416,34 @@ const SupervisorVisitPage = ({ user }) => {
                     className="map-location-open map-location-open--clickable map-location-open--compact"
                     title="فتح في خرائط Google"
                   >
-                    <span style={{ color: 'var(--success-color)', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <span className="visit-gps-success">
                       <CheckCircle2 size={14} /> تم تحديد الموقع ({gpsLocation.lat.toFixed(4)}, {gpsLocation.lng.toFixed(4)})
                     </span>
-                    <span className="map-location-open__hint" style={{ marginTop: 6, display: 'block' }}>
+                    <span className="map-location-open__hint visit-gps-hint">
                       اضغط للعرض على الخريطة
                     </span>
                   </button>
                 ) : (
                   <div>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>لم يتم جلب موقع الجوال بعد.</p>
-                    <BusyButton type="button" onClick={handleGetLocation} busy={locating} className="icon-btn" style={{ background: 'var(--md-primary)', color: 'var(--md-on-primary)', width: 'auto', padding: '8px 16px', borderRadius: '8px' }}>
+                    <p className="visit-gps-empty">لم يتم جلب موقع الجوال بعد.</p>
+                    <BusyButton type="button" onClick={handleGetLocation} busy={locating} className="icon-btn visit-gps-capture-btn">
                       التقاط الـ GPS الآن
                     </BusyButton>
                   </div>
                 )}
               </div>
 
-              <div className="surface-card" style={{ padding: '1.5rem', borderRadius: '12px' }}>
-                <h3 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="surface-card visit-panel-card">
+                <h3 className="visit-panel-card__title">
                   <ImageIcon size={20} color="#8b5cf6" /> التوثيق البصري
                 </h3>
-                <label style={{ display: 'inline-block', background: 'var(--bg-color)', border: '1px dashed var(--border-color)', padding: '1rem', borderRadius: '8px', cursor: 'pointer', width: '100%', textAlign: 'center' }}>
-                  <input type="file" multiple accept="image/*,video/*" onChange={handleMediaPick} style={{ display: 'none' }} />
-                  <Camera size={24} color="var(--text-secondary)" style={{ marginBottom: '8px' }} />
-                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-primary)' }}>اضغط لالتقاط أو اختيار صور وفيديو</p>
+                <label className="visit-media-drop">
+                  <input type="file" multiple accept="image/*,video/*" onChange={handleMediaPick} className="visit-media-drop__input" />
+                  <Camera size={24} color="var(--text-secondary)" className="visit-media-drop__icon" />
+                  <p className="visit-media-drop__text">اضغط لالتقاط أو اختيار صور وفيديو</p>
                 </label>
                 {mediaFiles.length > 0 && (
-                  <ul style={{ marginTop: '1rem', paddingLeft: '20px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <ul className="visit-media-list">
                     {mediaFiles.map((f, i) => <li key={i}>{f.name}</li>)}
                   </ul>
                 )}
@@ -449,11 +453,10 @@ const SupervisorVisitPage = ({ user }) => {
 
           <BusyButton
             type="button"
-            className="google-btn"
+            className={`google-btn visit-submit-btn ${gpsLocation ? 'visit-submit-btn--ready' : 'visit-submit-btn--blocked'}`}
             onClick={handleSubmitReport}
             busy={saving}
             disabled={!gpsLocation}
-            style={{ width: '100%', justifyContent: 'center', background: gpsLocation ? 'var(--md-primary)' : 'var(--border-color)', color: gpsLocation ? 'var(--md-on-primary)' : 'var(--text-secondary)', padding: '16px', fontSize: '1.1rem' }}
           >
             {gpsLocation ? 'حفظ التقرير الميداني بشكل نهائي' : 'يرجى التقاط الموقع أولاً لرفع التقرير'}
           </BusyButton>

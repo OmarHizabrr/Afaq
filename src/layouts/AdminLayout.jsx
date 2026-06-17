@@ -1,39 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Map, 
-  MapPin, 
-  Home, 
-  School, 
-  Users, 
-  Settings, 
-  BookOpen,
+import React, { useState, useEffect, useMemo } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import {
   LogOut,
-  Bell,
   Sun,
   Moon,
-  Menu,
   X,
   ChevronRight,
   ChevronLeft,
-  ClipboardList,
-  GraduationCap,
-  Shield,
-  Palette,
-  FileText,
-  Compass,
-  Tags,
-  CalendarDays,
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import UserMenuDropdown from '../components/UserMenuDropdown';
+import BottomTabBar from '../components/BottomTabBar';
+import InstallAppBanner from '../components/InstallAppBanner';
+import ScrollToTop from '../components/ScrollToTop';
 import usePermissions from '../context/usePermissions';
 import useSiteContent from '../context/useSiteContent';
-import { PERMISSION_PAGE_IDS } from '../config/permissionRegistry';
+import { getAppNavItems, filterVisibleNavItems } from '../config/appNavItems';
+import { getMobileNavTabs } from '../utils/mobileNavTabs';
+import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
 
 const AdminLayout = ({ user }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { canAccessPage } = usePermissions();
   const { branding, str } = useSiteContent();
   const [isDarkMode, setIsDarkMode] = useState(() =>
@@ -43,11 +31,32 @@ const AdminLayout = ({ user }) => {
   const [isCollapsed, setIsCollapsed] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('afaq-sidebar-collapsed') === 'true'
   );
+  const isMobile = useMediaQuery(MOBILE_QUERY);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.remove('light-mode');
     else document.documentElement.classList.add('light-mode');
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', isDarkMode ? '#1e1f22' : '#1a73e8');
   }, [isDarkMode]);
+
+  useEffect(() => {
+    if (!isMobile) setIsSidebarOpen(false);
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile) setIsSidebarOpen(false);
+  }, [location.pathname, isMobile]);
+
+  useEffect(() => {
+    if (!isMobile || !isSidebarOpen) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isMobile, isSidebarOpen]);
 
   const toggleSidebarCollapse = () => {
     const newState = !isCollapsed;
@@ -59,7 +68,7 @@ const AdminLayout = ({ user }) => {
     const newIsDark = !isDarkMode;
     setIsDarkMode(newIsDark);
     localStorage.setItem('afaq-theme', newIsDark ? 'dark' : 'light');
-    
+
     if (newIsDark) {
       document.documentElement.classList.remove('light-mode');
     } else {
@@ -72,70 +81,53 @@ const AdminLayout = ({ user }) => {
     navigate('/');
   };
 
-  const navItems = [
-    { name: str('layout.nav_dashboard', 'الرئيسية'), icon: LayoutDashboard, path: '/', pageId: PERMISSION_PAGE_IDS.dashboard },
-    { name: 'المحافظات', icon: Map, path: '/governorates', pageId: PERMISSION_PAGE_IDS.governorates },
-    { name: 'المناطق', icon: MapPin, path: '/regions', pageId: PERMISSION_PAGE_IDS.regions },
-    { name: 'القرى', icon: Home, path: '/villages', pageId: PERMISSION_PAGE_IDS.villages },
-    { name: 'المدارس', icon: School, path: '/schools', pageId: PERMISSION_PAGE_IDS.schools },
-    { name: 'الاستكشاف', icon: Compass, path: '/explorations', pageId: PERMISSION_PAGE_IDS.explorations },
-    { name: 'المنَاهِج', icon: BookOpen, path: '/curriculum', pageId: PERMISSION_PAGE_IDS.curriculum },
-    { name: 'التقارير', icon: ClipboardList, path: '/reports', pageId: PERMISSION_PAGE_IDS.reports },
-    { name: 'التحضير', icon: CalendarDays, path: '/daily-preparation', pageId: PERMISSION_PAGE_IDS.daily_preparation },
-    { name: str('layout.nav_users', 'المستخدمين'), icon: Users, path: '/users', pageId: PERMISSION_PAGE_IDS.users },
-    { name: 'إدارة الطلاب', icon: GraduationCap, path: '/students-management', pageId: PERMISSION_PAGE_IDS.students_management },
-    { name: str('layout.nav_notifications', 'الإشعارات'), icon: Bell, path: '/notifications', pageId: PERMISSION_PAGE_IDS.notifications },
-    { name: str('layout.nav_settings', 'الإعدادات'), icon: Settings, path: '/settings', pageId: PERMISSION_PAGE_IDS.settings },
-    { name: 'أنواع المستخدمين', icon: Shield, path: '/admin/user-types', pageId: PERMISSION_PAGE_IDS.admin_user_types },
-    { name: 'هوية الموقع', icon: Palette, path: '/admin/branding', pageId: PERMISSION_PAGE_IDS.admin_branding },
-    { name: 'النصوص الثابتة', icon: FileText, path: '/admin/site-copy', pageId: PERMISSION_PAGE_IDS.admin_site_copy },
-    { name: 'أنواع الاستكشاف', icon: Tags, path: '/admin/exploration-types', pageId: PERMISSION_PAGE_IDS.exploration_types },
-  ];
-  const visibleNavItems = navItems.filter((item) => {
-    if (!item.pageId) return true;
-    if (item.pageId === PERMISSION_PAGE_IDS.daily_preparation) {
-      return (
-        canAccessPage(PERMISSION_PAGE_IDS.daily_preparation) ||
-        canAccessPage(PERMISSION_PAGE_IDS.reports) ||
-        user?.role === 'teacher'
-      );
-    }
-    return canAccessPage(item.pageId);
-  });
+  const navItems = useMemo(() => getAppNavItems(str), [str]);
+  const visibleNavItems = useMemo(
+    () => filterVisibleNavItems(navItems, { canAccessPage, user }),
+    [navItems, canAccessPage, user]
+  );
+  const mobileTabs = useMemo(
+    () => getMobileNavTabs(visibleNavItems, user),
+    [visibleNavItems, user]
+  );
 
   const closeSidebar = () => {
     if (window.innerWidth <= 768) setIsSidebarOpen(false);
   };
 
+  const openSidebar = () => setIsSidebarOpen(true);
+
   return (
-    <div className={`admin-layout ${isSidebarOpen ? 'mobile-open' : ''}`} dir="rtl">
-      {/* Background Overlay for mobile */}
+    <div
+      className={`admin-layout ${isSidebarOpen ? 'mobile-open' : ''} ${isMobile ? 'admin-layout--mobile-nav' : ''}`}
+      dir="rtl"
+    >
       {isSidebarOpen && (
-        <div 
-          style={{ position: 'fixed', inset: 0, zIndex: 4, background: 'rgba(0,0,0,0.5)' }} 
+        <div
+          className="sidebar-overlay"
           onClick={closeSidebar}
+          aria-hidden
         />
       )}
 
-      {/* Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
-        <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="sidebar-header">
           <div>
-            <h2 className="logo-text" style={{ fontSize: '2rem', margin: 0, animation: 'none', transform: 'none', opacity: 1 }}>
+            <h2 className="logo-text">
               {branding.logoText || branding.siteName || 'آفاق'}
             </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>
+            <p className="sidebar-header__subtitle">
               {branding.adminSubtitle || 'لوحة تحكم الإدارة'}
             </p>
           </div>
-          
-          <button 
-             className="desktop-collapse-btn" 
-             onClick={toggleSidebarCollapse}
-             title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
-           >
-             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-           </button>
+
+          <button
+            className="desktop-collapse-btn"
+            onClick={toggleSidebarCollapse}
+            title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+          >
+            {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          </button>
 
           <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(false)}>
             <X size={24} />
@@ -144,9 +136,9 @@ const AdminLayout = ({ user }) => {
 
         <nav className="sidebar-nav">
           {visibleNavItems.map((item) => (
-            <NavLink 
-              key={item.path} 
-              to={item.path} 
+            <NavLink
+              key={item.path}
+              to={item.path}
               className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
               onClick={closeSidebar}
             >
@@ -156,7 +148,7 @@ const AdminLayout = ({ user }) => {
           ))}
         </nav>
 
-        <div className="sidebar-footer" style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+        <div className="sidebar-footer">
           <div className="nav-link" onClick={handleLogout} title="تسجيل الخروج">
             <LogOut size={20} />
             <span>تسجيل الخروج</span>
@@ -164,30 +156,34 @@ const AdminLayout = ({ user }) => {
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <div className="main-content">
-        {/* Topbar */}
         <header className="topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-              <Menu size={24} />
-            </button>
-            {/* Page title could go here */}
+          <div className="topbar__lead">
+            {isMobile ? (
+              <div className="topbar__brand">
+                <span className="topbar__brand-title">
+                  {branding.logoText || branding.siteName || 'آفاق'}
+                </span>
+              </div>
+            ) : null}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="topbar__actions">
             <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            
+
             <UserMenuDropdown user={user} tagline={user?.email || ''} />
           </div>
         </header>
 
-        {/* Dynamic Page Content */}
         <main className="page-content">
+          <ScrollToTop />
           <Outlet />
         </main>
+
+        <InstallAppBanner />
+        {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={openSidebar} /> : null}
       </div>
     </div>
   );

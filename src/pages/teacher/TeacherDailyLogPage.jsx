@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, Save, Users, School, BookOpen, CalendarDays, CalendarRange, StickyNote } from 'lucide-react';
+import { Calendar, Save, Users, School, BookOpen, CalendarDays, CalendarRange, StickyNote, ChevronDown, ChevronUp } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import CurriculumLessonPicker from '../../components/CurriculumLessonPicker';
 import AttendanceStatusIcon from '../../components/AttendanceStatusIcon';
+import DailyPrepStudentCard from '../../components/DailyPrepStudentCard';
+import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
@@ -70,6 +72,7 @@ const TeacherDailyLogPage = ({ user }) => {
   const perm = usePermissions();
   const { ready, pageDataScope, membershipLoading, actorUser } = perm;
   const actor = actorUser || user;
+  const isMobile = useMediaQuery(MOBILE_QUERY);
   const broadSchoolPick = useMemo(
     () => canPickAnySchoolForPrep(actor, pageDataScope),
     [actor, pageDataScope]
@@ -98,6 +101,7 @@ const TeacherDailyLogPage = ({ user }) => {
   const [prepPeriod, setPrepPeriod] = useState('weekly');
   const [prepDate, setPrepDate] = useState(formatDateInput());
   const [prepNotes, setPrepNotes] = useState('');
+  const [setupOpen, setSetupOpen] = useState(true);
 
   const activeSchool = useMemo(
     () => schoolOptions.find((o) => o.id === activeSchoolId),
@@ -111,6 +115,18 @@ const TeacherDailyLogPage = ({ user }) => {
 
   const statusCounts = useMemo(() => countByAttendanceStatus(trackingData), [trackingData]);
   const presentCount = (statusCounts.present || 0) + (statusCounts.late || 0);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setSetupOpen(true);
+      return;
+    }
+    if (activeSchoolId && students.length > 0 && !studentsLoading) {
+      setSetupOpen(false);
+    } else {
+      setSetupOpen(true);
+    }
+  }, [isMobile, activeSchoolId, students.length, studentsLoading]);
 
   useEffect(() => {
     if (!ready) return;
@@ -308,10 +324,10 @@ const TeacherDailyLogPage = ({ user }) => {
     }
   };
 
-  if (bootLoading) return <div className="loading-spinner" style={{ margin: '3rem auto' }} />;
+  if (bootLoading) return <div className="loading-spinner page-loading-md" />;
 
   return (
-    <div className="daily-prep-page">
+    <div className={`portal-page daily-prep-page${isMobile && students.length > 0 ? ' daily-prep-page--has-mobile-save' : ''}`}>
       <PageHeader
         icon={Calendar}
         iconColor="var(--success-color)"
@@ -328,10 +344,36 @@ const TeacherDailyLogPage = ({ user }) => {
 
       {/* إعداد: مدرسة + فترة */}
       <section className="surface-card daily-prep-setup">
-        <h3 className="daily-prep-section__title">
-          <School size={18} /> إعداد التحضير
-        </h3>
+        <div className="daily-prep-setup__toolbar">
+          <h3 className="daily-prep-section__title daily-prep-section__title--flush">
+            <School size={18} /> إعداد التحضير
+          </h3>
+          {isMobile && activeSchoolId && (
+            <button
+              type="button"
+              className="daily-prep-setup__toggle"
+              onClick={() => setSetupOpen((open) => !open)}
+              aria-expanded={setupOpen}
+            >
+              {setupOpen ? <ChevronUp size={16} aria-hidden /> : <ChevronDown size={16} aria-hidden />}
+              <span>{setupOpen ? 'طي الإعداد' : 'عرض الإعداد'}</span>
+            </button>
+          )}
+        </div>
 
+        {isMobile && !setupOpen && activeSchoolId ? (
+          <div className="daily-prep-setup__collapsed-summary">
+            <strong>{activeSchool?.name}</strong>
+            <span> • تحضير {periodSaveLabel(prepPeriod)}</span>
+            <span> • {periodRange.label}</span>
+            {!studentsLoading && trackingData.length > 0 && (
+              <span className="daily-prep-setup__collapsed-summary-present">
+                {attendanceSummaryText(trackingData)}
+              </span>
+            )}
+          </div>
+        ) : (
+        <>
         <div className="daily-prep-setup__school">
           <label className="app-label" htmlFor="daily-prep-school">
             {broadSchoolPick ? 'اختر المدرسة' : 'المدرسة'}
@@ -437,6 +479,8 @@ const TeacherDailyLogPage = ({ user }) => {
             )}
           </div>
         )}
+        </>
+        )}
       </section>
 
       {/* المناهج — متعدد */}
@@ -459,7 +503,7 @@ const TeacherDailyLogPage = ({ user }) => {
       {!activeSchoolId ? (
         <div className="empty-state">اختر مدرسة لبدء تسجيل التحضير.</div>
       ) : studentsLoading ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }} />
+        <div className="loading-spinner page-loading" />
       ) : students.length === 0 ? (
         <div className="empty-state">
           لا يوجد طلاب في هذه المدرسة حالياً. يرجى إضافتهم من إدارة الطلاب.
@@ -467,7 +511,7 @@ const TeacherDailyLogPage = ({ user }) => {
       ) : (
         <section className="surface-card daily-prep-attendance">
           <div className="daily-prep-attendance__head">
-            <h3 className="daily-prep-section__title" style={{ margin: 0 }}>
+            <h3 className="daily-prep-section__title daily-prep-section__title--flush">
               <Users size={18} /> سجل الحضور ({trackingData.length} طالب)
             </h3>
             <span className="daily-prep-attendance__count">
@@ -476,8 +520,7 @@ const TeacherDailyLogPage = ({ user }) => {
             <div className="teacher-daily-bulk daily-prep-attendance__bulk">
               <button
                 type="button"
-                className="google-btn google-btn--filled"
-                style={{ background: 'var(--success-color)', color: '#fff' }}
+                className="google-btn google-btn--filled google-btn--success"
                 onClick={markAllPresent}
               >
                 <Users size={16} /> تحضير الجميع
@@ -488,7 +531,7 @@ const TeacherDailyLogPage = ({ user }) => {
             </div>
           </div>
 
-          <div className="md-table-scroll">
+          <div className="md-table-scroll daily-prep-desktop-only">
             <table className="md-table daily-prep-table">
               <thead>
                 <tr>
@@ -564,6 +607,17 @@ const TeacherDailyLogPage = ({ user }) => {
             </table>
           </div>
 
+          <div className="daily-prep-mobile-only">
+            {trackingData.map((record) => (
+              <DailyPrepStudentCard
+                key={record.studentId}
+                record={record}
+                onStatusChange={handleStatusChange}
+                onTrackingChange={handleTrackingChange}
+              />
+            ))}
+          </div>
+
           <div className="daily-prep-session-notes">
             <label className="app-label daily-prep-session-notes__label" htmlFor="prep-session-notes">
               <StickyNote size={16} /> ملاحظات عامة على التحضير
@@ -578,7 +632,7 @@ const TeacherDailyLogPage = ({ user }) => {
             />
           </div>
 
-          <div className="daily-prep-attendance__footer">
+          <div className="daily-prep-attendance__footer daily-prep-desktop-only">
             <BusyButton
               type="button"
               className="google-btn google-btn--filled daily-prep-save-btn"
@@ -590,6 +644,26 @@ const TeacherDailyLogPage = ({ user }) => {
             </BusyButton>
           </div>
         </section>
+      )}
+
+      {isMobile && activeSchoolId && students.length > 0 && (
+        <div className="daily-prep-mobile-save-bar">
+          <span className="daily-prep-mobile-save-bar__summary">
+            {presentCount}/{trackingData.length} حاضر
+            {curriculumEntries.some((e) => (e.selectedWeeks || []).length > 0)
+              ? ` • ${curriculumEntries.length} مادة`
+              : ' • اختر المنهج'}
+          </span>
+          <BusyButton
+            type="button"
+            className="google-btn google-btn--filled daily-prep-save-btn daily-prep-mobile-save-bar__btn"
+            onClick={handleSaveLog}
+            busy={saving}
+          >
+            <Save size={18} />
+            حفظ {periodSaveLabel(prepPeriod)}
+          </BusyButton>
+        </div>
       )}
     </div>
   );

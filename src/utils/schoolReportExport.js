@@ -1,6 +1,14 @@
 import * as XLSX from 'xlsx';
 import { downloadHtmlBodyAsPdf } from './arabicPdfExport';
 import { buildSchoolReportBodyHtml, buildComprehensiveReportBodyHtml } from './schoolReportHtml';
+import { formatVisitRatingLabel } from './visitRating';
+import { normalizeSchoolReportForDisplay, teacherRatingsFromReport } from './schoolReportStars';
+
+function formatTeacherStars(stars) {
+  const n = Number(stars);
+  if (!Number.isFinite(n) || n <= 0) return '—';
+  return formatVisitRatingLabel(n);
+}
 
 const safe = (v) => String(v ?? '-');
 
@@ -12,6 +20,7 @@ function reportRows(rep) {
     .join(' | ');
   return [
     ['عنوان التقرير', safe(rep.reportTitle)],
+    ['نوع التقرير', safe(rep.reportPeriod === 'monthly' ? 'شهري' : rep.reportPeriod === 'weekly' ? 'أسبوعي' : rep.reportPeriod === 'visit' ? 'زيارة' : rep.reportPeriod)],
     ['المدرسة', safe(rep.schoolName)],
     ['القرية', safe(rep.villageName)],
     ['التاريخ', safe(rep.date || rep.timestamp?.split('T')[0])],
@@ -26,25 +35,28 @@ function reportRows(rep) {
     ['الغائبون', absent || 'لا يوجد'],
     ['المنهج', curriculum || '-'],
     ['تقييم المدرسة', safe(rep.schoolEvaluation)],
-    ['تقييم المعلم', safe(rep.teacherEvaluation)],
+    ['تقييم المعلم (نجوم)', safe(rep.teacherEvaluation)],
+    ['متوسط تقييم الطلاب', safe(rep.studentLevel)],
     ['ملاحظات', safe(rep.notes)],
   ];
 }
 
 export async function exportSchoolReportPdf(rep, filename = 'school-report.pdf') {
-  await downloadHtmlBodyAsPdf(buildSchoolReportBodyHtml(rep), filename);
+  const normalized = normalizeSchoolReportForDisplay(rep);
+  await downloadHtmlBodyAsPdf(buildSchoolReportBodyHtml(normalized), filename);
 }
 
 export function exportSchoolReportExcel(rep, filename = 'school-report.xlsx') {
+  const normalized = normalizeSchoolReportForDisplay(rep);
   const wb = XLSX.utils.book_new();
   const main = XLSX.utils.aoa_to_sheet([
     ['تقرير إشراف مدرسة'],
     [],
-    ...reportRows(rep),
+    ...reportRows(normalized),
   ]);
   XLSX.utils.book_append_sheet(wb, main, 'التقرير');
 
-  const progress = rep.curriculumProgressSummary || [];
+  const progress = normalized.curriculumProgressSummary || [];
   if (progress.length > 0) {
     const progSheet = XLSX.utils.aoa_to_sheet([
       ['المادة', 'الأسبوع المتوقع', 'الأسبوع المُبلّغ', 'الحالة', 'الفجوة'],
@@ -59,19 +71,35 @@ export function exportSchoolReportExcel(rep, filename = 'school-report.xlsx') {
     XLSX.utils.book_append_sheet(wb, progSheet, 'متابعة المنهج');
   }
 
-  const teachers = rep.teachers || [];
+  const teachers = normalized.teachers || [];
   if (teachers.length > 0) {
+    const teacherRatings = teacherRatingsFromReport(normalized, teachers.map((t) => t.teacherId).filter(Boolean));
     const tSheet = XLSX.utils.aoa_to_sheet([
-      ['#', 'المعلم', 'الهاتف'],
-      ...teachers.map((t, i) => [i + 1, t.teacherName, t.phone]),
+      ['#', 'المعلم', 'الهاتف', 'التقييم (نجوم)'],
+      ...teachers.map((t, i) => [
+        i + 1,
+        t.teacherName,
+        t.phone,
+        formatTeacherStars(t.stars ?? teacherRatings[t.teacherId]),
+      ]),
     ]);
     XLSX.utils.book_append_sheet(wb, tSheet, 'المعلمون');
+  }
+
+  const starAwards = (normalized.starAwards || []).filter((s) => Number(s.stars) > 0);
+  if (starAwards.length > 0) {
+    const starsSheet = XLSX.utils.aoa_to_sheet([
+      ['#', 'الطالب', 'التقييم (نجوم)'],
+      ...starAwards.map((s, i) => [i + 1, s.name || '-', formatTeacherStars(s.stars)]),
+    ]);
+    XLSX.utils.book_append_sheet(wb, starsSheet, 'تقييم الطلاب');
   }
 
   XLSX.writeFile(wb, filename);
 }
 
 export function exportComprehensiveExcel(data, filename = 'comprehensive-school-report.xlsx') {
+  const normalizedReports = (data.schoolReports || []).map(normalizeSchoolReportForDisplay);
   const wb = XLSX.utils.book_new();
 
   const summary = XLSX.utils.aoa_to_sheet([
@@ -80,7 +108,7 @@ export function exportComprehensiveExcel(data, filename = 'comprehensive-school-
     ['القرية', data.villageName || ''],
     ['تاريخ التصدير', new Date().toISOString().split('T')[0]],
     [],
-    ['عدد تقارير الإشراف', data.schoolReports?.length || 0],
+    ['عدد تقارير الإشراف', normalizedReports.length],
     ['عدد الزيارات الميدانية', data.fieldVisits?.length || 0],
     ['عدد سجلات التحضير', data.dailyLogs?.length || 0],
     ['المهتدون الجدد (قرية)', data.newConvertsCount ?? 0],
@@ -95,14 +123,33 @@ export function exportComprehensiveExcel(data, filename = 'comprehensive-school-
 
   addListSheet(
     'تقارير الإشراف',
-    (data.schoolReports || []).map((r) => [
+    normalizedReports.map((r) => [
       r.date || r.timestamp?.split('T')[0],
+      r.reportTitle || 'تقرير إشراف',
+      r.reportPeriod === 'monthly' ? 'شهري' : r.reportPeriod === 'weekly' ? 'أسبوعي' : r.reportPeriod === 'visit' ? 'زيارة' : r.reportPeriod || '',
       r.supervisorName,
       r.presentCount,
       r.totalStudents,
+      r.teacherEvaluation || '—',
+      r.studentLevel || '—',
       r.absenceReview,
     ]),
-    ['التاريخ', 'المشرف', 'الحضور', 'المسجلون', 'مراجعة الغياب']
+    ['التاريخ', 'العنوان', 'النوع', 'المشرف', 'الحضور', 'المسجلون', 'تقييم المعلم', 'تقييم الطلاب', 'مراجعة الغياب']
+  );
+
+  const allStarRows = [];
+  normalizedReports.forEach((r) => {
+    const date = r.date || r.timestamp?.split('T')[0] || '';
+    (r.starAwards || [])
+      .filter((s) => Number(s.stars) > 0)
+      .forEach((s) => {
+        allStarRows.push([date, r.reportTitle || 'تقرير إشراف', s.name || '-', formatTeacherStars(s.stars)]);
+      });
+  });
+  addListSheet(
+    'نجوم الطلاب',
+    allStarRows,
+    ['تاريخ التقرير', 'عنوان التقرير', 'الطالب', 'التقييم']
   );
 
   addListSheet(
@@ -133,7 +180,11 @@ export function exportComprehensiveExcel(data, filename = 'comprehensive-school-
 }
 
 export async function exportComprehensivePdf(data, filename = 'comprehensive-school-report.pdf') {
-  await downloadHtmlBodyAsPdf(buildComprehensiveReportBodyHtml(data), filename);
+  const normalized = {
+    ...data,
+    schoolReports: (data.schoolReports || []).map(normalizeSchoolReportForDisplay),
+  };
+  await downloadHtmlBodyAsPdf(buildComprehensiveReportBodyHtml(normalized), filename);
 }
 
 export { buildSchoolReportBodyHtml, buildComprehensiveReportBodyHtml };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Home, ChevronRight, Info } from 'lucide-react';
+import { MapPin, Home, ChevronRight } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
@@ -84,21 +84,21 @@ const GovernorateDetailsPage = () => {
         navigate,
     ]);
 
-    if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+    if (loading) return <div className="loading-spinner page-loading-lg" />;
     if (!gov) return <div className="empty-state">المحافظة غير موجودة</div>;
 
     return (
-        <div className="governorate-details-page">
+        <div className="governorate-details-page portal-page">
             <PageHeader
               topRow={
                 <div className="governorate-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/governorates')}>
                     <ChevronRight size={20} aria-hidden /> إدارة المحافظات
                   </button>
-                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                  <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>محافظة: <span style={{ color: 'var(--md-primary)' }}>{gov.name}</span></>}
+              title={<>محافظة: <span className="page-header-accent">{gov.name}</span></>}
               subtitle={`الدولة: ${gov.country || 'غير محددة'}`}
             />
 
@@ -113,12 +113,21 @@ const GovernorateDetailsPage = () => {
                     {regions.length === 0 ? <p className="governorate-details-panel__empty">لا توجد مناطق مضافة لهذه المحافظة.</p> : (
                         <div className="governorate-details-list">
                            {regions.map(reg => (
-                              <div key={reg.id} className="governorate-details-item">
-                                 <h4 className="governorate-details-item__name">{reg.name}</h4>
-                                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_region_view') && (
-                                   <button type="button" onClick={() => navigate(`/regions/${reg.id}`)} className="icon-btn" title="عرض المنطقة"><Info size={16}/></button>
-                                 )}
-                              </div>
+                              can(PERMISSION_PAGE_IDS.governorates, 'governorate_region_view') ? (
+                                <button
+                                  key={reg.id}
+                                  type="button"
+                                  className="governorate-details-item"
+                                  onClick={() => navigate(`/regions/${reg.id}`)}
+                                >
+                                  <h4 className="governorate-details-item__name">{reg.name}</h4>
+                                  <ChevronRight size={18} className="geo-details-item__chevron" aria-hidden />
+                                </button>
+                              ) : (
+                                <div key={reg.id} className="governorate-details-item">
+                                  <h4 className="governorate-details-item__name">{reg.name}</h4>
+                                </div>
+                              )
                            ))}
                         </div>
                     )}
@@ -134,12 +143,21 @@ const GovernorateDetailsPage = () => {
                     {villages.length === 0 ? <p className="governorate-details-panel__empty">لا توجد قرى مضافة في هذه المحافظة.</p> : (
                         <div className="governorate-details-list">
                            {villages.map(vil => (
-                              <div key={vil.id} className="governorate-details-item">
-                                 <h4 className="governorate-details-item__name">{vil.villageName}</h4>
-                                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_village_view') && (
-                                   <button type="button" onClick={() => navigate(`/villages/${vil.id}`)} className="icon-btn" title="عرض القرية"><Info size={16}/></button>
-                                 )}
-                              </div>
+                              can(PERMISSION_PAGE_IDS.governorates, 'governorate_village_view') ? (
+                                <button
+                                  key={vil.id}
+                                  type="button"
+                                  className="governorate-details-item"
+                                  onClick={() => navigate(`/villages/${vil.id}`)}
+                                >
+                                  <h4 className="governorate-details-item__name">{vil.villageName}</h4>
+                                  <ChevronRight size={18} className="geo-details-item__chevron" aria-hidden />
+                                </button>
+                              ) : (
+                                <div key={vil.id} className="governorate-details-item">
+                                  <h4 className="governorate-details-item__name">{vil.villageName}</h4>
+                                </div>
+                              )
                            ))}
                         </div>
                     )}

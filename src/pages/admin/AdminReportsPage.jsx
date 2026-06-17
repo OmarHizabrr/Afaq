@@ -17,7 +17,7 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
 import { formatVisitRatingLabel } from '../../utils/visitRating';
-import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath, formatDailyLogSubjects } from '../../utils/reportLabels';
+import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath, formatDailyLogSubjects, schoolReportSummaryLine } from '../../utils/reportLabels';
 import { enrichDailyPrepReportsBatch } from '../../utils/enrichDailyPrepReport';
 
 const TAB_LABELS = {
@@ -241,7 +241,7 @@ const AdminReportsPage = () => {
       />
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.reports) === DATA_SCOPE_MEMBERSHIP && (
-        <div className="app-alert app-alert--info no-print" style={{ marginBottom: '1rem' }}>
+        <div className="app-alert app-alert--info geo-page-alert no-print">
           عرض محدود: التقارير الظاهرة مرتبطة بمدارسك/مناطقك أو بأنشطتك كمعلم أو مشرف.
         </div>
       )}
@@ -259,28 +259,28 @@ const AdminReportsPage = () => {
           onClick={() => setActiveTab('daily')}
           className={`admin-reports-tabs__btn ${activeTab === 'daily' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <Calendar size={18} style={{ marginLeft: '6px' }} /> التحضير
+          <Calendar size={18} className="admin-reports-tabs__btn-icon" /> التحضير
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('school')}
           className={`admin-reports-tabs__btn ${activeTab === 'school' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <FileText size={18} style={{ marginLeft: '6px' }} /> تقارير المدارس
+          <FileText size={18} className="admin-reports-tabs__btn-icon" /> تقارير المدارس
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('weekly')}
           className={`admin-reports-tabs__btn ${activeTab === 'weekly' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <ClipboardList size={18} style={{ marginLeft: '6px' }} /> التقارير الأسبوعية
+          <ClipboardList size={18} className="admin-reports-tabs__btn-icon" /> التقارير الأسبوعية
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('visits')}
           className={`admin-reports-tabs__btn ${activeTab === 'visits' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <MapPin size={18} style={{ marginLeft: '6px' }} /> زيارات المشرفين
+          <MapPin size={18} className="admin-reports-tabs__btn-icon" /> زيارات المشرفين
         </button>
       </div>
 
@@ -307,7 +307,7 @@ const AdminReportsPage = () => {
         </div>
       </div>
 
-      <div className="surface-card admin-reports-filters no-print" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+      <div className="surface-card admin-reports-filters admin-reports-filters--dates no-print">
         <div className="admin-reports-filters__row--dates">
           <div className="admin-reports-preset-chips">
             <span className="admin-reports-preset-chips__label">فترة جاهزة:</span>
@@ -350,8 +350,7 @@ const AdminReportsPage = () => {
           </div>
           <button
             type="button"
-            className="google-btn google-btn--filled"
-            style={{ marginInlineStart: 'auto', alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+            className="google-btn google-btn--filled admin-reports-print-btn"
             onClick={() => window.print()}
           >
             <Printer size={18} /> طباعة القائمة
@@ -360,7 +359,7 @@ const AdminReportsPage = () => {
       </div>
 
       {loading ? (
-        <div className="loading-spinner" style={{ margin: '3rem auto' }}></div>
+        <div className="loading-spinner page-loading-md"></div>
       ) : error ? (
         <div className="app-alert app-alert--error admin-reports-error">{error}</div>
       ) : reports.length === 0 ? (
@@ -391,17 +390,15 @@ const AdminReportsPage = () => {
               tabIndex={can(PERMISSION_PAGE_IDS.reports, 'report_view') ? 0 : undefined}
             >
               <div
-                className="report-row-card__accent"
-                style={{
-                  background:
-                    activeTab === 'school'
-                      ? '#8b5cf6'
-                      : activeTab === 'visits'
-                        ? 'var(--md-primary)'
-                        : activeTab === 'weekly'
-                          ? 'var(--md-primary)'
-                          : 'var(--success-color)',
-                }}
+                className={`report-row-card__accent report-row-card__accent--${
+                  activeTab === 'school'
+                    ? 'school'
+                    : activeTab === 'visits'
+                      ? 'visits'
+                      : activeTab === 'weekly'
+                        ? 'weekly'
+                        : 'daily'
+                }`}
               />
 
               <div className="admin-reports-list__meta-wrap">
@@ -410,7 +407,7 @@ const AdminReportsPage = () => {
                   <p className="admin-reports-list__meta-value">
                     {rpt.date || rpt.periodLabel || rpt.submissionDate?.split('T')[0] || rpt.timestamp?.split('T')[0]}
                     {activeTab === 'daily' && rpt.periodStart && rpt.periodEnd && rpt.periodStart !== rpt.periodEnd && (
-                      <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                      <span className="admin-reports-list__meta-sub">
                         {rpt.periodStart} — {rpt.periodEnd}
                       </span>
                     )}
@@ -440,7 +437,7 @@ const AdminReportsPage = () => {
                       : activeTab === 'weekly'
                         ? 'تقرير أعمال أسبوعي'
                         : activeTab === 'school'
-                          ? `${rpt.reportTitle || 'تقرير إشراف'} • حضور ${rpt.presentCount ?? '-'}/${rpt.totalStudents ?? '-'}`
+                          ? `${rpt.reportTitle || 'تقرير المدرسة'} • ${schoolReportSummaryLine(rpt)}`
                           : `تقييم الأداء: ${formatVisitRatingLabel(rpt.teacherRating)}`}
                   </p>
                 </div>

@@ -177,15 +177,14 @@ const ExplorationTypePreviewModal = ({
       )}
 
       <div className="exploration-type-preview__footer">
-        <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={onClose}>
+        <button type="button" className="google-btn google-btn--inline" onClick={onClose}>
           إغلاق
         </button>
         <div className="exploration-type-preview__footer-actions">
           {canEdit && onEdit && (
             <button
               type="button"
-              className="google-btn google-btn--toolbar"
-              style={{ width: 'auto' }}
+              className="google-btn google-btn--toolbar google-btn--inline"
               onClick={onEdit}
             >
               <Edit2 size={16} aria-hidden />
@@ -195,8 +194,7 @@ const ExplorationTypePreviewModal = ({
           {canDelete && onDelete && (
             <button
               type="button"
-              className="google-btn"
-              style={{ width: 'auto', color: 'var(--danger-color)' }}
+              className="google-btn google-btn--inline google-btn--danger"
               onClick={onDelete}
             >
               <Trash2 size={16} aria-hidden />

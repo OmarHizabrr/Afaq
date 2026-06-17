@@ -1,49 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Award, 
-  Calendar, 
-  BookOpen, 
-  TrendingUp, 
+import {
+  Award,
+  Calendar,
+  BookOpen,
+  TrendingUp,
   CheckCircle,
   FileText,
   Activity,
   Lightbulb,
-  Rocket
+  Rocket,
+  Bell,
+  User,
 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import PortalQuickActions from '../../components/PortalQuickActions';
+import StudentResultCard from '../../components/StudentResultCard';
 
-const StatCard = ({ title, value, icon, color, subtext }) => {
+const StatCard = ({ title, value, icon, tone, subtext }) => {
   const IconComponent = icon;
   return (
-  <div className="surface-card surface-card--lg" style={{
-    padding: '1.5rem',
-    borderRadius: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1.25rem',
-    position: 'relative',
-    overflow: 'hidden'
-  }}>
-    <div style={{
-      width: '60px',
-      height: '60px',
-      borderRadius: '16px',
-      background: `${color}15`,
-      color: color,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: `0 8px 30px ${color}20`
-    }}>
-      <IconComponent size={30} />
+    <div className="surface-card surface-card--lg portal-stat-card portal-stat-card--lg">
+      <div className={`portal-stat-card__icon stat-tone--${tone}`}>
+        <IconComponent size={30} />
+      </div>
+      <div>
+        <p className="portal-stat-card__title">{title}</p>
+        <h3 className="portal-stat-card__value">{value}</h3>
+        {subtext && <p className="portal-stat-card__sub">{subtext}</p>}
+      </div>
     </div>
-    <div>
-      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{title}</p>
-      <h3 style={{ margin: '4px 0 0', fontSize: '1.8rem', fontWeight: 800 }}>{value}</h3>
-      {subtext && <p style={{ margin: '4px 0 0', fontSize: '0.75rem', color: 'var(--success-color)', fontWeight: 600 }}>{subtext}</p>}
-    </div>
-  </div>
   );
 };
 
@@ -63,7 +49,7 @@ const StudentDashboardPage = ({ user }) => {
       if (!actorId) return;
       try {
         const api = FirestoreApi.Api;
-        
+
         const schoolIds = await api.listUserSchoolIdsFromMirrors(user);
         if (schoolIds.length > 0) {
           const allSchools = await api.getCollectionGroupDocuments('schools');
@@ -74,8 +60,6 @@ const StudentDashboardPage = ({ user }) => {
           setStats((prev) => ({ ...prev, schoolName: names.length > 0 ? names.join('، ') : 'غير محدد' }));
         }
 
-        // 2. Fetch student performance from visits (collectionGroup)
-        // Since students are ID'd in reports, we filter by studentId
         const visitDocs = await api.getCollectionGroupDocuments('reports');
         const myResults = [];
         let totalAttend = 0;
@@ -115,93 +99,111 @@ const StudentDashboardPage = ({ user }) => {
     fetchStudentData();
   }, [actorId, user]);
 
-  if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+  if (loading) return <div className="loading-spinner page-loading-lg" />;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="portal-page student-dashboard-page">
       <PageHeader
         variant="hero"
         title={
           <>
             مرحباً يا{' '}
-            <span style={{ color: 'var(--md-primary)' }}>{user?.displayName?.split(/\s+/)[0] || 'طالب'}</span>
+            <span className="page-header-accent--primary">{user?.displayName?.split(/\s+/)[0] || 'طالب'}</span>
           </>
         }
         subtitle={
           <>
-            ملخص أدائك في مدرسة <strong style={{ color: 'var(--text-primary)' }}>{stats.schoolName}</strong>
+            ملخص أدائك في مدرسة <strong className="page-header-accent--text">{stats.schoolName}</strong>
           </>
         }
       />
 
-      {/* Hero Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
-        <StatCard title="نسبة الحضور" value={`${stats.attendancePercent}%`} icon={Calendar} color="var(--success-color)" subtext="انضباط ممتاز" />
-        <StatCard title="الاختبارات المنجزة" value={stats.completedTests} icon={Award} color="#f59e0b" subtext="بانتظار التفوق" />
-        <StatCard title="سجل المتابعة" value={stats.recentResults.length} icon={FileText} color="#3b82f6" subtext="تقييمات حديثة" />
-        <StatCard title="الحالة الأكاديمية" value="منتظم" icon={TrendingUp} color="#8b5cf6" subtext="آفاق 2026" />
+      <PortalQuickActions
+        actions={[
+          { path: '/student/results', label: 'نتائجي', icon: Award, tone: 'primary' },
+          { path: '/student/profile', label: 'ملفي', icon: User },
+          { path: '/student/notifications', label: 'الإشعارات', icon: Bell },
+          { path: '/student/settings', label: 'الإعدادات', icon: FileText },
+        ]}
+      />
+
+      <div className="portal-stats-grid portal-stats-grid--student">
+        <StatCard title="نسبة الحضور" value={`${stats.attendancePercent}%`} icon={Calendar} tone="success" subtext="انضباط ممتاز" />
+        <StatCard title="الاختبارات المنجزة" value={stats.completedTests} icon={Award} tone="amber" subtext="بانتظار التفوق" />
+        <StatCard title="سجل المتابعة" value={stats.recentResults.length} icon={FileText} tone="blue" subtext="تقييمات حديثة" />
+        <StatCard title="الحالة الأكاديمية" value="منتظم" icon={TrendingUp} tone="purple" subtext="آفاق 2026" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-        {/* Recent Results List */}
-        <div className="surface-card surface-card--lg" style={{ padding: '2rem', borderRadius: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
-             <Activity size={24} color="var(--accent-color)" />
-             <h2 style={{ margin: 0, fontSize: '1.4rem' }}>أحدث تقييمات المشرفين</h2>
+      <div className="student-dashboard-layout">
+        <div className="surface-card surface-card--lg student-results-card">
+          <div className="student-results-card__head">
+            <Activity size={24} color="var(--accent-color)" />
+            <h2 className="student-results-card__title">أحدث تقييمات المشرفين</h2>
           </div>
 
           {stats.recentResults.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
-                لا توجد تقييمات مسجلة لك حتى الآن.
+            <div className="student-results-empty">
+              لا توجد تقييمات مسجلة لك حتى الآن.
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <>
+              <div className="student-results-list student-dashboard-results-desktop-only">
                 {stats.recentResults.map((res, i) => (
-                    <div key={i} style={{ 
-                        padding: '1.25rem', borderRadius: '16px', background: 'var(--bg-color)', border: '1px solid var(--border-color)',
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                    }}>
-                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                            <div style={{ width: '45px', height: '45px', borderRadius: '12px', background: 'var(--accent-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--md-primary)' }}>
-                                <BookOpen size={20} />
-                            </div>
-                            <div>
-                                <h4 style={{ margin: 0, fontSize: '1rem' }}>{res.subject}</h4>
-                                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{res.date} • {res.school}</p>
-                            </div>
-                        </div>
-                        <div style={{ textAlign: 'left' }}>
-                            <span style={{ padding: '6px 12px', borderRadius: '20px', background: 'var(--success-color)15', color: 'var(--success-color)', fontSize: '0.8rem', fontWeight: 700 }}>
-                                {res.note || 'تم الاختبار بنجاح'}
-                            </span>
-                        </div>
+                  <div key={i} className="student-result-item">
+                    <div className="student-result-item__lead">
+                      <div className="student-result-item__icon">
+                        <BookOpen size={20} />
+                      </div>
+                      <div>
+                        <h4 className="student-result-item__subject">{res.subject}</h4>
+                        <p className="student-result-item__meta">{res.date} • {res.school}</p>
+                      </div>
                     </div>
+                    <span className="student-result-item__badge">
+                      {res.note || 'تم الاختبار بنجاح'}
+                    </span>
+                  </div>
                 ))}
-            </div>
+              </div>
+              <div className="student-dashboard-results-mobile-only">
+                {stats.recentResults.map((res, i) => (
+                  <StudentResultCard
+                    key={i}
+                    row={{
+                      schoolName: res.school,
+                      subjectName: res.subject,
+                      date: res.date,
+                      isPresent: true,
+                      isTested: true,
+                      note: res.note,
+                    }}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
-        {/* Small Progress / Tips Card */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ background: 'linear-gradient(135deg, var(--accent-color), #3b82f6)', padding: '2rem', borderRadius: '24px', color: '#fff', boxShadow: '0 15px 30px rgba(59, 130, 246, 0.3)' }}>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Lightbulb size={18} /> نصيحة اليوم</h3>
-                <p style={{ marginTop: '1rem', opacity: 0.9, lineHeight: 1.6 }}>الاستمرار في الحضور اليومي والمراجعة المستمرة هو سر التفوق في حلقات آفاق التعليمية.</p>
-                <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.2)', fontSize: '0.9rem', fontWeight: 600 }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} /> شعارنا: نتفكر في الآفاق</span>
-                </div>
+        <div className="student-sidebar-stack">
+          <div className="student-tip-card">
+            <h3 className="student-tip-card__title"><Lightbulb size={18} /> نصيحة اليوم</h3>
+            <p className="student-tip-card__body">الاستمرار في الحضور اليومي والمراجعة المستمرة هو سر التفوق في حلقات آفاق التعليمية.</p>
+            <div className="student-tip-card__footer">
+              <span className="btn-inner btn-inner--sm"><Rocket size={14} /> شعارنا: نتفكر في الآفاق</span>
             </div>
+          </div>
 
-            <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '24px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>الخطة الحالية</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                        <CheckCircle size={16} color="var(--success-color)" /> مراجعة الجزء الثلاثون
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                        <CheckCircle size={16} color="var(--border-color)" /> اختبار القاعدة النورانية
-                    </div>
-                </div>
+          <div className="surface-card surface-card--lg student-plan-card">
+            <h3 className="student-plan-card__title">الخطة الحالية</h3>
+            <div className="student-plan-card__list">
+              <div className="student-plan-card__item">
+                <CheckCircle size={16} color="var(--success-color)" /> مراجعة الجزء الثلاثون
+              </div>
+              <div className="student-plan-card__item">
+                <CheckCircle size={16} color="var(--border-color)" /> اختبار القاعدة النورانية
+              </div>
             </div>
+          </div>
         </div>
       </div>
     </div>

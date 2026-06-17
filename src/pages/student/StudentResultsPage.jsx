@@ -3,6 +3,7 @@ import { FileText, School, Calendar, CheckCircle2, XCircle } from 'lucide-react'
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
+import StudentResultCard from '../../components/StudentResultCard';
 
 const StudentResultsPage = ({ user }) => {
   const actorId = user?.uid || user?.id;
@@ -52,13 +53,13 @@ const StudentResultsPage = ({ user }) => {
     [rows, schoolFilter]
   );
 
-  if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+  if (loading) return <div className="loading-spinner page-loading-lg" />;
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="portal-page portal-page--results student-results-page">
       <PageHeader icon={FileText} title="نتائجي واختباراتي" subtitle="عرض جميع نتائج الزيارات والتقييمات الخاصة بك" />
 
-      <div className="surface-card" style={{ padding: '1rem', marginBottom: '1rem' }}>
+      <div className="surface-card portal-filter-card">
         <label className="app-label">تصفية حسب المدرسة</label>
         <AppSelect className="app-select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
           <option value="">كل المدارس</option>
@@ -71,34 +72,48 @@ const StudentResultsPage = ({ user }) => {
       {filtered.length === 0 ? (
         <div className="empty-state">لا توجد نتائج مسجلة لك حتى الآن.</div>
       ) : (
-        <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
-          <div className="md-table-scroll">
-            <table className="md-table" style={{ minWidth: 760 }}>
-              <thead>
-                <tr>
-                  <th>المدرسة</th>
-                  <th>المادة</th>
-                  <th>التاريخ</th>
-                  <th>الحضور</th>
-                  <th>الاختبار</th>
-                  <th>ملاحظة</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((r) => (
-                  <tr key={`${r.id}-${r.date}`}>
-                    <td><School size={14} style={{ marginLeft: 6 }} /> {r.schoolName}</td>
-                    <td>{r.subjectName}</td>
-                    <td><Calendar size={14} style={{ marginLeft: 6 }} /> {r.date ? new Date(r.date).toLocaleDateString('ar-EG') : '-'}</td>
-                    <td>{r.isPresent ? <span style={{ color: 'var(--success-color)' }}><CheckCircle2 size={14} /> حاضر</span> : <span style={{ color: 'var(--danger-color)' }}><XCircle size={14} /> غائب</span>}</td>
-                    <td>{r.isTested ? 'تم الاختبار' : 'لم يتم'}</td>
-                    <td style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{r.note || '-'}</td>
+        <>
+          <div className="surface-card portal-table-wrap student-results-desktop-only">
+            <div className="md-table-scroll">
+              <table className="md-table portal-table--wide">
+                <thead>
+                  <tr>
+                    <th>المدرسة</th>
+                    <th>المادة</th>
+                    <th>التاريخ</th>
+                    <th>الحضور</th>
+                    <th>الاختبار</th>
+                    <th>ملاحظة</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filtered.map((r) => (
+                    <tr key={`${r.id}-${r.date}`}>
+                      <td><School size={14} className="table-cell-icon" /> {r.schoolName}</td>
+                      <td>{r.subjectName}</td>
+                      <td><Calendar size={14} className="table-cell-icon" /> {r.date ? new Date(r.date).toLocaleDateString('ar-EG') : '-'}</td>
+                      <td>
+                        {r.isPresent ? (
+                          <span className="status-text--success"><CheckCircle2 size={14} /> حاضر</span>
+                        ) : (
+                          <span className="status-text--danger"><XCircle size={14} /> غائب</span>
+                        )}
+                      </td>
+                      <td>{r.isTested ? 'تم الاختبار' : 'لم يتم'}</td>
+                      <td className="cell-muted">{r.note || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          <div className="student-results-mobile-only">
+            {filtered.map((r) => (
+              <StudentResultCard key={`${r.id}-${r.date}`} row={r} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

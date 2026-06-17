@@ -1,4 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+@import './styles/rolePortalPages.css';
+@import './styles/mobileEssential.css';
+@import './styles/mobileLayout.media.css';
+
+/* Mobile list toggles — desktop default */
+.student-management-desktop-only {
+  display: block;
+}
+
+.student-management-mobile-only {
+  display: none;
+}
+
+.teacher-students-desktop-only,
+.visit-students-desktop-only {
+  display: block;
+}
+
+.teacher-students-mobile-only,
+.visit-students-mobile-only {
+  display: none;
+}
+
+.student-results-desktop-only {
+  display: block;
+}
+
+.student-results-mobile-only {
+  display: none;
+}
+
+.user-details-activity-desktop-only {
+  display: block;
+}
+
+.user-details-activity-mobile-only {
+  display: none;
+}
+
+.report-daily-records-mobile {
+  display: none;
+}
+
+.portal-toolbar__short {
+  display: none;
+}
 
 /* —— Google Material–inspired design tokens (RTL Arabic) —— */
 :root {
@@ -48,6 +94,8 @@
   --sidebar-width: 280px;
   --sidebar-collapsed: 80px;
   --topbar-height: 64px;
+  --bottom-tab-height: 60px;
+  --install-banner-height: 56px;
 }
 
 /* Dark theme — Material dark surfaces (no .light-mode on <html>) */
@@ -2082,6 +2130,34 @@ html:not(.light-mode) .nav-link.active {
   margin: 0;
 }
 
+button.governorate-details-item,
+button.region-details-item,
+button.village-details-schools-item {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}
+
+button.governorate-details-item:focus-visible,
+button.region-details-item:focus-visible,
+button.village-details-schools-item:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.geo-details-item__chevron {
+  flex-shrink: 0;
+  opacity: 0.45;
+}
+
+button.governorate-details-item:hover,
+button.region-details-item:hover,
+button.village-details-schools-item:hover {
+  border-color: color-mix(in srgb, var(--accent-color) 40%, var(--border-color));
+}
+
 /* —— Region details page —— */
 .region-details-page {
   max-width: 1200px;
@@ -3592,6 +3668,52 @@ html:not(.light-mode) .nav-link.active {
 
 .daily-prep-setup {
   padding: 1.25rem 1.5rem;
+}
+
+.daily-prep-setup__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.daily-prep-setup__toolbar .daily-prep-section__title--flush {
+  margin-bottom: 0;
+}
+
+.daily-prep-setup__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  background: var(--bg-color);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.daily-prep-setup__collapsed-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.daily-prep-setup__collapsed-summary-present {
+  color: var(--success-color);
+  font-weight: 600;
+  font-size: 0.8125rem;
 }
 
 .daily-prep-setup__school {
@@ -6317,7 +6439,29 @@ html:not(.light-mode) .nav-link.active {
 .school-report-section__title { margin: 0 0 1rem; font-size: 1.05rem; display: flex; align-items: center; gap: 0.4rem; }
 .school-report-teachers { display: grid; gap: 0.5rem; }
 .school-report-teacher-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; align-items: center; }
+.school-report-teacher-row--selected { grid-template-columns: 1fr 1fr minmax(0, 1.4fr); }
 .school-report-teacher-row__check { display: inline-flex; align-items: center; gap: 0.5rem; }
+.school-report-teacher-row__hint { font-size: 0.82rem; color: var(--text-secondary); }
+.school-report-section__sub { margin: -0.5rem 0 1rem; font-size: 0.85rem; color: var(--text-secondary); }
+.school-report-student-stars { display: grid; gap: 0.65rem; }
+.school-report-student-stars__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-color);
+}
+.school-report-student-stars__name { font-weight: 600; font-size: 0.9rem; }
+.star-rating-input__row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.star-rating-input__value { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); min-width: 2.5rem; }
+.star-rating-input--compact .star-rating-input__label { font-size: 0.78rem; margin-bottom: 0.15rem; }
+@media (max-width: 768px) {
+  .school-report-teacher-row--selected { grid-template-columns: 1fr; }
+  .school-report-student-stars__row { grid-template-columns: 1fr; }
+}
 .school-report-absent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.35rem; margin-top: 0.75rem; }
 .school-report-absent-item { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
 .school-report-location { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.75rem; }

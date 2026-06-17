@@ -1,32 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Calendar, FileText, Activity, MapPin, School, Eye } from 'lucide-react';
+import { Users, Calendar, FileText, Activity, School, ChevronRight, Bell } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import PortalQuickActions from '../../components/PortalQuickActions';
 
-const StatCard = ({ title, value, icon: Icon, color, loading }) => (
-  <div className="surface-card" style={{
-    padding: '1.5rem',
-    borderRadius: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem'
-  }}>
-    <div style={{
-      width: '60px',
-      height: '60px',
-      borderRadius: '12px',
-      background: `${color}20`,
-      color: color,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
+const StatCard = ({ title, value, icon: Icon, tone, loading }) => (
+  <div className="surface-card portal-stat-card">
+    <div className={`portal-stat-card__icon stat-tone--${tone}`}>
       <Icon size={32} />
     </div>
     <div>
-      <h3 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{title}</h3>
-      <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>{loading ? '...' : value}</p>
+      <h3 className="portal-stat-card__title">{title}</h3>
+      <p className="portal-stat-card__value">{loading ? '...' : value}</p>
     </div>
   </div>
 );
@@ -56,12 +42,10 @@ const TeacherDashboardPage = ({ user }) => {
         const assignedSchoolIds = await api.listUserSchoolIdsFromMirrors(user);
         const activeSchoolId = assignedSchoolIds[0] || user.schoolId || '';
 
-        // 2. Fetch Students count for the active school
         if (activeSchoolId) {
           const refStu = api.getSchoolStudentsCollection(activeSchoolId);
           const docsStu = await api.getDocuments(refStu);
-          
-          // 3. Find School Name
+
           const allSchools = await api.getCollectionGroupDocuments('schools');
           const mySchool = allSchools.find(s => s.id === activeSchoolId);
 
@@ -72,11 +56,9 @@ const TeacherDashboardPage = ({ user }) => {
           }));
         }
 
-        // 4. Fetch Daily Logs for this teacher
         const refLogs = api.getTeacherDailyLogsCollection(actorId);
         const docsLogs = await api.getDocuments(refLogs);
-        
-        // 5. Fetch Weekly Reports for this teacher
+
         const refReports = api.getTeacherReportsCollection(actorId);
         const docsReports = await api.getDocuments(refReports);
 
@@ -86,9 +68,8 @@ const TeacherDashboardPage = ({ user }) => {
           weeklyReportsCount: docsReports.length
         }));
 
-        // 6. Sort and take recent 5 logs
-        const sortedLogs = docsLogs.map(d => ({id: d.id, ...d.data()}))
-          .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
+        const sortedLogs = docsLogs.map(d => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
           .slice(0, 5);
         setRecentLogs(sortedLogs);
 
@@ -103,55 +84,63 @@ const TeacherDashboardPage = ({ user }) => {
   }, [actorId, user]);
 
   return (
-    <div>
+    <div className="portal-page teacher-dashboard-page">
       <PageHeader
-        title={<span style={{ color: 'var(--success-color)' }}>لوحة شرف المعلم</span>}
+        title={<span className="page-header-accent--success">لوحة شرف المعلم</span>}
         subtitle="نظرة عامة على نشاطاتك في مدرستك الحالية"
-      >
-        <div className="surface-card" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <School size={18} color="var(--success-color)" />
-          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{stats.schoolName}</span>
-        </div>
-      </PageHeader>
+      />
 
-      {/* Stats Grid */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
-        gap: '1.5rem', 
-        marginBottom: '2rem' 
-      }}>
-        <StatCard title="إجمالي الدارسين (الأعضاء)" value={stats.studentsCount} icon={Users} color="var(--success-color)" loading={loading} />
-        <StatCard title="التحضير اليومي المرفوع" value={stats.dailyLogsCount} icon={Calendar} color="#3b82f6" loading={loading} />
-        <StatCard title="التقارير الأسبوعية" value={stats.weeklyReportsCount} icon={FileText} color="#f59e0b" loading={loading} />
-        <StatCard title="نسبة الإنجاز" value={stats.dailyLogsCount > 0 ? "نشط" : "بانتظار التحضير"} icon={Activity} color="#8b5cf6" loading={loading} />
+      <div className="portal-school-chip-wrap">
+        <div className="surface-card portal-school-chip">
+          <School size={18} color="var(--success-color)" />
+          <span className="portal-school-chip__label">{stats.schoolName}</span>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-        <div className="surface-card surface-card--lg" style={{ padding: '1.5rem', borderRadius: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Activity size={18} color="var(--success-color)" /> آخر النشاطات (التحضير اليومي)
-                </h3>
-                <button onClick={() => navigate('/teacher/daily-log')} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', fontSize: '0.85rem', cursor: 'pointer' }}>عرض الكل</button>
+      <PortalQuickActions
+        actions={[
+          { path: '/teacher/daily-log', label: 'التحضير اليومي', icon: Calendar, tone: 'success' },
+          { path: '/teacher/students', label: 'طلابي', icon: Users },
+          { path: '/teacher/weekly-report', label: 'التقرير الأسبوعي', icon: FileText },
+          { path: '/teacher/notifications', label: 'الإشعارات', icon: Bell },
+        ]}
+      />
+
+      <div className="portal-stats-grid">
+        <StatCard title="إجمالي الدارسين (الأعضاء)" value={stats.studentsCount} icon={Users} tone="success" loading={loading} />
+        <StatCard title="التحضير اليومي المرفوع" value={stats.dailyLogsCount} icon={Calendar} tone="blue" loading={loading} />
+        <StatCard title="التقارير الأسبوعية" value={stats.weeklyReportsCount} icon={FileText} tone="amber" loading={loading} />
+        <StatCard title="نسبة الإنجاز" value={stats.dailyLogsCount > 0 ? 'نشط' : 'بانتظار التحضير'} icon={Activity} tone="purple" loading={loading} />
+      </div>
+
+      <div className="portal-section-grid">
+        <div className="surface-card surface-card--lg portal-recent-card">
+          <div className="portal-recent-card__head">
+            <h3 className="portal-recent-card__title">
+              <Activity size={18} color="var(--success-color)" /> آخر النشاطات (التحضير اليومي)
+            </h3>
+            <button type="button" onClick={() => navigate('/teacher/daily-log')} className="portal-link-btn">عرض الكل</button>
+          </div>
+          {recentLogs.length === 0 ? (
+            <p className="portal-recent-empty">لا توجد سجلات حديثة.</p>
+          ) : (
+            <div className="portal-recent-list">
+              {recentLogs.map(log => (
+                <button
+                  key={log.id}
+                  type="button"
+                  className="portal-recent-item"
+                  onClick={() => navigate(`/teacher/reports/${log.id}`)}
+                >
+                  <div>
+                    <div className="portal-recent-item__title">تحضير يوم: {log.date}</div>
+                    <div className="portal-recent-item__meta">{log.records?.length || 0} طالباً مسجلاً</div>
+                  </div>
+                  <ChevronRight size={18} className="portal-recent-item__chevron" aria-hidden />
+                </button>
+              ))}
             </div>
-            {recentLogs.length === 0 ? (
-                <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>لا توجد سجلات حديثة.</p>
-            ) : (
-                <div style={{ display: 'grid', gap: '10px' }}>
-                    {recentLogs.map(log => (
-                        <div key={log.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-color)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                            <div>
-                                <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>تحضير يوم: {log.date}</div>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{log.records?.length || 0} طالباً مسجلاً</div>
-                            </div>
-                            <button onClick={() => navigate(`/teacher/reports/${log.id}`)} className="icon-btn">
-                                <Eye size={18} color="var(--accent-color)" />
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
+          )}
         </div>
       </div>
     </div>

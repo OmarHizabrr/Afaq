@@ -33,7 +33,9 @@ import {
 } from '../../utils/attendanceStatus';
 import { enrichDailyPrepReport } from '../../utils/enrichDailyPrepReport';
 import AttendanceStatusIcon from '../../components/AttendanceStatusIcon';
+import ReportDailyRecordCard from '../../components/ReportDailyRecordCard';
 import DailyPrepEditor from '../../components/DailyPrepEditor';
+import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 import {
   buildDailyPrepSavePayload,
   formatDateInput,
@@ -66,6 +68,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   const [adminError, setAdminError] = useState('');
   const [editMode, setEditMode] = useState(false);
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = usePermissions();
+  const isMobile = useMediaQuery(MOBILE_QUERY);
 
   const [visitEdit, setVisitEdit] = useState({});
   const [dailyEdit, setDailyEdit] = useState(null);
@@ -370,11 +373,11 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   };
 
   if (loading) {
-    return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+    return <div className="loading-spinner page-loading-lg" />;
   }
   if (!report) {
     return (
-      <div className="empty-state" style={{ margin: '2rem auto', maxWidth: '480px' }}>
+      <div className="empty-state report-details-empty">
         التقرير غير موجود
       </div>
     );
@@ -410,25 +413,25 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       : TYPE_LABELS[report.type] || report.type;
 
   return (
-    <div className="report-details-page">
+    <div className={`report-details-page portal-page${isMobile && editMode ? ' report-details-page--has-mobile-save' : ''}`}>
       <PageHeader
         topRow={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div className="report-details-page__top-row">
             <button type="button" className="page-nav-back" onClick={() => navigate(-1)}>
               <ChevronRight size={20} aria-hidden /> رجوع
             </button>
-            <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+            <ChevronRight size={16} className="page-nav-separator" aria-hidden />
           </div>
         }
         title={
           <>
             تفاصيل التقرير:{' '}
-            <span style={{ color: 'var(--md-primary)' }}>{id.substring(0, 8)}</span>
+            <span className="page-header-accent">{id.substring(0, 8)}</span>
           </>
         }
       />
 
-      {isAdmin && (canEditReport || canDeleteReport) && (
+      {isAdmin && (canEditReport || canDeleteReport) && !(isMobile && editMode) && (
         <div className="surface-card report-admin-toolbar">
           <span className="report-admin-toolbar__label">
             صلاحيات المدير: تعديل أو حذف هذا السجل
@@ -438,8 +441,8 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               <>
                 {canEditReport && (
                   <BusyButton type="button" className="google-btn google-btn--toolbar" busy={saving} onClick={beginEdit}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                      <Pencil size={18} style={{ marginLeft: 6 }} aria-hidden />
+                    <span className="btn-inner btn-inner--sm">
+                      <Pencil size={18} aria-hidden />
                       تعديل
                     </span>
                   </BusyButton>
@@ -451,8 +454,8 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                     busy={saving}
                     onClick={handleAdminDelete}
                   >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                      <Trash2 size={18} style={{ marginLeft: 6 }} aria-hidden />
+                    <span className="btn-inner btn-inner--sm">
+                      <Trash2 size={18} aria-hidden />
                       حذف
                     </span>
                   </BusyButton>
@@ -466,14 +469,14 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                   busy={saving}
                   onClick={handleAdminSave}
                 >
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <Save size={18} style={{ marginLeft: 6 }} aria-hidden />
+                  <span className="btn-inner btn-inner--sm">
+                    <Save size={18} aria-hidden />
                     حفظ
                   </span>
                 </BusyButton>
                 <BusyButton type="button" className="google-btn google-btn--toolbar" busy={saving} onClick={cancelEdit}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <X size={18} style={{ marginLeft: 6 }} aria-hidden />
+                  <span className="btn-inner btn-inner--sm">
+                    <X size={18} aria-hidden />
                     إلغاء
                   </span>
                 </BusyButton>
@@ -484,7 +487,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       )}
 
       {adminError && (
-        <div className="app-alert app-alert--error" style={{ marginBottom: '1rem' }} role="alert">
+        <div className="app-alert app-alert--error report-details-alert" role="alert">
           {adminError}
         </div>
       )}
@@ -492,48 +495,40 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       <div className="surface-card surface-card--lg report-details-card">
         {!editMode && (
           <div className="report-details-summary-grid">
-            <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            <div className="report-summary-field">
+              <p className="report-summary-field__label">
                 المشرف / المعلم
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
-                <User size={18} color="var(--accent-color)" />
-                <strong style={{ fontSize: '1.1rem' }}>
+              <div className="report-summary-field__row">
+                <User size={18} color="var(--accent-color)" aria-hidden />
+                <strong className="report-summary-field__value">
                   {report.supervisorName || report.teacherName || 'غير محدد'}
                 </strong>
               </div>
             </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>المدرسة</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
-                <School size={18} color="var(--accent-color)" />
-                <strong style={{ fontSize: '1.1rem' }}>{report.schoolName || '—'}</strong>
+            <div className="report-summary-field">
+              <p className="report-summary-field__label">المدرسة</p>
+              <div className="report-summary-field__row">
+                <School size={18} color="var(--accent-color)" aria-hidden />
+                <strong className="report-summary-field__value">{report.schoolName || '—'}</strong>
               </div>
             </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            <div className="report-summary-field">
+              <p className="report-summary-field__label">
                 التاريخ والوقت
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
-                <Calendar size={18} color="var(--accent-color)" />
-                <strong style={{ fontSize: '1.1rem' }}>{dateDisplay}</strong>
+              <div className="report-summary-field__row">
+                <Calendar size={18} color="var(--accent-color)" aria-hidden />
+                <strong className="report-summary-field__value">{dateDisplay}</strong>
               </div>
             </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            <div className="report-summary-field">
+              <p className="report-summary-field__label">
                 نوع التقرير
               </p>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginTop: '8px',
-                  color: 'var(--accent-color)'
-                }}
-              >
-                <Info size={18} />
-                <strong style={{ fontSize: '1.1rem' }}>{typeLabel}</strong>
+              <div className="report-summary-field__row report-summary-field__row--accent">
+                <Info size={18} aria-hidden />
+                <strong className="report-summary-field__value">{typeLabel}</strong>
               </div>
             </div>
           </div>
@@ -559,7 +554,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 className="app-input"
               />
             </label>
-            <div className="report-edit-form__two-cols" style={{ alignItems: 'flex-start' }}>
+            <div className="report-edit-form__two-cols report-edit-form__two-cols--start">
               <div className="app-field app-field--grow">
                 <StarRatingInput
                   label="تقييم المعلم (من 5 نجوم)"
@@ -591,7 +586,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
           <div className="report-daily-edit">
             <h3 className="report-daily-edit__title">تعديل سجل التحضير</h3>
             {editBootLoading || !dailyEdit ? (
-              <div className="loading-spinner" style={{ margin: '2rem auto' }} />
+              <div className="loading-spinner report-edit-loading" />
             ) : (
               <DailyPrepEditor
                 schoolOptions={editSchoolOptions}
@@ -644,90 +639,56 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
         {report.type === 'visit' && !editMode && (
           <>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '1.5rem',
-                marginBottom: '2.5rem'
-              }}
-            >
-              <div className="stat-tile">
-                <Star size={24} color="#f59e0b" style={{ marginBottom: '8px' }} />
-                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>تقييم المعلم</p>
-                <h2 style={{ margin: '8px 0 0', fontSize: '2rem', color: '#f59e0b' }}>
+            <div className="report-visit-scores">
+              <div className="stat-tile report-visit-score-card">
+                <Star size={24} className="report-visit-score-card__icon report-visit-score-card__icon--warning" aria-hidden />
+                <p className="report-visit-score-card__label">تقييم المعلم</p>
+                <h2 className="report-visit-score-card__value report-visit-score-card__value--warning">
                   {formatVisitRatingLabel(report.teacherRating)}
                 </h2>
               </div>
-              <div className="stat-tile">
-                <Star size={24} color="var(--success-color)" style={{ marginBottom: '8px' }} />
-                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+              <div className="stat-tile report-visit-score-card">
+                <Star size={24} className="report-visit-score-card__icon report-visit-score-card__icon--success" aria-hidden />
+                <p className="report-visit-score-card__label">
                   تقييم القرية / الموقع
                 </p>
-                <h2 style={{ margin: '8px 0 0', fontSize: '2rem', color: 'var(--success-color)' }}>
+                <h2 className="report-visit-score-card__value report-visit-score-card__value--success">
                   {formatVisitRatingLabel(report.villageRating)}
                 </h2>
               </div>
             </div>
 
-            <div style={{ marginBottom: '2.5rem' }}>
-              <h3
-                style={{
-                  fontSize: '1.2rem',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                <FileText size={20} color="var(--accent-color)" /> ملاحظات وتوصيات المشرف
+            <div className="report-visit-notes-block">
+              <h3 className="report-section-title">
+                <FileText size={20} color="var(--accent-color)" aria-hidden /> ملاحظات وتوصيات المشرف
               </h3>
-              <div
-                style={{
-                  background: 'var(--bg-color)',
-                  padding: '1.5rem',
-                  borderRadius: '16px',
-                  border: '1px solid var(--border-color)',
-                  lineHeight: 1.6,
-                  color: 'var(--text-secondary)'
-                }}
-              >
+              <div className="report-notes-box">
                 {report.generalNotes || 'لا توجد ملاحظات عامة مسجلة لهذه الزيارة.'}
               </div>
             </div>
 
             {report.studentsTracking && (
               <div>
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>تتبع أداء الطلاب أثناء الزيارة</h3>
-                <div style={{ display: 'grid', gap: '1rem' }}>
+                <h3 className="report-section-title">تتبع أداء الطلاب أثناء الزيارة</h3>
+                <div className="report-visit-students-grid">
                   {report.studentsTracking.map((st, i) => (
                     <div
                       key={i}
-                      className="activity-list-item activity-list-item--split"
-                      style={{ padding: '1.25rem' }}
+                      className="activity-list-item activity-list-item--split report-visit-student-card"
                     >
                       <div>
-                        <h4 style={{ margin: 0 }}>{st.name || 'طالب مجهول'}</h4>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        <h4 className="activity-list-item__title">{st.name || 'طالب مجهول'}</h4>
+                        <p className="activity-list-item__meta">
                           {st.note || 'لا توجد ملاحظات'}
                         </p>
                       </div>
-                      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                      <div className="report-visit-student-card__stats">
                         {st.isPresent ? (
-                          <span style={{ color: 'var(--success-color)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={14} /> حاضر</span>
+                          <span className="report-status-chip report-status-chip--present"><CheckCircle2 size={14} aria-hidden /> حاضر</span>
                         ) : (
-                          <span style={{ color: 'var(--danger-color)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}><XCircle size={14} /> غائب</span>
+                          <span className="report-status-chip report-status-chip--absent"><XCircle size={14} aria-hidden /> غائب</span>
                         )}
-                        <div
-                          style={{
-                            padding: '4px 12px',
-                            background: 'var(--accent-glow)',
-                            color: 'var(--accent-color)',
-                            borderRadius: '12px',
-                            fontSize: '0.9rem',
-                            fontWeight: 700
-                          }}
-                        >
+                        <div className="report-points-badge">
                           {st.points || 0} نقطة
                         </div>
                       </div>
@@ -741,11 +702,11 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
         {report.type === 'daily' && !editMode && (
           <div>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
+            <h3 className="report-section-title report-section-title--tight">
               سجل التحضير ({prepPeriodLabel(report.prepPeriod)})
             </h3>
             {(formatDailyLogSubjects(report) || report.periodStart) && (
-              <p style={{ margin: '0 0 1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              <p className="report-section-lead">
                 {formatDailyLogSubjects(report) && (
                   <>المواد: <strong>{formatDailyLogSubjects(report)}</strong></>
                 )}
@@ -755,17 +716,17 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               </p>
             )}
             {report.attendanceSummary && (
-              <p style={{ margin: '0 0 0.75rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+              <p className="report-section-lead report-section-lead--sm">
                 ملخص الحضور: <strong>{report.attendanceSummary}</strong>
               </p>
             )}
             {report.prepNotes && (
-              <div className="app-alert app-alert--info" style={{ marginBottom: '1rem' }}>
+              <div className="app-alert app-alert--info report-daily-prep-alert">
                 <strong>ملاحظات التحضير:</strong> {report.prepNotes}
               </div>
             )}
             {Array.isArray(report.curriculumProgressSummary) && report.curriculumProgressSummary.length > 0 && (
-              <div className="curriculum-picker__summary" style={{ marginBottom: '1rem' }}>
+              <div className="curriculum-picker__summary report-curriculum-summary">
                 {report.curriculumProgressSummary.map((p) => (
                   <span key={p.subjectId} className="curriculum-picker__badge curriculum-picker__badge--track">
                     {p.subjectName}: {p.label}
@@ -773,9 +734,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 ))}
               </div>
             )}
-            <div className="surface-card" style={{ borderRadius: '12px', overflow: 'hidden' }}>
+            <div className="surface-card report-daily-records-desktop">
               <div className="md-table-scroll">
-                <table className="md-table" style={{ minWidth: 'unset' }}>
+                <table className="md-table">
                   <thead>
                     <tr>
                       <th>اسم الطالب</th>
@@ -791,7 +752,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                       const label = attendanceStatusLabel(r);
                       return (
                       <tr key={r.studentId} className={!present ? 'md-table__row--absent' : ''}>
-                        <td style={{ fontWeight: 600 }}>{r.name}</td>
+                        <td className="report-daily-table__name">{r.name}</td>
                         <td>
                           <span
                             className={`daily-prep-status-badge daily-prep-status-badge--${r.attendanceStatus || (present ? 'present' : 'absent')}`}
@@ -814,37 +775,26 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 </table>
               </div>
             </div>
+
+            <div className="report-daily-records-mobile">
+              {report.records?.map((r) => (
+                <ReportDailyRecordCard key={r.studentId} record={r} />
+              ))}
+            </div>
           </div>
         )}
 
         {report.type === 'weekly' && !editMode && (
           <div>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>أنشطة الأسبوع</h3>
+            <h3 className="report-section-title">أنشطة الأسبوع</h3>
             {report.reportData &&
               Object.entries(report.reportData).map(([key, val]) => (
-                <div
-                  key={key}
-                  style={{
-                    marginBottom: '1rem',
-                    padding: '1rem',
-                    background: 'var(--bg-color)',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)'
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      marginBottom: '0.5rem',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
-                  >
+                <div key={key} className="report-weekly-activity-card">
+                  <div className="report-weekly-activity-card__head">
                     <strong>{key}</strong>
                     {renderWeeklyStatus(val?.isActive)}
                   </div>
-                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                  <p className="report-weekly-activity-card__body">
                     {val?.details || 'لا توجد ملاحظات إضافية'}
                   </p>
                 </div>
@@ -858,6 +808,24 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         label="الموقع الجغرافي للزيارة"
         subtitle="لم يتم تسجيل إحداثيات GPS لهذا التقرير"
       />
+
+      {isMobile && editMode && isAdmin && (canEditReport || canDeleteReport) ? (
+        <div className="report-details-mobile-save-bar">
+          <BusyButton type="button" className="google-btn report-details-mobile-save-bar__btn" busy={saving} onClick={cancelEdit}>
+            <X size={18} aria-hidden />
+            إلغاء
+          </BusyButton>
+          <BusyButton
+            type="button"
+            className="google-btn google-btn--filled report-details-mobile-save-bar__btn"
+            busy={saving}
+            onClick={handleAdminSave}
+          >
+            <Save size={18} aria-hidden />
+            حفظ
+          </BusyButton>
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -1,0 +1,106 @@
+.report-preview-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  min-width: min(280px, 90vw);
+}
+
+.report-preview-loading__text {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.admin-settings-mobile-save-bar,
+.admin-user-types-mobile-save-bar {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 22;
+  bottom: calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px));
+  padding: 10px 12px;
+  background: var(--panel-color);
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-settings-mobile-save-bar__btn,
+.admin-user-types-mobile-save-bar__btn {
+  flex: 1;
+  max-width: none;
+  justify-content: center;
+}
+
+.admin-user-types-mobile-save-bar__delete {
+  flex-shrink: 0;
+}
+
+.admin-site-copy-page,
+.admin-branding-page {
+  max-width: 720px;
+}
+
+@media (max-width: 768px) {
+  .admin-settings-page--has-mobile-save,
+  .admin-user-types-page--has-mobile-save,
+  .settings-page--has-mobile-save {
+    padding-bottom: calc(var(--bottom-tab-height) + 56px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .admin-user-types-mobile-save-bar,
+  .admin-settings-mobile-save-bar {
+    display: flex;
+  }
+
+  .admin-settings-save-btn--desktop,
+  .settings-profile-form__actions--desktop {
+    display: none;
+  }
+
+  .admin-branding-card,
+  .admin-site-copy-card {
+    padding: 1rem;
+  }
+
+  .admin-branding-contacts__row {
+    grid-template-columns: 1fr;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--panel-color);
+  }
+
+  .admin-site-copy-item__save-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-user-types-sidebar__list {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .admin-user-types-sidebar__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-user-types-sidebar__item {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .admin-user-types-content__actions--desktop {
+    display: none;
+  }
+}

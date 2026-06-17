@@ -22,7 +22,7 @@ function resolvePaths(user) {
   };
 }
 
-const UserMenuDropdown = ({ user, accentColor, tagline }) => {
+const UserMenuDropdown = ({ user, accentTone, tagline }) => {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const navigate = useNavigate();
@@ -64,13 +64,18 @@ const UserMenuDropdown = ({ user, accentColor, tagline }) => {
           <p className="user-chip__role">{tagline || user?.email || ''}</p>
         </div>
         <img
-          className="user-chip__avatar"
+          className={`user-chip__avatar${
+            accentTone === 'primary'
+              ? ' user-chip__avatar--accent-primary'
+              : accentTone === 'success'
+                ? ' user-chip__avatar--accent-success'
+                : ''
+          }`}
           src={
             user?.photoURL ||
             `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'U')}&background=1a73e8&color=fff`
           }
           alt=""
-          style={{ borderColor: accentColor || 'var(--border-color)' }}
         />
         <ChevronDown size={18} className={`user-menu-dropdown__chev ${open ? 'user-menu-dropdown__chev--open' : ''}`} />
       </button>

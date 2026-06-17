@@ -97,7 +97,7 @@ export default function CurriculumPrintPage() {
   if (loading) {
     return (
       <div className="print-shell print-shell--plain">
-        <div className="loading-spinner" style={{ margin: '4rem auto', width: 48, height: 48 }} />
+        <div className="loading-spinner print-shell__loading" />
       </div>
     );
   }
@@ -105,8 +105,8 @@ export default function CurriculumPrintPage() {
   if (error || !subject) {
     return (
       <div className="print-shell print-shell--plain">
-        <div className="surface-card" style={{ maxWidth: 480, margin: '3rem auto', padding: '2rem', textAlign: 'center' }}>
-          <p style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>{error || 'لا توجد بيانات'}</p>
+        <div className="surface-card print-shell__error-card">
+          <p className="print-shell__error-text">{error || 'لا توجد بيانات'}</p>
           <button type="button" className="google-btn google-btn--filled" onClick={handleBack}>
             العودة إلى المناهج
           </button>

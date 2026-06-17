@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Navigate } from 'react-router-dom';
-import { ChevronRight, User, Phone, Mail, School, MapPin, Activity, Save } from 'lucide-react';
+import { ChevronRight, User, Phone, Mail, School, MapPin, Activity, Save, TrendingUp } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
+import StudentResultCard from '../../components/StudentResultCard';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, studentRowMatchesScope } from '../../utils/permissionDataScope';
 import BusyButton from '../../components/BusyButton';
+import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 
 const StudentDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
+  const isMobile = useMediaQuery(MOBILE_QUERY);
+  const canEdit = can(PERMISSION_PAGE_IDS.students_management, 'student_management_edit');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -64,11 +68,24 @@ const StudentDetailsPage = () => {
         );
 
         const studentActivity = reportDocs
-          .map((d) => ({ id: d.id, ...d.data() }))
-          .filter(
-            (r) => Array.isArray(r.studentsTracking) && r.studentsTracking.some((s) => s.studentId === id)
-          )
-          .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+          .map((d) => {
+            const data = d.data() || {};
+            const record = Array.isArray(data.studentsTracking)
+              ? data.studentsTracking.find((s) => s.studentId === id)
+              : null;
+            if (!record) return null;
+            return {
+              id: d.id,
+              date: data.timestamp?.split('T')[0] || '',
+              subjectName: data.subjectName || 'مادة غير محددة',
+              schoolName: data.schoolName || 'بدون مدرسة',
+              isPresent: !!record.isPresent,
+              isTested: !!record.isTested,
+              note: record.note || '',
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         setActivity(studentActivity);
       } catch (err) {
         console.error(err);
@@ -104,7 +121,7 @@ const StudentDetailsPage = () => {
     }
   };
 
-  if (loading) return <div className="loading-spinner" style={{ margin: '3rem auto' }}></div>;
+  if (loading) return <div className="loading-spinner page-loading-md" />;
   if (!student) return <div className="empty-state">ملف الطالب غير موجود.</div>;
 
   const stScope = pageDataScope(PERMISSION_PAGE_IDS.students_management);
@@ -119,16 +136,16 @@ const StudentDetailsPage = () => {
   }
 
   return (
-    <div>
+    <div className={`student-details-page portal-page${isMobile && canEdit ? ' student-details-page--has-mobile-save' : ''}`}>
       <PageHeader
         topRow={(
-          <div className="user-details-page__top-row">
+          <div className="user-details-page__top-row student-details-page__top-row">
             <button type="button" className="page-nav-back" onClick={() => navigate('/students-management')}>
               <ChevronRight size={20} aria-hidden /> الطلاب
             </button>
           </div>
         )}
-        title={<>ملف الطالب: <span style={{ color: 'var(--md-primary)' }}>{student.displayName || 'بدون اسم'}</span></>}
+        title={<>ملف الطالب: <span className="page-header-accent">{student.displayName || 'بدون اسم'}</span></>}
         subtitle="كل بيانات الطالب وارتباطاته بالمدارس والمناطق"
       />
 
@@ -145,8 +162,8 @@ const StudentDetailsPage = () => {
             <h2 className="user-details-profile-card__name">{student.displayName || 'بدون اسم'}</h2>
             <span className="user-details-profile-card__role">طالب</span>
 
-            {can(PERMISSION_PAGE_IDS.students_management, 'student_management_edit') && (
-              <div style={{ width: '100%', marginTop: 12 }}>
+            {canEdit && (
+              <div className="user-details-profile-card__edit-form">
                 <div className="app-field app-field--grow">
                   <label className="app-label">الاسم</label>
                   <input className="app-input" value={editName} onChange={(e) => setEditName(e.target.value)} />
@@ -159,12 +176,14 @@ const StudentDetailsPage = () => {
                   <label className="app-label">البريد</label>
                   <input className="app-input" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
                 </div>
-                <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSave} busy={saving}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                    <Save size={16} />
-                    حفظ التعديلات
-                  </span>
-                </BusyButton>
+                {!isMobile && (
+                  <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSave} busy={saving}>
+                    <span className="btn-inner">
+                      <Save size={16} aria-hidden />
+                      حفظ التعديلات
+                    </span>
+                  </BusyButton>
+                )}
               </div>
             )}
 
@@ -196,31 +215,74 @@ const StudentDetailsPage = () => {
             </div>
           )}
 
-          <div className="user-details-activity-card__head" style={{ marginTop: 16 }}>
+          <div className="user-details-activity-card__head user-details-activity-card__head--spaced">
             <Activity size={22} color="var(--accent-color)" />
             <h2 className="user-details-activity-card__title">سجل الطالب</h2>
           </div>
           {activity.length === 0 ? (
-            <p className="empty-state">لا يوجد نشاط مسجل.</p>
+            <p className="empty-state user-details-activity-card__empty">لا يوجد نشاط مسجل.</p>
           ) : (
             <div className="user-details-activity-list">
-              {activity.map((r) => (
-                <div key={r.id} className="activity-list-item activity-list-item--split">
-                  <div>
-                    <h4 style={{ margin: 0 }}>{r.subjectName || 'مادة غير محددة'}</h4>
-                    <p style={{ margin: '4px 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                      {(r.timestamp || '').split('T')[0] || 'بدون تاريخ'} • {r.schoolName || 'بدون مدرسة'}
-                    </p>
+              <div className="user-details-activity-desktop-only">
+                {activity.map((item) => (
+                  <div key={item.id} className="activity-list-item activity-list-item--split">
+                    <div>
+                      <h4 className="activity-list-item__title">{item.subjectName}</h4>
+                      <p className="activity-list-item__meta">{item.date || 'بدون تاريخ'} • {item.schoolName}</p>
+                    </div>
+                    <div className="user-details-activity-list__status-wrap">
+                      <span className={`user-details-activity-list__status-chip ${item.isPresent ? 'user-details-activity-list__status-chip--present' : 'user-details-activity-list__status-chip--absent'}`}>
+                        {item.isPresent ? 'حاضر' : 'غائب'}
+                      </span>
+                      {item.isTested && <TrendingUp size={16} color="var(--success-color)" />}
+                      <button type="button" className="icon-btn" onClick={() => navigate(`/reports/${item.id}`)} aria-label="عرض التقرير">
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <button className="icon-btn" onClick={() => navigate(`/reports/${r.id}`)}>
-                    <ChevronRight size={16} />
+                ))}
+              </div>
+              <div className="user-details-activity-mobile-only">
+                {activity.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="student-details-activity-link"
+                    onClick={() => navigate(`/reports/${item.id}`)}
+                  >
+                    <StudentResultCard
+                      row={{
+                        schoolName: item.schoolName,
+                        subjectName: item.subjectName,
+                        date: item.date,
+                        isPresent: item.isPresent,
+                        isTested: item.isTested,
+                        note: item.note,
+                      }}
+                    />
                   </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {isMobile && canEdit && (
+        <div className="student-details-mobile-save-bar">
+          <BusyButton
+            type="button"
+            className="google-btn google-btn--filled student-details-mobile-save-bar__btn"
+            onClick={handleSave}
+            busy={saving}
+          >
+            <span className="btn-inner">
+              <Save size={16} aria-hidden />
+              حفظ التعديلات
+            </span>
+          </BusyButton>
+        </div>
+      )}
     </div>
   );
 };

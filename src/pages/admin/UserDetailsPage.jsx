@@ -7,6 +7,7 @@ import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, loadPeerUserIdsForGroups } from '../../utils/permissionDataScope';
 import BusyButton from '../../components/BusyButton';
+import StudentResultCard from '../../components/StudentResultCard';
 
 const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     const { id: routeUserId } = useParams();
@@ -258,7 +259,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
         }
     };
 
-    if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
+    if (loading) return <div className="loading-spinner page-loading-lg" />;
     if (!profile) return <div className="empty-state user-details-empty">المستخدم غير موجود</div>;
 
     const ROLE_LABELS = {
@@ -273,30 +274,31 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
 
     return (
       <>
-        <div className="user-details-page">
+        <div className="user-details-page portal-page">
             <PageHeader
               topRow={
                 <div className="user-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate(-1)}>
                     <ChevronRight size={20} aria-hidden /> رجوع
                   </button>
-                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                  <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>عرض ملف: <span style={{ color: 'var(--md-primary)' }}>{profile.displayName}</span></>}
+              title={<>عرض ملف: <span className="page-header-accent">{profile.displayName}</span></>}
             >
               {canEditUserProfile && (
                 <button type="button" className="google-btn google-btn--toolbar" onClick={openEditUserModal}>
                   <Edit2 size={18} />
-                  <span>تعديل بيانات المستخدم</span>
+                  <span className="portal-toolbar__long">تعديل بيانات المستخدم</span>
+                  <span className="portal-toolbar__short">تعديل</span>
                 </button>
               )}
             </PageHeader>
 
             {editSuccess && (
-              <div className="app-alert app-alert--success" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+              <div className="app-alert app-alert--success app-alert--dismissible user-details-page-alert">
                 <span>{editSuccess}</span>
-                <button type="button" className="icon-btn" title="إغلاق" onClick={() => setEditSuccess('')} style={{ width: 28, height: 28 }}>
+                <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setEditSuccess('')}>
                   <X size={14} />
                 </button>
               </div>
@@ -339,8 +341,8 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                           busy={adminWorking}
                                           onClick={handleToggleAccountDisabled}
                                       >
-                                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                                            <Ban size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                          <span className="btn-inner">
+                                            <Ban size={18} aria-hidden />
                                             {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
                                           </span>
                                       </BusyButton>
@@ -352,8 +354,8 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                           busy={adminWorking}
                                           onClick={handleAdminDeleteUser}
                                       >
-                                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                                            <Trash2 size={18} style={{ marginLeft: 8 }} aria-hidden />
+                                          <span className="btn-inner">
+                                            <Trash2 size={18} aria-hidden />
                                             حذف المستخدم نهائياً من النظام
                                           </span>
                                       </BusyButton>
@@ -394,30 +396,11 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                             )}
                         </div>
                         {profile.notes && (
-                          <div
-                            style={{
-                              marginTop: 10,
-                              padding: '10px 12px',
-                              borderRadius: 10,
-                              border: '1px solid var(--border-color)',
-                              background: 'color-mix(in srgb, var(--bg-color) 88%, var(--panel-color))',
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontWeight: 700 }}>
-                              <Info size={15} /> ملاحظات
+                          <div className="user-details-notes">
+                            <div className="user-details-notes__head">
+                              <Info size={15} aria-hidden /> ملاحظات
                             </div>
-                            <p
-                              style={{
-                                margin: 0,
-                                fontSize: '0.9rem',
-                                lineHeight: 1.7,
-                                color: 'var(--text-primary)',
-                                whiteSpace: 'pre-wrap',
-                                wordBreak: 'break-word',
-                              }}
-                            >
-                              {profile.notes}
-                            </p>
+                            <p className="user-details-notes__text">{profile.notes}</p>
                           </div>
                         )}
                     </div>
@@ -455,27 +438,48 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                         </div>
                     ) : (
                         <div className="user-details-activity-list">
-                           {profile.role === 'student' && activity.map(item => (
-                              <div key={item.id} className="activity-list-item activity-list-item--split">
-                                 <div>
-                                    <h4 style={{ margin: 0 }}>{item.subject}</h4>
-                                    <p style={{ margin: '4px 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.date} • {item.school}</p>
-                                 </div>
-                                 <div className="user-details-activity-list__status-wrap">
-                                    <span className={`user-details-activity-list__status-chip ${item.isPresent ? 'user-details-activity-list__status-chip--present' : 'user-details-activity-list__status-chip--absent'}`}>
-                                       {item.isPresent ? 'حاضر' : 'غائب'}
-                                    </span>
-                                    {item.isTested && <TrendingUp size={16} color="var(--success-color)" />}
-                                 </div>
-                              </div>
-                           ))}
+                           {profile.role === 'student' && (
+                             <>
+                               <div className="user-details-activity-desktop-only">
+                                 {activity.map((item) => (
+                                   <div key={item.id} className="activity-list-item activity-list-item--split">
+                                     <div>
+                                       <h4 className="activity-list-item__title">{item.subject}</h4>
+                                       <p className="activity-list-item__meta">{item.date} • {item.school}</p>
+                                     </div>
+                                     <div className="user-details-activity-list__status-wrap">
+                                       <span className={`user-details-activity-list__status-chip ${item.isPresent ? 'user-details-activity-list__status-chip--present' : 'user-details-activity-list__status-chip--absent'}`}>
+                                         {item.isPresent ? 'حاضر' : 'غائب'}
+                                       </span>
+                                       {item.isTested && <TrendingUp size={16} color="var(--success-color)" />}
+                                     </div>
+                                   </div>
+                                 ))}
+                               </div>
+                               <div className="user-details-activity-mobile-only">
+                                 {activity.map((item) => (
+                                   <StudentResultCard
+                                     key={item.id}
+                                     row={{
+                                       schoolName: item.school,
+                                       subjectName: item.subject,
+                                       date: item.date,
+                                       isPresent: item.isPresent,
+                                       isTested: item.isTested,
+                                       note: item.note,
+                                     }}
+                                   />
+                                 ))}
+                               </div>
+                             </>
+                           )}
 
                            {profile.role === 'teacher' && activity.map(item => (
                               <div key={item.id} className="activity-list-item">
                                  <div className="user-details-activity-list__teacher-row">
                                     <div className="user-details-activity-list__teacher-date">
                                        <Calendar size={14} color="var(--accent-color)" />
-                                       <span style={{ fontWeight: 600 }}>{item.date}</span>
+                                       <span>{item.date}</span>
                                     </div>
                                     <span className="user-details-activity-list__teacher-subject">{item.subject}</span>
                                  </div>
@@ -486,8 +490,8 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                            {profile.role?.includes('supervisor') && activity.map(item => (
                               <div key={item.id} className="activity-list-item activity-list-item--split">
                                  <div>
-                                    <h4 style={{ margin: 0 }}>زيارة: {item.schoolName}</h4>
-                                    <p style={{ margin: '4px 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.timestamp?.split('T')[0]} • {item.subjectName}</p>
+                                    <h4 className="activity-list-item__title">زيارة: {item.schoolName}</h4>
+                                    <p className="activity-list-item__meta">{item.timestamp?.split('T')[0]} • {item.subjectName}</p>
                                  </div>
                                  <button onClick={() => navigate(`/reports/${item.id}`)} className="icon-btn"><Info size={18}/></button>
                               </div>
@@ -593,8 +597,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
               <div className="users-modal__field">
                 <label className="app-label">ملاحظات (اختياري)</label>
                 <textarea
-                  className="app-input"
-                  style={{ minHeight: '80px' }}
+                  className="app-input users-modal__textarea"
                   value={editForm.notes}
                   onChange={(e) => setEditForm((p) => ({ ...p, notes: e.target.value }))}
                   placeholder="أي ملاحظات إضافية"
@@ -602,11 +605,11 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
               </div>
 
               <div className="users-modal__actions">
-                <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={() => setIsEditModalOpen(false)} disabled={editBusy}>
+                <button type="button" className="google-btn users-modal__action-btn" onClick={() => setIsEditModalOpen(false)} disabled={editBusy}>
                   إلغاء
                 </button>
                 <BusyButton type="button" busy={editBusy} className="google-btn google-btn--filled users-modal__save-btn" onClick={handleSaveUserProfile}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span className="btn-inner btn-inner--sm">
                     <Save size={14} aria-hidden /> حفظ التعديلات
                   </span>
                 </BusyButton>

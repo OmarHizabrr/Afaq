@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Search, Compass, Edit2, Trash2, X, Save } from 'lucide-react';
+import { Plus, Search, Compass, X, Save } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import FirestoreApi from '../../services/firestoreApi';
 import AppSelect from '../../components/AppSelect';
@@ -16,6 +16,7 @@ import {
   sanitizeFieldValuesForSave,
 } from '../../utils/explorationDynamicFields';
 import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFieldBlock';
+import ExplorationListCard from '../../components/ExplorationListCard';
 import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
 import { filterExplorationTypesForPage } from '../../utils/explorationTargetPages';
 
@@ -411,28 +412,29 @@ const ExplorationsPage = () => {
   };
 
   return (
-    <div>
+    <div className="explorations-page">
       <PageHeader icon={Compass} title="قسم الاستكشاف">
         {can(PERMISSION_PAGE_IDS.explorations, 'exploration_add') && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={openAddModal}>
             <Plus size={18} />
-            <span>إضافة استكشاف</span>
+            <span className="explorations-toolbar__long">إضافة استكشاف</span>
+            <span className="explorations-toolbar__short">إضافة</span>
           </button>
         )}
       </PageHeader>
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.explorations) === DATA_SCOPE_MEMBERSHIP && (
-        <div className="app-alert app-alert--info" style={{ marginBottom: '0.75rem' }}>
+        <div className="app-alert app-alert--info explorations-alert">
           عرض محدود: تظهر بيانات الاستكشاف المرتبطة بقراك/مجموعاتك فقط.
         </div>
       )}
-      {error && <div className="app-alert app-alert--error">{error}</div>}
-      {success && <div className="app-alert app-alert--success">{success}</div>}
+      {error && <div className="app-alert app-alert--error explorations-alert">{error}</div>}
+      {success && <div className="app-alert app-alert--success explorations-alert">{success}</div>}
 
-      <div className="surface-card" style={{ marginBottom: '1rem' }}>
+      <div className="surface-card explorations-search-card">
         <label className="app-label">بحث</label>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Search size={16} color="var(--text-secondary)" />
+        <div className="explorations-search-row">
+          <Search size={16} color="var(--text-secondary)" aria-hidden />
           <input
             className="app-input"
             placeholder="ابحث بالنوع أو المشرف أو الحقول أو القرية..."
@@ -443,38 +445,23 @@ const ExplorationsPage = () => {
       </div>
 
       {loading ? (
-        <div className="loading-spinner" style={{ margin: '2rem auto' }} />
+        <div className="loading-spinner explorations-loading" />
       ) : filteredExplorations.length === 0 ? (
         <div className="empty-state">لا توجد استكشافات مضافة حتى الآن.</div>
       ) : (
-        <div className="entity-grid entity-grid--md">
+        <div className="entity-grid entity-grid--md explorations-grid">
           {filteredExplorations.map((item) => (
-            <div key={item.id} className="surface-card surface-card--entity">
-              <div>
-                <h3 style={{ margin: 0 }}>{item.explorationTypeName || 'نوع غير محدد'}</h3>
-                <p style={{ margin: '4px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  {item.governorateName || '-'} / {item.regionName || '-'} / {item.villageName || '-'}
-                </p>
-                <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{cardSubtitle(item)}</p>
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {can(PERMISSION_PAGE_IDS.explorations, 'exploration_edit') && (
-                  <button type="button" className="icon-btn" title="تعديل" onClick={() => openEditModal(item)}>
-                    <Edit2 size={16} />
-                  </button>
-                )}
-                {can(PERMISSION_PAGE_IDS.explorations, 'exploration_delete') && (
-                  <button
-                    type="button"
-                    className="icon-btn"
-                    title="حذف"
-                    onClick={() => setPendingDelete({ id: item.id, name: item.explorationTypeName || item.villageName || item.id })}
-                  >
-                    <Trash2 size={16} color="var(--danger-color)" />
-                  </button>
-                )}
-              </div>
-            </div>
+            <ExplorationListCard
+              key={item.id}
+              item={item}
+              subtitle={cardSubtitle(item)}
+              canEdit={can(PERMISSION_PAGE_IDS.explorations, 'exploration_edit')}
+              canDelete={can(PERMISSION_PAGE_IDS.explorations, 'exploration_delete')}
+              onEdit={() => openEditModal(item)}
+              onDelete={() =>
+                setPendingDelete({ id: item.id, name: item.explorationTypeName || item.villageName || item.id })
+              }
+            />
           ))}
         </div>
       )}
@@ -486,10 +473,7 @@ const ExplorationsPage = () => {
         size="xl"
         className="modal-card--exploration-flow"
       >
-        <form
-          onSubmit={saveExploration}
-          style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}
-        >
+        <form onSubmit={saveExploration} className="exploration-modal-form">
           <div className="exploration-modal-scroll">
             <div className="exploration-modal-flow">
               <section className="exploration-modal-type-card">
@@ -537,9 +521,7 @@ const ExplorationsPage = () => {
                   {useDynamicForm ? (
                     <>
                       {optionCachesLoading && (
-                        <p style={{ margin: '0 0 8px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                          جاري تحميل قوائم البيانات من المنصة…
-                        </p>
+                        <p className="exploration-modal-loading-hint">جاري تحميل قوائم البيانات من المنصة…</p>
                       )}
                       <ExplorationDynamicFieldBlock
                         variant="sheet"
@@ -680,10 +662,9 @@ const ExplorationsPage = () => {
 
                       <label className="app-label">احتياج القرية</label>
                       <textarea
-                        className="app-input"
+                        className="app-input exploration-field-sheet__textarea"
                         value={form.villageNeeds}
                         onChange={(e) => setField('villageNeeds', e.target.value)}
-                        style={{ minHeight: '90px' }}
                       />
                     </div>
                   )}
@@ -692,24 +673,15 @@ const ExplorationsPage = () => {
             </div>
           </div>
 
-          <div
-            className="exploration-modal-footer"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              gap: 10,
-              justifyContent: 'flex-end',
-            }}
-          >
-            <button type="button" className="google-btn" style={{ width: 'auto' }} onClick={closeModal}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <X size={14} /> إلغاء
+          <div className="exploration-modal-footer">
+            <button type="button" className="google-btn exploration-modal-footer__btn" onClick={closeModal}>
+              <span className="exploration-modal-footer__btn-inner">
+                <X size={14} aria-hidden /> إلغاء
               </span>
             </button>
-            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled" style={{ width: 'auto' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <Save size={14} /> حفظ الاستكشاف
+            <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled exploration-modal-footer__btn">
+              <span className="exploration-modal-footer__btn-inner">
+                <Save size={14} aria-hidden /> حفظ الاستكشاف
               </span>
             </BusyButton>
           </div>

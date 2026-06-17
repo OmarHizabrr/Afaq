@@ -204,8 +204,8 @@ const RegionDetailsPage = () => {
         }
     };
 
-    if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }}></div>;
-    if (!region) return <div style={{ padding: '2rem', textAlign: 'center' }}>المنطقة غير موجودة</div>;
+    if (loading) return <div className="loading-spinner page-loading-lg" />;
+    if (!region) return <div className="empty-state empty-state--centered">المنطقة غير موجودة</div>;
 
     const regionScope = pageDataScope(PERMISSION_PAGE_IDS.regions);
     if (
@@ -249,17 +249,17 @@ const RegionDetailsPage = () => {
     }, {});
 
     return (
-        <div className="region-details-page">
+        <div className="region-details-page portal-page">
             <PageHeader
               topRow={
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div className="region-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/regions')}>
                     <ChevronRight size={20} aria-hidden /> إدارة المناطق
                   </button>
-                  <ChevronRight size={16} style={{ transform: 'rotate(180deg)', opacity: 0.35 }} aria-hidden />
+                  <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>منطقة: <span style={{ color: 'var(--md-primary)' }}>{region.name}</span></>}
+              title={<>منطقة: <span className="page-header-accent">{region.name}</span></>}
             />
 
             <div className="region-details-grid">
@@ -272,12 +272,21 @@ const RegionDetailsPage = () => {
                     {schools.length === 0 ? <p className="region-details-panel__empty">لا توجد مدارس مضافة لهذه المنطقة.</p> : (
                         <div className="region-details-list">
                            {schools.map(sch => (
-                              <div key={sch.id} className="region-details-item">
-                                 <h4 className="region-details-item__name">{sch.name}</h4>
-                                 {can(PERMISSION_PAGE_IDS.regions, 'region_school_view') && (
-                                   <button type="button" onClick={() => navigate(`/schools/${sch.id}`)} className="icon-btn" title="عرض المدرسة"><Info size={16}/></button>
-                                 )}
-                              </div>
+                              can(PERMISSION_PAGE_IDS.regions, 'region_school_view') ? (
+                                <button
+                                  key={sch.id}
+                                  type="button"
+                                  className="region-details-item"
+                                  onClick={() => navigate(`/schools/${sch.id}`)}
+                                >
+                                  <h4 className="region-details-item__name">{sch.name}</h4>
+                                  <ChevronRight size={18} className="geo-details-item__chevron" aria-hidden />
+                                </button>
+                              ) : (
+                                <div key={sch.id} className="region-details-item">
+                                  <h4 className="region-details-item__name">{sch.name}</h4>
+                                </div>
+                              )
                            ))}
                         </div>
                     )}
@@ -297,10 +306,10 @@ const RegionDetailsPage = () => {
                            {supervisors.map(sup => (
                               <div key={sup.id} className="region-details-item">
                                  <div className="region-details-item__member">
-                                    <img src={sup.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(sup.displayName || '')}`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                                    <img src={sup.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(sup.displayName || '')}`} alt="" className="member-avatar-sm" />
                                     <h4 className="region-details-item__name">{sup.displayName}</h4>
                                  </div>
-                                 <div style={{ display: 'flex', gap: 6 }}>
+                                 <div className="region-details-item__actions">
                                  {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_view_profile') && (
                                    <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
                                  )}
@@ -320,50 +329,42 @@ const RegionDetailsPage = () => {
             {isModalOpen && can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
                 <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="region-assign-title" onClick={() => setIsModalOpen(false)}>
                     <div className="modal-card modal-card--sm" onClick={e => e.stopPropagation()}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                            <h3 id="region-assign-title" style={{ margin: 0 }}>تعيين مشرف للمنطقة</h3>
+                        <div className="region-assign-modal__head">
+                            <h3 id="region-assign-title" className="region-assign-modal__title">تعيين مشرف للمنطقة</h3>
                             <button type="button" onClick={() => setIsModalOpen(false)} className="icon-btn" aria-label="إغلاق"><X size={20}/></button>
                         </div>
-                        <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                          المنطقة هي مجموعة (group): يُسجَّل العضو في <code style={{ fontSize: '0.75rem' }}>members/{'{'}معرف_المنطقة{'}'}/members/{'{'}userId{'}'}</code> مع المرآة{' '}
-                          <code style={{ fontSize: '0.75rem' }}>Mygroup/{'{'}userId{'}'}/Mygroup/{'{'}معرف_المنطقة{'}'}</code>. يظهر هنا جميع المستخدمين بما فيهم مدير النظام، باستثناء من عُيِّن مسبقاً لهذه المنطقة — يمكنك تعيين أكثر من مشرف دون إغلاق النافذة.
+                        <p className="region-assign-modal__lead">
+                          المنطقة هي مجموعة (group): يُسجَّل العضو في <code>members/{'{'}معرف_المنطقة{'}'}/members/{'{'}userId{'}'}</code> مع المرآة{' '}
+                          <code>Mygroup/{'{'}userId{'}'}/Mygroup/{'{'}معرف_المنطقة{'}'}</code>. يظهر هنا جميع المستخدمين بما فيهم مدير النظام، باستثناء من عُيِّن مسبقاً لهذه المنطقة — يمكنك تعيين أكثر من مشرف دون إغلاق النافذة.
                         </p>
                         {assignMsg && (
-                          <div
-                            className="app-alert app-alert--success"
-                            style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
-                          >
+                          <div className="app-alert app-alert--success app-alert--dismissible geo-page-alert">
                             <span>{assignMsg}</span>
                             <button
                               type="button"
-                              className="icon-btn"
+                              className="icon-btn app-alert__dismiss"
                               title="إغلاق"
                               onClick={() => setAssignMsg('')}
-                              style={{ width: 28, height: 28 }}
                             >
                               <X size={14} />
                             </button>
                           </div>
                         )}
                         {error && (
-                          <div
-                            className="app-alert app-alert--error"
-                            style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
-                          >
+                          <div className="app-alert app-alert--error app-alert--dismissible geo-page-alert">
                             <span>{error}</span>
                             <button
                               type="button"
-                              className="icon-btn"
+                              className="icon-btn app-alert__dismiss"
                               title="إغلاق"
                               onClick={() => setError('')}
-                              style={{ width: 28, height: 28 }}
                             >
                               <X size={14} />
                             </button>
                           </div>
                         )}
 
-                        <div className="md-field" style={{ borderRadius: '12px', marginBottom: '1rem' }}>
+                        <div className="md-field region-assign-modal__search">
                             <Search size={18} color="var(--text-secondary)" aria-hidden />
                             <input
                               type="search"
@@ -372,7 +373,7 @@ const RegionDetailsPage = () => {
                               onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <div className="role-filter-bar" style={{ marginBottom: '0.75rem' }}>
+                        <div className="role-filter-bar region-assign-modal__filters">
                           {ASSIGN_ROLE_FILTER_ORDER.map((rid) => (
                             <button
                               key={rid}
@@ -385,27 +386,26 @@ const RegionDetailsPage = () => {
                           ))}
                         </div>
 
-                        <div className="modal-scroll-box" style={{ maxHeight: 'min(50vh, 380px)', marginBottom: 0 }}>
+                        <div className="modal-scroll-box region-assign-scroll">
                             {filteredUsers.length === 0 ? (
-                              <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem', margin: 0 }}>لا يوجد مستخدمون يطابقون البحث أو الجميع معيّنون لهذه المنطقة.</p>
+                              <p className="region-assign-empty">لا يوجد مستخدمون يطابقون البحث أو الجميع معيّنون لهذه المنطقة.</p>
                             ) : (
                               filteredUsers.map(u => (
-                                <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--panel-color)', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '8px' }}>
-                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0 }}>
-                                        <img src={u.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.displayName || '')}`} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0 }} />
-                                        <div style={{ minWidth: 0 }}>
-                                            <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{u.displayName || u.email}</div>
-                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{ROLE_LABELS[u.role] || u.role || '—'}</div>
+                                <div key={u.id} className="region-assign-user-row">
+                                    <div className="region-assign-user-row__info">
+                                        <img src={u.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.displayName || '')}`} alt="" className="member-avatar-sm" />
+                                        <div className="region-assign-user-row__body">
+                                            <div className="region-assign-user-row__name">{u.displayName || u.email}</div>
+                                            <div className="region-assign-user-row__role">{ROLE_LABELS[u.role] || u.role || '—'}</div>
                                         </div>
                                     </div>
                                     <BusyButton
                                       type="button"
                                       onClick={() => handleAssignSupervisor(u)}
                                       busy={assigning}
-                                      className="google-btn google-btn--filled"
-                                      style={{ padding: '6px 12px', minHeight: '36px', fontSize: '0.8rem', width: 'auto', flexShrink: 0, gap: '6px' }}
+                                      className="google-btn google-btn--filled region-assign-user-row__btn"
                                     >
-                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                      <span className="btn-inner btn-inner--sm">
                                         <Check size={14} aria-hidden /> تعيين
                                       </span>
                                     </BusyButton>

@@ -1,0 +1,746 @@
+@media (max-width: 768px) {
+  .bottom-tab-bar {
+    display: flex;
+  }
+
+  .topbar__brand {
+    display: block;
+  }
+
+  .admin-layout--mobile-nav .page-content {
+    padding-bottom: calc(
+      var(--bottom-tab-height) + var(--install-banner-height) + 24px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .admin-layout--mobile-nav .mobile-menu-btn {
+    display: none;
+  }
+
+  .admin-layout--mobile-nav .student-topbar-title {
+    display: none;
+  }
+
+  .daily-prep-desktop-only {
+    display: none !important;
+  }
+
+  .daily-prep-mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+  }
+
+  .daily-prep-setup,
+  .daily-prep-curriculum,
+  .daily-prep-attendance {
+    padding: 1rem;
+  }
+
+  .prep-period-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .prep-period-chip {
+    flex-shrink: 0;
+  }
+
+  .daily-prep-summary-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 0.8125rem;
+  }
+
+  .daily-prep-mobile-save-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .daily-prep-mobile-save-bar__summary {
+    text-align: center;
+    white-space: normal;
+  }
+
+  .daily-prep-mobile-save-bar__btn {
+    max-width: none;
+    width: 100%;
+  }
+
+  .daily-prep-student-card__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-prep-student-card__head {
+    flex-wrap: wrap;
+  }
+
+  .daily-prep-student-card__status {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .curriculum-picker__head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .curriculum-picker__add {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .curriculum-picker__quick-add {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .curriculum-picker__quick-chip {
+    flex-shrink: 0;
+  }
+
+  .curriculum-picker__weeks {
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+    max-height: 280px;
+  }
+
+  .curriculum-picker__badge {
+    flex-wrap: wrap;
+  }
+
+  .daily-prep-mobile-save-bar,
+  .curriculum-mobile-save-bar,
+  .teacher-weekly-mobile-save-bar,
+  .school-report-mobile-save-bar,
+  .report-details-mobile-save-bar,
+  .student-details-mobile-save-bar {
+    display: flex;
+  }
+
+  .daily-prep-page--has-mobile-save,
+  .curriculum-page--editing,
+  .teacher-weekly-page--mobile-save,
+  .school-report-page--has-mobile-save,
+  .report-details-page--has-mobile-save,
+  .student-details-page--has-mobile-save {
+    padding-bottom: calc(var(--bottom-tab-height) + 56px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .daily-prep-setup__dates,
+  .daily-prep-school-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-prep-school-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .daily-prep-attendance__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .daily-prep-attendance__bulk,
+  .daily-prep-attendance__bulk .google-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .daily-prep-attendance__bulk {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: var(--panel-color);
+    padding: 4px 0 8px;
+  }
+
+  .settings-theme-card__options {
+    flex-direction: column;
+  }
+
+  .settings-install-card,
+  .settings-theme-card,
+  .settings-profile-form {
+    padding: 1.25rem;
+  }
+
+  .google-btn--toolbar {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .role-filter-bar,
+  .users-role-filter-bar {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .role-filter-bar::-webkit-scrollbar,
+  .users-role-filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .role-filter-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .surface-card--entity {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .surface-card--entity > div:last-child {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .messenger-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .messenger-col--hidden-sm {
+    display: none !important;
+  }
+
+  .messenger-back-sm {
+    display: flex;
+  }
+
+  .page-content {
+    padding: 16px;
+    padding-inline-start: max(16px, env(safe-area-inset-start, 0px));
+    padding-inline-end: max(16px, env(safe-area-inset-end, 0px));
+  }
+
+  .topbar {
+    padding-inline: 12px;
+  }
+
+  /* Toolbar short labels */
+  .geo-page .geo-toolbar__long,
+  .curriculum-page .curriculum-toolbar__long,
+  .explorations-page .explorations-toolbar__long,
+  .school-details-page .school-details-toolbar__long,
+  .villages-page .villages-toolbar__long {
+    display: none;
+  }
+
+  .geo-page .geo-toolbar__short,
+  .curriculum-page .curriculum-toolbar__short,
+  .explorations-page .explorations-toolbar__short,
+  .school-details-page .school-details-toolbar__short,
+  .villages-page .villages-toolbar__short {
+    display: inline;
+  }
+
+  .curriculum-editor__footer--desktop {
+    display: none;
+  }
+
+  .daily-prep-attendance__bulk .google-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.8125rem;
+    padding: 10px 8px;
+  }
+
+  /* Student management list toggle */
+  .student-management-desktop-only {
+    display: none !important;
+  }
+
+  .student-management-mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .teacher-students-desktop-only,
+  .visit-students-desktop-only {
+    display: none !important;
+  }
+
+  .teacher-students-mobile-only,
+  .visit-students-mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .portal-page .portal-toolbar__long {
+    display: none;
+  }
+
+  .portal-page .portal-toolbar__short {
+    display: inline;
+  }
+
+  .visit-students-card__head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .visit-students-card__bulk {
+    margin-inline-start: 0;
+    width: 100%;
+  }
+
+  .visit-students-card__bulk .google-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .visit-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Exploration list cards */
+  .exploration-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .exploration-card__actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  /* Reports page tabs */
+  .admin-reports-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .admin-reports-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-reports-tabs__btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    padding: 8px 12px;
+  }
+
+  .admin-reports-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-reports-filters > * {
+    width: 100%;
+  }
+
+  /* Dashboard */
+  .dashboard-activity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-activity-card__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .dashboard-activity-card__all {
+    width: 100%;
+    margin-inline-start: 0;
+    justify-content: center;
+  }
+
+  .portal-stats-grid,
+  .portal-stats-grid--student {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .page-header-block__title--hero {
+    font-size: 1.35rem;
+  }
+
+  .school-report-mobile-save-bar {
+    display: flex;
+  }
+
+  .school-report-toolbar__save--desktop {
+    display: none !important;
+  }
+
+  .school-report-page__toolbar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    gap: 6px;
+  }
+
+  .school-report-page__toolbar .google-btn--toolbar {
+    justify-content: center;
+    padding-inline: 8px;
+    font-size: 0.8125rem;
+  }
+
+  .portal-school-chip-wrap {
+    margin-bottom: 1.25rem;
+  }
+
+  .portal-school-chip-wrap .portal-school-chip {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .student-result-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .student-result-item__lead {
+    gap: 1rem;
+  }
+
+  .student-result-item__badge {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .portal-recent-card__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .portal-recent-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .portal-recent-item > div {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .portal-recent-item .icon-btn {
+    align-self: flex-end;
+  }
+
+  .school-report-section {
+    padding: 1rem;
+  }
+
+  .comprehensive-report-stat {
+    padding: 0.85rem;
+  }
+
+  .student-results-desktop-only {
+    display: none !important;
+  }
+
+  .student-results-mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .school-details-stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .school-details-stats-row .school-details-stat-card {
+    flex: none;
+    padding: 1rem;
+  }
+
+  .school-details-stats-row .school-details-stat-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .school-details-report-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .school-details-panel__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .school-details-panel__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .school-details-member-item {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .school-details-member-item__body {
+    min-width: 0;
+    flex: 1 1 calc(100% - 52px);
+  }
+
+  .school-details-member-item__actions {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .school-details-assign-modal {
+    max-width: none;
+    width: calc(100% - 24px);
+    max-height: calc(100dvh - 24px);
+    margin: 12px;
+    padding: 1rem;
+    overflow: auto;
+  }
+
+  .school-details-assign-modal__toolbar {
+    flex-direction: column;
+  }
+
+  .school-details-assign-modal__toolbar-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .comprehensive-report-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .comprehensive-report-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .school-details-page__top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .school-details-page__top-row .page-nav-separator {
+    display: none;
+  }
+
+  .user-details-page__top-row,
+  .report-details-page__top-row,
+  .student-details-page__top-row,
+  .governorate-details-page__top-row,
+  .region-details-page__top-row,
+  .village-details-page__top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .user-details-page__top-row .page-nav-separator,
+  .report-details-page__top-row .page-nav-separator,
+  .student-details-page__top-row .page-nav-separator,
+  .governorate-details-page__top-row .page-nav-separator,
+  .region-details-page__top-row .page-nav-separator,
+  .village-details-page__top-row .page-nav-separator {
+    display: none;
+  }
+
+  .governorate-details-panel__head,
+  .region-details-panel__head,
+  .village-details-card__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .governorate-details-panel__title,
+  .region-details-panel__title,
+  .village-details-card__title {
+    font-size: 1.05rem;
+  }
+
+  .governorate-details-item,
+  button.governorate-details-item,
+  .region-details-item,
+  button.region-details-item {
+    min-height: 48px;
+    padding: 12px 14px;
+  }
+
+  .region-details-item {
+    flex-wrap: wrap;
+  }
+
+  .region-details-item__member {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .region-details-item__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .village-details-card__stats {
+    flex-direction: column;
+  }
+
+  .village-details-statbox {
+    width: 100%;
+  }
+
+  .village-details-schools-item,
+  button.village-details-schools-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .village-details-schools-item > div {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .region-assign-modal__lead {
+    display: none;
+  }
+
+  .region-assign-modal__filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .region-assign-modal__filters .role-filter-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .region-assign-user-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .region-assign-user-row__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .user-details-profile-card,
+  .user-details-activity-card,
+  .report-details-card {
+    padding: 1rem;
+  }
+
+  .user-details-admin-card__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .user-details-activity-desktop-only,
+  .report-daily-records-desktop {
+    display: none !important;
+  }
+
+  .user-details-activity-mobile-only,
+  .report-daily-records-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .activity-list-item--split {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .user-details-activity-list__status-wrap {
+    justify-content: flex-start;
+  }
+
+  .report-admin-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.85rem;
+  }
+
+  .report-admin-toolbar__actions {
+    width: 100%;
+  }
+
+  .report-admin-toolbar__actions .google-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .report-visit-scores {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .report-visit-student-card.activity-list-item--split {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .report-visit-student-card__stats {
+    justify-content: flex-start;
+  }
+
+  .report-weekly-activity-card__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .modal-card {
+    width: calc(100% - 24px);
+    max-width: none;
+    max-height: calc(100dvh - 24px);
+    margin: 12px;
+    overflow: auto;
+  }
+
+  .users-modal__actions {
+    flex-direction: column;
+  }
+
+  .users-modal__actions .google-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
