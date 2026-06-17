@@ -38,7 +38,7 @@ async function pruneInvalidTokens(tokens, userId, invalidTokens) {
 async function sendPushToUser(userId, payload) {
   const tokens = await getUserFcmTokens(userId);
   if (!tokens.length) {
-    return {sent: 0, failed: 0};
+    return {sent: 0, failed: 0, tokensCount: 0};
   }
 
   const data = {};
@@ -79,6 +79,7 @@ async function sendPushToUser(userId, payload) {
   return {
     sent: response.successCount,
     failed: response.failureCount,
+    tokensCount: tokens.length,
   };
 }
 
@@ -168,11 +169,17 @@ async function deliverNotificationPush(snap, notificationId) {
     },
   });
 
+  // إذا لا توجد توكنات، لا نعلّم pushSent حتى لا يظهر كأنه تم الإرسال.
+  // (لن يُعاد تشغيل onCreate لنفس الوثيقة، لكن هذا يفيد التشخيص ووضوح الحالة في Firestore.)
+  const hasAnyAttempt = (result.tokensCount || 0) > 0;
   await snap.ref.update({
-    pushSent: true,
-    pushSentAt: admin.firestore.FieldValue.serverTimestamp(),
+    pushSent: hasAnyAttempt && result.sent > 0,
+    pushAttempted: hasAnyAttempt,
+    pushSentAt: hasAnyAttempt ? admin.firestore.FieldValue.serverTimestamp() : null,
     pushSuccessCount: result.sent,
     pushFailureCount: result.failed,
+    pushTokensCount: result.tokensCount || 0,
+    pushSkipReason: hasAnyAttempt ? "" : "no-fcm-tokens",
   });
 
   logger.info("notification push delivered", {
@@ -180,6 +187,7 @@ async function deliverNotificationPush(snap, notificationId) {
     toUserId: n.toUserId,
     sent: result.sent,
     failed: result.failed,
+    tokensCount: result.tokensCount || 0,
   });
 }
 
