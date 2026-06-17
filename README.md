@@ -1,16 +1,60 @@
-# React + Vite
+# آفاق (Afaq)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+تطبيق ويب (PWA) مبني بـ React + Vite مع مركز إشعارات/محادثات، وإشعارات فورية عبر Firebase Cloud Functions + FCM.
 
-Currently, two official plugins are available:
+## التشغيل محلياً
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1) تثبيت الحزم:
 
-## React Compiler
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2) إنشاء ملف بيئة:
 
-## Expanding the ESLint configuration
+انسخ `.env.example` إلى `.env` ثم عبّئ القيم المطلوبة.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3) تشغيل الواجهة:
+
+```bash
+npm run dev
+```
+
+## إشعارات المتصفح (Push / FCM)
+
+الإشعارات الفورية في هذا المشروع تعتمد على:
+- **حفظ توكنات FCM** في وثيقة المستخدم: `users/{userId}.fcmTokens` (من المتصفح بعد الموافقة).
+- **Cloud Functions** ترصد الرسائل/الإشعارات وتقوم بإرسال FCM.
+
+### المتطلبات الأساسية
+
+- **مفتاح VAPID** في الواجهة:
+  - `VITE_FIREBASE_VAPID_KEY` داخل `.env` (أو ضمن إعدادات بيئة الاستضافة عند النشر).
+  - بدون VAPID: قد يعمل إذن الإشعارات في المتصفح، لكن غالباً **لن يتم استخراج FCM token** وبالتالي لن تصل إشعارات الخلفية.
+
+### كيف أعرف أن المشكلة من التوكنات؟
+
+1) افتح Firestore وتأكد أن المستخدم المستلم لديه:
+- `users/{id}` يحتوي `fcmTokens` (قائمة نصوص طويلة).
+
+2) افتح أحدث وثيقة في `notifications/{notificationId}` وراقب:
+- `pushTokensCount`
+- `pushAttempted`
+- `pushSkipReason`
+- `pushSuccessCount` / `pushFailureCount`
+
+**حالة شائعة:**  
+`pushSkipReason = "no-fcm-tokens"` ⇒ لا توجد أجهزة مسجلة للمستلم.
+
+### نشر الدوال (Functions)
+
+داخل جذر المشروع:
+
+```bash
+firebase deploy --only functions
+```
+
+## ملاحظات مهمة
+
+- نافذة السماح بالإشعارات في المتصفح لا تظهر تلقائياً بدون تفاعل المستخدم (زر/نقرة).
+- على iOS: إشعارات الويب قد تتطلب تثبيت التطبيق كـ PWA وقد تختلف حسب إصدار النظام والمتصفح.
