@@ -7,6 +7,17 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   globalIgnores(['dist']),
   {
+    files: ['functions/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2018,
+      globals: globals.node,
+      sourceType: 'commonjs',
+    },
+    rules: {
+      quotes: ['error', 'double', { allowTemplateLiterals: true }],
+    },
+  },
+  {
     files: ['**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,

@@ -106,6 +106,13 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    import('./services/pushMessaging').then(({ registerPushMessaging }) => {
+      registerPushMessaging(user);
+    });
+  }, [user]);
+
   if (loading) {
     return (
       <main className="welcome-container app-boot">

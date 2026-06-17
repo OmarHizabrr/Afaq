@@ -4,6 +4,14 @@
   max-width: 1200px;
 }
 
+.notifications-page--chat-thread {
+  overflow: hidden;
+}
+
+.notifications-page--chat-thread .messenger-page-card {
+  flex: 1;
+}
+
 .notifications-page--chat-thread.notifications-page--mobile {
   padding: 0;
 }
@@ -15,7 +23,10 @@
 .messenger-page-card {
   padding: 0;
   overflow: hidden;
-  min-height: min(78vh, 720px);
+  height: min(78vh, 720px);
+  max-height: min(78vh, 720px);
+  display: flex;
+  flex-direction: column;
   border-radius: 16px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow);
@@ -24,7 +35,10 @@
 .messenger-shell {
   display: grid;
   grid-template-columns: minmax(280px, 340px) 1fr;
-  min-height: min(78vh, 720px);
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
   background: var(--panel-color);
 }
 
@@ -39,6 +53,8 @@
 .messenger-col--thread {
   border-inline-end: none;
   background: var(--messenger-chat-bg, color-mix(in srgb, var(--bg-color) 88%, #8bb4d9 12%));
+  overflow: hidden;
+  min-height: 0;
 }
 
 .messenger-col__head {
@@ -146,7 +162,10 @@
 
 .messenger-col__scroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 
@@ -262,13 +281,18 @@
   position: relative;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .messenger-messages {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   overscroll-behavior: contain;
   padding: 0.75rem 0.85rem 1rem;
   display: flex;
@@ -293,15 +317,18 @@
   box-shadow: var(--shadow);
 }
 
+/* صف الرسالة — محاذاة منطقية تعمل في RTL و LTR */
 .messenger-msg-row {
   display: flex;
   align-items: flex-end;
   gap: 6px;
   max-width: 100%;
   padding: 1px 0;
+  justify-content: flex-start;
 }
 
 .messenger-msg-row--mine {
+  justify-content: flex-end;
   flex-direction: row-reverse;
 }
 
@@ -345,7 +372,6 @@
 
 .messenger-msg-row--mine .messenger-msg__bubble-wrap {
   align-items: flex-end;
-  margin-inline-start: auto;
 }
 
 .messenger-msg__sender {
@@ -361,6 +387,7 @@
   color: var(--text-secondary);
 }
 
+/* فقاعات — زوايا منطقية (تعمل عربي RTL وإنجليزي LTR) */
 .messenger-bubble {
   position: relative;
   padding: 0.45rem 0.7rem 0.35rem;
@@ -370,30 +397,40 @@
   word-break: break-word;
   white-space: pre-wrap;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+  text-align: start;
+  unicode-bidi: plaintext;
 }
 
 .messenger-bubble--in {
   background: var(--messenger-in-bg, var(--panel-color));
   color: var(--text-primary);
-  border-end-end-radius: 4px;
 }
 
 .messenger-bubble--out {
   background: var(--messenger-out-bg, color-mix(in srgb, #dcf8c6 70%, var(--panel-color)));
   color: var(--text-primary);
-  border-end-start-radius: 4px;
 }
 
-.messenger-bubble--grouped {
+.messenger-bubble--grouped.messenger-bubble--in,
+.messenger-bubble--grouped.messenger-bubble--out {
   border-radius: 14px;
 }
 
+/* ذيل الفقاعة نحو حافة المحادثة (inline-start للواردة، inline-end للصادرة) */
 .messenger-bubble--in.messenger-bubble--last-in-group {
-  border-end-end-radius: 4px;
+  border-end-start-radius: 4px;
 }
 
 .messenger-bubble--out.messenger-bubble--last-in-group {
+  border-end-end-radius: 4px;
+}
+
+.messenger-bubble--in.messenger-bubble--first-in-group.messenger-bubble--last-in-group {
   border-end-start-radius: 4px;
+}
+
+.messenger-bubble--out.messenger-bubble--first-in-group.messenger-bubble--last-in-group {
+  border-end-end-radius: 4px;
 }
 
 .messenger-bubble__reply {
@@ -713,19 +750,27 @@ html:not(.light-mode) {
 
 @media (max-width: 768px) {
   .notifications-page--mobile .messenger-page-card {
-    min-height: calc(100dvh - var(--mobile-nav-height, 64px) - 120px);
+    height: calc(100dvh - var(--mobile-nav-height, 64px) - 120px);
+    max-height: calc(100dvh - var(--mobile-nav-height, 64px) - 120px);
     border-radius: 14px;
-  }
-
-  .notifications-page--chat-thread.notifications-page--mobile .messenger-page-card {
-    min-height: calc(100dvh - var(--mobile-nav-height, 64px) - 8px);
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
   }
 
   .notifications-page--chat-thread.notifications-page--mobile {
     margin-inline: -0.5rem;
+    height: calc(100dvh - var(--mobile-nav-height, 64px));
+    max-height: calc(100dvh - var(--mobile-nav-height, 64px));
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notifications-page--chat-thread.notifications-page--mobile .messenger-page-card {
+    height: 100%;
+    max-height: 100%;
+    flex: 1;
+    min-height: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
   }
 
   .messenger-shell {

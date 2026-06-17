@@ -58,6 +58,7 @@ const MessengerPanel = ({
   const bottomRef = useRef(null);
   const messagesRef = useRef(null);
   const composerRef = useRef(null);
+  const nearBottomRef = useRef(true);
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -67,20 +68,31 @@ const MessengerPanel = ({
   const getUser = useCallback((id) => allUsers.find((u) => u.id === id), [allUsers]);
 
   const scrollToBottom = useCallback((smooth = true) => {
-    bottomRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
+    const el = messagesRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, selectedConversation?.id, scrollToBottom]);
+    nearBottomRef.current = true;
+    scrollToBottom(false);
+  }, [selectedConversation?.id, scrollToBottom]);
+
+  useEffect(() => {
+    if (nearBottomRef.current) {
+      scrollToBottom(messages.length > 2);
+    }
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     const el = messagesRef.current;
     if (!el) return undefined;
     const onScroll = () => {
       const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
+      nearBottomRef.current = dist < 120;
       setShowScrollDown(dist > 120);
     };
+    onScroll();
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, [selectedConversation?.id]);
@@ -176,7 +188,10 @@ const MessengerPanel = ({
     if (id !== m.id) return;
     const dx = t.clientX - x;
     const dy = Math.abs(t.clientY - y);
-    if (dy < 40 && dx < -48) {
+    if (dy >= 40) return;
+    const isRtl = document.documentElement.dir === 'rtl';
+    const swipeToReply = isRtl ? dx > 48 : dx < -48;
+    if (swipeToReply) {
       setReplyTo({
         id: m.id,
         text: m.text,
@@ -373,7 +388,7 @@ const MessengerPanel = ({
                         )}
 
                         <div
-                          className={`messenger-bubble ${mine ? 'messenger-bubble--out' : 'messenger-bubble--in'} ${!item.isFirstInGroup || !item.isLastInGroup ? 'messenger-bubble--grouped' : ''} ${item.isLastInGroup ? 'messenger-bubble--last-in-group' : ''}`}
+                          className={`messenger-bubble ${mine ? 'messenger-bubble--out' : 'messenger-bubble--in'} ${!item.isFirstInGroup || !item.isLastInGroup ? 'messenger-bubble--grouped' : ''} ${item.isFirstInGroup ? 'messenger-bubble--first-in-group' : ''} ${item.isLastInGroup ? 'messenger-bubble--last-in-group' : ''}`}
                         >
                           {m.replyToText && (
                             <div className="messenger-bubble__reply">
@@ -403,7 +418,7 @@ const MessengerPanel = ({
                               </div>
                             </div>
                           ) : (
-                            m.text
+                            <span dir="auto">{m.text}</span>
                           )}
 
                           {editingId !== m.id && (

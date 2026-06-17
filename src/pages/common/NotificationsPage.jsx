@@ -229,6 +229,39 @@ const NotificationsPage = ({ user }) => {
     setReplyTo(null);
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const chatId = params.get('chat');
+    if (!chatId || !actorId) return;
+    setActiveTab('chats');
+    const existing = conversations.find((c) => c.id === chatId);
+    if (existing) {
+      openConversation(existing);
+      return;
+    }
+    const api = FirestoreApi.Api;
+    api.getData(api.getConversationDoc(chatId)).then((doc) => {
+      if (doc) openConversation({ id: chatId, ...doc });
+    });
+  }, [location.search, actorId, conversations, openConversation]);
+
+  const openConversationFromNotification = useCallback(
+    async (n) => {
+      if (!n?.conversationId) return;
+      markOneRead(n);
+      setActiveTab('chats');
+      const existing = conversations.find((c) => c.id === n.conversationId);
+      if (existing) {
+        openConversation(existing);
+        return;
+      }
+      const api = FirestoreApi.Api;
+      const doc = await api.getData(api.getConversationDoc(n.conversationId));
+      if (doc) openConversation({ id: n.conversationId, ...doc });
+    },
+    [conversations, markOneRead, openConversation]
+  );
+
   const createConversation = async (e) => {
     e.preventDefault();
     if (newChatUsers.length === 0 || !actorId || createChatBusy) return;
@@ -287,6 +320,7 @@ const NotificationsPage = ({ user }) => {
     e.preventDefault();
     if (!selectedConversation?.id || !messageText.trim()) return;
     setSendingMessage(true);
+    const text = messageText.trim();
     try {
       const api = FirestoreApi.Api;
       const msgId = api.getNewId('messages');
@@ -295,7 +329,7 @@ const NotificationsPage = ({ user }) => {
         senderName: user?.displayName || '',
         senderPhotoURL: user?.photoURL || '',
         senderRole: user?.role || '',
-        text: messageText.trim(),
+        text,
         createdAt: new Date().toISOString(),
       };
       if (replyTo) {
@@ -312,7 +346,7 @@ const NotificationsPage = ({ user }) => {
       await api.updateData({
         docRef: api.getConversationDoc(selectedConversation.id),
         data: {
-          lastMessage: messageText.trim(),
+          lastMessage: text,
           lastSenderId: actorId,
           updatedAt: new Date().toISOString(),
         },
@@ -423,17 +457,31 @@ const NotificationsPage = ({ user }) => {
                     </>
                   }
                   footer={
-                    <button
-                      type="button"
-                      className="btn-md btn-md--outline btn-md--compact"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openReply(n);
-                      }}
-                      disabled={!n.fromUserId || n.fromUserId === actorId || !recipientsMap[n.fromUserId]}
-                    >
-                      رد
-                    </button>
+                    <div className="notif-card__actions">
+                      {n.conversationId && (
+                        <button
+                          type="button"
+                          className="btn-md btn-md--primary btn-md--compact"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openConversationFromNotification(n);
+                          }}
+                        >
+                          فتح المحادثة
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="btn-md btn-md--outline btn-md--compact"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openReply(n);
+                        }}
+                        disabled={!n.fromUserId || n.fromUserId === actorId || !recipientsMap[n.fromUserId]}
+                      >
+                        رد
+                      </button>
+                    </div>
                   }
                 />
 

@@ -4732,6 +4732,13 @@ button.village-details-schools-item:hover {
   box-shadow: 0 0 10px var(--md-primary);
 }
 
+.notif-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .notif-card {
     transition: none;
