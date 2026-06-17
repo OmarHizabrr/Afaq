@@ -371,7 +371,7 @@ const AdminReportsPage = () => {
           {filteredReports.map((rpt) => {
             const openReport = () => {
               if (!can(PERMISSION_PAGE_IDS.reports, 'report_view')) return;
-              const schoolPath = activeTab === 'school' ? schoolReportViewPath(rpt) : null;
+              const schoolPath = activeTab === 'school' ? schoolReportViewPath(rpt, { view: true }) : null;
               if (schoolPath) navigate(schoolPath);
               else navigate(`/reports/${rpt.id}`);
             };
@@ -448,7 +448,7 @@ const AdminReportsPage = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      const schoolPath = activeTab === 'school' ? schoolReportViewPath(rpt) : null;
+                      const schoolPath = activeTab === 'school' ? schoolReportViewPath(rpt, { view: true }) : null;
                       if (schoolPath) navigate(schoolPath);
                       else navigate(`/reports/${rpt.id}`);
                     }}

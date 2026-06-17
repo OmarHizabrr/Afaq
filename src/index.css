@@ -6132,7 +6132,55 @@ button.village-details-schools-item:hover {
 .school-report-visits__item-head { display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--text-secondary); }
 .school-report-visits__item-title { margin: 0.25rem 0 0; font-weight: 600; font-size: 0.9rem; }
 .school-report-visits__item-meta { margin: 0.15rem 0 0; font-size: 0.8rem; color: var(--text-secondary); }
+.report-text-list { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+.report-text-list__label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; }
+.report-text-list__add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.5rem; align-items: center; }
+.report-text-list__add-btn { white-space: nowrap; }
+.report-text-list__suggestions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.report-text-list__suggestion { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.3rem 0.65rem; border-radius: var(--radius-full); border: 1px dashed var(--border-color); background: var(--bg-color); font-size: 0.78rem; cursor: pointer; }
+.report-text-list__suggestion:hover { border-color: var(--md-primary); background: var(--accent-muted); color: var(--md-primary); }
+.report-text-list__empty { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+.report-text-list__items { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.report-text-list__item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.5rem; align-items: center; }
+.report-text-list__index { font-size: 0.82rem; color: var(--text-secondary); min-width: 1.25rem; text-align: center; }
+.report-text-list__input { min-width: 0; }
+@media (max-width: 640px) {
+  .report-text-list__add { grid-template-columns: 1fr; }
+}
 .yes-no-radio { border: none; margin: 0.75rem 0; padding: 0; }
+.visit-village-hint { display: flex; align-items: center; gap: 0.4rem; margin: 0 0 0.75rem; font-size: 0.9rem; color: var(--text-secondary); }
+.portal-history-card__village { margin: 0 0 0.35rem; font-size: 0.82rem; color: var(--text-secondary); }
+.visit-village-card { margin-top: 1rem; }
+.visit-report-editor { display: grid; gap: 1.25rem; }
+.visit-report-editor__section { display: grid; gap: 0.75rem; }
+.visit-report-editor__section--village { padding-top: 0.5rem; border-top: 1px solid var(--border-color); }
+.visit-report-editor__title { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 0.4rem; }
+.visit-report-editor__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+@media (max-width: 720px) {
+  .visit-report-editor__grid { grid-template-columns: 1fr; }
+}
+.report-visit-edit { margin-top: 0.5rem; }
+.village-report-fields__readonly-value { margin: 0; font-weight: 600; }
+.village-report-fields { display: grid; gap: 0.25rem; }
+.report-text-list__items--readonly { list-style: decimal; padding-right: 1.25rem; }
+.report-text-list--readonly .report-text-list__items li { padding: 0.2rem 0; }
+.school-report-view-banner { margin-bottom: 1rem; }
+.school-report-page--readonly input:not([type="checkbox"]),
+.school-report-page--readonly textarea,
+.school-report-page--readonly select { background: var(--bg-color); }
+.village-report-fields__title { margin: 0 0 1rem; font-size: 1.05rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.village-report-fields__village { font-size: 0.85rem; font-weight: 600; color: var(--md-primary); padding: 0.2rem 0.65rem; border-radius: var(--radius-full); background: var(--accent-muted); }
+.village-report-display { padding: 1.25rem; margin-top: 1rem; }
+.village-report-display__title { margin: 0 0 1rem; font-size: 1.05rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.village-report-display__village { font-size: 0.85rem; color: var(--md-primary); font-weight: 600; }
+.village-report-display__stats { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+.village-report-display__stat { padding: 0.6rem 0.9rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); min-width: 120px; }
+.village-report-display__stat-label { display: block; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
+.village-report-display__block { margin-bottom: 1rem; }
+.village-report-display__label { margin: 0 0 0.4rem; font-size: 0.88rem; color: var(--text-secondary); }
+.village-report-display__list { margin: 0; padding-right: 1.25rem; display: grid; gap: 0.35rem; }
+.village-report-display__notes p { margin: 0; white-space: pre-wrap; line-height: 1.6; }
+.report-edit-form__village { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
 .yes-no-radio__legend { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
 .yes-no-radio__options { display: inline-flex; gap: 0.5rem; }
 .yes-no-radio__option { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.9rem; border: 1px solid var(--border-color); border-radius: var(--radius-full); cursor: pointer; font-size: 0.9rem; }

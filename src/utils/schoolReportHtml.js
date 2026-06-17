@@ -59,6 +59,22 @@ function starsRows(starAwards) {
     .join('');
 }
 
+function stringListRows(items, emptyLabel = 'لا يوجد') {
+  const list = (items || []).map((item) => String(item ?? '').trim()).filter(Boolean);
+  if (!list.length) return `<tr><td colspan="2">${safeHtml(emptyLabel)}</td></tr>`;
+  return list
+    .map((item, idx) => `<tr><td>${idx + 1}</td><td>${safeHtml(item)}</td></tr>`)
+    .join('');
+}
+
+function stringListSection(title, items, emptyLabel) {
+  return `
+  <div class="section">
+    <h3>${safeHtml(title)}</h3>
+    <table><thead><tr><th>#</th><th>البيان</th></tr></thead><tbody>${stringListRows(items, emptyLabel)}</tbody></table>
+  </div>`;
+}
+
 function curriculumRows(rep) {
   const lessons = rep.lessonCoverage || {};
   const curriculumItems = Array.isArray(rep.curriculumItems)
@@ -131,22 +147,38 @@ export function buildSchoolReportBodyHtml(rep) {
     <table><thead><tr><th>#</th><th>اسم المعلم</th><th>رقم الهاتف</th><th>التقييم</th></tr></thead><tbody>${teachersRows(rep.teachers)}</tbody></table>
   </div>
   <div class="section">
-    <h3>المقررات والمتابعة العلمية</h3>
-    <table><tbody>${curriculumRows(rep)}</tbody></table>
+    <h3>تقييم الطلاب بالنجوم</h3>
+    <table><thead><tr><th>#</th><th>الطالب</th><th>التقييم</th></tr></thead><tbody>${starsRows(rep.starAwards)}</tbody></table>
   </div>
-  ${progressRows(rep.curriculumProgressSummary)}
+  ${stringListSection('الطلاب المتفوقون', rep.outstandingStudents, 'لا يوجد طلاب متفوقون')}
+  <div class="section">
+    <h3>القرية والنشاطات</h3>
+    <div class="grid">
+      <div class="item"><div class="label">عدد من دخل الإسلام جديداً</div><div class="value">${safeHtml(rep.newConvertsCount ?? 0)}</div></div>
+      <div class="item"><div class="label">مشاريع المؤسسة بالقرية</div><div class="value">${safeHtml(rep.hasInstitutionProjects || '-')}</div></div>
+      ${
+        rep.hasInstitutionProjects === 'نعم'
+          ? `<div class="item" style="grid-column:1/-1"><div class="label">حالة المشاريع</div><div class="value">${safeHtml(rep.institutionProjectsStatus || '-')}</div></div>`
+          : ''
+      }
+    </div>
+  </div>
+  ${stringListSection('أنشطة المعلم في القرية', rep.teacherVillageActivities)}
+  ${stringListSection('أنشطة المؤسسة في القرية', rep.institutionVillageActivities)}
+  ${stringListSection('خطب الجمعة في القرية', rep.fridaySermons)}
+  <div class="section">
+    <h3>ملاحظات إضافية</h3>
+    <div class="notes">${safeHtml(rep.notes || rep.villageNotes || '-')}</div>
+  </div>
   <div class="section">
     <h3>الطلاب الغائبون</h3>
     <table><thead><tr><th>#</th><th>اسم الطالب</th></tr></thead><tbody>${absentRows(rep.absentStudents)}</tbody></table>
   </div>
   <div class="section">
-    <h3>تقييم الطلاب بالنجوم</h3>
-    <table><thead><tr><th>#</th><th>الطالب</th><th>التقييم</th></tr></thead><tbody>${starsRows(rep.starAwards)}</tbody></table>
+    <h3>المقررات والمتابعة العلمية</h3>
+    <table><tbody>${curriculumRows(rep)}</tbody></table>
   </div>
-  <div class="section">
-    <h3>ملاحظات</h3>
-    <div class="notes">${safeHtml(rep.notes || '-')}</div>
-  </div>`;
+  ${progressRows(rep.curriculumProgressSummary)}`;
 }
 
 export function buildSchoolReportPrintDocument(rep, { autoPrint = true } = {}) {

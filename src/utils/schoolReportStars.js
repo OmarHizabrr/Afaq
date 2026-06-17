@@ -1,4 +1,5 @@
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from './visitRating';
+import { villageReportFromStored } from './villageReportFields';
 
 export function mergeStarAwardsForStudents(students, existing = []) {
   const byId = new Map((existing || []).map((row) => [row.studentId, row]));
@@ -71,7 +72,10 @@ export function normalizeSchoolReportForDisplay(rep) {
 
   return {
     ...rep,
+    ...villageReportFromStored(rep),
+    notes: rep.notes || rep.villageNotes || '',
     reportPeriod: rep.reportPeriod || 'monthly',
+    outstandingStudents: rep.outstandingStudents || [],
     teachers,
     teacherEvaluation:
       rep.teacherEvaluation || teacherEvaluationLabelFromRatings(teacherRatings, teacherIds),

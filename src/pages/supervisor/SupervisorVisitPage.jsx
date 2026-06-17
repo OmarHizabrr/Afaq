@@ -66,11 +66,21 @@ const SupervisorVisitPage = ({ user }) => {
           villageDocs.map((d) => [d.id, d.data()?.regionId || ''])
         );
 
+        const villageNameById = Object.fromEntries(
+          villageDocs.map((d) => [d.id, d.data()?.villageName || ''])
+        );
+
         let schoolsData = schDocs.map((d) => {
           const data = d.data() || {};
           const vid = data.villageId || d.ref.parent.parent?.id || '';
           const regionIdResolved = data.regionId || villageToRegion[vid] || '';
-          return { id: d.id, ...data, regionIdResolved, villageId: vid };
+          return {
+            id: d.id,
+            ...data,
+            regionIdResolved,
+            villageId: vid,
+            villageName: villageNameById[vid] || data.villageName || '',
+          };
         });
 
         if (user.role !== 'admin' && user.role !== 'system_admin' && user.role !== 'supervisor_arab') {
@@ -140,6 +150,7 @@ const SupervisorVisitPage = ({ user }) => {
 
   const getSelectedSubject = () => curriculumList.find(c => c.id === selectedSubjectId);
   const availableWeeks = getSelectedSubject()?.weeks || [];
+  const selectedSchool = assignedSchools.find((s) => s.id === selectedSchoolId) || null;
 
   const handleMediaPick = (e) => {
     if (e.target.files) {
@@ -187,14 +198,17 @@ const SupervisorVisitPage = ({ user }) => {
 
       const api = FirestoreApi.Api;
       const reportId = api.getNewId('reports');
-      const selectedSchoolName = assignedSchools.find(s => s.id === selectedSchoolId)?.name;
+      const selectedSchoolName = selectedSchool?.name;
       const selectedSubjectName = getSelectedSubject()?.name;
 
       const payload = {
+        reportType: 'supervisor_visit',
         supervisorId: actorId,
         supervisorName: user.displayName,
         schoolId: selectedSchoolId,
         schoolName: selectedSchoolName,
+        villageId: selectedSchool?.villageId || '',
+        villageName: selectedSchool?.villageName || '',
         subjectId: selectedSubjectId,
         subjectName: selectedSubjectName,
         week: selectedWeek,
@@ -378,13 +392,19 @@ const SupervisorVisitPage = ({ user }) => {
             </div>
           </div>
 
+          {selectedSchool?.villageName && (
+            <p className="visit-village-hint">
+              القرية: <strong>{selectedSchool.villageName}</strong>
+            </p>
+          )}
+
           {/* Evaluations & Media */}
           <div className="visit-eval-grid">
             <div className="surface-card visit-panel-card">
               <h3 className="visit-panel-card__title">
                 <Star size={20} color="#f59e0b" /> التقييم العام
               </h3>
-              
+
               <StarRatingInput
                 label="تقييم المدرّس (من 5 نجوم)"
                 value={teacherRating}
@@ -400,7 +420,12 @@ const SupervisorVisitPage = ({ user }) => {
               />
 
               <label className="app-label">الملاحظات والتوجيهات</label>
-              <textarea value={generalNotes} onChange={(e) => setGeneralNotes(e.target.value)} placeholder="اكتب رأيك العام عن الزيارة..." className="app-input app-textarea visit-textarea" />
+              <textarea
+                value={generalNotes}
+                onChange={(e) => setGeneralNotes(e.target.value)}
+                placeholder="اكتب رأيك العام عن الزيارة..."
+                className="app-input app-textarea visit-textarea"
+              />
             </div>
 
             <div className="visit-side-stack">

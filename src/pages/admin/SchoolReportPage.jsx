@@ -37,6 +37,14 @@ import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 import { buildSchoolReportBodyHtml } from '../../utils/schoolReportHtml';
 import EvalSelectWithOther from '../../components/EvalSelectWithOther';
 import StarRatingInput from '../../components/StarRatingInput';
+import ReportTextList from '../../components/ReportTextList';
+import VillageReportFields from '../../components/VillageReportFields';
+import {
+  emptyVillageReportFields,
+  normalizeStringList,
+  villageReportFromStored,
+  villageReportToPayload,
+} from '../../utils/villageReportFields';
 import {
   EVAL_QUALITY_OPTIONS,
   EVAL_YES_NO_OPTIONS,
@@ -89,6 +97,7 @@ const SchoolReportPage = () => {
   const ownerIdParam = searchParams.get('ownerId') || '';
   const navigate = useNavigate();
   const isEditing = Boolean(reportId);
+  const viewMode = searchParams.get('view') === '1';
 
   const [school, setSchool] = useState(null);
   const [staff, setStaff] = useState([]);
@@ -139,6 +148,8 @@ const SchoolReportPage = () => {
     gpsLocation: null,
     mediaUrls: [],
     mediaFiles: [],
+    outstandingStudents: [],
+    ...emptyVillageReportFields(),
     ...emptyEvalOthers(),
   });
 
@@ -261,6 +272,9 @@ const SchoolReportPage = () => {
             gpsLocation: rep.gpsLocation || null,
             mediaUrls: rep.mediaUrls || [],
             mediaFiles: [],
+            outstandingStudents: normalizeStringList(rep.outstandingStudents),
+            ...villageReportFromStored(rep),
+            notes: rep.notes || rep.villageNotes || '',
           });
         }
       } else {
@@ -304,6 +318,8 @@ const SchoolReportPage = () => {
           gpsLocation: null,
           mediaUrls: [],
           mediaFiles: [],
+          outstandingStudents: [],
+          ...emptyVillageReportFields(),
           ...emptyEvalOthers(),
         });
         if (navigator.geolocation) {
@@ -477,6 +493,9 @@ const SchoolReportPage = () => {
           stars: clampVisitRatingSave(form.teacherRatings[t.id] || 0) || null,
         })),
         starAwards: form.starAwards.filter((row) => Number(row.stars) > 0),
+        outstandingStudents: normalizeStringList(form.outstandingStudents),
+        ...villageReportToPayload(form),
+        villageNotes: '',
         projectsOfficerName: form.projectsOfficerName,
         notes: form.notes,
         gpsLocation: form.gpsLocation,
@@ -548,6 +567,8 @@ const SchoolReportPage = () => {
         stars: form.teacherRatings[t.id] || 0,
       })),
     starAwards: form.starAwards.filter((row) => Number(row.stars) > 0),
+    outstandingStudents: normalizeStringList(form.outstandingStudents),
+    ...villageReportToPayload(form),
     absentStudents: students
       .filter((s) => form.absentStudentIds.includes(s.id))
       .map((s) => ({ studentName: s.displayName })),
@@ -557,27 +578,50 @@ const SchoolReportPage = () => {
   if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
 
   const schoolScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
+  const canCreate = can(PERMISSION_PAGE_IDS.schools, 'school_report_create');
+  const canViewReport = can(PERMISSION_PAGE_IDS.reports, 'report_view');
+  const readOnly = viewMode || (isEditing && !canCreate);
+
   if (ready && !membershipLoading && schoolScope === DATA_SCOPE_MEMBERSHIP && schoolId && !membershipGroupIds.has(schoolId)) {
     return <Navigate to="/schools" replace />;
   }
-  if (ready && !can(PERMISSION_PAGE_IDS.schools, 'school_report_create')) {
+  if (ready && !isEditing && !canCreate) {
+    return <Navigate to={`/schools/${schoolId}`} replace />;
+  }
+  if (ready && isEditing && !canCreate && !canViewReport) {
     return <Navigate to={`/schools/${schoolId}`} replace />;
   }
 
   const teachers = staff.filter((s) => s.role === 'teacher');
+  const editQuery = ownerIdParam ? `?ownerId=${ownerIdParam}` : '';
 
   return (
-    <div className={`school-report-page portal-page${isMobile ? ' school-report-page--has-mobile-save' : ''}`}>
+    <div className={`school-report-page portal-page${isMobile && !readOnly ? ' school-report-page--has-mobile-save' : ''}${readOnly ? ' school-report-page--readonly' : ''}`}>
       <PageHeader
         topRow={
           <button type="button" className="page-nav-back" onClick={() => navigate(`/schools/${schoolId}`)}>
             <ChevronRight size={20} aria-hidden /> العودة لتفاصيل المدرسة
           </button>
         }
-        title={isEditing ? 'تعديل تقرير المدرسة' : 'إضافة تقرير للمدرسة'}
+        title={
+          readOnly
+            ? 'عرض التقرير الشهري عن المدرسة'
+            : isEditing
+              ? 'تعديل التقرير الشهري عن المدرسة'
+              : 'إضافة التقرير الشهري عن المدرسة'
+        }
         subtitle={school.name}
       >
         <div className="school-report-page__toolbar">
+          {readOnly && canCreate && isEditing && (
+            <button
+              type="button"
+              className="google-btn google-btn--filled google-btn--toolbar"
+              onClick={() => navigate(`/schools/${schoolId}/report/${reportId}${editQuery}`)}
+            >
+              تعديل التقرير
+            </button>
+          )}
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => setPreviewOpen(true)}>
             <Printer size={16} />
             <span className="portal-toolbar__long">معاينة</span>
@@ -609,6 +653,7 @@ const SchoolReportPage = () => {
           >
             <FileSpreadsheet size={16} /> Excel
           </button>
+          {!readOnly && (
           <BusyButton
             type="button"
             className="google-btn google-btn--filled google-btn--toolbar school-report-toolbar__save--desktop"
@@ -619,11 +664,17 @@ const SchoolReportPage = () => {
             <span className="portal-toolbar__long">{isEditing ? 'حفظ التعديلات' : 'حفظ التقرير'}</span>
             <span className="portal-toolbar__short">حفظ</span>
           </BusyButton>
+          )}
         </div>
       </PageHeader>
 
       {error && <div className="app-alert app-alert--error">{error}</div>}
       {success && <div className="app-alert app-alert--success">{success}</div>}
+      {readOnly && (
+        <div className="app-alert app-alert--info school-report-view-banner">
+          وضع العرض فقط — يمكنك معاينة التقرير أو تصديره. {canCreate && isEditing ? 'اضغط «تعديل التقرير» للتعديل.' : ''}
+        </div>
+      )}
 
       <div className="school-report-page__layout">
         <div className="school-report-page__main">
@@ -713,13 +764,15 @@ const SchoolReportPage = () => {
                   return (
                   <div key={t.id} className={`school-report-teacher-row ${selected ? 'school-report-teacher-row--selected' : ''}`}>
                     <label className="school-report-teacher-row__check">
-                      <input type="checkbox" checked={selected} onChange={() => toggleTeacher(t.id)} />
+                      <input type="checkbox" checked={selected} disabled={readOnly} onChange={() => toggleTeacher(t.id)} />
                       <span>{t.displayName}</span>
                     </label>
                     <input
                       className="app-input"
                       placeholder="رقم الهاتف"
                       value={form.teacherPhoneMap[t.id] || ''}
+                      readOnly={readOnly}
+                      disabled={readOnly}
                       onChange={(e) =>
                         setForm((p) => ({
                           ...p,
@@ -730,6 +783,7 @@ const SchoolReportPage = () => {
                     {selected ? (
                       <StarRatingInput
                         compact
+                        readOnly={readOnly}
                         label="تقييم المعلم"
                         value={form.teacherRatings[t.id] || 0}
                         onChange={(stars) => setTeacherRating(t.id, stars)}
@@ -744,7 +798,79 @@ const SchoolReportPage = () => {
             )}
           </section>
 
-          {/* القسم 4: الحضور والغياب */}
+          {/* تقييم الطلاب بالنجوم */}
+          <section className="surface-card school-report-section">
+            <h3 className="school-report-section__title">تقييم الطلاب بالنجوم</h3>
+            {!readOnly && (
+              <p className="school-report-section__sub">قيّم كل طالب من 1 إلى 5 نجوم (اختياري — يُحفظ من حصل على نجمة واحدة فأكثر).</p>
+            )}
+            {form.starAwards.length === 0 ? (
+              <p className="school-report-section__empty">لا يوجد طلاب مسجلون في هذه المدرسة.</p>
+            ) : (
+              <div className="school-report-student-stars">
+                {form.starAwards.map((row) => (
+                  <div key={row.studentId} className="school-report-student-stars__row">
+                    <span className="school-report-student-stars__name">{row.name}</span>
+                    <StarRatingInput
+                      compact
+                      readOnly={readOnly}
+                      value={row.stars}
+                      onChange={(stars) => setStudentStars(row.studentId, stars)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* الطلاب المتفوقون */}
+          <section className="surface-card school-report-section">
+            <h3 className="school-report-section__title">الطلاب المتفوقون</h3>
+            {!readOnly && (
+              <p className="school-report-section__sub">أضف أسماء الطلاب المتفوقين — يمكنك الكتابة أو الاختيار من قائمة الطلاب.</p>
+            )}
+            <ReportTextList
+              readOnly={readOnly}
+              items={form.outstandingStudents}
+              onChange={(outstandingStudents) => setForm((p) => ({ ...p, outstandingStudents }))}
+              placeholder="اسم الطالب المتفوق..."
+              addLabel="إضافة طالب"
+              emptyHint="لم تُضف أسماء بعد."
+              suggestions={readOnly ? [] : students.map((s) => s.displayName).filter(Boolean)}
+            />
+          </section>
+
+          {/* القرية والنشاطات */}
+          <section className="surface-card school-report-section">
+            <VillageReportFields
+              readOnly={readOnly}
+              showTitle
+              showAdditionalNotes={false}
+              sectionTitle="القرية والنشاطات"
+              villageName={form.village}
+              value={{
+                teacherVillageActivities: form.teacherVillageActivities,
+                institutionVillageActivities: form.institutionVillageActivities,
+                fridaySermons: form.fridaySermons,
+                newConvertsCount: form.newConvertsCount,
+                hasInstitutionProjects: form.hasInstitutionProjects,
+                institutionProjectsStatus: form.institutionProjectsStatus,
+              }}
+              onChange={(patch) => setForm((p) => ({ ...p, ...patch }))}
+            />
+            <ReportField label="ملاحظات إضافية" span={2}>
+              <textarea
+                className="app-input app-textarea"
+                value={form.notes}
+                onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
+                placeholder="أي ملاحظات إضافية..."
+                readOnly={readOnly}
+                disabled={readOnly}
+              />
+            </ReportField>
+          </section>
+
+          {/* الحضور والغياب */}
           <section className="surface-card school-report-section">
             <h3 className="school-report-section__title">الحضور والغياب</h3>
             <div className="report-field-grid report-field-grid--2">
@@ -754,6 +880,8 @@ const SchoolReportPage = () => {
                   type="number"
                   min="0"
                   value={form.totalStudents}
+                  readOnly={readOnly}
+                  disabled={readOnly}
                   onChange={(e) => {
                     const total = Math.max(Number(e.target.value || 0), 0);
                     setForm((p) => ({ ...p, totalStudents: total, presentCount: Math.max(total - p.absentStudentIds.length, 0) }));
@@ -764,18 +892,24 @@ const SchoolReportPage = () => {
                 <input className="app-input" type="number" value={form.presentCount} readOnly />
               </ReportField>
             </div>
-            <YesNoRadio
-              label="مراجعة الغياب"
-              name="absenceReview"
-              value={form.absenceReview}
-              onChange={(val) => setForm((p) => ({ ...p, absenceReview: val }))}
-            />
+            {!readOnly && (
+              <YesNoRadio
+                label="مراجعة الغياب"
+                name="absenceReview"
+                value={form.absenceReview}
+                onChange={(val) => setForm((p) => ({ ...p, absenceReview: val }))}
+              />
+            )}
+            {readOnly && form.absenceReview && (
+              <p className="school-report-section__sub">مراجعة الغياب: {form.absenceReview}</p>
+            )}
             <div className="school-report-absent-grid">
               {students.map((s) => (
                 <label key={s.id} className="school-report-absent-item">
                   <input
                     type="checkbox"
                     checked={form.absentStudentIds.includes(s.id)}
+                    disabled={readOnly}
                     onChange={(e) => {
                       const next = e.target.checked
                         ? [...new Set([...form.absentStudentIds, s.id])]
@@ -789,29 +923,7 @@ const SchoolReportPage = () => {
             </div>
           </section>
 
-          {/* القسم 5: تقييم الطلاب بالنجوم */}
-          <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title">تقييم الطلاب بالنجوم</h3>
-            <p className="school-report-section__sub">قيّم كل طالب من 1 إلى 5 نجوم (اختياري — يُحفظ من حصل على نجمة واحدة فأكثر).</p>
-            {form.starAwards.length === 0 ? (
-              <p className="school-report-section__empty">لا يوجد طلاب مسجلون في هذه المدرسة.</p>
-            ) : (
-              <div className="school-report-student-stars">
-                {form.starAwards.map((row) => (
-                  <div key={row.studentId} className="school-report-student-stars__row">
-                    <span className="school-report-student-stars__name">{row.name}</span>
-                    <StarRatingInput
-                      compact
-                      value={row.stars}
-                      onChange={(stars) => setStudentStars(row.studentId, stars)}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* القسم 6: المنهج */}
+          {/* المنهج */}
           <section className="surface-card school-report-section">
             <CurriculumLessonPicker
               curriculumList={curriculumList}
@@ -856,9 +968,6 @@ const SchoolReportPage = () => {
                 <input className="app-input" value={form.projectsOfficerName} onChange={(e) => setForm((p) => ({ ...p, projectsOfficerName: e.target.value }))} />
               </ReportField>
             </div>
-            <ReportField label="ملاحظات إضافية" span={2}>
-              <textarea className="app-input app-textarea" value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))} />
-            </ReportField>
           </section>
 
           {/* القسم 8: الوسائط */}
@@ -957,7 +1066,7 @@ const SchoolReportPage = () => {
         }}
       />
 
-      {isMobile ? (
+      {isMobile && !readOnly ? (
         <div className="school-report-mobile-save-bar">
           <BusyButton
             type="button"

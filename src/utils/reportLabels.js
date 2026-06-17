@@ -3,6 +3,7 @@ import {
   studentLevelSummaryFromStars,
   teacherEvaluationLabelFromRatings,
 } from './schoolReportStars';
+import { villageReportHasContent } from './villageReportFields';
 
 export function schoolReportPeriodLabel(reportPeriod) {
   if (reportPeriod === 'monthly') return 'شهري';
@@ -33,6 +34,18 @@ export function schoolReportSummaryLine(rep) {
     if (studentSummary && studentSummary !== '—') parts.push(`الطلاب: ${studentSummary}`);
   }
 
+  const outstanding = (rep.outstandingStudents || []).filter(Boolean).length;
+  if (outstanding > 0) parts.push(`متفوقون: ${outstanding}`);
+
+  if (villageReportHasContent(rep)) {
+    const activityCount =
+      (rep.teacherVillageActivities || []).length +
+      (rep.institutionVillageActivities || []).length +
+      (rep.fridaySermons || []).length;
+    if (activityCount > 0) parts.push(`نشاطات قرية: ${activityCount}`);
+    if (Number(rep.newConvertsCount) > 0) parts.push(`مهتدون: ${rep.newConvertsCount}`);
+  }
+
   return parts.join(' • ');
 }
 
@@ -61,10 +74,14 @@ export function activityBadgeLabel(type, data = {}) {
   return 'زيارة ميدانية';
 }
 
-export function schoolReportViewPath(report) {
+export function schoolReportViewPath(report, { view = false } = {}) {
   if (!report?.schoolId || !report?.id) return null;
   const ownerId = report._ownerId || report.ownerId || report.supervisorId || '';
-  return `/schools/${report.schoolId}/report/${report.id}${ownerId ? `?ownerId=${ownerId}` : ''}`;
+  const params = new URLSearchParams();
+  if (ownerId) params.set('ownerId', ownerId);
+  if (view) params.set('view', '1');
+  const qs = params.toString();
+  return `/schools/${report.schoolId}/report/${report.id}${qs ? `?${qs}` : ''}`;
 }
 
 /** عرض مواد التحضير (متعدد أو مفرد) */

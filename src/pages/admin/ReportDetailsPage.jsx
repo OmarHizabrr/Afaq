@@ -14,7 +14,9 @@ import {
   Trash2,
   Pencil,
   Save,
-  X
+  X,
+  Printer,
+  FileDown,
 } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
@@ -22,7 +24,6 @@ import MapLocationOpen from '../../components/MapLocationOpen';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissionDataScope';
-import StarRatingInput from '../../components/StarRatingInput';
 import BusyButton from '../../components/BusyButton';
 import { clampVisitRatingSave, formatVisitRatingLabel, toStarDisplayValue } from '../../utils/visitRating';
 import { prepPeriodLabel, formatDailyLogSubjects } from '../../utils/reportLabels';
@@ -35,6 +36,7 @@ import { enrichDailyPrepReport } from '../../utils/enrichDailyPrepReport';
 import AttendanceStatusIcon from '../../components/AttendanceStatusIcon';
 import ReportDailyRecordCard from '../../components/ReportDailyRecordCard';
 import DailyPrepEditor from '../../components/DailyPrepEditor';
+import VisitReportEditor from '../../components/VisitReportEditor';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 import {
   buildDailyPrepSavePayload,
@@ -44,6 +46,19 @@ import {
   mergeStudentRecords,
 } from '../../utils/dailyPrepForm';
 import { parseLegacyToEntries } from '../../utils/curriculumProgress';
+import VillageReportDisplay from '../../components/VillageReportDisplay';
+import { villageReportHasContent } from '../../utils/villageReportFields';
+import {
+  buildVisitSavePayload,
+  loadVisitEditOptions,
+  resolveVisitEditIds,
+} from '../../utils/visitReportForm';
+import LazyReportPrintPreviewModal from '../../components/LazyReportPrintPreviewModal';
+import {
+  buildReportDetailsBodyHtml,
+  reportDetailsPreviewTitle,
+} from '../../utils/reportDetailsHtml';
+import { exportReportDetailsPdf } from '../../utils/reportDetailsExport';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -70,13 +85,17 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = usePermissions();
   const isMobile = useMediaQuery(MOBILE_QUERY);
 
-  const [visitEdit, setVisitEdit] = useState({});
+  const [visitEdit, setVisitEdit] = useState(null);
   const [dailyEdit, setDailyEdit] = useState(null);
   const [weeklyEdit, setWeeklyEdit] = useState({ reportDataJson: '{}' });
   const [editSchoolOptions, setEditSchoolOptions] = useState([]);
   const [editCurriculumList, setEditCurriculumList] = useState([]);
+  const [editVisitOptions, setEditVisitOptions] = useState({ schools: [], villages: [], curriculum: [] });
   const [editBootLoading, setEditBootLoading] = useState(false);
+  const [visitEditBootLoading, setVisitEditBootLoading] = useState(false);
   const [editStudentsLoading, setEditStudentsLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [pdfExporting, setPdfExporting] = useState(false);
   const editSchoolInitRef = useRef(null);
 
   const isAdmin = viewerUser?.role === 'admin' || viewerUser?.role === 'system_admin';
@@ -95,7 +114,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         const data = visit.data() || {};
         const ownerId = visit.ref.parent.parent?.id || '';
         if (data.reportType === 'school_supervision' && data.schoolId) {
-          navigate(`/schools/${data.schoolId}/report/${id}?ownerId=${ownerId}`, { replace: true });
+          navigate(`/schools/${data.schoolId}/report/${id}?ownerId=${ownerId}&view=1`, { replace: true });
           return;
         }
         setReport({ id, ...data, type: 'visit', _ownerId: ownerId });
@@ -134,13 +153,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
     if (!report) return;
     setAdminError('');
     if (report.type === 'visit') {
-      setVisitEdit({
-        schoolName: report.schoolName || '',
-        subjectName: report.subjectName || '',
-        generalNotes: report.generalNotes || '',
-        teacherRating: toStarDisplayValue(report.teacherRating),
-        villageRating: toStarDisplayValue(report.villageRating),
-      });
+      setVisitEdit(null);
     } else if (report.type === 'daily') {
       editSchoolInitRef.current = null;
       setDailyEdit(null);
@@ -161,8 +174,42 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
     setEditMode(false);
     setAdminError('');
     setDailyEdit(null);
+    setVisitEdit(null);
     editSchoolInitRef.current = null;
   };
+
+  useEffect(() => {
+    if (!editMode || report?.type !== 'visit') return undefined;
+
+    let cancelled = false;
+    (async () => {
+      setVisitEditBootLoading(true);
+      setAdminError('');
+      try {
+        const api = FirestoreApi.Api;
+        const options = await loadVisitEditOptions(api);
+        if (cancelled) return;
+
+        const ids = resolveVisitEditIds(report, options);
+        setEditVisitOptions(options);
+        setVisitEdit({
+          ...ids,
+          generalNotes: report.generalNotes || '',
+          teacherRating: toStarDisplayValue(report.teacherRating),
+          villageRating: toStarDisplayValue(report.villageRating),
+        });
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) setAdminError('تعذر تحميل بيانات تعديل الزيارة.');
+      } finally {
+        if (!cancelled) setVisitEditBootLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [editMode, report]);
 
   useEffect(() => {
     if (!editMode || report?.type !== 'daily') return undefined;
@@ -268,10 +315,33 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
     try {
       let data = {};
       if (report.type === 'visit') {
+        if (!visitEdit) {
+          setAdminError('بيانات تعديل الزيارة غير جاهزة بعد.');
+          setSaving(false);
+          return;
+        }
+        if (!visitEdit.schoolId) {
+          setAdminError('يرجى اختيار المدرسة من القائمة.');
+          setSaving(false);
+          return;
+        }
+        if (!visitEdit.villageId) {
+          setAdminError('يرجى اختيار القرية من القائمة.');
+          setSaving(false);
+          return;
+        }
+        if (!visitEdit.subjectId) {
+          setAdminError('يرجى اختيار المادة من القائمة.');
+          setSaving(false);
+          return;
+        }
+        if (!visitEdit.week) {
+          setAdminError('يرجى اختيار الدرس/الأسبوع من القائمة.');
+          setSaving(false);
+          return;
+        }
         data = {
-          schoolName: visitEdit.schoolName,
-          subjectName: visitEdit.subjectName,
-          generalNotes: visitEdit.generalNotes,
+          ...buildVisitSavePayload(visitEdit, editVisitOptions),
           teacherRating: clampVisitRatingSave(visitEdit.teacherRating),
           villageRating: clampVisitRatingSave(visitEdit.villageRating),
         };
@@ -328,6 +398,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       setReport((r) => ({ ...r, ...data }));
       setEditMode(false);
       setDailyEdit(null);
+      setVisitEdit(null);
       editSchoolInitRef.current = null;
     } catch (err) {
       console.error(err);
@@ -412,6 +483,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       ? `تحضير ${prepPeriodLabel(report.prepPeriod)}`
       : TYPE_LABELS[report.type] || report.type;
 
+  const reportBodyHtml = buildReportDetailsBodyHtml(report);
+  const previewTitle = reportDetailsPreviewTitle(report);
+
   return (
     <div className={`report-details-page portal-page${isMobile && editMode ? ' report-details-page--has-mobile-save' : ''}`}>
       <PageHeader
@@ -429,7 +503,36 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             <span className="page-header-accent">{id.substring(0, 8)}</span>
           </>
         }
-      />
+      >
+        {!editMode && reportBodyHtml ? (
+          <div className="school-report-page__toolbar">
+            <button
+              type="button"
+              className="google-btn google-btn--toolbar"
+              onClick={() => setPreviewOpen(true)}
+            >
+              <Printer size={16} aria-hidden />
+              <span className="portal-toolbar__long">معاينة</span>
+              <span className="portal-toolbar__short">معاينة</span>
+            </button>
+            <BusyButton
+              type="button"
+              className="google-btn google-btn--toolbar"
+              busy={pdfExporting}
+              onClick={async () => {
+                setPdfExporting(true);
+                try {
+                  await exportReportDetailsPdf(report);
+                } finally {
+                  setPdfExporting(false);
+                }
+              }}
+            >
+              <FileDown size={16} aria-hidden /> PDF
+            </BusyButton>
+          </div>
+        ) : null}
+      </PageHeader>
 
       {isAdmin && (canEditReport || canDeleteReport) && !(isMobile && editMode) && (
         <div className="surface-card report-admin-toolbar">
@@ -513,6 +616,15 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 <strong className="report-summary-field__value">{report.schoolName || '—'}</strong>
               </div>
             </div>
+            {report.type === 'visit' && report.villageName && (
+              <div className="report-summary-field">
+                <p className="report-summary-field__label">القرية</p>
+                <div className="report-summary-field__row">
+                  <School size={18} color="var(--md-primary)" aria-hidden />
+                  <strong className="report-summary-field__value">{report.villageName}</strong>
+                </div>
+              </div>
+            )}
             <div className="report-summary-field">
               <p className="report-summary-field__label">
                 التاريخ والوقت
@@ -535,50 +647,19 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         )}
 
         {editMode && isAdmin && report.type === 'visit' && (
-          <div className="report-edit-form">
-            <label className="app-field app-field--grow">
-              <span className="app-label">اسم المدرسة</span>
-              <input
-                type="text"
-                value={visitEdit.schoolName}
-                onChange={(e) => setVisitEdit((s) => ({ ...s, schoolName: e.target.value }))}
-                className="app-input"
+          <div className="report-visit-edit">
+            <h3 className="report-daily-edit__title">تعديل الزيارة الميدانية</h3>
+            {visitEditBootLoading || !visitEdit ? (
+              <div className="loading-spinner report-edit-loading" />
+            ) : (
+              <VisitReportEditor
+                schoolOptions={editVisitOptions.schools}
+                villageOptions={editVisitOptions.villages}
+                curriculumList={editVisitOptions.curriculum}
+                value={visitEdit}
+                onChange={setVisitEdit}
               />
-            </label>
-            <label className="app-field app-field--grow">
-              <span className="app-label">المادة</span>
-              <input
-                type="text"
-                value={visitEdit.subjectName}
-                onChange={(e) => setVisitEdit((s) => ({ ...s, subjectName: e.target.value }))}
-                className="app-input"
-              />
-            </label>
-            <div className="report-edit-form__two-cols report-edit-form__two-cols--start">
-              <div className="app-field app-field--grow">
-                <StarRatingInput
-                  label="تقييم المعلم (من 5 نجوم)"
-                  value={visitEdit.teacherRating}
-                  onChange={(n) => setVisitEdit((s) => ({ ...s, teacherRating: n }))}
-                />
-              </div>
-              <div className="app-field app-field--grow">
-                <StarRatingInput
-                  label="تقييم القرية (من 5 نجوم)"
-                  value={visitEdit.villageRating}
-                  onChange={(n) => setVisitEdit((s) => ({ ...s, villageRating: n }))}
-                />
-              </div>
-            </div>
-            <label className="app-field app-field--grow">
-              <span className="app-label">ملاحظات المشرف</span>
-              <textarea
-                value={visitEdit.generalNotes}
-                onChange={(e) => setVisitEdit((s) => ({ ...s, generalNotes: e.target.value }))}
-                rows={5}
-                className="app-textarea"
-              />
-            </label>
+            )}
           </div>
         )}
 
@@ -660,12 +741,16 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
             <div className="report-visit-notes-block">
               <h3 className="report-section-title">
-                <FileText size={20} color="var(--accent-color)" aria-hidden /> ملاحظات وتوصيات المشرف
+                <FileText size={20} color="var(--accent-color)" aria-hidden /> ملاحظات وتوجيهات عن الزيارة المدرسية
               </h3>
               <div className="report-notes-box">
                 {report.generalNotes || 'لا توجد ملاحظات عامة مسجلة لهذه الزيارة.'}
               </div>
             </div>
+
+            {villageReportHasContent(report) && (
+              <VillageReportDisplay report={report} villageName={report.villageName} />
+            )}
 
             {report.studentsTracking && (
               <div>
@@ -826,6 +911,22 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
           </BusyButton>
         </div>
       ) : null}
+
+      <LazyReportPrintPreviewModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title={previewTitle}
+        bodyHtml={reportBodyHtml}
+        pdfExporting={pdfExporting}
+        onDownloadPdf={async () => {
+          setPdfExporting(true);
+          try {
+            await exportReportDetailsPdf(report);
+          } finally {
+            setPdfExporting(false);
+          }
+        }}
+      />
     </div>
   );
 };

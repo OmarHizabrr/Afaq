@@ -37,7 +37,14 @@ function reportRows(rep) {
     ['تقييم المدرسة', safe(rep.schoolEvaluation)],
     ['تقييم المعلم (نجوم)', safe(rep.teacherEvaluation)],
     ['متوسط تقييم الطلاب', safe(rep.studentLevel)],
-    ['ملاحظات', safe(rep.notes)],
+    ['الطلاب المتفوقون', (rep.outstandingStudents || []).join('، ') || '-'],
+    ['أنشطة المعلم في القرية', (rep.teacherVillageActivities || []).join('؛ ') || '-'],
+    ['أنشطة المؤسسة في القرية', (rep.institutionVillageActivities || []).join('؛ ') || '-'],
+    ['خطب الجمعة في القرية', (rep.fridaySermons || []).join('؛ ') || '-'],
+    ['عدد من دخل الإسلام جديداً', safe(rep.newConvertsCount ?? 0)],
+    ['مشاريع المؤسسة بالقرية', safe(rep.hasInstitutionProjects || '-')],
+    ['حالة مشاريع المؤسسة', safe(rep.institutionProjectsStatus || '-')],
+    ['ملاحظات إضافية', safe(rep.notes || rep.villageNotes)],
   ];
 }
 
@@ -93,6 +100,43 @@ export function exportSchoolReportExcel(rep, filename = 'school-report.xlsx') {
       ...starAwards.map((s, i) => [i + 1, s.name || '-', formatTeacherStars(s.stars)]),
     ]);
     XLSX.utils.book_append_sheet(wb, starsSheet, 'تقييم الطلاب');
+  }
+
+  const outstanding = (normalized.outstandingStudents || []).filter(Boolean);
+  if (outstanding.length > 0) {
+    const outSheet = XLSX.utils.aoa_to_sheet([
+      ['#', 'الطالب المتفوق'],
+      ...outstanding.map((name, i) => [i + 1, name]),
+    ]);
+    XLSX.utils.book_append_sheet(wb, outSheet, 'المتفوقون');
+  }
+
+  const villageRows = (items, title) =>
+    (items || []).filter(Boolean).map((text, i) => [i + 1, text]);
+
+  const teacherActs = villageRows(normalized.teacherVillageActivities);
+  if (teacherActs.length) {
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.aoa_to_sheet([['#', 'نشاط المعلم في القرية'], ...teacherActs]),
+      'أنشطة المعلم'
+    );
+  }
+  const instActs = villageRows(normalized.institutionVillageActivities);
+  if (instActs.length) {
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.aoa_to_sheet([['#', 'نشاط المؤسسة في القرية'], ...instActs]),
+      'أنشطة المؤسسة'
+    );
+  }
+  const sermons = villageRows(normalized.fridaySermons);
+  if (sermons.length) {
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.aoa_to_sheet([['#', 'خطبة الجمعة'], ...sermons]),
+      'خطب الجمعة'
+    );
   }
 
   XLSX.writeFile(wb, filename);

@@ -74,6 +74,9 @@ const SupervisorHistoryPage = ({ user }) => {
               </div>
 
               <h3 className="portal-history-card__school">{rpt.schoolName}</h3>
+              {rpt.villageName && (
+                <p className="portal-history-card__village">القرية: {rpt.villageName}</p>
+              )}
               <p className="portal-history-card__subject">
                 {rpt.subjectName} - أسبوع {rpt.week}
               </p>

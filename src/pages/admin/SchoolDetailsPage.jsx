@@ -613,7 +613,7 @@ const SchoolDetailsPage = () => {
                       </div>
                       <div className="school-details-member-item__actions">
                         {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
-                          <button type="button" className="icon-btn" title="فتح التقرير" onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}`)}>
+                          <button type="button" className="icon-btn" title="عرض التقرير" onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}&view=1`)}>
                             <Info size={16} />
                           </button>
                         )}
