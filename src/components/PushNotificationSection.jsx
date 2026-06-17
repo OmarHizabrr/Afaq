@@ -1,10 +1,37 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Bell, CheckCircle, Loader2 } from 'lucide-react';
 import usePushNotifications from '../hooks/usePushNotifications';
+import FirestoreApi from '../services/firestoreApi';
 
 const PushNotificationSection = ({ user }) => {
   const { permission, registered, busy, enable, supported, configured, fcmSupported } =
     usePushNotifications(user);
+  const [tokenCount, setTokenCount] = useState(null);
+  const userId = user?.uid || user?.id;
+
+  const canShowDiagnostics = useMemo(() => {
+    const role = user?.role;
+    return role === 'admin' || role === 'system_admin';
+  }, [user?.role]);
+
+  useEffect(() => {
+    let active = true;
+    if (!userId) return undefined;
+    const api = FirestoreApi.Api;
+    api
+      .getData(api.getUserDoc(userId))
+      .then((doc) => {
+        if (!active) return;
+        const tokens = Array.isArray(doc?.fcmTokens) ? doc.fcmTokens : [];
+        setTokenCount(tokens.length);
+      })
+      .catch(() => {
+        if (active) setTokenCount(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [userId, registered, permission]);
 
   if (!supported) {
     return (
@@ -30,6 +57,12 @@ const PushNotificationSection = ({ user }) => {
         {!configured && (
           <p className="settings-push-card__hint">
             لإشعارات الخلفية (عند إغلاق التطبيق) أضف مفتاح VAPID في إعدادات الخادم.
+          </p>
+        )}
+        {canShowDiagnostics && (
+          <p className="settings-push-card__hint">
+            التشخيص: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
+            {tokenCount == null ? '—' : tokenCount}
           </p>
         )}
       </section>
@@ -66,6 +99,12 @@ const PushNotificationSection = ({ user }) => {
         )}
         تفعيل الإشعارات
       </button>
+      {canShowDiagnostics && (
+        <p className="settings-push-card__hint" style={{ marginTop: '10px' }}>
+          التشخيص: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
+          {tokenCount == null ? '—' : tokenCount}
+        </p>
+      )}
     </section>
   );
 };
