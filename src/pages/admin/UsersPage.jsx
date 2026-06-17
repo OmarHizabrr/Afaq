@@ -176,6 +176,7 @@ const UsersPage = () => {
           role,
           accountDisabled: false,
           photoURL: '',
+          fcmTokens: [],
         },
       });
       setIsAddUserOpen(false);
@@ -236,6 +237,7 @@ const UsersPage = () => {
           role: 'unassigned',
           accountDisabled: false,
           photoURL: '',
+          fcmTokens: [],
           explorationTypeId: expForm.selectedType?.id || '',
           explorationTypeName: expForm.selectedType?.name || '',
           explorationFieldValues: expForm.sanitize(),

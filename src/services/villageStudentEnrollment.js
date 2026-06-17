@@ -108,6 +108,7 @@ export async function enrollVillagePersonAsStudent(api, {
       password: '',
       permissionProfileId: null,
       accountDisabled: false,
+      fcmTokens: [],
       villageId,
       primarySchoolId,
     },

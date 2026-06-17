@@ -153,6 +153,25 @@ class FirestoreApi {
     return this.getDocument('users', userId);
   }
 
+  /** حقول افتراضية لوثيقة المستخدم — توكنات FCM لإشعارات Push */
+  static defaultUserFields() {
+    return { fcmTokens: [] };
+  }
+
+  /**
+   * يضمن وجود fcmTokens كمصفوفة دون مسح التوكنات المحفوظة مسبقاً.
+   * @param {string} userId
+   * @returns {Promise<string[]>}
+   */
+  async ensureUserFcmTokensField(userId) {
+    if (!userId) return [];
+    const docRef = this.getUserDoc(userId);
+    const existing = await this.getData(docRef);
+    if (existing && Array.isArray(existing.fcmTokens)) return existing.fcmTokens;
+    await this.setData({ docRef, data: FirestoreApi.defaultUserFields(), merge: true });
+    return [];
+  }
+
   /** supervisor_assignments/{userId} */
   getSupervisorAssignmentDoc(userId) {
     return this.getDocument('supervisor_assignments', userId);

@@ -290,6 +290,7 @@ const StudentManagementPage = () => {
       };
       if (!editingStudent) {
         userData.password = formPassword.trim();
+        userData.fcmTokens = [];
       } else if (formPassword.trim()) {
         userData.password = formPassword.trim();
       }
@@ -389,6 +390,7 @@ const StudentManagementPage = () => {
           permissionProfileId: null,
           photoURL,
           accountDisabled: false,
+          fcmTokens: [],
           primarySchoolId: '',
           villageId: '',
           password,

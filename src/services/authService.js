@@ -67,6 +67,10 @@ class AuthService {
       lastLogin: new Date().toISOString(),
     };
 
+    if (!existingDoc || !Array.isArray(existingDoc.fcmTokens)) {
+      userData.fcmTokens = [];
+    }
+
     // لا نعيّن رتبة افتراضية؛ نوع الصلاحيات يحدده المدير عبر permissionProfileId
     await api.setData({ 
       docRef, 
@@ -134,6 +138,10 @@ class AuthService {
               callback(null);
               return;
             }
+            if (!Array.isArray(userData.fcmTokens)) {
+              await api.ensureUserFcmTokensField(firebaseUser.uid);
+              userData.fcmTokens = [];
+            }
             callback({ ...firebaseUser, ...userData, uid: firebaseUser.uid, id: firebaseUser.uid });
           } else {
             callback({ ...firebaseUser, uid: firebaseUser.uid, id: firebaseUser.uid });
@@ -155,6 +163,10 @@ class AuthService {
                 localStorage.removeItem('afaq_custom_auth_uid');
                 callback(null);
                 return;
+              }
+              if (!Array.isArray(userData.fcmTokens)) {
+                await api.ensureUserFcmTokensField(customAuthUid);
+                userData.fcmTokens = [];
               }
               // إرسال كائن مستخدم وهمي يحمل الـ uid واسمه ليتعامل معه التطبيق كأنه حقيقي
               callback({ uid: customAuthUid, id: customAuthUid, ...userData });
