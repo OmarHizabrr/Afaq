@@ -48,14 +48,14 @@ async function persistFcmToken(userId, token) {
   const userRef = api.getUserDoc(userId);
   const existing = await api.getData(userRef);
   const tokens = Array.isArray(existing?.fcmTokens) ? existing.fcmTokens : [];
-  if (tokens.includes(token)) return;
+  if (tokens.includes(token)) return { saved: true, tokensCount: tokens.length };
 
   const next = [...tokens, token].slice(-MAX_TOKENS);
-  await api.setData({
+  await api.updateData({
     docRef: userRef,
     data: { fcmTokens: next },
-    merge: true,
   });
+  return { saved: true, tokensCount: next.length };
 }
 
 function attachForegroundHandler(messaging) {
@@ -109,9 +109,9 @@ export async function requestAndRegisterPush(user) {
       return { ok: false, reason: 'no-token', permission: getNotificationPermission() };
     }
 
-    await persistFcmToken(userId, token);
+    const saveResult = await persistFcmToken(userId, token);
     attachForegroundHandler(messaging);
-    return { ok: true, token, permission: 'granted' };
+    return { ok: true, token, tokensCount: saveResult.tokensCount, permission: 'granted' };
   } catch (err) {
     console.warn('requestAndRegisterPush', err);
     return { ok: false, reason: 'error', permission: getNotificationPermission(), err };

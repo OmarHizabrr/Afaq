@@ -62,6 +62,22 @@ const PushNotificationSection = ({ user }) => {
             {tokenCount == null ? '—' : tokenCount}
           </p>
         )}
+        {configured && fcmSupported && tokenCount === 0 && (
+          <button
+            type="button"
+            className="btn-md btn-md--outline settings-push-card__btn"
+            onClick={async () => {
+              await enable();
+              const api = FirestoreApi.Api;
+              const doc = await api.getData(api.getUserDoc(userId));
+              const tokens = Array.isArray(doc?.fcmTokens) ? doc.fcmTokens : [];
+              setTokenCount(tokens.length);
+            }}
+            disabled={busy}
+          >
+            {busy ? <Loader2 className="busy-btn__spin" size={16} aria-hidden /> : 'إعادة ربط الجهاز'}
+          </button>
+        )}
       </section>
     );
   }

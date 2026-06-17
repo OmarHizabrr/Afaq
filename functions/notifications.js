@@ -63,7 +63,14 @@ async function sendPushToUser(userId, payload) {
   const invalidTokens = [];
   response.responses.forEach((res, index) => {
     if (res.success) return;
-    const code = res.error && res.error.code;
+    const err = res.error || {};
+    logger.warn("fcm send failed", {
+      userId,
+      tokenPrefix: tokens[index] ? tokens[index].slice(0, 12) : "",
+      code: err.code || "",
+      message: err.message || "",
+    });
+    const code = err.code;
     if (
       code === "messaging/invalid-registration-token" ||
       code === "messaging/registration-token-not-registered"
