@@ -11,16 +11,12 @@ firebase.initializeApp({
   appId: '1:790510406588:web:95b0b3aacf224913d6b9b9',
 });
 
+importScripts('/push-notification-display.js');
+
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const title = payload.notification?.title || 'آفاق';
-  const options = {
-    body: payload.notification?.body || '',
-    icon: '/icon-512.png',
-    badge: '/icon-512.png',
-    data: payload.data || {},
-  };
+  const { title, options } = buildPushNotificationDisplay(payload);
   return self.registration.showNotification(title, options);
 });
 

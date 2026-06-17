@@ -5,6 +5,20 @@ const db = () => admin.firestore();
 const messaging = () => admin.messaging();
 
 /**
+ * @param {string} photoURL
+ * @param {string} displayName
+ * @return {string}
+ */
+function avatarUrlForPush(photoURL, displayName) {
+  if (photoURL && typeof photoURL === "string" && photoURL.startsWith("http")) {
+    return photoURL;
+  }
+  const name = (displayName || "آفاق").trim() || "آفاق";
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}` +
+    "&background=1a73e8&color=fff&size=128";
+}
+
+/**
  * @param {string} userId
  * @return {Promise<string[]>}
  */
@@ -46,19 +60,38 @@ async function sendPushToUser(userId, payload) {
     if (value != null) data[key] = String(value);
   });
 
-  const response = await messaging().sendEachForMulticast({
+  const title = payload.title || "آفاق";
+  const body = payload.body || "";
+  const iconUrl = payload.icon || avatarUrlForPush("", "آفاق");
+  const imageUrl = payload.image && payload.image.startsWith("http") ?
+    payload.image :
+    "";
+
+  const multicast = {
     tokens,
     notification: {
-      title: payload.title || "آفاق",
-      body: payload.body || "",
+      title,
+      body,
     },
     data,
     webpush: {
+      notification: {
+        title,
+        body,
+        icon: iconUrl,
+      },
       fcmOptions: {
         link: payload.link || "/notifications",
       },
     },
-  });
+  };
+
+  if (imageUrl) {
+    multicast.notification.imageUrl = imageUrl;
+    multicast.webpush.notification.image = imageUrl;
+  }
+
+  const response = await messaging().sendEachForMulticast(multicast);
 
   const invalidTokens = [];
   response.responses.forEach((res, index) => {
@@ -164,13 +197,25 @@ async function deliverNotificationPush(snap, notificationId) {
     `/notifications?chat=${n.conversationId}` :
     "/notifications";
 
+  const iconUrl = avatarUrlForPush(n.fromUserPhotoURL, n.fromUserName);
+  const imageUrl = n.fromUserPhotoURL && n.fromUserPhotoURL.startsWith("http") ?
+    n.fromUserPhotoURL :
+    "";
+
   const result = await sendPushToUser(n.toUserId, {
     title: n.title,
     body: n.body,
+    icon: iconUrl,
+    image: imageUrl,
     link,
     data: {
       notificationId,
       conversationId: n.conversationId || "",
+      conversationTitle: n.conversationTitle || "",
+      fromUserId: n.fromUserId || "",
+      fromUserName: n.fromUserName || "",
+      fromUserPhotoURL: n.fromUserPhotoURL || "",
+      fromUserRole: n.fromUserRole || "",
       type: n.type || "info",
       source: n.source || "manual",
     },

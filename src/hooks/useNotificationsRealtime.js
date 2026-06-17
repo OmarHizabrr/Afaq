@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import FirestoreApi from '../services/firestoreApi';
+import { buildInboxNotificationOptions } from '../utils/notificationDisplay';
 
 /**
  * اشتراك صندوق الإشعارات + عدّاد غير المقروء + تنبيهات المتصفح عند إخفاء التبويب.
@@ -42,13 +43,10 @@ export function useNotificationsRealtime(user) {
           if (data.fromUserId === actorId) return;
           if (data.isRead) return;
           try {
-            new Notification(data.title || 'آفاق', {
-              body: data.body || '',
-              icon: '/icon-512.png',
-              tag: ch.doc.id,
-              dir: 'rtl',
-              lang: 'ar',
-            });
+            new Notification(
+              data.title || 'آفاق',
+              buildInboxNotificationOptions(data, ch.doc.id),
+            );
           } catch {
             /* ignore */
           }
