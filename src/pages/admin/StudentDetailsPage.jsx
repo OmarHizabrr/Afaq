@@ -230,14 +230,14 @@ const StudentDetailsPage = () => {
                   <div key={item.id} className="activity-list-item activity-list-item--split">
                     <div>
                       <h4 className="activity-list-item__title">{item.subjectName}</h4>
-                      <p className="activity-list-item__meta">{item.date || 'بدون تاريخ'} • {item.schoolName}</p>
+                      <p className="activity-list-item__meta">{item.date || t('pages.StudentDetailsPage.بدون_تاريخ', 'بدون تاريخ')} • {item.schoolName}</p>
                     </div>
                     <div className="user-details-activity-list__status-wrap">
                       <span className={`user-details-activity-list__status-chip ${item.isPresent ? 'user-details-activity-list__status-chip--present' : 'user-details-activity-list__status-chip--absent'}`}>
-                        {item.isPresent ? 'حاضر' : 'غائب'}
+                        {item.isPresent ? t('components.StudentResultCard.حاضر', 'حاضر') : t('pages.StudentDetailsPage.غائب', 'غائب')}
                       </span>
                       {item.isTested && <TrendingUp size={16} color="var(--success-color)" />}
-                      <button type="button" className="icon-btn" onClick={() => navigate(`/reports/${item.id}`)} aria-label="عرض التقرير">
+                      <button type="button" className="icon-btn" onClick={() => navigate(`/reports/${item.id}`)} aria-label={t('pages.SchoolDetailsPage.عرض_التقرير', 'عرض التقرير')}>
                         <ChevronRight size={16} />
                       </button>
                     </div>

@@ -3,15 +3,19 @@ import { ShieldAlert } from 'lucide-react';
 import useSiteContent from '../../context/useSiteContent';
 import useAppTranslation from '../../hooks/useAppTranslation';
 
-function normalizeContactUrl(item, messageText = '') {
+function normalizeContactUrl(item, messageText, t) {
   const channel = String(item?.channel || '').toLowerCase();
   const raw = String(item?.value || '').trim();
-  const encodedMessage = encodeURIComponent(messageText || t('pages.NoPermissionsPage.السلام_عليكم،_أحتاج_تفعيل_الصلاحيات_لحسابي', 'السلام عليكم، أحتاج تفعيل الصلاحيات لحسابي.'));
+  const defaultMessage = t('pages.NoPermissionsPage.السلام_عليكم،_أحتاج_تفعيل_الصلاحيات_لحسابي', 'السلام عليكم، أحتاج تفعيل الصلاحيات لحسابي.');
+  const encodedMessage = encodeURIComponent(messageText || defaultMessage);
   if (!raw) return '';
   if (/^https?:\/\//i.test(raw)) return raw;
   if (channel === 'whatsapp') return `https://wa.me/${raw.replace(/[^\d]/g, '')}?text=${encodedMessage}`;
   if (channel === 'telegram') return `https://t.me/${raw.replace(/^@/, '')}?text=${encodedMessage}`;
-  if (channel === 'email') return `mailto:${raw}?subject=${encodeURIComponent('طلب تفعيل الصلاحيات')}&body=${encodedMessage}`;
+  if (channel === 'email') {
+    const subject = t('pages.NoPermissionsPage.طلب_تفعيل_الصلاحيات', 'طلب تفعيل الصلاحيات');
+    return `mailto:${raw}?subject=${encodeURIComponent(subject)}&body=${encodedMessage}`;
+  }
   if (channel === 'phone') return `tel:${raw}`;
   if (channel === 'instagram') return `https://instagram.com/${raw.replace(/^@/, '')}`;
   if (channel === 'facebook') return `https://facebook.com/${raw.replace(/^@/, '')}`;
@@ -32,7 +36,7 @@ export default function NoPermissionsPage() {
         </div>
         <h1 className="no-permissions-card__title">{t('pages.NoPermissionsPage.مرحباً_بك', 'مرحباً بك')}</h1>
         <p className="no-permissions-card__text">
-          لا توجد لديك أي صلاحية مفعّلة حالياً. يرجى طلب تحديد نوع الصلاحيات من الإدارة.
+          {t('pages.NoPermissionsPage.لا_صلاحيات_مفعّلة', 'لا توجد لديك أي صلاحية مفعّلة حالياً. يرجى طلب تحديد نوع الصلاحيات من الإدارة.')}
         </p>
         {contactsMessage && <p className="no-permissions-card__hint">{contactsMessage}</p>}
 
@@ -41,7 +45,7 @@ export default function NoPermissionsPage() {
             <h3>{t('pages.NoPermissionsPage.التواصل_مع_الإدارة', 'التواصل مع الإدارة')}</h3>
             <div className="no-permissions-card__contacts-list">
               {list.map((item, idx) => {
-                const href = normalizeContactUrl(item, contactsMessage);
+                const href = normalizeContactUrl(item, contactsMessage, t);
                 return (
                   <a
                     key={item.id || `${item.label}-${idx}`}

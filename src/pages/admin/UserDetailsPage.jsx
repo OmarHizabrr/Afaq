@@ -451,7 +451,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                      </div>
                                      <div className="user-details-activity-list__status-wrap">
                                        <span className={`user-details-activity-list__status-chip ${item.isPresent ? 'user-details-activity-list__status-chip--present' : 'user-details-activity-list__status-chip--absent'}`}>
-                                         {item.isPresent ? 'حاضر' : 'غائب'}
+                                         {item.isPresent ? t('components.StudentResultCard.حاضر', 'حاضر') : t('pages.StudentDetailsPage.غائب', 'غائب')}
                                        </span>
                                        {item.isTested && <TrendingUp size={16} color="var(--success-color)" />}
                                      </div>

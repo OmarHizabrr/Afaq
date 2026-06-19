@@ -24,6 +24,7 @@ const acceptForType = (t) => {
 };
 
 function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fieldId }) {
+  const { t } = useAppTranslation();
   const ref = useRef(null);
   const drawing = useRef(false);
   const last = useRef(null);
@@ -126,7 +127,7 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
       c.toBlob((b) => resolve(b), 'image/png', 0.92);
     });
     if (!blob || blob.size < 80) {
-      window.alert('ارسم التوقيع أولاً ثم اضغط «رفع التوقيع».');
+      window.alert(t('components.ExplorationDynamicFieldBlock.ارسم_التوقيع_أولاً', 'ارسم التوقيع أولاً ثم اضغط «رفع التوقيع».'));
       return;
     }
     if (!storageUserId) {
@@ -140,7 +141,7 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
       onChange(url);
     } catch (err) {
       console.error(err);
-      window.alert('تعذر رفع التوقيع إلى التخزين. تحقق من قواعد Firebase Storage والصلاحيات.');
+      window.alert(t('components.ExplorationDynamicFieldBlock.تعذر_رفع_التوقيع', 'تعذر رفع التوقيع إلى التخزين. تحقق من قواعد Firebase Storage والصلاحيات.'));
       onChange(toData());
     } finally {
       setUploading(false);
@@ -164,15 +165,20 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
       />
       <div className="exploration-signature-actions">
         <button type="button" className="google-btn google-btn--inline" onClick={clearCanvas} disabled={disabled || uploading}>
-          مسح اللوحة
+          {t('components.ExplorationDynamicFieldBlock.مسح_اللوحة', 'مسح اللوحة')}
         </button>
         <button type="button" className="google-btn google-btn--filled google-btn--inline" onClick={handleUploadSignature} disabled={disabled || uploading}>
-          {uploading ? 'جاري الرفع…' : storageUserId ? 'رفع التوقيع إلى التخزين' : 'حفظ التوقيع (محلي)'}
+          {uploading
+            ? t('components.ExplorationDynamicFieldBlock.جاري_الرفع', 'جاري الرفع…')
+            : storageUserId
+              ? t('components.ExplorationDynamicFieldBlock.رفع_التوقيع_إلى_التخزين', 'رفع التوقيع إلى التخزين')
+              : t('components.ExplorationDynamicFieldBlock.حفظ_التوقيع_محلي', 'حفظ التوقيع (محلي)')}
         </button>
       </div>
       {String(value || '').startsWith('http') && (
         <p className="exploration-signature-saved">
-          رابط محفوظ: <a href={value} target="_blank" rel="noreferrer">{t('components.ExplorationDynamicFieldBlock.فتح', 'فتح')}</a>
+          {t('components.ExplorationDynamicFieldBlock.رابط_محفوظ', 'رابط محفوظ:')}{' '}
+          <a href={value} target="_blank" rel="noreferrer">{t('components.ExplorationDynamicFieldBlock.فتح', 'فتح')}</a>
         </p>
       )}
     </div>

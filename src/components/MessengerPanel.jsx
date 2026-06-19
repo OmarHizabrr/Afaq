@@ -121,15 +121,15 @@ const MessengerPanel = ({
         .map((id) => getUser(id)?.displayName || id);
       return names.join(t('components.ExplorationDataModal.،', '، ')) || t('components.MessengerPanel.محادثة', 'محادثة');
     },
-    [actorId, getUser]
+    [actorId, getUser, t]
   );
 
   const threadAvatar = useCallback(
     (c) => {
       if (!c) return { letter: '?', src: null };
       if (c.isGroup) {
-        const t = c.title || t('components.MessengerPanel.مجموعة', 'مجموعة');
-        return { letter: t.charAt(0), src: null };
+        const groupTitle = c.title || t('components.MessengerPanel.مجموعة', 'مجموعة');
+        return { letter: groupTitle.charAt(0), src: null };
       }
       const oid = (c.participants || []).find((id) => id !== actorId);
       const u = oid ? getUser(oid) : null;
@@ -140,7 +140,7 @@ const MessengerPanel = ({
         src: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a73e8&color=fff`,
       };
     },
-    [actorId, getUser]
+    [actorId, getUser, t]
   );
 
   const headerAvatar = selectedConversation ? threadAvatar(selectedConversation) : { letter: '?', src: null };

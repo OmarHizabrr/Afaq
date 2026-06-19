@@ -653,7 +653,11 @@ const UsersPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
+        title={
+          viewingExplorationOf
+            ? `${t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')} — ${viewingExplorationOf.displayName || ''}`
+            : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')
+        }
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
