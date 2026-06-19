@@ -6,8 +6,9 @@ import useAppTranslation from '../hooks/useAppTranslation';
 /**
  * عرض الإحداثيات مع إمكانية النقر لفتح خرائط Google (مثل تيليجرام/واتساب).
  */
-const MapLocationOpen = ({ gpsLocation, label = t('components.MapLocationOpen.الموقع_الجغرافي', 'الموقع الجغرافي'), subtitle }) => {
+const MapLocationOpen = ({ gpsLocation, label, subtitle }) => {
   const { t } = useAppTranslation();
+  const resolvedLabel = label ?? t('components.MapLocationOpen.الموقع_الجغرافي', 'الموقع الجغرافي');
   if (!hasValidGps(gpsLocation)) {
     return (
       <div className="map-location-open map-location-open--empty">
@@ -31,7 +32,7 @@ const MapLocationOpen = ({ gpsLocation, label = t('components.MapLocationOpen.ا
     >
       <MapPin size={22} color="var(--md-primary)" aria-hidden />
       <div className="map-location-open__text">
-        <strong>{label}</strong>
+        <strong>{resolvedLabel}</strong>
         <span className="map-location-open__coords">{text}</span>
         <span className="map-location-open__hint">
           <ExternalLink size={14} aria-hidden /> اضغط للانتقال إلى الخريطة

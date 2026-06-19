@@ -13,16 +13,8 @@ import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 import usePushNotifications from '../../hooks/usePushNotifications';
 import { getUserProfilePath } from '../../utils/profileLinks';
 import useAppTranslation from '../../hooks/useAppTranslation';
+import { getSystemRoleLabels } from '../../utils/systemRoles';
 
-const ROLE_LABELS = {
-  system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
-  admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
-  supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
-  supervisor_local: t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة'),
-  teacher: t('components.MessengerPanel.معلم', 'معلم'),
-  student: t('components.MessengerPanel.طالب', 'طالب'),
-  unassigned: t('pages.NotificationsPage.غير_معين', 'غير معين'),
-};
 const RECIPIENT_ROLE_FILTER_ORDER = [
   'teacher',
   'supervisor_local',
@@ -36,6 +28,7 @@ const RECIPIENT_ROLE_FILTER_ORDER = [
 
 const NotificationsPage = ({ user }) => {
   const { t } = useAppTranslation();
+  const roleLabels = useMemo(() => getSystemRoleLabels(t), [t]);
   const location = useLocation();
   const actorId = user?.uid || user?.id;
   const [activeTab, setActiveTab] = useState('notifications');
@@ -467,7 +460,7 @@ const NotificationsPage = ({ user }) => {
                       />
                       <span className="notif-sender-name">{n.fromUserName || t('pages.NotificationsPage.مرسل_غير_معروف', 'مرسل غير معروف')}</span>
                       <span className="notif-sender-role">
-                        {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || t('pages.NotificationsPage.بدون_دور', 'بدون دور')}
+                        {roleLabels[n.fromUserRole] || n.fromUserRole || t('pages.NotificationsPage.بدون_دور', 'بدون دور')}
                       </span>
                     </>
                   }
@@ -567,7 +560,7 @@ const NotificationsPage = ({ user }) => {
                 className={`role-filter-btn ${composeRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                 onClick={() => setComposeRoleFilter(rid)}
               >
-                {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
+                {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : roleLabels[rid] || rid)} ({recipientRoleCounts[rid] || 0})
               </button>
             ))}
           </div>
@@ -584,7 +577,7 @@ const NotificationsPage = ({ user }) => {
                   })
                 }
                 profileHref={getUserProfilePath(location.pathname, u.id)}
-                roleLabel={ROLE_LABELS[u.role] || u.role || ''}
+                roleLabel={roleLabels[u.role] || u.role || ''}
               />
             ))}
           </div>
@@ -642,7 +635,7 @@ const NotificationsPage = ({ user }) => {
                 className={`role-filter-btn ${chatRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                 onClick={() => setChatRoleFilter(rid)}
               >
-                {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
+                {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : roleLabels[rid] || rid)} ({recipientRoleCounts[rid] || 0})
               </button>
             ))}
           </div>
@@ -659,7 +652,7 @@ const NotificationsPage = ({ user }) => {
                   })
                 }
                 profileHref={getUserProfilePath(location.pathname, u.id)}
-                roleLabel={ROLE_LABELS[u.role] || u.role || ''}
+                roleLabel={roleLabels[u.role] || u.role || ''}
               />
             ))}
           </div>

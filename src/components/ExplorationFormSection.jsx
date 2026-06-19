@@ -20,11 +20,12 @@ const ExplorationFormSection = ({
   actorUser,
   storageUserId,
   className,
-  heading = t('components.ExplorationFormSection.حقول_النموذج', 'حقول النموذج'),
+  heading,
   hideTypeSelect = false,
   currentPageId = null,
 }) => {
   const { t } = useAppTranslation();
+  const resolvedHeading = heading ?? t('components.ExplorationFormSection.حقول_النموذج', 'حقول النموذج');
   const {
     visibleExplorationTypes,
     typesLoading,
@@ -104,7 +105,7 @@ const ExplorationFormSection = ({
 
       {schemaFields.length > 0 && (
         <>
-          {heading && <h3 className="exploration-form-section__heading">{heading}</h3>}
+          {resolvedHeading && <h3 className="exploration-form-section__heading">{resolvedHeading}</h3>}
           {optionCachesLoading && (
             <p className="exploration-form-section__loading-hint">
               {t('pages.ExplorationsPage.جاري_تحميل_قوائم_البيانات_من_المنصة', 'جاري تحميل قوائم البيانات من المنصة…')}

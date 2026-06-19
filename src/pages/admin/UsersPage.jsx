@@ -17,18 +17,9 @@ import {
   filterUsersByScope,
   loadPeerUserIdsForGroups,
 } from '../../utils/permissionDataScope';
-import { SYSTEM_ADMIN_ROLE } from '../../utils/systemRoles';
+import { SYSTEM_ADMIN_ROLE, getSystemRoleLabels } from '../../utils/systemRoles';
 import useAppTranslation from '../../hooks/useAppTranslation';
 
-const USER_ROLE_LABELS = {
-  [SYSTEM_ADMIN_ROLE]: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
-  admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
-  supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
-  supervisor_local: t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة'),
-  teacher: t('components.MessengerPanel.معلم', 'معلم'),
-  student: t('components.MessengerPanel.طالب', 'طالب'),
-  unassigned: t('pages.SchoolDetailsPage.غير_معيّن', 'غير معيّن'),
-};
 const USERS_ROLE_FILTER_ORDER = [
   'teacher',
   'supervisor_local',
@@ -42,6 +33,7 @@ const USERS_ROLE_FILTER_ORDER = [
 
 const UsersPage = () => {
   const { t } = useAppTranslation();
+  const roleLabels = useMemo(() => getSystemRoleLabels(t), [t]);
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [permissionProfiles, setPermissionProfiles] = useState([]);
@@ -76,9 +68,9 @@ const UsersPage = () => {
     () =>
       USERS_ROLE_FILTER_ORDER.map((id) => ({
         id,
-        label: id === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : USER_ROLE_LABELS[id] || id,
+        label: id === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : roleLabels[id] || id,
       })),
-    []
+    [t, roleLabels],
   );
   const usersRoleCounts = useMemo(() => {
     const counts = { all: users.length };
@@ -372,7 +364,7 @@ const UsersPage = () => {
                 </p>
                 <div className="users-card__chips">
                   <div className="users-card__role-chip" title={t('pages.UsersPage.الدور_في_النظام', 'الدور في النظام')}>
-                    {USER_ROLE_LABELS[user.role] || user.role || '—'}
+                    {roleLabels[user.role] || user.role || '—'}
                   </div>
                   <div className="users-card__role-chip">
                     {user.permissionProfileId ? t('pages.UsersPage.نوع_صلاحيات_مخصص', 'نوع صلاحيات مخصص') : t('pages.UsersPage.بدون_نوع_صلاحيات', 'بدون نوع صلاحيات')}
@@ -440,14 +432,14 @@ const UsersPage = () => {
                   }}
                   className="app-select"
                 >
-                  <option value="unassigned">{USER_ROLE_LABELS.unassigned}</option>
-                  <option value="student">{USER_ROLE_LABELS.student}</option>
-                  <option value="teacher">{USER_ROLE_LABELS.teacher}</option>
-                  <option value="supervisor_local">{USER_ROLE_LABELS.supervisor_local}</option>
-                  <option value="supervisor_arab">{USER_ROLE_LABELS.supervisor_arab}</option>
-                  <option value="admin">{USER_ROLE_LABELS.admin}</option>
+                  <option value="unassigned">{roleLabels.unassigned}</option>
+                  <option value="student">{roleLabels.student}</option>
+                  <option value="teacher">{roleLabels.teacher}</option>
+                  <option value="supervisor_local">{roleLabels.supervisor_local}</option>
+                  <option value="supervisor_arab">{roleLabels.supervisor_arab}</option>
+                  <option value="admin">{roleLabels.admin}</option>
                   {canAssignSystemAdmin && (
-                    <option value={SYSTEM_ADMIN_ROLE}>{USER_ROLE_LABELS[SYSTEM_ADMIN_ROLE]}</option>
+                    <option value={SYSTEM_ADMIN_ROLE}>{roleLabels[SYSTEM_ADMIN_ROLE]}</option>
                   )}
                 </AppSelect>
               </div>
@@ -608,14 +600,14 @@ const UsersPage = () => {
                 }}
                 className="app-select"
               >
-                <option value="unassigned">{USER_ROLE_LABELS.unassigned}</option>
-                <option value="student">{USER_ROLE_LABELS.student}</option>
-                <option value="teacher">{USER_ROLE_LABELS.teacher}</option>
-                <option value="supervisor_local">{USER_ROLE_LABELS.supervisor_local}</option>
-                <option value="supervisor_arab">{USER_ROLE_LABELS.supervisor_arab}</option>
-                <option value="admin">{USER_ROLE_LABELS.admin}</option>
+                <option value="unassigned">{roleLabels.unassigned}</option>
+                <option value="student">{roleLabels.student}</option>
+                <option value="teacher">{roleLabels.teacher}</option>
+                <option value="supervisor_local">{roleLabels.supervisor_local}</option>
+                <option value="supervisor_arab">{roleLabels.supervisor_arab}</option>
+                <option value="admin">{roleLabels.admin}</option>
                 {canAssignSystemAdmin && (
-                  <option value={SYSTEM_ADMIN_ROLE}>{USER_ROLE_LABELS[SYSTEM_ADMIN_ROLE]}</option>
+                  <option value={SYSTEM_ADMIN_ROLE}>{roleLabels[SYSTEM_ADMIN_ROLE]}</option>
                 )}
               </AppSelect>
             </div>

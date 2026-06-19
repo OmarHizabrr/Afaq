@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FileText } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import useSiteContent from '../../context/useSiteContent';
@@ -6,7 +6,7 @@ import { saveStrings } from '../../services/siteConfigService';
 import BusyButton from '../../components/BusyButton';
 import useAppTranslation from '../../hooks/useAppTranslation';
 
-const COPY_KEYS = [
+const getCopyKeys = (t) => [
   { key: 'layout.nav_dashboard', label: t('pages.AdminSiteCopyPage.عنوان_الرئيسية', 'عنوان: الرئيسية') },
   { key: 'layout.nav_users', label: t('pages.AdminSiteCopyPage.عنوان_المستخدمين', 'عنوان: المستخدمين') },
   { key: 'layout.nav_notifications', label: t('pages.AdminSiteCopyPage.عنوان_الإشعارات', 'عنوان: الإشعارات') },
@@ -16,6 +16,7 @@ const COPY_KEYS = [
 
 export default function AdminSiteCopyPage({ user }) {
   const { t } = useAppTranslation();
+  const copyKeys = useMemo(() => getCopyKeys(t), [t]);
   const { strings } = useSiteContent();
   const [drafts, setDrafts] = useState({});
   const [savingKey, setSavingKey] = useState('');
@@ -50,7 +51,7 @@ export default function AdminSiteCopyPage({ user }) {
             {status.text}
           </div>
         )}
-        {COPY_KEYS.map((item) => (
+        {copyKeys.map((item) => (
           <div key={item.key} className="admin-site-copy-item">
             <div className="admin-site-copy-item__title">{item.label}</div>
             <div className="admin-site-copy-item__key">{item.key}</div>
