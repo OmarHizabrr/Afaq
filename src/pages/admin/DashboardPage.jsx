@@ -22,7 +22,6 @@ import {
 import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StatCard = ({ title, value, icon, tone, loading, onClick, hint }) => {
-  const { t } = useAppTranslation();
   const IconComponent = icon;
   const interactive = Boolean(onClick);
   const Tag = interactive ? 'button' : 'div';
@@ -47,6 +46,7 @@ const StatCard = ({ title, value, icon, tone, loading, onClick, hint }) => {
 };
 
 const DashboardPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const perm = usePermissions();
   const {

@@ -53,19 +53,20 @@ const defaultForm = () => ({
   fieldValues: {},
 });
 
-const yesNo = [
+const getYesNoOptions = (t) => [
   { value: '', label: t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد') },
   { value: 'yes', label: t('components.ExplorationDynamicFieldBlock.نعم', 'نعم') },
   { value: 'no', label: t('components.ExplorationDynamicFieldBlock.لا', 'لا') },
 ];
 
 const numberOrZero = (v) => {
-  const { t } = useAppTranslation();
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 };
 
 const ExplorationsPage = () => {
+  const { t } = useAppTranslation();
+  const yesNo = getYesNoOptions(t);
   const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser } = usePermissions();
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [loading, setLoading] = useState(true);
@@ -194,14 +195,14 @@ const ExplorationsPage = () => {
 
   useEffect(() => {
     if (!error) return;
-    const t = setTimeout(() => setError(''), 5000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setError(''), 5000);
+    return () => clearTimeout(timer);
   }, [error]);
 
   useEffect(() => {
     if (!success) return;
-    const t = setTimeout(() => setSuccess(''), 3500);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setSuccess(''), 3500);
+    return () => clearTimeout(timer);
   }, [success]);
 
   const closeModal = () => {
