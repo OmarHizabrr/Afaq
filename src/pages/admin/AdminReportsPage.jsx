@@ -21,14 +21,14 @@ import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath, forma
 import { enrichDailyPrepReportsBatch } from '../../utils/enrichDailyPrepReport';
 import useAppTranslation from '../../hooks/useAppTranslation';
 
-const TAB_LABELS = {
+const getTabLabels = (t) => ({
   daily: t('config.appNavItems.التحضير', 'التحضير'),
   weekly: t('pages.AdminReportsPage.التقارير_الأسبوعية', 'التقارير الأسبوعية'),
   visits: t('pages.AdminReportsPage.زيارات_المشرفين', 'زيارات المشرفين'),
   school: t('pages.AdminReportsPage.تقارير_المدارس', 'تقارير المدارس'),
-};
+});
 
-const PRESET_KEYS = [
+const getPresetKeys = (t) => [
   { key: 'week', label: t('pages.AdminReportsPage.أسبوع', 'أسبوع') },
   { key: 'month', label: t('pages.AdminReportsPage.شهر', 'شهر') },
   { key: 'quarter', label: t('pages.AdminReportsPage.3_أشهر', '3 أشهر') },
@@ -75,6 +75,8 @@ function getReportTimeMs(r) {
 
 const AdminReportsPage = () => {
   const { t } = useAppTranslation();
+  const tabLabels = useMemo(() => getTabLabels(t), [t]);
+  const presetKeys = useMemo(() => getPresetKeys(t), [t]);
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
@@ -249,10 +251,10 @@ const AdminReportsPage = () => {
       )}
 
       <div className="admin-reports-print-header print-only">
-        <h1>مراجعة التقارير — {TAB_LABELS[activeTab]}</h1>
-        <p>الفترة: {periodLabel}</p>
-        <p>عدد السجلات المعروضة: {filteredReports.length}</p>
-        <p>تاريخ الطباعة: {new Date().toLocaleString('ar-SA', { hour12: true })}</p>
+        <h1>{t('pages.AdminReportsPage.مراجعة_التقارير', 'مراجعة التقارير')} — {tabLabels[activeTab]}</h1>
+        <p>{t('pages.AdminReportsPage.الفترة', 'الفترة:')} {periodLabel}</p>
+        <p>{t('pages.AdminReportsPage.عدد_السجلات_المعروضة', 'عدد السجلات المعروضة:')} {filteredReports.length}</p>
+        <p>{t('pages.AdminReportsPage.تاريخ_الطباعة', 'تاريخ الطباعة:')} {new Date().toLocaleString('ar-SA', { hour12: true })}</p>
       </div>
 
       <div className="admin-reports-tabs no-print">
@@ -261,7 +263,7 @@ const AdminReportsPage = () => {
           onClick={() => setActiveTab('daily')}
           className={`admin-reports-tabs__btn ${activeTab === 'daily' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <Calendar size={18} className="admin-reports-tabs__btn-icon" /> {t('config.appNavItems.التحضير', t('config.appNavItems.التحضير', 'التحضير'))}
+          <Calendar size={18} className="admin-reports-tabs__btn-icon" /> {t('config.appNavItems.التحضير', 'التحضير')}
         </button>
         <button
           type="button"
@@ -313,7 +315,7 @@ const AdminReportsPage = () => {
         <div className="admin-reports-filters__row--dates">
           <div className="admin-reports-preset-chips">
             <span className="admin-reports-preset-chips__label">{t('pages.AdminReportsPage.فترة_جاهزة', 'فترة جاهزة:')}</span>
-            {PRESET_KEYS.map(({ key, label }) => (
+            {presetKeys.map(({ key, label }) => (
               <button
                 key={key}
                 type="button"
