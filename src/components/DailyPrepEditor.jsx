@@ -4,14 +4,14 @@ import AppSelect from './AppSelect';
 import CurriculumLessonPicker from './CurriculumLessonPicker';
 import AttendanceStatusIcon from './AttendanceStatusIcon';
 import {
-  PREP_PERIOD_OPTIONS,
+  getPrepPeriodOptions,
   periodSaveLabel,
   prepDateFieldLabel,
   curriculumSectionTitle,
   getPeriodRange,
 } from '../utils/dailyPrepForm';
 import {
-  ATTENDANCE_STATUSES,
+  getAttendanceStatuses,
   attendanceSummaryText,
   applyAttendanceStatus,
   countByAttendanceStatus,
@@ -33,6 +33,8 @@ export default function DailyPrepEditor({
   onSchoolChange,
 }) {
   const { t } = useAppTranslation();
+  const prepPeriodOptions = useMemo(() => getPrepPeriodOptions(t), [t]);
+  const attendanceStatuses = useMemo(() => getAttendanceStatuses(t), [t]);
   const {
     schoolId = '',
     prepPeriod = 'weekly',
@@ -147,7 +149,7 @@ export default function DailyPrepEditor({
         <div className="daily-prep-setup__period">
           <span className="app-label">{t('components.DailyPrepEditor.نوع_الفترة', 'نوع الفترة')}</span>
           <div className="prep-period-chips" role="group" aria-label={t('components.DailyPrepEditor.نوع_فترة_التحضير', 'نوع فترة التحضير')}>
-            {PREP_PERIOD_OPTIONS.map((o) => {
+            {prepPeriodOptions.map((o) => {
               const Icon = o.Icon;
               return (
                 <button
@@ -167,7 +169,7 @@ export default function DailyPrepEditor({
 
         <div className="daily-prep-setup__dates">
           <div>
-            <label className="app-label">{prepDateFieldLabel(prepPeriod)}</label>
+            <label className="app-label">{prepDateFieldLabel(prepPeriod, t)}</label>
             <input
               type="date"
               className="app-input"
@@ -186,13 +188,13 @@ export default function DailyPrepEditor({
             <span>
               <strong>{activeSchool?.name}</strong>
               {' • '}
-              تحضير {periodSaveLabel(prepPeriod)}
+              تحضير {periodSaveLabel(prepPeriod, t)}
               {' • '}
               {periodRange.label}
             </span>
             {!studentsLoading && records.length > 0 && (
               <span className="daily-prep-summary-bar__present">
-                {attendanceSummaryText(records)}
+                {attendanceSummaryText(records, t)}
               </span>
             )}
           </div>
@@ -203,7 +205,7 @@ export default function DailyPrepEditor({
         <section className="surface-card daily-prep-curriculum">
           <h3 className="daily-prep-section__title">
             <BookOpen size={18} />
-            {curriculumSectionTitle(prepPeriod)}
+            {curriculumSectionTitle(prepPeriod, t)}
           </h3>
           <CurriculumLessonPicker
             curriculumList={curriculumList}
@@ -272,7 +274,7 @@ export default function DailyPrepEditor({
                             className={`daily-prep-status-select daily-prep-status-select--${status}`}
                             aria-label={`حالة ${record.name}`}
                           >
-                            {ATTENDANCE_STATUSES.map((s) => (
+                            {attendanceStatuses.map((s) => (
                               <option key={s.value} value={s.value}>
                                 {s.label}
                               </option>

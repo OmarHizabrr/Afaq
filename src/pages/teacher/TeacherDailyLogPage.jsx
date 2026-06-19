@@ -400,7 +400,7 @@ const TeacherDailyLogPage = ({ user }) => {
         <div className="daily-prep-setup__period">
           <span className="app-label">{t('components.DailyPrepEditor.نوع_الفترة', 'نوع الفترة')}</span>
           <div className="prep-period-chips" role="group" aria-label={t('components.DailyPrepEditor.نوع_فترة_التحضير', 'نوع فترة التحضير')}>
-            {PREP_PERIOD_OPTIONS.map((o) => {
+            {prepPeriodOptions.map((o) => {
               const Icon = o.Icon;
               return (
               <button
@@ -533,7 +533,7 @@ const TeacherDailyLogPage = ({ user }) => {
                           className={`daily-prep-status-select daily-prep-status-select--${status}`}
                           aria-label={`حالة ${record.name}`}
                         >
-                          {ATTENDANCE_STATUSES.map((s) => (
+                          {attendanceStatuses.map((s) => (
                             <option key={s.value} value={s.value}>
                               {s.label}
                             </option>
