@@ -7,7 +7,7 @@ import { isMoreTabActive, isNavPathActive } from '../utils/mobileNavTabs';
 import useAppTranslation from '../hooks/useAppTranslation';
 
 
-const BottomTabBar = ({ tabs, onMoreClick }) => {
+const BottomTabBar = ({ tabs, onMoreClick, sidebarOpen = false }) => {
   const { t } = useAppTranslation();
   const location = useLocation();
   const { unreadCount } = useNotificationBadge();
@@ -49,7 +49,7 @@ const BottomTabBar = ({ tabs, onMoreClick }) => {
         className={`bottom-tab-bar__item bottom-tab-bar__item--more ${moreActive ? 'bottom-tab-bar__item--active' : ''}`}
         onClick={onMoreClick}
         aria-label={t('components.BottomTabBar.المزيد_من_القوائم', 'المزيد من القوائم')}
-        aria-expanded={moreActive}
+        aria-expanded={sidebarOpen || moreActive}
       >
         <span className="bottom-tab-bar__icon-wrap">
           <LayoutGrid size={22} strokeWidth={moreActive ? 2.25 : 2} aria-hidden />

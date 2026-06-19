@@ -96,11 +96,9 @@ const StudentLayout = ({ user }) => {
   const menuItems = useMemo(() => getStudentMenuItems(t), [t]);
   const mobileTabs = useMemo(() => getPortalMobileTabs(menuItems, 'student'), [menuItems]);
 
-  const closeSidebar = () => {
-    if (window.innerWidth <= 1024) setSidebarOpen(false);
-  };
+  const closeSidebar = () => setSidebarOpen(false);
 
-  const openSidebar = () => setSidebarOpen(true);
+  const toggleSidebar = () => setSidebarOpen((open) => !open);
 
   return (
     <div
@@ -193,7 +191,7 @@ const StudentLayout = ({ user }) => {
 
         <InstallAppBanner />
         <PushNotificationBanner user={user} />
-        {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={openSidebar} /> : null}
+        {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={toggleSidebar} sidebarOpen={isSidebarOpen} /> : null}
       </div>
     </div>
   );

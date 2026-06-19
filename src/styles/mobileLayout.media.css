@@ -22,6 +22,29 @@
     display: none;
   }
 
+  .admin-layout--mobile-nav.mobile-open .mobile-menu-btn {
+    display: flex;
+  }
+
+  .admin-layout--mobile-nav .sidebar:not(.open) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .admin-layout--mobile-nav .sidebar.open {
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 50;
+  }
+
+  .admin-layout--mobile-nav .sidebar.collapsed {
+    width: var(--sidebar-width);
+  }
+
+  .sidebar-overlay {
+    z-index: 40;
+  }
+
   .admin-layout--mobile-nav .student-topbar-title {
     display: none;
   }

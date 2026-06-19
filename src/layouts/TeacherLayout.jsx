@@ -95,11 +95,9 @@ const TeacherLayout = ({ user }) => {
   const navItems = useMemo(() => getTeacherNavItems(t), [t]);
   const mobileTabs = useMemo(() => getPortalMobileTabs(navItems, 'teacher'), [navItems]);
 
-  const closeSidebar = () => {
-    if (window.innerWidth <= 768) setIsSidebarOpen(false);
-  };
+  const closeSidebar = () => setIsSidebarOpen(false);
 
-  const openSidebar = () => setIsSidebarOpen(true);
+  const toggleSidebar = () => setIsSidebarOpen((open) => !open);
 
   return (
     <div
@@ -183,7 +181,7 @@ const TeacherLayout = ({ user }) => {
 
         <InstallAppBanner />
         <PushNotificationBanner user={user} />
-        {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={openSidebar} /> : null}
+        {isMobile ? <BottomTabBar tabs={mobileTabs} onMoreClick={toggleSidebar} sidebarOpen={isSidebarOpen} /> : null}
       </div>
     </div>
   );
