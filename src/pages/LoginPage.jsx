@@ -3,6 +3,7 @@ import AuthService, { ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE } fro
 import { Phone, Lock, LogIn, Eye, EyeOff, Download, Share } from 'lucide-react';
 import BusyButton from '../components/BusyButton';
 import useInstallPrompt from '../hooks/useInstallPrompt';
+import LanguageMenuButton from '../components/LanguageMenuButton';
 import useAppTranslation from '../hooks/useAppTranslation';
 
 
@@ -79,6 +80,7 @@ const LoginPage = () => {
 
   return (
     <main className="welcome-container">
+      <LanguageMenuButton className="login-language-menu" />
       <div className="glow-orb"></div>
       
       <div className="login-card">

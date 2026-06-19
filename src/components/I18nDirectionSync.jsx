@@ -16,5 +16,9 @@ export default function I18nDirectionSync({ children }) {
 
   const dir = getLanguageMeta(i18n.language).dir;
 
-  return <div dir={dir}>{children}</div>;
+  return (
+    <div dir={dir} className="i18n-root">
+      {children}
+    </div>
+  );
 }

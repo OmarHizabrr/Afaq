@@ -22,6 +22,7 @@ import PushNotificationBanner from '../components/PushNotificationBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
+import LanguageMenuButton from '../components/LanguageMenuButton';
 import useAppTranslation from '../hooks/useAppTranslation';
 
 
@@ -103,7 +104,6 @@ const TeacherLayout = ({ user }) => {
   return (
     <div
       className={`admin-layout ${isSidebarOpen ? 'mobile-open' : ''} ${isMobile ? 'admin-layout--mobile-nav' : ''}`}
-      dir="rtl"
     >
       {isSidebarOpen && (
         <div className="sidebar-overlay" onClick={closeSidebar} aria-hidden />
@@ -163,6 +163,7 @@ const TeacherLayout = ({ user }) => {
           </div>
 
           <div className="topbar__actions">
+            <LanguageMenuButton />
             <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? t('layouts.AdminLayout.الوضع_النهاري', 'الوضع النهاري') : t('layouts.AdminLayout.الوضع_الليلي', 'الوضع الليلي')}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>

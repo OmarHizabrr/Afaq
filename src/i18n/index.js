@@ -20,6 +20,8 @@ export function applyDocumentLanguage(lang) {
   const root = document.documentElement;
   root.lang = lang;
   root.dir = meta.dir;
+  root.classList.remove('lang-ar', 'lang-en', 'lang-sn');
+  root.classList.add(`lang-${lang}`);
 }
 
 const initialLang = typeof window !== 'undefined' ? readStoredLanguage() : DEFAULT_LANGUAGE;

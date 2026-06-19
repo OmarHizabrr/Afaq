@@ -153,6 +153,12 @@ body {
   height: 100%;
 }
 
+.i18n-root {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -174,6 +180,23 @@ body {
   text-align: center;
   padding: 2rem;
   background: linear-gradient(180deg, var(--bg-color) 0%, var(--bg-elevated) 100%);
+}
+
+.login-language-menu {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top, 0px));
+  inset-inline-end: max(1rem, env(safe-area-inset-end, 0px));
+  z-index: 2;
+}
+
+html[dir='ltr'] body {
+  font-family: var(--font-latin);
+}
+
+html[dir='ltr'] .logo-text,
+html[dir='ltr'] .google-btn,
+html[dir='ltr'] .nav-link {
+  font-family: var(--font-latin);
 }
 
 .glow-orb {
@@ -437,15 +460,15 @@ body {
 }
 
 .login-form__field input {
-  text-align: right;
-  direction: rtl;
+  text-align: start;
+  direction: inherit;
   font-size: 0.95rem;
   line-height: 1.45;
   padding: 10px 0;
 }
 
 .login-form__field input::placeholder {
-  text-align: right;
+  text-align: start;
 }
 
 .login-form__password-toggle {
@@ -5243,10 +5266,16 @@ button.village-details-schools-item:hover {
   .sidebar {
     position: fixed;
     top: 0;
-    right: 0;
     bottom: 0;
+    inset-inline-end: 0;
     transform: translateX(100%);
     box-shadow: var(--shadow-lg);
+  }
+
+  [dir='ltr'] .sidebar {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+    transform: translateX(-100%);
   }
 
   .sidebar.open {
@@ -5271,6 +5300,75 @@ button.village-details-schools-item:hover {
 }
 
 /* قائمة المستخدم */
+.language-menu {
+  position: relative;
+}
+
+.language-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 40px;
+  padding-inline: 6px;
+}
+
+.language-menu__code {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+.language-menu__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  min-width: 180px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--panel-color);
+  box-shadow: var(--shadow-lg);
+  z-index: 120;
+}
+
+.language-menu__heading {
+  margin: 0 0 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.language-menu__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.875rem;
+  text-align: start;
+  cursor: pointer;
+  transition: background var(--motion-fast), color var(--motion-fast);
+}
+
+.language-menu__option:hover {
+  background: var(--accent-muted);
+}
+
+.language-menu__option--active {
+  background: var(--accent-glow);
+  color: var(--md-primary);
+  font-weight: 600;
+}
+
 .user-menu-dropdown {
   position: relative;
 }

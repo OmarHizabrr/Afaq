@@ -109,9 +109,13 @@ function App() {
 
   if (loading) {
     return (
-      <main className="welcome-container app-boot">
-        <div className="loading-spinner loading-spinner--lg"></div>
-      </main>
+      <SiteContentProvider>
+        <I18nDirectionSync>
+          <main className="welcome-container app-boot">
+            <div className="loading-spinner loading-spinner--lg"></div>
+          </main>
+        </I18nDirectionSync>
+      </SiteContentProvider>
     );
   }
 
