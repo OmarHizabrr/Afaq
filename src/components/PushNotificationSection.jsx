@@ -2,14 +2,22 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Bell, CheckCircle, Loader2 } from 'lucide-react';
 import usePushNotifications from '../hooks/usePushNotifications';
 import FirestoreApi from '../services/firestoreApi';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const PushNotificationSection = ({ user }) => {
+  const { t } = useAppTranslation();
   const { permission, registered, busy, enable, supported, configured, fcmSupported } =
     usePushNotifications(user);
   const [tokenCount, setTokenCount] = useState(null);
   const userId = user?.uid || user?.id;
 
   const canShowDiagnostics = useMemo(() => true, []);
+
+  const title = t('components.PushNotificationSection.إشعارات_الجهاز', 'إشعارات الجهاز');
+  const diagnostics = t(
+    'components.PushNotificationSection.الحالة_vapid',
+    `الحالة: VAPID=${configured ? 'ON' : 'OFF'} · FCM=${fcmSupported ? 'ON' : 'OFF'} · tokens=${tokenCount == null ? '—' : tokenCount}`
+  );
 
   useEffect(() => {
     let active = true;
@@ -33,8 +41,10 @@ const PushNotificationSection = ({ user }) => {
   if (!supported) {
     return (
       <section className="surface-card settings-push-card">
-        <h2 className="settings-push-card__title">إشعارات الجهاز</h2>
-        <p className="settings-push-card__hint">المتصفح الحالي لا يدعم إشعارات النظام.</p>
+        <h2 className="settings-push-card__title">{title}</h2>
+        <p className="settings-push-card__hint">
+          {t('components.PushNotificationSection.المتصفح_لا_يدعم_الإشعارات', 'المتصفح الحالي لا يدعم إشعارات النظام.')}
+        </p>
       </section>
     );
   }
@@ -42,26 +52,24 @@ const PushNotificationSection = ({ user }) => {
   if (permission === 'granted') {
     return (
       <section className="surface-card settings-push-card">
-        <h2 className="settings-push-card__title">إشعارات الجهاز</h2>
+        <h2 className="settings-push-card__title">{title}</h2>
         <p className="settings-push-card__status settings-push-card__status--ok">
           <CheckCircle size={18} aria-hidden />
           {configured && fcmSupported && registered
-            ? 'الإشعارات مفعّلة ومتصلة بالخادم'
+            ? t('components.PushNotificationSection.الإشعارات_مفعّلة_ومتصلة_بالخادم', 'الإشعارات مفعّلة ومتصلة بالخادم')
             : configured && fcmSupported
-              ? 'الإشعارات مسموحة — جاري الربط…'
-              : 'إشعارات المتصفح مفعّلة'}
+              ? t('components.PushNotificationSection.الإشعارات_مسموحة_جاري_الربط', 'الإشعارات مسموحة — جاري الربط…')
+              : t('components.PushNotificationSection.إشعارات_المتصفح_مفعّلة', 'إشعارات المتصفح مفعّلة')}
         </p>
         {!configured && (
           <p className="settings-push-card__hint">
-            لإشعارات الخلفية (عند إغلاق التطبيق) أضف مفتاح VAPID في إعدادات الخادم.
+            {t(
+              'components.PushNotificationSection.لإشعارات_الخلفية_أضف_vapid',
+              'لإشعارات الخلفية (عند إغلاق التطبيق) أضف مفتاح VAPID في إعدادات الخادم.'
+            )}
           </p>
         )}
-        {canShowDiagnostics && (
-          <p className="settings-push-card__hint">
-            الحالة: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
-            {tokenCount == null ? '—' : tokenCount}
-          </p>
-        )}
+        {canShowDiagnostics && <p className="settings-push-card__hint">{diagnostics}</p>}
         {configured && fcmSupported && tokenCount === 0 && (
           <button
             type="button"
@@ -75,7 +83,11 @@ const PushNotificationSection = ({ user }) => {
             }}
             disabled={busy}
           >
-            {busy ? <Loader2 className="busy-btn__spin" size={16} aria-hidden /> : 'إعادة ربط الجهاز'}
+            {busy ? (
+              <Loader2 className="busy-btn__spin" size={16} aria-hidden />
+            ) : (
+              t('components.PushNotificationSection.إعادة_ربط_الجهاز', 'إعادة ربط الجهاز')
+            )}
           </button>
         )}
       </section>
@@ -85,9 +97,12 @@ const PushNotificationSection = ({ user }) => {
   if (permission === 'denied') {
     return (
       <section className="surface-card settings-push-card">
-        <h2 className="settings-push-card__title">إشعارات الجهاز</h2>
+        <h2 className="settings-push-card__title">{title}</h2>
         <p className="settings-push-card__hint">
-          الإشعارات محظورة من إعدادات المتصفح. افتح إعدادات الموقع واسمح بالإشعارات ثم أعد تحميل الصفحة.
+          {t(
+            'components.PushNotificationSection.الإشعارات_محظورة',
+            'الإشعارات محظورة من إعدادات المتصفح. افتح إعدادات الموقع واسمح بالإشعارات ثم أعد تحميل الصفحة.'
+          )}
         </p>
       </section>
     );
@@ -95,9 +110,12 @@ const PushNotificationSection = ({ user }) => {
 
   return (
     <section className="surface-card settings-push-card">
-      <h2 className="settings-push-card__title">إشعارات الجهاز</h2>
+      <h2 className="settings-push-card__title">{title}</h2>
       <p className="settings-push-card__hint">
-        اسمح بالإشعارات لتصلك رسائل المحادثات والتنبيهات فوراً.
+        {t(
+          'components.PushNotificationSection.اسمح_بالإشعارات',
+          'اسمح بالإشعارات لتصلك رسائل المحادثات والتنبيهات فوراً.'
+        )}
       </p>
       <button
         type="button"
@@ -110,12 +128,11 @@ const PushNotificationSection = ({ user }) => {
         ) : (
           <Bell size={16} aria-hidden />
         )}
-        تفعيل الإشعارات
+        {t('components.PushNotificationSection.تفعيل_الإشعارات', 'تفعيل الإشعارات')}
       </button>
       {canShowDiagnostics && (
         <p className="settings-push-card__hint" style={{ marginTop: '10px' }}>
-          الحالة: VAPID={configured ? 'ON' : 'OFF'} · FCM={fcmSupported ? 'ON' : 'OFF'} · tokens=
-          {tokenCount == null ? '—' : tokenCount}
+          {diagnostics}
         </p>
       )}
     </section>

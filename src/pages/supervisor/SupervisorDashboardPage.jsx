@@ -19,6 +19,7 @@ const StatCard = ({ title, value, icon: Icon, tone, loading }) => (
 );
 
 const SupervisorDashboardPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const actorId = user?.uid || user?.id;
   const [stats, setStats] = useState({
@@ -91,33 +92,33 @@ const SupervisorDashboardPage = ({ user }) => {
     <div className="portal-page supervisor-dashboard-page">
       <PageHeader
         title={<span className="page-header-accent--primary">لوحة المشرف الميداني</span>}
-        subtitle="إحصائيات زياراتك ونشاطاتك في المناطق التابعة لك"
+        subtitle={t('pages.SupervisorDashboardPage.إحصائيات_زياراتك_ونشاطاتك_في_المناطق_التابعة_لك', 'إحصائيات زياراتك ونشاطاتك في المناطق التابعة لك')}
       />
 
       <PortalFeaturedAction
         to="/supervisor/visit"
         icon={MapPin}
-        title="زيارة ميدانية جديدة"
-        subtitle="سجّل زيارتك وارفع تقريرك الميداني بسرعة"
-        badge="وصول سريع"
+        title={t('pages.SupervisorDashboardPage.زيارة_ميدانية_جديدة', 'زيارة ميدانية جديدة')}
+        subtitle={t('pages.SupervisorDashboardPage.سجّل_زيارتك_وارفع_تقريرك_الميداني_بسرعة', 'سجّل زيارتك وارفع تقريرك الميداني بسرعة')}
+        badge={t('pages.SupervisorDashboardPage.وصول_سريع', 'وصول سريع')}
         tone="primary"
-        secondaryAction={{ path: '/supervisor/history', label: 'عرض سجل الزيارات السابقة', icon: FileText }}
+        secondaryAction={{ path: '/supervisor/history', label: t('pages.SupervisorDashboardPage.عرض_سجل_الزيارات_السابقة', 'عرض سجل الزيارات السابقة'), icon: FileText }}
       />
 
       <PortalQuickActions
         actions={[
-          { path: '/supervisor/visit', label: 'تسجيل زيارة', icon: MapPin, tone: 'primary' },
-          { path: '/supervisor/history', label: 'سجل الزيارات', icon: FileText },
-          { path: '/supervisor/notifications', label: 'الإشعارات', icon: Bell },
-          { path: '/supervisor/settings', label: 'الإعدادات', icon: Settings },
+          { path: '/supervisor/visit', label: t('layouts.SupervisorLayout.تسجيل_زيارة', 'تسجيل زيارة'), icon: MapPin, tone: 'primary' },
+          { path: '/supervisor/history', label: t('layouts.SupervisorLayout.سجل_الزيارات', 'سجل الزيارات'), icon: FileText },
+          { path: '/supervisor/notifications', label: t('config.appNavItems.الإشعارات', 'الإشعارات'), icon: Bell },
+          { path: '/supervisor/settings', label: t('config.appNavItems.الإعدادات', 'الإعدادات'), icon: Settings },
         ]}
       />
 
       <div className="portal-stats-grid">
-        <StatCard title="المناطق المسندة" value={stats.regionsCount} icon={Layers} tone="blue" loading={loading} />
-        <StatCard title="الزيارات (هذا الشهر)" value={stats.visitsThisMonth} icon={CheckCircle} tone="success" loading={loading} />
-        <StatCard title="إجمالي الزيارات الميدانية" value={stats.visitsCount} icon={FileText} tone="amber" loading={loading} />
-        <StatCard title="المدارس النشطة" value={stats.totalSchools} icon={School} tone="purple" loading={loading} />
+        <StatCard title={t('pages.SupervisorDashboardPage.المناطق_المسندة', 'المناطق المسندة')} value={stats.regionsCount} icon={Layers} tone="blue" loading={loading} />
+        <StatCard title={t('pages.SupervisorDashboardPage.الزيارات_هذا_الشهر', 'الزيارات (هذا الشهر)')} value={stats.visitsThisMonth} icon={CheckCircle} tone="success" loading={loading} />
+        <StatCard title={t('pages.SupervisorDashboardPage.إجمالي_الزيارات_الميدانية', 'إجمالي الزيارات الميدانية')} value={stats.visitsCount} icon={FileText} tone="amber" loading={loading} />
+        <StatCard title={t('pages.SupervisorDashboardPage.المدارس_النشطة', 'المدارس النشطة')} value={stats.totalSchools} icon={School} tone="purple" loading={loading} />
       </div>
 
       <div className="portal-section-grid">

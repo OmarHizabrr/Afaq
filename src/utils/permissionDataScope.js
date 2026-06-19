@@ -1,3 +1,4 @@
+import translate from '../i18n/translate';
 import { isSystemAdmin } from './systemRoles';
 
 /**
@@ -8,6 +9,26 @@ import { isSystemAdmin } from './systemRoles';
 
 export const DATA_SCOPE_ALL = 'all';
 export const DATA_SCOPE_MEMBERSHIP = 'membership';
+
+export function getDataScopeSectionLabel(t = translate) {
+  return t('utils.permissionDataScope.نطاق_عرض_البيانات_في_هذه_الصفحة', 'نطاق عرض البيانات في هذه الصفحة');
+}
+
+export function getDataScopeOptions(t = translate) {
+  return [
+    {
+      value: DATA_SCOPE_ALL,
+      label: t('utils.permissionDataScope.كل_السجلات_عرض_شامل', 'كل السجلات (عرض شامل)'),
+    },
+    {
+      value: DATA_SCOPE_MEMBERSHIP,
+      label: t(
+        'utils.permissionDataScope.ما_يرتبط_بي_فقط',
+        'ما يرتبط بي فقط (مدارس/مناطق/مجموعات أنا عضو فيها)'
+      ),
+    },
+  ];
+}
 
 export function normalizeDataScope(value) {
   return value === DATA_SCOPE_MEMBERSHIP ? DATA_SCOPE_MEMBERSHIP : DATA_SCOPE_ALL;

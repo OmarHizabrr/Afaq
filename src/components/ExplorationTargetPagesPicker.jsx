@@ -10,6 +10,7 @@ import {
  * مصفوفة فارغة = يظهر في جميع الصفحات.
  */
 const ExplorationTargetPagesPicker = ({ value = [], onChange, disabled = false }) => {
+  const { t } = useAppTranslation();
   const selected = useMemo(() => new Set(normalizeAllowedPageIds(value)), [value]);
   const allSelected = selected.size === EXPLORATION_TARGET_PAGES.length;
   const isGlobal = selected.size === 0;
@@ -17,7 +18,7 @@ const ExplorationTargetPagesPicker = ({ value = [], onChange, disabled = false }
   const groups = useMemo(() => {
     const map = new Map();
     for (const page of EXPLORATION_TARGET_PAGES) {
-      const g = page.group || 'أخرى';
+      const g = page.group || t('components.ExplorationTargetPagesPicker.أخرى', 'أخرى');
       if (!map.has(g)) map.set(g, []);
       map.get(g).push(page);
     }
@@ -52,7 +53,7 @@ const ExplorationTargetPagesPicker = ({ value = [], onChange, disabled = false }
           </h4>
           <p className="exploration-target-pages__lead">
             {isGlobal
-              ? 'بدون تحديد: يظهر هذا النموذج في كل الصفحات التي تدعم «إضافة من الاستكشاف» وفي قسم الاستكشاف.'
+              ? t('components.ExplorationTargetPagesPicker.بدون_تحديد_يظهر_هذا_النموذج_في_كل_الصفحات_التي_تدعم_إضافة_من', 'بدون تحديد: يظهر هذا النموذج في كل الصفحات التي تدعم «إضافة من الاستكشاف» وفي قسم الاستكشاف.')
               : `محدّد لـ ${selected.size} صفحة — لن يظهر في غيرها عند الإضافة.`}
           </p>
         </div>
@@ -62,20 +63,20 @@ const ExplorationTargetPagesPicker = ({ value = [], onChange, disabled = false }
             className="exploration-target-pages__tool-btn"
             onClick={selectAll}
             disabled={disabled || allSelected}
-            title="تحديد كل الصفحات"
+            title={t('components.ExplorationTargetPagesPicker.تحديد_كل_الصفحات', 'تحديد كل الصفحات')}
           >
             <CheckCheck size={15} aria-hidden />
-            <span>الكل</span>
+            <span>{t('pages.RegionDetailsPage.الكل', 'الكل')}</span>
           </button>
           <button
             type="button"
             className="exploration-target-pages__tool-btn"
             onClick={clearToGlobal}
             disabled={disabled || isGlobal}
-            title="إلغاء التحديد — جميع الصفحات"
+            title={t('components.ExplorationTargetPagesPicker.إلغاء_التحديد_جميع_الصفحات', 'إلغاء التحديد — جميع الصفحات')}
           >
             <RotateCcw size={15} aria-hidden />
-            <span>جميع الصفحات</span>
+            <span>{t('utils.explorationTargetPages.جميع_الصفحات', 'جميع الصفحات')}</span>
           </button>
         </div>
       </div>

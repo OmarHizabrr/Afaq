@@ -18,6 +18,7 @@ import PortalQuickActions from '../../components/PortalQuickActions';
 import StudentResultCard from '../../components/StudentResultCard';
 
 const StatCard = ({ title, value, icon, tone, subtext }) => {
+  const { t } = useAppTranslation();
   const IconComponent = icon;
   return (
     <div className="surface-card surface-card--lg portal-stat-card portal-stat-card--lg">
@@ -38,7 +39,7 @@ const StudentDashboardPage = ({ user }) => {
   const [stats, setStats] = useState({
     attendancePercent: 0,
     averageGrade: 0,
-    schoolName: 'غير محدد',
+    schoolName: t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد'),
     completedTests: 0,
     recentResults: []
   });
@@ -57,7 +58,7 @@ const StudentDashboardPage = ({ user }) => {
             .filter((s) => schoolIds.includes(s.id))
             .map((s) => s.data()?.name)
             .filter(Boolean);
-          setStats((prev) => ({ ...prev, schoolName: names.length > 0 ? names.join('، ') : 'غير محدد' }));
+          setStats((prev) => ({ ...prev, schoolName: names.length > 0 ? names.join(t('components.ExplorationDataModal.،', '، ')) : t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد') }));
         }
 
         const visitDocs = await api.getCollectionGroupDocuments('reports');
@@ -108,7 +109,7 @@ const StudentDashboardPage = ({ user }) => {
         title={
           <>
             مرحباً يا{' '}
-            <span className="page-header-accent--primary">{user?.displayName?.split(/\s+/)[0] || 'طالب'}</span>
+            <span className="page-header-accent--primary">{user?.displayName?.split(/\s+/)[0] || t('components.MessengerPanel.طالب', 'طالب')}</span>
           </>
         }
         subtitle={
@@ -120,18 +121,18 @@ const StudentDashboardPage = ({ user }) => {
 
       <PortalQuickActions
         actions={[
-          { path: '/student/results', label: 'نتائجي', icon: Award, tone: 'primary' },
-          { path: '/student/profile', label: 'ملفي', icon: User },
-          { path: '/student/notifications', label: 'الإشعارات', icon: Bell },
-          { path: '/student/settings', label: 'الإعدادات', icon: FileText },
+          { path: '/student/results', label: t('layouts.StudentLayout.نتائجي', 'نتائجي'), icon: Award, tone: 'primary' },
+          { path: '/student/profile', label: t('layouts.StudentLayout.ملفي', 'ملفي'), icon: User },
+          { path: '/student/notifications', label: t('config.appNavItems.الإشعارات', 'الإشعارات'), icon: Bell },
+          { path: '/student/settings', label: t('config.appNavItems.الإعدادات', 'الإعدادات'), icon: FileText },
         ]}
       />
 
       <div className="portal-stats-grid portal-stats-grid--student">
-        <StatCard title="نسبة الحضور" value={`${stats.attendancePercent}%`} icon={Calendar} tone="success" subtext="انضباط ممتاز" />
-        <StatCard title="الاختبارات المنجزة" value={stats.completedTests} icon={Award} tone="amber" subtext="بانتظار التفوق" />
-        <StatCard title="سجل المتابعة" value={stats.recentResults.length} icon={FileText} tone="blue" subtext="تقييمات حديثة" />
-        <StatCard title="الحالة الأكاديمية" value="منتظم" icon={TrendingUp} tone="purple" subtext="آفاق 2026" />
+        <StatCard title={t('pages.StudentDashboardPage.نسبة_الحضور', 'نسبة الحضور')} value={`${stats.attendancePercent}%`} icon={Calendar} tone="success" subtext={t('pages.StudentDashboardPage.انضباط_ممتاز', 'انضباط ممتاز')} />
+        <StatCard title={t('pages.StudentDashboardPage.الاختبارات_المنجزة', 'الاختبارات المنجزة')} value={stats.completedTests} icon={Award} tone="amber" subtext={t('pages.StudentDashboardPage.بانتظار_التفوق', 'بانتظار التفوق')} />
+        <StatCard title={t('pages.StudentDashboardPage.سجل_المتابعة', 'سجل المتابعة')} value={stats.recentResults.length} icon={FileText} tone="blue" subtext={t('pages.StudentDashboardPage.تقييمات_حديثة', 'تقييمات حديثة')} />
+        <StatCard title={t('pages.StudentDashboardPage.الحالة_الأكاديمية', 'الحالة الأكاديمية')} value={t('pages.StudentDashboardPage.منتظم', 'منتظم')} icon={TrendingUp} tone="purple" subtext={t('pages.StudentDashboardPage.آفاق_2026', 'آفاق 2026')} />
       </div>
 
       <div className="student-dashboard-layout">
@@ -160,7 +161,7 @@ const StudentDashboardPage = ({ user }) => {
                       </div>
                     </div>
                     <span className="student-result-item__badge">
-                      {res.note || 'تم الاختبار بنجاح'}
+                      {res.note || t('pages.StudentDashboardPage.تم_الاختبار_بنجاح', 'تم الاختبار بنجاح')}
                     </span>
                   </div>
                 ))}

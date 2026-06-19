@@ -11,7 +11,9 @@ const StudentManagementStudentCard = ({
   onView,
   onEdit,
   onExplorationView,
-}) => (
+}) => {
+  const { t } = useAppTranslation();
+  return (
   <article className="student-mgmt-card">
     <div className="student-mgmt-card__head">
       <img
@@ -20,8 +22,8 @@ const StudentManagementStudentCard = ({
         className="student-mgmt-card__avatar"
       />
       <div className="student-mgmt-card__identity">
-        <h3 className="student-mgmt-card__name">{student.displayName || 'بدون اسم'}</h3>
-        <p className="student-mgmt-card__email">{student.email || 'بدون بريد'}</p>
+        <h3 className="student-mgmt-card__name">{student.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</h3>
+        <p className="student-mgmt-card__email">{student.email || t('components.StudentManagementStudentCard.بدون_بريد', 'بدون بريد')}</p>
       </div>
     </div>
 
@@ -33,11 +35,11 @@ const StudentManagementStudentCard = ({
 
     <dl className="student-mgmt-card__meta">
       <div>
-        <dt>الارتباطات</dt>
-        <dd>{student.membershipText || 'غير مرتبط بأي مجموعة'}</dd>
+        <dt>{t('components.StudentManagementStudentCard.الارتباطات', 'الارتباطات')}</dt>
+        <dd>{student.membershipText || t('components.StudentManagementStudentCard.غير_مرتبط_بأي_مجموعة', 'غير مرتبط بأي مجموعة')}</dd>
       </div>
       <div>
-        <dt>التحركات</dt>
+        <dt>{t('components.StudentManagementStudentCard.التحركات', 'التحركات')}</dt>
         <dd>
           <span className="student-management-activity-chip">
             <Activity size={14} /> {student.activityCount}
@@ -45,24 +47,26 @@ const StudentManagementStudentCard = ({
         </dd>
       </div>
       <div>
-        <dt>آخر حركة</dt>
-        <dd>{student.lastActivity ? new Date(student.lastActivity).toLocaleDateString('ar-EG') : 'لا يوجد'}</dd>
+        <dt>{t('components.StudentManagementStudentCard.آخر_حركة', 'آخر حركة')}</dt>
+        <dd>{student.lastActivity ? new Date(student.lastActivity).toLocaleDateString('ar-EG') : t('components.StudentManagementStudentCard.لا_يوجد', 'لا يوجد')}</dd>
       </div>
     </dl>
 
     <div className="student-mgmt-card__actions">
       {canView ? (
         <button type="button" className="google-btn google-btn--toolbar" onClick={() => onView(student.id)}>
-          <Eye size={16} /> الملف
+          <Eye size={16} /> {t('components.StudentManagementStudentCard.الملف', 'الملف')}
         </button>
       ) : null}
       {canEdit ? (
         <button type="button" className="google-btn google-btn--toolbar" onClick={() => onEdit(student)}>
-          <Edit2 size={16} /> تعديل
+          <Edit2 size={16} /> {t('components.ExplorationListCard.تعديل', 'تعديل')}
         </button>
       ) : null}
     </div>
   </article>
 );
+
+};
 
 export default StudentManagementStudentCard;

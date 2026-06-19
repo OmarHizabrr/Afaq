@@ -1,3 +1,4 @@
+import useAppTranslation from '../../hooks/useAppTranslation';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Calendar, Save, Users, School, BookOpen, CalendarDays, CalendarRange, StickyNote, ChevronDown, ChevronUp } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -14,60 +15,30 @@ import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 import { skipsMembershipDataScopeLoading } from '../../utils/systemRoles';
 import { canPickAnySchoolForPrep, resolveDailyPrepSchoolOptions } from '../../utils/dailyPrepSchools';
 import {
-  ATTENDANCE_STATUSES,
+  getAttendanceStatuses,
   applyAttendanceStatus,
   attendanceSummaryText,
   countByAttendanceStatus,
   defaultAttendanceRecord,
   isAttendancePresent,
 } from '../../utils/attendanceStatus';
-import { entriesToLegacyItems, summarizeCurriculumProgress } from '../../utils/curriculumProgress';
+import {
+  entriesToLegacyItems,
+  summarizeCurriculumProgress,
+} from '../../utils/curriculumProgress';
+import {
+  getPrepPeriodOptions,
+  periodSaveLabel,
+  getPeriodRange,
+} from '../../utils/dailyPrepForm';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
-const formatDateInput = (d = new Date()) => {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-};
-
-const getPeriodRange = (period, referenceDate = new Date()) => {
-  const d = new Date(referenceDate);
-  if (period === 'daily') {
-    const date = formatDateInput(d);
-    return { start: date, end: date, label: date };
-  }
-  if (period === 'weekly') {
-    const day = d.getDay();
-    const start = new Date(d);
-    start.setDate(d.getDate() - day);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    const startStr = formatDateInput(start);
-    const endStr = formatDateInput(end);
-    return { start: startStr, end: endStr, label: `${startStr} — ${endStr}` };
-  }
-  const start = new Date(d.getFullYear(), d.getMonth(), 1);
-  const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-  const startStr = formatDateInput(start);
-  const endStr = formatDateInput(end);
-  return { start: startStr, end: endStr, label: `${startStr} — ${endStr}` };
-};
-
-const PREP_PERIOD_OPTIONS = [
-  { value: 'weekly', label: 'أسبوعي', hint: 'الافتراضي — تسجيل أسبوع كامل', Icon: CalendarDays },
-  { value: 'daily', label: 'يومي', hint: 'تحضير يوم واحد', Icon: Calendar },
-  { value: 'monthly', label: 'شهري', hint: 'ملخص الشهر', Icon: CalendarRange },
-];
-
-const periodSaveLabel = (period) => {
-  if (period === 'weekly') return 'الأسبوعي';
-  if (period === 'monthly') return 'الشهري';
-  return 'اليومي';
-};
-
 const TeacherDailyLogPage = ({ user }) => {
+  const { t } = useAppTranslation();
+  const prepPeriodOptions = useMemo(() => getPrepPeriodOptions(t), [t]);
+  const attendanceStatuses = useMemo(() => getAttendanceStatuses(t), [t]);
+  const savePeriodLabel = (period) => periodSaveLabel(period, t);
   const actorId = user?.uid || user?.id;
   const perm = usePermissions();
   const { ready, pageDataScope, membershipLoading, actorUser } = perm;
@@ -150,10 +121,10 @@ const TeacherDailyLogPage = ({ user }) => {
 
         if (!options.length) {
           if (broadSchoolPick) {
-            setError('لا توجد مدارس مسجلة في النظام حالياً.');
+            setError(t('pages.TeacherDailyLogPage.لا_توجد_مدارس_مسجلة_في_النظام_حالياً', 'لا توجد مدارس مسجلة في النظام حالياً.'));
           } else {
             setError(
-              'الحساب غير مرتبط بمدرسة. اطلب من الإدارة تعيينك في مدرسة من صفحة تفاصيل المدرسة.'
+              t('pages.TeacherDailyLogPage.الحساب_غير_مرتبط_بمدرسة_اطلب_من_الإدارة_تعيينك_في_مدرسة_من_ص', 'الحساب غير مرتبط بمدرسة. اطلب من الإدارة تعيينك في مدرسة من صفحة تفاصيل المدرسة.')
             );
           }
           setSchoolOptions([]);
@@ -170,7 +141,7 @@ const TeacherDailyLogPage = ({ user }) => {
         setActiveSchoolId(sid);
       } catch (err) {
         console.error(err);
-        setError('حدث خطأ أثناء الاتصال بقاعدة البيانات');
+        setError(t('pages.TeacherDailyLogPage.حدث_خطأ_أثناء_الاتصال_بقاعدة_البيانات', 'حدث خطأ أثناء الاتصال بقاعدة البيانات'));
       } finally {
         if (!cancelled) setBootLoading(false);
       }
@@ -208,13 +179,13 @@ const TeacherDailyLogPage = ({ user }) => {
           stData.map((s) =>
             defaultAttendanceRecord({
               studentId: s.id,
-              name: s.displayName || s.studentName || s.name || 'طالب',
+              name: s.displayName || s.studentName || s.name || t('components.MessengerPanel.طالب', 'طالب'),
             })
           )
         );
       } catch (err) {
         console.error(err);
-        setError('حدث خطأ أثناء جلب طلاب المدرسة');
+        setError(t('pages.TeacherDailyLogPage.حدث_خطأ_أثناء_جلب_طلاب_المدرسة', 'حدث خطأ أثناء جلب طلاب المدرسة'));
       } finally {
         if (!cancelled) setStudentsLoading(false);
       }
@@ -250,20 +221,20 @@ const TeacherDailyLogPage = ({ user }) => {
 
   const handleSaveLog = async () => {
     if (!activeSchoolId) {
-      setError('يرجى اختيار المدرسة أولاً');
+      setError(t('pages.TeacherDailyLogPage.يرجى_اختيار_المدرسة_أولاً', 'يرجى اختيار المدرسة أولاً'));
       return;
     }
     const hasCurriculum = curriculumEntries.some((e) => (e.selectedWeeks || []).length > 0);
     if (!hasCurriculum) {
-      setError('اختر مادة واحدة أو أكثر من المناهج وحدّد الأسبوع/الدرس لكل مادة');
+      setError(t('pages.ReportDetailsPage.اختر_مادة_واحدة_أو_أكثر_من_المناهج_وحدّد_الأسبوع_الدرس_لكل_م', 'اختر مادة واحدة أو أكثر من المناهج وحدّد الأسبوع/الدرس لكل مادة'));
       return;
     }
     if (!trackingData.length) {
-      setError('لا يوجد طلاب مسجلون في هذه المدرسة');
+      setError(t('pages.TeacherDailyLogPage.لا_يوجد_طلاب_مسجلون_في_هذه_المدرسة', 'لا يوجد طلاب مسجلون في هذه المدرسة'));
       return;
     }
     if (!actorId) {
-      setError('تعذر تحديد معرف المعلم للحفظ.');
+      setError(t('pages.TeacherDailyLogPage.تعذر_تحديد_معرف_المعلم_للحفظ', 'تعذر تحديد معرف المعلم للحفظ.'));
       return;
     }
 
@@ -296,7 +267,7 @@ const TeacherDailyLogPage = ({ user }) => {
         curriculumProgressSummary: progressSummary,
         curriculumItems: entriesToLegacyItems(curriculumEntries),
         subjectId: primary.subjectId || curriculumEntries[0]?.subjectId || '',
-        subjectName: curriculumEntries.map((e) => e.subjectName).join('، '),
+        subjectName: curriculumEntries.map((e) => e.subjectName).join(t('components.ExplorationDataModal.،', '، ')),
         week: primary.reportedWeek || curriculumEntries[0]?.selectedWeeks?.[0] || '',
         lessonName: allLessons.join(' | '),
         totalStudents: trackingData.length,
@@ -318,7 +289,7 @@ const TeacherDailyLogPage = ({ user }) => {
       setTrackingData((prev) => prev.map((item) => ({ ...item, memorization: '', review: '' })));
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء حفظ التحضير');
+      setError(t('pages.TeacherDailyLogPage.حدث_خطأ_أثناء_حفظ_التحضير', 'حدث خطأ أثناء حفظ التحضير'));
     } finally {
       setSaving(false);
     }
@@ -331,11 +302,11 @@ const TeacherDailyLogPage = ({ user }) => {
       <PageHeader
         icon={Calendar}
         iconColor="var(--success-color)"
-        title="التحضير"
+        title={t('config.appNavItems.التحضير', 'التحضير')}
         subtitle={
           broadSchoolPick
-            ? 'صلاحية شاملة — اختر أي مدرسة ثم سجّل التحضير'
-            : 'المدارس المعيّنة لك فقط — اختر المدرسة والفترة والمواد'
+            ? t('pages.TeacherDailyLogPage.صلاحية_شاملة_اختر_أي_مدرسة_ثم_سجّل_التحضير', 'صلاحية شاملة — اختر أي مدرسة ثم سجّل التحضير')
+            : t('pages.TeacherDailyLogPage.المدارس_المعيّنة_لك_فقط_اختر_المدرسة_والفترة_والمواد', 'المدارس المعيّنة لك فقط — اختر المدرسة والفترة والمواد')
         }
       />
 
@@ -356,7 +327,7 @@ const TeacherDailyLogPage = ({ user }) => {
               aria-expanded={setupOpen}
             >
               {setupOpen ? <ChevronUp size={16} aria-hidden /> : <ChevronDown size={16} aria-hidden />}
-              <span>{setupOpen ? 'طي الإعداد' : 'عرض الإعداد'}</span>
+              <span>{setupOpen ? t('pages.TeacherDailyLogPage.طي_الإعداد', 'طي الإعداد') : t('pages.TeacherDailyLogPage.عرض_الإعداد', 'عرض الإعداد')}</span>
             </button>
           )}
         </div>
@@ -376,11 +347,11 @@ const TeacherDailyLogPage = ({ user }) => {
         <>
         <div className="daily-prep-setup__school">
           <label className="app-label" htmlFor="daily-prep-school">
-            {broadSchoolPick ? 'اختر المدرسة' : 'المدرسة'}
+            {broadSchoolPick ? t('components.DailyPrepEditor.اختر_المدرسة', 'اختر المدرسة') : t('components.DailyPrepEditor.المدرسة', 'المدرسة')}
           </label>
           {schoolOptions.length === 0 ? (
             <p className="daily-prep-setup__hint">
-              {broadSchoolPick ? 'لا توجد مدارس مسجلة في النظام.' : 'لا توجد مدارس معيّنة لحسابك. اطلب من الإدارة تعيينك في مدرسة.'}
+              {broadSchoolPick ? t('pages.TeacherDailyLogPage.لا_توجد_مدارس_مسجلة_في_النظام', 'لا توجد مدارس مسجلة في النظام.') : t('pages.TeacherDailyLogPage.لا_توجد_مدارس_معيّنة_لحسابك_اطلب_من_الإدارة_تعيينك_في_مدرسة', 'لا توجد مدارس معيّنة لحسابك. اطلب من الإدارة تعيينك في مدرسة.')}
             </p>
           ) : broadSchoolPick || schoolOptions.length > 5 ? (
             <AppSelect
@@ -396,7 +367,7 @@ const TeacherDailyLogPage = ({ user }) => {
               ))}
             </AppSelect>
           ) : (
-            <div className="daily-prep-school-grid" role="listbox" aria-label="اختيار المدرسة">
+            <div className="daily-prep-school-grid" role="listbox" aria-label={t('components.DailyPrepEditor.اختيار_المدرسة', 'اختيار المدرسة')}>
               {schoolOptions.map((o) => (
                 <button
                   key={o.id}
@@ -426,7 +397,7 @@ const TeacherDailyLogPage = ({ user }) => {
 
         <div className="daily-prep-setup__period">
           <span className="app-label">نوع الفترة</span>
-          <div className="prep-period-chips" role="group" aria-label="نوع فترة التحضير">
+          <div className="prep-period-chips" role="group" aria-label={t('components.DailyPrepEditor.نوع_فترة_التحضير', 'نوع فترة التحضير')}>
             {PREP_PERIOD_OPTIONS.map((o) => {
               const Icon = o.Icon;
               return (
@@ -448,7 +419,7 @@ const TeacherDailyLogPage = ({ user }) => {
         <div className="daily-prep-setup__dates">
           <div>
             <label className="app-label">
-              {prepPeriod === 'daily' ? 'تاريخ اليوم' : prepPeriod === 'weekly' ? 'مرجع الأسبوع' : 'مرجع الشهر'}
+              {prepPeriod === 'daily' ? t('pages.TeacherDailyLogPage.تاريخ_اليوم', 'تاريخ اليوم') : prepPeriod === 'weekly' ? t('pages.TeacherDailyLogPage.مرجع_الأسبوع', 'مرجع الأسبوع') : t('pages.TeacherDailyLogPage.مرجع_الشهر', 'مرجع الشهر')}
             </label>
             <input
               type="date"
@@ -488,7 +459,7 @@ const TeacherDailyLogPage = ({ user }) => {
         <section className="surface-card daily-prep-curriculum">
           <h3 className="daily-prep-section__title">
             <BookOpen size={18} />
-            {prepPeriod === 'weekly' ? 'مواد الأسبوع من المناهج' : prepPeriod === 'monthly' ? 'مواد الشهر' : 'مواد اليوم'}
+            {prepPeriod === 'weekly' ? t('pages.TeacherDailyLogPage.مواد_الأسبوع_من_المناهج', 'مواد الأسبوع من المناهج') : prepPeriod === 'monthly' ? t('pages.TeacherDailyLogPage.مواد_الشهر', 'مواد الشهر') : t('pages.TeacherDailyLogPage.مواد_اليوم', 'مواد اليوم')}
           </h3>
           <CurriculumLessonPicker
             curriculumList={curriculumList}
@@ -575,7 +546,7 @@ const TeacherDailyLogPage = ({ user }) => {
                       <input
                         type="text"
                         className="app-input daily-prep-table__input daily-prep-table__input--mem"
-                        placeholder={present ? 'مثال: صفحة 10' : '—'}
+                        placeholder={present ? t('components.DailyPrepEditor.مثال_صفحة_10', 'مثال: صفحة 10') : '—'}
                         value={record.memorization}
                         onChange={(e) => handleTrackingChange(record.studentId, 'memorization', e.target.value)}
                         disabled={!present}
@@ -585,7 +556,7 @@ const TeacherDailyLogPage = ({ user }) => {
                       <input
                         type="text"
                         className="app-input daily-prep-table__input daily-prep-table__input--rev"
-                        placeholder={present ? 'مثال: جزء عم' : '—'}
+                        placeholder={present ? t('components.DailyPrepEditor.مثال_جزء_عم', 'مثال: جزء عم') : '—'}
                         value={record.review}
                         onChange={(e) => handleTrackingChange(record.studentId, 'review', e.target.value)}
                         disabled={!present}
@@ -595,7 +566,7 @@ const TeacherDailyLogPage = ({ user }) => {
                       <input
                         type="text"
                         className="app-input daily-prep-table__input"
-                        placeholder="ملاحظة على الطالب..."
+                        placeholder={t('components.DailyPrepEditor.ملاحظة_على_الطالب', 'ملاحظة على الطالب...')}
                         value={record.note || ''}
                         onChange={(e) => handleTrackingChange(record.studentId, 'note', e.target.value)}
                       />
@@ -626,7 +597,7 @@ const TeacherDailyLogPage = ({ user }) => {
               id="prep-session-notes"
               className="app-input daily-prep-session-notes__input"
               rows={3}
-              placeholder="اكتب أي ملاحظات تريد إرفاقها مع هذا التحضير..."
+              placeholder={t('components.DailyPrepEditor.اكتب_أي_ملاحظات_تريد_إرفاقها_مع_هذا_التحضير', 'اكتب أي ملاحظات تريد إرفاقها مع هذا التحضير...')}
               value={prepNotes}
               onChange={(e) => setPrepNotes(e.target.value)}
             />
@@ -652,7 +623,7 @@ const TeacherDailyLogPage = ({ user }) => {
             {presentCount}/{trackingData.length} حاضر
             {curriculumEntries.some((e) => (e.selectedWeeks || []).length > 0)
               ? ` • ${curriculumEntries.length} مادة`
-              : ' • اختر المنهج'}
+              : t('pages.TeacherDailyLogPage.اختر_المنهج', ' • اختر المنهج')}
           </span>
           <BusyButton
             type="button"

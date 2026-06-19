@@ -1,8 +1,10 @@
 import React from 'react';
 import AttendanceStatusIcon from './AttendanceStatusIcon';
 import { attendanceStatusLabel, isAttendancePresent } from '../utils/attendanceStatus';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const ReportDailyRecordCard = ({ record }) => {
+  const { t } = useAppTranslation();
   const present = isAttendancePresent(record);
   const status = record.attendanceStatus || (present ? 'present' : 'absent');
   const label = attendanceStatusLabel(record);
@@ -18,16 +20,16 @@ const ReportDailyRecordCard = ({ record }) => {
       </header>
       <dl className="report-daily-record-card__fields">
         <div>
-          <dt>الحفظ</dt>
+          <dt>{t('components.ReportDailyRecordCard.الحفظ', 'الحفظ')}</dt>
           <dd>{record.memorization || '—'}</dd>
         </div>
         <div>
-          <dt>المراجعة</dt>
+          <dt>{t('components.ReportDailyRecordCard.المراجعة', 'المراجعة')}</dt>
           <dd>{record.review || '—'}</dd>
         </div>
         {record.note ? (
           <div className="report-daily-record-card__note">
-            <dt>ملاحظة</dt>
+            <dt>{t('components.ReportDailyRecordCard.ملاحظة', 'ملاحظة')}</dt>
             <dd>{record.note}</dd>
           </div>
         ) : null}

@@ -12,6 +12,7 @@ import { EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
 const TeacherStudentDetailPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { explorationBridgeAllowed } = usePermissions();
@@ -54,7 +55,7 @@ const TeacherStudentDetailPage = ({ user }) => {
         setStudent({ id, ...doc });
       } catch (err) {
         console.error(err);
-        setError('تعذر تحميل بيانات الدارس.');
+        setError(t('pages.TeacherStudentDetailPage.تعذر_تحميل_بيانات_الدارس', 'تعذر تحميل بيانات الدارس.'));
       } finally {
         setLoading(false);
       }
@@ -75,7 +76,7 @@ const TeacherStudentDetailPage = ({ user }) => {
       navigate('/teacher/students', { replace: true });
     } catch (err) {
       console.error(err);
-      setError('تعذر حذف الدارس.');
+      setError(t('pages.TeacherStudentDetailPage.تعذر_حذف_الدارس', 'تعذر حذف الدارس.'));
     }
   };
 
@@ -90,7 +91,7 @@ const TeacherStudentDetailPage = ({ user }) => {
         topRow={(
           <div className="teacher-student-detail-page__top-row">
             <button type="button" className="page-nav-back" onClick={() => navigate('/teacher/students')}>
-              <ChevronRight size={20} aria-hidden /> طلابي
+              <ChevronRight size={20} aria-hidden /> {t('layouts.TeacherLayout.طلابي', 'طلابي')}
             </button>
           </div>
         )}
@@ -104,7 +105,7 @@ const TeacherStudentDetailPage = ({ user }) => {
         >
           <Edit2 size={18} />
           <span className="portal-toolbar__long">تعديل البيانات</span>
-          <span className="portal-toolbar__short">تعديل</span>
+          <span className="portal-toolbar__short">{t('components.ExplorationListCard.تعديل', 'تعديل')}</span>
         </button>
       </PageHeader>
 
@@ -143,23 +144,23 @@ const TeacherStudentDetailPage = ({ user }) => {
             className="google-btn google-btn--filled google-btn--success"
             onClick={() => navigate('/teacher/students', { state: { editStudent: student } })}
           >
-            <Edit2 size={16} /> تعديل
+            <Edit2 size={16} /> {t('components.ExplorationListCard.تعديل', 'تعديل')}
           </button>
           <button
             type="button"
             className="google-btn"
             onClick={() => setPendingDelete(true)}
           >
-            <Trash2 size={16} color="var(--danger-color)" /> حذف
+            <Trash2 size={16} color="var(--danger-color)" /> {t('components.ExplorationListCard.حذف', 'حذف')}
           </button>
         </div>
       </div>
 
       <ConfirmDialog
         open={pendingDelete}
-        title="تأكيد حذف الدارس"
+        title={t('pages.TeacherStudentDetailPage.تأكيد_حذف_الدارس', 'تأكيد حذف الدارس')}
         message={`سيتم حذف «${student.studentName}» من السجل.`}
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         danger
         onCancel={() => setPendingDelete(false)}
         onConfirm={async () => {

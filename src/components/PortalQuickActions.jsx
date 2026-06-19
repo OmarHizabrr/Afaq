@@ -2,12 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const PortalQuickActions = ({ actions }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
 
   if (!actions?.length) return null;
 
   return (
-    <div className="portal-quick-actions" role="navigation" aria-label="اختصارات سريعة">
+    <div className="portal-quick-actions" role="navigation" aria-label={t('components.PortalQuickActions.اختصارات_سريعة', 'اختصارات سريعة')}>
       {actions.map((action) => {
         const Icon = action.icon;
         return (

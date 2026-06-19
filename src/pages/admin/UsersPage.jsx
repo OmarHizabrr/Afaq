@@ -20,13 +20,13 @@ import {
 import { SYSTEM_ADMIN_ROLE } from '../../utils/systemRoles';
 
 const USER_ROLE_LABELS = {
-  [SYSTEM_ADMIN_ROLE]: 'مدير نظام (وصول كامل)',
-  admin: 'مدير النظام',
-  supervisor_arab: 'مشرف عام',
-  supervisor_local: 'مشرف منطقة',
-  teacher: 'معلم',
-  student: 'طالب',
-  unassigned: 'غير معيّن',
+  [SYSTEM_ADMIN_ROLE]: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
+  admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
+  supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
+  supervisor_local: t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة'),
+  teacher: t('components.MessengerPanel.معلم', 'معلم'),
+  student: t('components.MessengerPanel.طالب', 'طالب'),
+  unassigned: t('pages.SchoolDetailsPage.غير_معيّن', 'غير معيّن'),
 };
 const USERS_ROLE_FILTER_ORDER = [
   'teacher',
@@ -40,6 +40,7 @@ const USERS_ROLE_FILTER_ORDER = [
 ];
 
 const UsersPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [permissionProfiles, setPermissionProfiles] = useState([]);
@@ -74,7 +75,7 @@ const UsersPage = () => {
     () =>
       USERS_ROLE_FILTER_ORDER.map((id) => ({
         id,
-        label: id === 'all' ? 'الكل' : USER_ROLE_LABELS[id] || id,
+        label: id === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : USER_ROLE_LABELS[id] || id,
       })),
     []
   );
@@ -108,7 +109,7 @@ const UsersPage = () => {
       setUsers(usersList);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء جلب البيانات');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_جلب_البيانات', 'حدث خطأ أثناء جلب البيانات'));
     } finally {
       if (!quiet) setLoading(false);
     }
@@ -144,7 +145,7 @@ const UsersPage = () => {
 
   const handleCreateUser = async () => {
     if (!newUserName.trim() || !newUserPhone.trim() || !newUserPassword.trim()) {
-      setError('يرجى إدخال الاسم ورقم الهاتف وكلمة المرور للمستخدم.');
+      setError(t('pages.UsersPage.يرجى_إدخال_الاسم_ورقم_الهاتف_وكلمة_المرور_للمستخدم', 'يرجى إدخال الاسم ورقم الهاتف وكلمة المرور للمستخدم.'));
       return;
     }
     const emailNormalized = newUserEmail.trim().toLowerCase();
@@ -152,7 +153,7 @@ const UsersPage = () => {
       ? users.some((u) => (u.email || '').toLowerCase() === emailNormalized)
       : false;
     if (emailNormalized && emailExists) {
-      setError('هذا البريد الإلكتروني مستخدم مسبقاً.');
+      setError(t('pages.UserDetailsPage.هذا_البريد_الإلكتروني_مستخدم_مسبقاً', 'هذا البريد الإلكتروني مستخدم مسبقاً.'));
       return;
     }
 
@@ -184,7 +185,7 @@ const UsersPage = () => {
       await fetchData({ quiet: true });
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء إضافة المستخدم الجديد.');
+      setError(t('pages.UsersPage.حدث_خطأ_أثناء_إضافة_المستخدم_الجديد', 'حدث خطأ أثناء إضافة المستخدم الجديد.'));
     } finally {
       setModalBusy(false);
     }
@@ -198,17 +199,17 @@ const UsersPage = () => {
     }
     const displayName = expForm.deriveDisplayName('');
     if (!displayName) {
-      setError('لا يمكن استخراج اسم المستخدم من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      setError(t('pages.UsersPage.لا_يمكن_استخراج_اسم_المستخدم_من_حقول_النموذج_أضف_حقلاً_نصياً', 'لا يمكن استخراج اسم المستخدم من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".'));
       return;
     }
     const phone = expForm.getValueByType('tel').trim();
     if (!phone) {
-      setError('يحتاج النموذج إلى حقل من نوع «رقم هاتف» لرقم المستخدم.');
+      setError(t('pages.UsersPage.يحتاج_النموذج_إلى_حقل_من_نوع_رقم_هاتف_لرقم_المستخدم', 'يحتاج النموذج إلى حقل من نوع «رقم هاتف» لرقم المستخدم.'));
       return;
     }
     const password = expForm.getValueByType('password').trim();
     if (!password) {
-      setError('يحتاج النموذج إلى حقل من نوع «كلمة مرور» لإنشاء حساب المستخدم.');
+      setError(t('pages.UsersPage.يحتاج_النموذج_إلى_حقل_من_نوع_كلمة_مرور_لإنشاء_حساب_المستخدم', 'يحتاج النموذج إلى حقل من نوع «كلمة مرور» لإنشاء حساب المستخدم.'));
       return;
     }
     const emailNormalized = expForm.getValueByType('email').trim().toLowerCase();
@@ -216,7 +217,7 @@ const UsersPage = () => {
       ? users.some((u) => (u.email || '').toLowerCase() === emailNormalized)
       : false;
     if (emailNormalized && emailExists) {
-      setError('هذا البريد الإلكتروني مستخدم مسبقاً.');
+      setError(t('pages.UserDetailsPage.هذا_البريد_الإلكتروني_مستخدم_مسبقاً', 'هذا البريد الإلكتروني مستخدم مسبقاً.'));
       return;
     }
     const permissionProfileId = expForm.getValueBySource('permission_profiles') || null;
@@ -249,7 +250,7 @@ const UsersPage = () => {
       await fetchData({ quiet: true });
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء إضافة المستخدم من الاستكشاف.');
+      setError(t('pages.UsersPage.حدث_خطأ_أثناء_إضافة_المستخدم_من_الاستكشاف', 'حدث خطأ أثناء إضافة المستخدم من الاستكشاف.'));
     } finally {
       setExpSaving(false);
     }
@@ -287,7 +288,7 @@ const UsersPage = () => {
       await fetchData({ quiet: true });
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء تحديث الصلاحية');
+      setError(t('pages.UsersPage.حدث_خطأ_أثناء_تحديث_الصلاحية', 'حدث خطأ أثناء تحديث الصلاحية'));
     } finally {
       setModalBusy(false);
     }
@@ -297,8 +298,8 @@ const UsersPage = () => {
     <div className="users-page portal-page">
       <PageHeader
         icon={Shield}
-        title="إدارة المستخدمين والصلاحيات"
-        subtitle="عرض جميع الحسابات بما فيها الطلاب ومدير النظام. تعديل نوع الصلاحيات من هنا؛ الربط بالمدارس والمناطق من صفحات تلك المجموعات."
+        title={t('pages.UsersPage.إدارة_المستخدمين_والصلاحيات', 'إدارة المستخدمين والصلاحيات')}
+        subtitle={t('pages.UsersPage.عرض_جميع_الحسابات_بما_فيها_الطلاب_ومدير_النظام_تعديل_نوع_الص', 'عرض جميع الحسابات بما فيها الطلاب ومدير النظام. تعديل نوع الصلاحيات من هنا؛ الربط بالمدارس والمناطق من صفحات تلك المجموعات.')}
       >
         {(can(PERMISSION_PAGE_IDS.users, 'user_edit_role') || can(PERMISSION_PAGE_IDS.users, 'user_edit_permission_profile')) && (
           <>
@@ -312,7 +313,7 @@ const UsersPage = () => {
             >
               <UserPlus size={18} />
               <span className="portal-toolbar__long">إضافة مستخدم</span>
-              <span className="portal-toolbar__short">إضافة</span>
+              <span className="portal-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
             </button>
             {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
               <button
@@ -325,7 +326,7 @@ const UsersPage = () => {
               >
                 <Compass size={18} />
                 <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
-                <span className="portal-toolbar__short">استكشاف</span>
+                <span className="portal-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
               </button>
             )}
           </>
@@ -364,16 +365,16 @@ const UsersPage = () => {
                 className="users-card__avatar"
               />
               <div className="users-card__body">
-                <h3 className="users-card__name">{user.displayName || 'بدون اسم'}</h3>
+                <h3 className="users-card__name">{user.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</h3>
                 <p className="users-card__email">
                   {user.email}
                 </p>
                 <div className="users-card__chips">
-                  <div className="users-card__role-chip" title="الدور في النظام">
+                  <div className="users-card__role-chip" title={t('pages.UsersPage.الدور_في_النظام', 'الدور في النظام')}>
                     {USER_ROLE_LABELS[user.role] || user.role || '—'}
                   </div>
                   <div className="users-card__role-chip">
-                    {user.permissionProfileId ? 'نوع صلاحيات مخصص' : 'بدون نوع صلاحيات'}
+                    {user.permissionProfileId ? t('pages.UsersPage.نوع_صلاحيات_مخصص', 'نوع صلاحيات مخصص') : t('pages.UsersPage.بدون_نوع_صلاحيات', 'بدون نوع صلاحيات')}
                   </div>
                   {user.permissionProfileId && (
                     <div className="users-card__profile-chip">{user.permissionProfileId}</div>
@@ -394,7 +395,7 @@ const UsersPage = () => {
                     type="button"
                     className="icon-btn"
                     onClick={() => navigate(`/users/${user.id}`)}
-                    title="عرض الملف الشخصي"
+                    title={t('components.RecipientUserCard.عرض_الملف_الشخصي', 'عرض الملف الشخصي')}
                   >
                     <Eye size={18} color="var(--accent-color)" />
                   </button>
@@ -405,7 +406,7 @@ const UsersPage = () => {
                     type="button"
                     className="icon-btn"
                     onClick={() => openEditModal(user)}
-                    title="تعديل الصلاحيات"
+                    title={t('pages.UsersPage.تعديل_الصلاحيات', 'تعديل الصلاحيات')}
                   >
                     <Edit2 size={18} />
                   </button>
@@ -428,7 +429,7 @@ const UsersPage = () => {
 
             {can(PERMISSION_PAGE_IDS.users, 'user_edit_role') && (
               <div className="users-modal__field">
-                <label className="app-label">الدور في النظام</label>
+                <label className="app-label">{t('pages.UsersPage.الدور_في_النظام', 'الدور في النظام')}</label>
                 <AppSelect searchable
                   value={selectedRole}
                   onChange={(e) => {
@@ -471,8 +472,8 @@ const UsersPage = () => {
             </div>
             <div className="app-alert app-alert--info users-modal__helper-alert">
               {selectedRole === SYSTEM_ADMIN_ROLE
-                ? 'مدير النظام (وصول كامل) يرى كل الصفحات وكل الإجراءات دون ربط بنوع صلاحيات.'
-                : 'إذا تُرك نوع الصلاحيات فارغاً وليس المستخدم مدير نظام، فلن تُعرض له الصفحات حتى يُعيَّن له نوع صلاحيات.'}
+                ? t('pages.UsersPage.مدير_النظام_وصول_كامل_يرى_كل_الصفحات_وكل_الإجراءات_دون_ربط_ب', 'مدير النظام (وصول كامل) يرى كل الصفحات وكل الإجراءات دون ربط بنوع صلاحيات.')
+                : t('pages.UsersPage.إذا_تُرك_نوع_الصلاحيات_فارغاً_وليس_المستخدم_مدير_نظام،_فلن_ت', 'إذا تُرك نوع الصلاحيات فارغاً وليس المستخدم مدير نظام، فلن تُعرض له الصفحات حتى يُعيَّن له نوع صلاحيات.')}
             </div>
 
             <div className="users-modal__actions">
@@ -511,7 +512,7 @@ const UsersPage = () => {
               controller={expForm}
               actorUser={actorUser}
               storageUserId={storageUserId}
-              heading="حقول نموذج الاستكشاف"
+              heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
               currentPageId={PERMISSION_PAGE_IDS.users}
             />
             <div className="users-modal__actions">
@@ -539,12 +540,12 @@ const UsersPage = () => {
             </div>
 
             <div className="users-modal__field">
-              <label className="app-label">اسم المستخدم</label>
+              <label className="app-label">{t('pages.UserDetailsPage.اسم_المستخدم', 'اسم المستخدم')}</label>
               <input
                 className="app-input"
                 value={newUserName}
                 onChange={(e) => setNewUserName(e.target.value)}
-                placeholder="الاسم الكامل"
+                placeholder={t('pages.UsersPage.الاسم_الكامل', 'الاسم الكامل')}
               />
             </div>
 
@@ -580,15 +581,15 @@ const UsersPage = () => {
                   type={showNewUserPassword ? 'text' : 'password'}
                   value={newUserPassword}
                   onChange={(e) => setNewUserPassword(e.target.value)}
-                  placeholder="ادخل كلمة مرور المستخدم"
+                  placeholder={t('pages.UsersPage.ادخل_كلمة_مرور_المستخدم', 'ادخل كلمة مرور المستخدم')}
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   className="icon-btn settings-profile-form__password-toggle"
                   onClick={() => setShowNewUserPassword((v) => !v)}
-                  title={showNewUserPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
-                  aria-label={showNewUserPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                  title={showNewUserPassword ? t('pages.StudentManagementPage.إخفاء_كلمة_المرور', 'إخفاء كلمة المرور') : t('pages.StudentManagementPage.إظهار_كلمة_المرور', 'إظهار كلمة المرور')}
+                  aria-label={showNewUserPassword ? t('pages.StudentManagementPage.إخفاء_كلمة_المرور', 'إخفاء كلمة المرور') : t('pages.StudentManagementPage.إظهار_كلمة_المرور', 'إظهار كلمة المرور')}
                 >
                   {showNewUserPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -596,7 +597,7 @@ const UsersPage = () => {
             </div>
 
             <div className="users-modal__field">
-              <label className="app-label">الدور في النظام</label>
+              <label className="app-label">{t('pages.UsersPage.الدور_في_النظام', 'الدور في النظام')}</label>
               <AppSelect searchable
                 value={newUserRole}
                 onChange={(e) => {
@@ -659,7 +660,7 @@ const UsersPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}

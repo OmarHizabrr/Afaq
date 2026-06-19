@@ -1,0 +1,986 @@
+{
+  "components": {
+    "BottomTabBar": {
+      "التنقل_السريع": "Kutenderera Nokukurumidza",
+      "المزيد_من_القوائم": "Mamwe Menyu",
+      "المزيد": "Zvimwe"
+    },
+    "CurriculumLessonPicker": {
+      "لم_يُحدد": "Haisina kusarudzwa",
+      "إزالة_المادة": "Bvisa Chidzidzo"
+    },
+    "DailyPrepEditor": {
+      "اختر_المدرسة": "Sarudza Chikoro",
+      "المدرسة": "Chikoro",
+      "اختيار_المدرسة": "Sarudza Chikoro",
+      "نوع_فترة_التحضير": "Mhando yenguva yekugadzirira",
+      "مثال_صفحة_10": "Muenzaniso: Peji 10",
+      "مثال_جزء_عم": "Muenzaniso: Juz' Amma",
+      "ملاحظة_على_الطالب": "Zvinyorwa pamusoro pemudzidzi...",
+      "اكتب_أي_ملاحظات_تريد_إرفاقها_مع_هذا_التحضير": "Nyora zvinyorwa zvaunoida kubatanidza nokurongedza uku..."
+    },
+    "DailyPrepStudentCard": {
+      "مقدار_الحفظ": "Huwandu hwekuchengeta mumusoro",
+      "مقدار_المراجعة": "Huwandu hwekuongorora",
+      "ملاحظة": "Zvinyorwa"
+    },
+    "ExplorationBadge": {
+      "نموذج_الاستكشاف": "Fomu yekutsvagisisa",
+      "عرض_حقول_نموذج_الاستكشاف": "Ona minda yefomu yekutsvagisisa"
+    },
+    "ExplorationDataModal": {
+      "تعذر_حفظ_التعديلات": "Kuchanganisa zvisarudzwa kwakundikana.",
+      "بيانات_نموذج_الاستكشاف": "Dhata yefomu yekutsvagisisa",
+      "حقول_نموذج_الاستكشاف": "Minda yefomu yekutsvagisisa",
+      "،": ", "
+    },
+    "ExplorationDynamicFieldBlock": {
+      "غير_محدد": "Haisina kutsanangurwa",
+      "نعم": "Hongu",
+      "لا": "Kwete",
+      "وسم1،_وسم2": "chiziviso1, chiziviso2"
+    },
+    "ExplorationFormSection": {
+      "لا_توجد_أنواع_استكشاف_معرَّفة_أضف_نوعاً_من_أنواع_الاستكشاف_ق": "Hapana mhando dzekutsvagisisa dzakasimudzwa. Wedzera mhando kubva ku'Mhando dzekutsvagisisa' usati washandisa fomu iyi.",
+      "نوع_الاستكشاف": "Mhando yekutsvagisisa"
+    },
+    "ExplorationListCard": {
+      "نوع_غير_محدد": "Mhando isina kutsanangurwa",
+      "تعديل": "Gadzirisa",
+      "حذف": "Dzima"
+    },
+    "ExplorationTargetPagesPicker": {
+      "أخرى": "Zvimwe",
+      "بدون_تحديد_يظهر_هذا_النموذج_في_كل_الصفحات_التي_تدعم_إضافة_من": "Pasina kusarudza: fomu iyi inoratidzwa pamapeji ese anobvumira 'Wedzera kubva pakutsvagisisa' uye munzvimbo yekutsvagisisa.",
+      "تحديد_كل_الصفحات": "Sarudza Mapeji Ese",
+      "إلغاء_التحديد_جميع_الصفحات": "Bvisa Kusarudzwa — Mapeji Ese"
+    },
+    "ExplorationTypePreviewModal": {
+      "النموذج_الافتراضي_الكامل": "Fomu Yese Yemuzvinhu"
+    },
+    "InstallAppBanner": {
+      "تثبيت_التطبيق": "Isa Chirongwa",
+      "إغلاق": "Vhara"
+    },
+    "MapLocationOpen": {
+      "لم_يتم_تسجيل_إحداثيات_GPS": "Nzvimbo yeGPS haina kunyorwa",
+      "فتح_في_خرائط_Google": "Vhura muGoogle Maps",
+      "الموقع_الجغرافي": "Nzvimbo yepasirose"
+    },
+    "MessengerPanel": {
+      "مدير_نظام": "Mutariri weSisitimu",
+      "مدير": "Mutariri",
+      "مشرف_عام": "Mutariri Mukuru",
+      "مشرف_منطقة": "Mutariri weDunhu",
+      "معلم": "Mudzidzisi",
+      "طالب": "Mudzidzi",
+      "أنت": "Iwe",
+      "مجموعة": "Boka",
+      "محادثة": "Hurukuro",
+      "أنا": "Ini",
+      "ابدأ_المحادثة": "Tanga hurukuro…",
+      "رسالة": "Meseji",
+      "حفظ": "Chengetedza",
+      "محادثة_جديدة": "Hurukuro Itsva",
+      "رد": "Pindura",
+      "إرسال": "Tumira"
+    },
+    "PortalQuickActions": {
+      "اختصارات_سريعة": "Nzira Dzokukurumidza"
+    },
+    "PrintDocumentShell": {
+      "معاينة_قبل_الطباعة": "Tarisa Usati Waprinda",
+      "رجوع": "رجوع",
+      "طباعة_حفظ_pdf": "طباعة / حفظ PDF",
+      "بعد_إغلاق_الطباعة": "بعد إغلاق نافذة الطباعة تبقى هذه الصفحة للمراجعة. يمكنك الطباعة مجدداً عبر الزر أعلاه أو اختصار",
+      "أو": "(أو",
+      "على_ماك": "على ماك).",
+      "منصة_آفاق_التعليمية": "منصة آفاق التعليمية",
+      "آفاق_وثيقة_رسمية": "آفاق — وثيقة رسمية"
+    },
+    "PushNotificationBanner": {
+      "تفعيل_الإشعارات": "Bvumidza Zvirevo",
+      "تفعيل": "Bvumidza",
+      "لاحقاً": "Gare gare"
+    },
+    "PushNotificationSection": {
+      "الإشعارات_مفعّلة_ومتصلة_بالخادم": "Zvirevo zvabvumidzwa uye zvakabatana neseva",
+      "الإشعارات_مسموحة_جاري_الربط": "Zvirevo zvabvumidzwa — kuri kubatana…",
+      "إشعارات_المتصفح_مفعّلة": "Zvirevo zvebhurauzha zvabvumidzwa",
+      "إعادة_ربط_الجهاز": "Batanidza Mudziyo Zvakare",
+      "إشعارات_الجهاز": "إشعارات الجهاز",
+      "المتصفح_لا_يدعم_الإشعارات": "المتصفح الحالي لا يدعم إشعارات النظام.",
+      "لإشعارات_الخلفية_أضف_vapid": "لإشعارات الخلفية (عند إغلاق التطبيق) أضف مفتاح VAPID في إعدادات الخادم.",
+      "الإشعارات_محظورة": "الإشعارات محظورة من إعدادات المتصفح. افتح إعدادات الموقع واسمح بالإشعارات ثم أعد تحميل الصفحة.",
+      "اسمح_بالإشعارات": "اسمح بالإشعارات لتصلك رسائل المحادثات والتنبيهات فوراً.",
+      "تفعيل_الإشعارات": "تفعيل الإشعارات"
+    },
+    "RecipientUserCard": {
+      "تحديد": "Sarudza",
+      "الملف_الشخصي": "Chinyorwa Chako",
+      "عرض_الملف_الشخصي": "Ona Chinyorwa Chako",
+      "غير_متاح": "Haikuwanikwa"
+    },
+    "StarRatingInput": {
+      "تقييم_بالنجوم": "Kuyera neNyeredzi"
+    },
+    "StudentManagementStudentCard": {
+      "بدون_اسم": "Pasina Zita",
+      "بدون_بريد": "Pasina Imero",
+      "غير_مرتبط_بأي_مجموعة": "Haina kubatana neboka ripi zvaro",
+      "لا_يوجد": "Hapana",
+      "الارتباطات": "الارتباطات",
+      "التحركات": "التحركات",
+      "آخر_حركة": "آخر حركة",
+      "الملف": "Profile"
+    },
+    "StudentResultCard": {
+      "تم_الاختبار": "Akaedzwa",
+      "لم_يتم": "Kusati kwaitwa",
+      "حاضر": "Aripo",
+      "غائب": "Asipo"
+    },
+    "SupervisorVisitStudentCard": {
+      "تعديل_لغائب": "Gadzirisa wekusipo",
+      "حاضر": "Aripo",
+      "حاضر_اضغط_للغياب": "Aripo — baya kuzivisa kusipo",
+      "غائب_اضغط_للحضور": "Kusipo — baya kuzivisa kuvapo",
+      "اختُبر": "Akaedzwa",
+      "اختبار": "Bvunzo",
+      "ملاحظات_قراءته": "Zvinyorwa zvekuverenga kwake...",
+      "ملاحظة_التقييم": "ملاحظة التقييم"
+    },
+    "UserMenuDropdown": {
+      "حسابي": "Akaunzi Yangu",
+      "الإشعارات_والمحادثات": "الإشعارات والمحادثات",
+      "تفعيل_تنبيهات_المتصفح": "تفعيل تنبيهات المتصفح"
+    },
+    "VillageDefaultSchoolPanel": {
+      "لا_توجد_مدرسة_افتراضية": "Hapana chikoro chehutungamiri",
+      "إضافة_تقرير_المدرسة_الافتراضية": "Wedzera Ripoti yeChikoro cheHutungamiri",
+      "المدرسة_الافتراضية_للتقرير": "المدرسة الافتراضية للتقرير",
+      "الافتراضي_التلقائي": "الافتراضي التلقائي هو أول مدرسة في القائمة، ويمكن تغييره يدويًا.",
+      "لا_مدارس_مرتبطة": "لا توجد مدارس مرتبطة بهذه القرية.",
+      "إضافة_تقرير_المدرسة": "إضافة تقرير المدرسة الافتراضية",
+      "حفظ_الافتراضي": "حفظ الافتراضي",
+      "تقرير_افتراضي": "تقرير افتراضي",
+      "المدرسة_الافتراضية_الحالية": "المدرسة الافتراضية الحالية:"
+    },
+    "VillageReportDisplay": {
+      "أنشطة_المعلم_في_القرية": "Mabasa eMudzidzisi muKamusha",
+      "أنشطة_المؤسسة_في_القرية": "Mabasa eMuungano muKamusha",
+      "خطب_الجمعة_في_القرية": "Mapreach eChishanu muKamusha",
+      "تقرير_القرية": "تقرير القرية"
+    },
+    "VillageReportFields": {
+      "الأنشطة_التي_تمت_في_القرية_من_قبل_المعلم": "Mabasa akaitwa mukamusha nemudzidzisi",
+      "وصف_النشاط": "Tsananguro yebasa...",
+      "إضافة_نشاط": "Wedzera Basa",
+      "لم_تُضف_أنشطة_بعد_اضغط_إضافة_نشاط_لإضافة_نشاط_جديد": "Hapana mabasa akawedzerwa. Baya 'Wedzera Basa' kuwedzera basa idzva.",
+      "الأنشطة_التي_تمت_في_القرية_من_قبل_المؤسسة": "Mabasa akaitwa mukamusha nemuungano",
+      "موضوع_أو_ملخص_الخطبة": "Musoro kana pfupiso yepreach...",
+      "إضافة_خطبة": "Wedzera Preach",
+      "لم_تُضف_خطباً_بعد_اضغط_إضافة_خطبة_لإضافة_خطبة_جديدة": "Hapana mapreach akawedzerwa. Baya 'Wedzera Preach' kuwedzera preach itsva.",
+      "هل_يوجد_مشاريع_للمؤسسة_بالقرية؟": "Kune mabasa emuungano mukamusha here?",
+      "اكتب_حالة_المشاريع_وتفاصيلها": "Nyora mamiriro emabasa nezvimwe zvawo...",
+      "أي_ملاحظات_إضافية_عن_القرية": "Zvimwe zvinyorwa pamusoro pekamusha...",
+      "القرية_والنشاطات": "القرية والنشاطات",
+      "عدد_من_دخل_الإسلام": "عدد من دخل الإسلام جديداً في القرية",
+      "ما_حالة_المشاريع": "ما حالة المشاريع؟",
+      "ملاحظات_إضافية_القرية": "ملاحظات إضافية (القرية)"
+    },
+    "VillageSchoolCheckboxGroup": {
+      "اختيار_المدارس": "Sarudza Zvikoro"
+    },
+    "VisitReportEditor": {
+      "تقييم_المعلم_من_5_نجوم": "Kuyera Mudzidzisi (kubva kunyeredzi 5)",
+      "تقييم_القرية_من_5_نجوم": "Kuyera Kamusha (kubva kunyeredzi 5)",
+      "ملاحظات_وتوجيهات_عن_الزيارة": "Zvinyorwa nemirayiridzo pamusoro pekushanyira...",
+      "بيانات_الزيارة_الميدانية": "بيانات الزيارة الميدانية",
+      "اختر_المدرسة": "— اختر المدرسة —",
+      "اختر_القرية": "— اختر القرية —",
+      "اختر_المادة": "— اختر المادة —",
+      "الدرس_الأسبوع": "الدرس / الأسبوع",
+      "اختر_الدرس": "— اختر الدرس —",
+      "التقييم_والملاحظات": "التقييم والملاحظات",
+      "ملاحظات_المشرف": "ملاحظات المشرف"
+    },
+    "ConfirmDialog": {
+      "تأكيد": "Simbisa",
+      "إلغاء": "Rambidza",
+      "تأكيد_الإجراء": "Simbisa chiito"
+    },
+    "ReportTextList": {
+      "إضافة": "Wedzera",
+      "اكتب_النص_هنا": "اكتب النص هنا...",
+      "لم_تُضف_عناصر_بعد": "لم تُضف عناصر بعد. اضغط «إضافة» لإضافة عنصر جديد.",
+      "حذف": "Delete"
+    },
+    "AppSelect": {
+      "ابحث": "Tsvaga...",
+      "لا_توجد_نتائج": "Hapana mhinduro"
+    },
+    "EvalSelectWithOther": {
+      "اكتب_التقييم_أو_الملاحظة": "اكتب التقييم أو الملاحظة...",
+      "اختر": "— Sarudza —"
+    },
+    "InstallAppSection": {
+      "التطبيق_مثبّت": "App yaiswa",
+      "تستخدم_آفاق_كتطبيق_مستقل": "تستخدم آفاق كتطبيق مستقل على جهازك — وصول سريع من الشاشة الرئيسية أو سطح المكتب.",
+      "تثبيت_التطبيق": "Isa app",
+      "ثبّت_آفاق_على_جهازك": "ثبّت آفاق على هاتفك أو حاسوبك للوصول السريع دون فتح المتصفح في كل مرة.",
+      "على_iPhone_iPad": "على iPhone / iPad:",
+      "اضغط_زر_المشاركة": "اضغط زر المشاركة",
+      "اختر_إضافة_إلى_الشاشة_الرئيسية": "اختر «إضافة إلى الشاشة الرئيسية»",
+      "اضغط_إضافة": "اضغط «إضافة»",
+      "تثبيت_التطبيق_الآن": "Isa app izvozvi",
+      "افتح_الموقع_من_Chrome": "افتح الموقع من Chrome أو Edge على سطح المكتب أو أندرويد ليظهر خيار التثبيت."
+    },
+    "TeacherStudentCard": {
+      "السن": "Zera",
+      "الملف": "Profile"
+    },
+    "LazyReportPrintPreviewModal": {
+      "جاري_تحميل_المعاينة": "جاري تحميل المعاينة…"
+    },
+    "ReportDailyRecordCard": {
+      "الحفظ": "الحفظ",
+      "المراجعة": "المراجعة",
+      "ملاحظة": "ملاحظة"
+    },
+    "ReportPrintPreviewModal": {
+      "معاينة_التقرير": "معاينة التقرير",
+      "تحميل_pdf": "تحميل PDF",
+      "تحميل_excel": "تحميل Excel",
+      "طباعة": "طباعة"
+    }
+  },
+  "utils": {
+    "schoolReportExport": {
+      "النوع": "Mhando",
+      "الحالة": "Mamiriro",
+      "تقارير_الإشراف": "Mapoti ekutarira",
+      "الطلاب_المتفوقون": "Vadzidzi Vanobwinya",
+      "الهاتف": "Runhare",
+      "الطالب": "Mudzidzi",
+      "العنوان": "Kero",
+      "الحضور": "Kuvapo"
+    },
+    "explorationTargetPages": {
+      "جميع_الصفحات": "Mapeji Ese",
+      "استكشاف": "Kutsvagisisa"
+    },
+    "reportDetailsHtml": {
+      "دخل_الإسلام_جديداً": "Wapinda muchiIslam mutsva",
+      "مشاريع_المؤسسة": "Mabasa eMuungano",
+      "حالة_المشاريع": "Mamiriro eMabasa",
+      "المادة": "Chidzidzo",
+      "تاريخ_الإرسال": "Zuva rekutumira",
+      "الأسبوع": "Svondo"
+    },
+    "explorationDynamicFields": {
+      "بريد_إلكتروني": "Imero",
+      "بحث": "Tsvaga"
+    },
+    "chatNotifications": {
+      "مجموعة": "Boka",
+      "محادثة": "Hurukuro"
+    },
+    "curriculumProgress": {
+      "لم_يُحدد_بعد": "Kusati kwasarudzwa",
+      "حسب_الخطة": "Zvinoenderana nehurongwa"
+    },
+    "dailyPrepForm": {
+      "الأسبوعي": "Yesvondo",
+      "الشهري": "Yemwedzi",
+      "اليومي": "Yezuva",
+      "تاريخ_اليوم": "Zuva reNhasi",
+      "مرجع_الأسبوع": "Referensi yesvondo",
+      "مرجع_الشهر": "Referensi yemwedzi",
+      "مواد_الأسبوع_من_المناهج": "Zvidzidzo zvezvondo kubva muchirongwa",
+      "مواد_الشهر": "Zvidzidzo zvemwedzi",
+      "مواد_اليوم": "Zvidzidzo zvenhasi",
+      "طالب": "Mudzidzi"
+    },
+    "messengerFormat": {
+      "أمس": "Nezuro",
+      "اليوم": "Nhasi"
+    },
+    "permissionDataScope": {
+      "نطاق_عرض_البيانات_في_هذه_الصفحة": "Nzvimbo yekuratidzwa kwedhata papeji ino",
+      "كل_السجلات_عرض_شامل": "Manyoreso ese (kuona kwakakwana)",
+      "ما_يرتبط_بي_فقط": "Zvinobatana neni chete (zvikoro/dunhu/maboka andiri nhengo)"
+    },
+    "reportEvalOptions": {
+      "السير_على_المنهج": "Kufamba Zvinoenderana neChirongwa",
+      "تقييم_المدرسة": "Kuyera Chikoro",
+      "التقرير_الشهري_عن_المدرسة": "Ripoti yemwedzi pamusoro pechikoro"
+    },
+    "reportLabels": {
+      "شهري": "Yemwedzi",
+      "أسبوعي": "Yesvondo",
+      "زيارة_ميدانية": "Kushanyira kuNzvimbo",
+      "يومي": "Yezuva",
+      "تقرير_مدرسة": "Ripoti yeChikoro"
+    }
+  },
+  "pages": {
+    "RegionDetailsPage": {
+      "الكل": "Zvese",
+      "مدير_نظام_وصول_كامل": "Mutariri weSisitimu (Pakupinda Kwakakwana)",
+      "مدير_النظام": "Mutariri weSisitimu",
+      "مشرف_عام_عربي": "Mutariri Mukuru (Arabic)",
+      "مشرف_منطقة_محلي": "Mutariri weDunhu (Wepanzvimbo)",
+      "معلم_مدرسة": "Mudzidzisi weChikoro",
+      "طالب_دارس": "Mudzidzi / Mudzidzi Mukuru",
+      "صلاحية_معلقة": "Mvumo Irikumirira",
+      "حدث_خطأ_أثناء_التعيين": "Kwakaitika kukanganisa pakugadza.",
+      "تعذر_إزالة_المشرف_من_المنطقة": "Kukundikana kubvisa mutariri kubva mudunhu.",
+      "تعيين_مشرف": "Gadza Mutariri",
+      "عرض_الملف": "Ona Faira",
+      "إزالة_من_المنطقة": "Bvisa kubva muDunhu",
+      "بحث_بالاسم_أو_البريد": "Tsvaga nezita kana imero..."
+    },
+    "SchoolReportPage": {
+      "ملاحظات_إضافية": "Zvinyorwa Zvimwe",
+      "القرية": "Kamusha",
+      "التاريخ": "Zuva",
+      "تقييم_المعلم": "Kuyera Mudzidzisi",
+      "الأحد": "Svondo",
+      "الإثنين": "Muvhuro",
+      "الثلاثاء": "Chipiri",
+      "الأربعاء": "Chitatu",
+      "الخميس": "China",
+      "الجمعة": "Chishanu",
+      "السبت": "Mugovera",
+      "حفظ_التعديلات": "Chengetedza Zvigadziriswa",
+      "حفظ_التقرير": "Chengetedza Ripoti",
+      "رقم_الهاتف": "Nhamba yeRunhare"
+    },
+    "AdminBrandingPage": {
+      "تم_حفظ_هوية_الموقع_بنجاح": "Chimiro chewebhusaiti chakachengetedzwa zvakabvumirwa.",
+      "تعذر_حفظ_الهوية_حالياً،_حاول_مرة_أخرى": "Kukundikana kuchengetedza chimiro. Edza zvakare.",
+      "تعديل_اسم_المنصة_والعنوان_والنص_الظاهر_في_رأس_لوحة_التحكم": "Gadzirisa zita redhangwe, musoro, uye nyaya inoratidzwa pamusoro pepuranga yekutarira.",
+      "إضافة_وسيلة_تواصل": "Wedzera Nzira yekutaurirana",
+      "مثال_يرجى_التواصل_مع_الإدارة_عبر_الوسائل_التالية_لتفعيل_الصل": "Muenzaniso: Ndokumbira utaurire nemasangano nenzira dzinotevera kuti ugadze mvumo.",
+      "المسمى_مثال_مدير_المنصة": "Zita (Muenzaniso: Mutariri wedhangwe)",
+      "رقم_أو_رابط_الحساب": "Nhamba kana sungano yeakaunzi"
+    },
+    "AdminReportsPage": {
+      "التقارير_الأسبوعية": "Mapoti esvondo",
+      "زيارات_المشرفين": "Kushanyira kwevataridzi",
+      "تقارير_المدارس": "Mapoti eZvikoro",
+      "أسبوع": "Svondo",
+      "شهر": "Mwedzi",
+      "3_أشهر": "Mwedzi 3",
+      "6_أشهر": "Mwedzi 6",
+      "سنة": "Gore",
+      "كل_الفترات": "Nguva Dzese",
+      "حدث_خطأ_أثناء_جلب_التقارير": "Kukanganisa pakutora mapoti",
+      "تعذر_تحديد_مسار_المستند_للحذف": "Kukundikana kutsanangura nzira yedokumendi yekudzimwa.",
+      "فشل_حذف_التقرير": "Kukundikana kudzima ripoti.",
+      "مراجعة_التقارير_الميدانية": "Ongorora Mapoti eNzvimbo",
+      "متابعة_أداء_المعلمين_والمشرفين_من_لوحة_واحدة": "Teverera mabasa evadzidzisi nevataridzi kubva pabhodi rimwe",
+      "البحث_باسم_المعلم_أو_المشرف": "Tsvaga nezita remudzidzisi kana mutariri...",
+      "فلترة_حسب_المدرسة": "Sarudza nechikoro...",
+      "المشرف": "Mutariri",
+      "المعلم": "Mudzidzisi",
+      "تقرير_أعمال_أسبوعي": "Ripoti yeMabasa yesvondo",
+      "عرض_التفاصيل_الكاملة": "Ona Zvimwe Zvese",
+      "تقرير_المدرسة": "Ripoti yeChikoro"
+    },
+    "AdminSiteCopyPage": {
+      "عنوان_الرئيسية": "Musoro: Kumba",
+      "عنوان_المستخدمين": "Musoro: Vashandisi",
+      "عنوان_الإشعارات": "Musoro: Zvirevo",
+      "عنوان_الإعدادات": "Musoro: Zvigadzirwa",
+      "وصف_لوحة_التحكم": "Tsananguro: Puranga yekutarira",
+      "تم_حفظ_النص_بنجاح": "Nyaya yakachengetedzwa zvakabvumirwa.",
+      "تعذر_حفظ_النص_حالياً": "Kukundikana kuchengetedza nyaya panguva ino.",
+      "عدّل_النصوص_الثابتة_للواجهة_بدون_تغيير_الكود": "Gadzirisa nyaya dzakagara dzeinterface usina kuchinja kodhi."
+    },
+    "AdminUserTypesPage": {
+      "نوع_جديد": "Mhando Itsva",
+      "تم_حفظ_نوع_المستخدم_والصلاحيات": "Mhando yemushandisi nemvumo zvakachengetedzwa.",
+      "تعذر_حفظ_نوع_المستخدم_حالياً": "Kukundikana kuchengetedza mhando yemushandisi panguva ino.",
+      "تم_حذف_نوع_المستخدم": "Mhando yemushandisi yakadzimiwa.",
+      "تعذر_حذف_نوع_المستخدم": "Kukundikana kudzima mhando yemushandisi.",
+      "أنشئ_نوعاً،_ثم_فعّل_الصفحات_والإجراءات_التي_تظهر_له": "Gadzira mhando, wobvumidza mapeji nemabasa anoratidzwa kwaari.",
+      "حذف_النوع": "Dzima Mhando"
+    },
+    "CurriculumPage": {
+      "حدث_خطأ_أثناء_جلب_المناهج": "Kukanganisa pakutora chirongwa",
+      "تمت_إضافة_المادة_بنجاح": "Chidzidzo chakawedzerwa zvakabvumirwa.",
+      "حدث_خطأ_أثناء_إضافة_المادة": "Kukanganisa pawedzerwa chidzidzo",
+      "لا_يمكن_استخراج_اسم_المادة_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Zita rechidzidzo hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
+      "تمت_إضافة_المادة_من_نموذج_الاستكشاف_بنجاح": "Chidzidzo chakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
+      "حدث_خطأ_أثناء_إضافة_المادة_من_الاستكشاف": "Kukanganisa pawedzerwa chidzidzo kubva pakutsvagisisa",
+      "تم_حذف_المادة_بنجاح": "Chidzidzo chakadzimiwa zvakabvumirwa.",
+      "لا_يمكن_الحذف_في_الوقت_الحالي": "Kudzima hakugonekwi panguva ino.",
+      "تجاهل_التعديلات_غير_المحفوظة": "Siya Zvigadziriswa Zvisisina Kuchengetedzwa",
+      "لديك_تعديلات_حالية_غير_محفوظة_هل_تريد_تجاهلها_وفتح_مادة_أخرى": "Une zvigadziriswa zvisisina kuchengetedzwa. Unoda kusiya uchinovhura chimwe chidzidzo here?",
+      "تجاهل_وفتح": "Siya uVhure",
+      "يرجى_إدخال_اسم_المادة_قبل_الحفظ": "Ndokumbira upinde zita rechidzidzo usati wachengetedza",
+      "تم_حفظ_توزيع_المنهج_بنجاح": "Kugovera kwechirongwa kwakachengetedzwa zvakabvumirwa.",
+      "حدث_خطأ_أثناء_حفظ_المنهج": "Kukanganisa pakuchengetedza chirongwa",
+      "إدارة_المناهج_الأساسية": "Tarisira Zvirongwa Zvikuru",
+      "توزيع_خطة_الأسابيع_٥٠_أسبوعاً": "Kugovera kwehurongwa hwesvondo (Masvondo 50)",
+      "إضافة_مادة_جديدة": "Wedzera Chidzidzo Chitsva",
+      "اسم_المادة_مثال_العقيدة": "Zita rechidzidzo (muenzaniso: Aqeedah)",
+      "إضافة_مادة_من_نموذج_الاستكشاف": "Wedzera Chidzidzo kubva kuFomu yekutsvagisisa",
+      "طباعة_الخطة_أو_حفظ_PDF_صفحة_منفصلة": "Prinda hurongwa kana kuchengetedza sePDF (peji rakaparadzana)",
+      "تأكيد_حذف_المادة": "Simbisa Kudzimwa kweChidzidzo",
+      "حذف_نهائي": "Kudzima Zvachose",
+      "حذف_المادة_نهائياً": "Dzima Chidzidzo Zvachose",
+      "مثال_العقيدة": "Muenzaniso: Aqeedah",
+      "حدد_الدرس_أو_الهدف": "Tsanangura chidzidzo kana chinangwa...",
+      "بيانات_النموذج": "Dhata yeFormu",
+      "تم_تحديث_بيانات_نموذج_المادة": "Dhata yefomu yechidzidzo yakagadziridzwa."
+    },
+    "DashboardPage": {
+      "لوحة_التحكم_الرئيسية": "Puranga Huru yekutarira",
+      "نظرة_عامة_على_الإحصائيات_الحيوية_للمنصة": "Tarisa zvakajeka zvemaonero edhangwe",
+      "المشرفين": "Vataridzi",
+      "عرض_المستخدمين": "Ona Vashandisi",
+      "عرض_القرى": "Ona Misha",
+      "عرض_المناطق": "Ona Nzvimbo",
+      "عرض_المدارس": "Ona Zvikoro",
+      "المدرسين": "Vadzidzisi",
+      "إجمالي_الطلاب": "Vadzidzi Vese",
+      "المهتدون_الجدد": "Vatsva VakapinaIslam",
+      "عرض_سجل_المهتدين_في_القرى": "Ona Rekodhi yevapinaIslam mumisha",
+      "مدرسة_غير_محددة": "Chikoro Chisina Kutsanangurwa",
+      "عضو_غير_معروف": "Nhengo Isingazivikanwi"
+    },
+    "ExplorationsPage": {
+      "تعذر_تحميل_بيانات_الاستكشاف": "Kukundikana kuisa dhata yekutsvagisisa.",
+      "يرجى_اختيار_نوع_الاستكشاف": "Ndokumbira usarudze mhando yekutsvagisisa.",
+      "تم_تحديث_الاستكشاف": "Kutsvagisisa kwagadziridzwa.",
+      "تمت_إضافة_الاستكشاف_بنجاح": "Kutsvagisisa kwakawedzerwa zvakabvumirwa.",
+      "تعذر_حفظ_الاستكشاف": "Kukundikana kuchengetedza kutsvagisisa.",
+      "تم_حذف_الاستكشاف": "Kutsvagisisa kwakadzimiwa.",
+      "تعذر_حذف_الاستكشاف": "Kukundikana kudzima kutsvagisisa.",
+      "نموذج_مخصص": "Fomu Yakagadzirwa",
+      "قسم_الاستكشاف": "Nzvimbo yekutsvagisisa",
+      "ابحث_بالنوع_أو_المشرف_أو_الحقول_أو_القرية": "Tsvaga nemhando, mutariri, minda, kana kamusha...",
+      "تعديل_الاستكشاف": "Gadzirisa Kutsvagisisa",
+      "إضافة_استكشاف_جديد": "Wedzera Kutsvagisisa Kutsva",
+      "تأكيد_حذف_الاستكشاف": "Simbisa Kudzimwa kwekutsvagisisa"
+    },
+    "ExplorationTypesPage": {
+      "تعذر_جلب_أنواع_الاستكشاف": "Kukundikana kutora mhando dzekutsvagisisa.",
+      "أي_حقل_يدوي_من_نوع_قائمة_منسدلة_اختيار_متعدد_راديو_يجب_أن_يح": "Nzvimbo dzakasimudzwa dzemhando 'dorp-down / kusarudza kwakawanda / radio' dzinofanira kuva neline rimwe nzvimbo muzviparo, kana sarudza sosi yedhata redhangwe.",
+      "تم_تحديث_نوع_الاستكشاف": "Mhando yekutsvagisisa yakagadziridzwa.",
+      "تمت_إضافة_نوع_استكشاف_جديد": "Mhando itsva yekutsvagisisa yakawedzerwa.",
+      "تعذر_حفظ_نوع_الاستكشاف": "Kukundikana kuchengetedza mhando yekutsvagisisa.",
+      "تم_حذف_نوع_الاستكشاف": "Mhando yekutsvagisisa yakadzimiwa.",
+      "تعذر_حذف_نوع_الاستكشاف": "Kukundikana kudzima mhando yekutsvagisisa.",
+      "إدارة_أنواع_الاستكشاف": "Tarisira Mhando dzekutsvagisisa",
+      "تعديل_نوع_الاستكشاف": "Gadzirisa Mhando yekutsvagisisa",
+      "مثال_استكشاف_بئر": "Muenzaniso: Kuongorora Tsime",
+      "تفاصيل_إضافية_عن_النوع_اختياري": "Zvimwe zvakawedzerwa pamusoro pemhando (zvisarudzwa)",
+      "مثال_عدد_الأسر": "Muenzaniso: Nhamba yemhuri",
+      "أعلى": "Kumusoro",
+      "أسفل": "Pasi",
+      "حذف_الحقل": "Dzima Nzvimbo",
+      "مثال_draft_أو_معرف_داخلي": "Muenzaniso: draft kana ID yemukati",
+      "بدون_وصف": "Pasina tsananguro",
+      "يستخدم_النموذج_الافتراضي_الكامل": "Inoshandisa fomu yese yemuzvinhu",
+      "معاينة_الحقول": "Tarisa Minda",
+      "تأكيد_حذف_نوع_الاستكشاف": "Simbisa Kudzimwa kweMhando yekutsvagisisa"
+    },
+    "GovernoratesPage": {
+      "حدث_خطأ_أثناء_جلب_البيانات": "Kukanganisa pakutora dhata",
+      "تمت_إضافة_المحافظة_بنجاح": "Dunhu guru rakawedzerwa zvakabvumirwa.",
+      "حدث_خطأ_أثناء_الإضافة": "Kukanganisa pakuwedzera",
+      "تم_تحديث_المحافظة_بنجاح": "Dunhu guru rakagadziridzwa zvakabvumirwa.",
+      "حدث_خطأ_أثناء_التحديث": "Kukanganisa pakugadzirisa",
+      "لا_يمكن_استخراج_اسم_المحافظة_من_حقول_النموذج_أضف_حقلاً_نصياً": "Zita redunhu guru hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\" mufomu.",
+      "تمت_إضافة_المحافظة_من_نموذج_الاستكشاف_بنجاح": "Dunhu guru rakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
+      "تم_حذف_المحافظة_بنجاح": "Dunhu guru rakadzimiwa zvakabvumirwa.",
+      "إدارة_المحافظات": "Tarisira Madunhu Makuru",
+      "تعديل_المحافظة": "Gadzirisa Dunhu Guru",
+      "اسم_المحافظة_مثال_صنعاء": "Zita redunhu guru (muenzaniso: Sanaa)",
+      "الدولة_مثال_MALAWI": "Nyika (muenzaniso: MALAWI)",
+      "تحديث": "Gadzirisa",
+      "إضافة_محافظة_من_نموذج_الاستكشاف": "Wedzera Dunhu Guru kubva kuFomu yekutsvagisisa",
+      "تم_تحديث_بيانات_نموذج_المحافظة": "Dhata yefomu yedunhu guru yakagadziridzwa.",
+      "تأكيد_حذف_المحافظة": "Simbisa Kudzimwa kweDunhu Guru"
+    },
+    "GovernorateDetailsPage": {
+      "غير_محددة": "Haisina kutsanangurwa",
+      "المحافظة_غير_موجودة": "المحافظة غير موجودة",
+      "إدارة_المحافظات": "إدارة المحافظات",
+      "محافظة": "محافظة:",
+      "المناطق_التابعة": "المناطق التابعة",
+      "لا_مناطق": "لا توجد مناطق مضافة لهذه المحافظة.",
+      "القرى_التابعة": "القرى التابعة",
+      "لا_قرى": "لا توجد قرى مضافة في هذه المحافظة."
+    },
+    "RegionsPage": {
+      "يرجى_إدخال_اسم_المنطقة_واختيار_المحافظة": "Ndokumbira upinde zita renzvimbo usarudze dunhu guru",
+      "تمت_إضافة_المنطقة_بنجاح": "Nzvimbo yakawedzerwa zvakabvumirwa.",
+      "تم_تحديث_المنطقة_بنجاح": "Nzvimbo yakagadziridzwa zvakabvumirwa.",
+      "تم_حذف_المنطقة_بنجاح": "Nzvimbo yakadzimiwa zvakabvumirwa.",
+      "يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_المحافظات_لاختيار": "Fomu yekutsvagisisa inofanira kuva nenzvimbo inobva ku'Madunhu Makuru' kusarudza dunhu guru raamai.",
+      "لا_يمكن_استخراج_اسم_المنطقة_من_حقول_النموذج_أضف_حقلاً_نصياً_": "Zita renzvimbo hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
+      "تمت_إضافة_المنطقة_من_نموذج_الاستكشاف_بنجاح": "Nzvimbo yakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
+      "غير_معروف": "Isingazivikanwi",
+      "إدارة_المناطق": "Tarisira Nzvimbo",
+      "تعديل_المنطقة": "Gadzirisa Nzvimbo",
+      "اسم_المنطقة_مثال_أزال": "Zita renzvimbo (muenzaniso: Azal)",
+      "إضافة_منطقة_من_نموذج_الاستكشاف": "Wedzera Nzvimbo kubva kuFomu yekutsvagisisa",
+      "تم_تحديث_بيانات_نموذج_المنطقة": "Dhata yefomu yenzvimbo yakagadziridzwa.",
+      "تأكيد_حذف_المنطقة": "Simbisa Kudzimwa kweNzvimbo"
+    },
+    "ReportDetailsPage": {
+      "زيارة_ميدانية": "Kushanyira kuNzvimbo",
+      "تحضير_يومي": "Kugadzirira Kwezuva",
+      "تقرير_أسبوعي": "Ripoti yesvondo",
+      "تعذر_جلب_طلاب_المدرسة": "Kukundikana kutora vadzidzi vechikoro.",
+      "تعذر_تحديد_مسار_المستند": "Kukundikana kutsanangura nzira yedokumendi.",
+      "بيانات_تعديل_الزيارة_غير_جاهزة_بعد": "Dhata yekugadzirisa kushanyira haina kubatana.",
+      "يرجى_اختيار_المدرسة_من_القائمة": "Ndokumbira usarudze chikoro parutivi.",
+      "يرجى_اختيار_القرية_من_القائمة": "Ndokumbira usarudze kamusha parutivi.",
+      "يرجى_اختيار_المادة_من_القائمة": "Ndokumbira usarudze chidzidzo parutivi.",
+      "يرجى_اختيار_الدرس_الأسبوع_من_القائمة": "Ndokumbira usarudze chidzidzo/svondo parutivi.",
+      "بيانات_التعديل_غير_جاهزة_بعد": "Dhata yekugadzirisa haina kubatana.",
+      "اختر_مادة_واحدة_أو_أكثر_من_المناهج_وحدّد_الأسبوع_الدرس_لكل_م": "Sarudza chidzidzo chimwe kana zvakawanda kubva muchirongwa utsanangure svondo/chidzidzo pachidzidzo chimwe nechimwe",
+      "يرجى_اختيار_المدرسة": "Ndokumbira usarudze chikoro",
+      "تنسيق_JSON_لبيانات_التقرير_غير_صالح": "Fomati yeJSON yedhata yeripoti haibvumi.",
+      "فشل_الحفظ_تحقق_من_قواعد_Firestore": "Kuchengetedza kwakundikana. Tarisa mitemo yeFirestore.",
+      "حذف_هذا_التقرير_نهائياً؟_لا_يمكن_التراجع_عن_العملية": "Dzima ripoti iyi zvachose? Chiito ichi hachigoni kudzoswa.",
+      "تعذر_حذف_التقرير": "Kukundikana kudzima ripoti.",
+      "الموقع_الجغرافي_للزيارة": "Nzvimbo yepasirose yekushanyira",
+      "لم_يتم_تسجيل_إحداثيات_GPS_لهذا_التقرير": "Nzvimbo yeGPS haina kunyorwa kweripoti iyi"
+    },
+    "StudentDetailsPage": {
+      "غائب": "Kusipo",
+      "مادة_غير_محددة": "Chidzidzo Chisina Kutsanangurwa",
+      "بدون_مدرسة": "Pasina Chikoro",
+      "تعذر_تحميل_ملف_الطالب": "Kukundikana kuisa faira remudzidzi.",
+      "تعذر_حفظ_بيانات_الطالب": "Kukundikana kuchengetedza dhata yemudzidzi.",
+      "كل_بيانات_الطالب_وارتباطاته_بالمدارس_والمناطق": "Dhata yese yemudzidzi nezvakabatana nezvikoro nenzvimbo",
+      "لا_يوجد_رقم": "Hapana nhamba yerunhare",
+      "لا_يوجد_بريد": "Hapana imero"
+    },
+    "SchoolComprehensiveReportPage": {
+      "تقرير_شامل_عن_المدرسة": "Ripoti Yakakwana yeChikoro",
+      "تقرير_إشراف": "Ripoti yekutarira",
+      "تحضير": "Kugadzirira",
+      "أسبوعي": "Yesvondo",
+      "شهري": "Yemwedzi",
+      "يومي": "Yezuva",
+      "معاينة_التقرير_الشامل": "Tarisa Ripoti Yakakwana"
+    },
+    "SchoolDetailsPage": {
+      "نوع_الحلقة_كبار": "Mhando yeboka: Vakuru",
+      "نوع_الحلقة_صغار": "Mhando yeboka: Vadiki",
+      "نوع_الحلقة_غير_محدد": "Mhando yeboka: Isina kutsanangurwa",
+      "غير_معيّن": "Isina kugadzwa",
+      "مستخدم": "Mushandisi",
+      "حدث_خطأ_أثناء_التعيين_الجماعي": "Kukanganisa pakugadza kwemaboka.",
+      "تعذر_إزالة_العضو_من_المدرسة": "Kukundikana kubvisa nhengo kubva kuchikoro.",
+      "تم_حذف_التقرير_بنجاح": "Ripoti yakadzimiwa zvakabvumirwa.",
+      "الكادر_التعليمي": "Vashandi vekudzidzisa",
+      "التقارير_الميدانية": "Mapoti eNzvimbo",
+      "بحث_في_الكادر": "Tsvaga vashandi...",
+      "إضافة_عضو_للمدرسة": "Wedzera Nhengo kuChikoro",
+      "بحث_في_الطلاب": "Tsvaga vadzidzi...",
+      "بحث_بالعنوان_المشرف_التاريخ": "Tsvaga nemusoro/mutariri/zuva...",
+      "لا_توجد_تقارير_محفوظة_لهذه_المدرسة_حتى_الآن": "Hapana mapoti akachengetedzwa echikoro ichi kusvika zvino.",
+      "لا_توجد_نتائج_مطابقة_للفلاتر_الحالية": "Hapana mhedzisiro inoenderana nezvipiro zvino.",
+      "بحث_عن_مستخدم_الاسم_أو_البريد": "Tsvaga mushandisi (zita kana imero)...",
+      "مرتبط_بمدرسة_أخرى": "(yakabatana nechikoro chimwe)",
+      "معاينة_تقرير_المدرسة": "Tarisa Ripoti yeChikoro"
+    },
+    "SchoolsPage": {
+      "كبار": "Vakuru",
+      "صغار": "Vadiki",
+      "يرجى_إدخال_اسم_المدرسة_واختيار_القرية_ونوع_المدرسة_كبار_صغار": "Ndokumbira upinde zita rechikoro usarudze kamusha nemhando yechikoro (Vakuru / Vadiki)",
+      "تعذر_تحديد_مسار_المدرسة_في_القاعدة_أعد_تحميل_الصفحة_وحاول_مر": "Kukundikana kutsanangura nzira yechikoro mudhadhabhesi. Dwibhuraidza peji uedze zvakare.",
+      "تم_تحديث_المدرسة_بنجاح": "Chikoro chakagadziridzwa zvakabvumirwa.",
+      "تمت_إضافة_المدرسة_بنجاح": "Chikoro chakawedzerwa zvakabvumirwa.",
+      "حدث_خطأ_أثناء_الحفظ": "Kukanganisa pakuchengetedza",
+      "يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_القرى_لربط_المدرس": "Fomu yekutsvagisisa inofanira kuva nenzvimbo inobva ku'Misha' kubatanidza chikoro nekamusha kacho.",
+      "لا_يمكن_استخراج_اسم_المدرسة_من_حقول_النموذج_أضف_حقلاً_نصياً_": "Zita rechikoro hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
+      "تمت_إضافة_المدرسة_من_نموذج_الاستكشاف_بنجاح": "Chikoro chakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
+      "تم_حذف_المدرسة_بنجاح": "Chikoro chakadzimiwa zvakabvumirwa.",
+      "إدارة_المدارس": "Tarisira Zvikoro",
+      "تعديل_المدرسة": "Gadzirisa Chikoro",
+      "مثال_مدرسة_النور": "Muenzaniso: Chikoro cheAl-Noor",
+      "فاعل_خير": "Mubatsiri",
+      "إضافة_مدرسة_من_نموذج_الاستكشاف": "Wedzera Chikoro kubva kuFomu yekutsvagisisa",
+      "تعذر_تحديد_مسار_المدرسة_في_القاعدة": "Kukundikana kutsanangura nzira yechikoro mudhadhabhesi.",
+      "تم_تحديث_بيانات_نموذج_المدرسة": "Dhata yefomu yechikoro yakagadziridzwa.",
+      "تأكيد_حذف_المدرسة": "Simbisa Kudzimwa kweChikoro"
+    },
+    "VillageDetailsPage": {
+      "الاسم": "Zita",
+      "رجل": "Murume",
+      "امرأة": "Mukadzi",
+      "طفل": "Mwana",
+      "اختر_مدرسة_واحدة_على_الأقل_للتسجيل": "Sarudza chikoro chimwe kana zvakawanda pakunyoresa.",
+      "لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_الطالب_تلقائياً": "Hapana chikoro mukamusha uku kunyoresa mudzidzi otomatikirwa.",
+      "إجمالي_السكان": "Vanhu Vese",
+      "مسلم_قديم": " · MuMuslim wekare",
+      "مهتد": " · Akapinda muchiIslam"
+    },
+    "StudentManagementPage": {
+      "تعذر_تحميل_بيانات_إدارة_الطلاب": "Kukundikana kuisa dhata yekutarisira vadzidzi.",
+      "اسم_الطالب_مطلوب": "Zita remudzidzi rinodiwa.",
+      "عند_إضافة_طالب_جديد_يجب_إدخال_رقم_الهاتف_وكلمة_المرور": "Pawedzerwa mudzidzi mutsva nhamba yerunhare nepsiwedhi zvinofanira kupindwa.",
+      "لا_يمكن_استخراج_اسم_الطالب_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Zita remudzidzi hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_رقم_هاتف_لإنشاء_حساب_الطالب": "Fomu inoda nzvimbo yemhando 'nhamba yerunhare' kugadzira akaunzi yemudzidzi.",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_كلمة_مرور_لإنشاء_حساب_الطالب": "Fomu inoda nzvimbo yemhando 'psiwedhi' kugadzira akaunzi yemudzidzi.",
+      "تعذر_حفظ_الطالب_من_نموذج_الاستكشاف": "Kukundikana kuchengetedza mudzidzi kubva kufomu yekutsvagisisa.",
+      "عرض_الارتباطات_والتحركات_لكل_طالب_بنمط_عضويات_المجموعات": "Ona zvakakonganiswa nemafambiro emudzidzi wese nenzira yenhengo dzeboka",
+      "بحث_بالاسم_أو_البريد_أو_الارتباط": "Tsvaga nezita, imero, kana kukonganiswa...",
+      "إضافة_طالب_جديد": "Wedzera Mudzidzi Mutsva",
+      "إجباري": "(Inodikanwa)",
+      "اتركها_فارغة_للإبقاء_على_الحالية": "(Siya isina chinhu kuchengetedza iri zvino)",
+      "كلمة_مرور_الطالب": "Psiwedhi yemudzidzi",
+      "إخفاء": "Viga",
+      "إظهار": "Ratidza",
+      "إخفاء_كلمة_المرور": "Viga Psiwedhi",
+      "إظهار_كلمة_المرور": "Ratidza Psiwedhi",
+      "إضافة_طالب_من_نموذج_الاستكشاف": "Wedzera Mudzidzi kubva kuFomu yekutsvagisisa"
+    },
+    "UsersPage": {
+      "الاسم_الكامل": "Zita Rechizere",
+      "يرجى_إدخال_الاسم_ورقم_الهاتف_وكلمة_المرور_للمستخدم": "Ndokumbira upinde zita, nhamba yerunhare, nepsiwedhi yemushandisi.",
+      "حدث_خطأ_أثناء_إضافة_المستخدم_الجديد": "Kukanganisa pawedzerwa mushandisi mutsva.",
+      "لا_يمكن_استخراج_اسم_المستخدم_من_حقول_النموذج_أضف_حقلاً_نصياً": "Zita remushandisi hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_رقم_هاتف_لرقم_المستخدم": "Fomu inoda nzvimbo yemhando 'nhamba yerunhare' yenhamba yemushandisi.",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_كلمة_مرور_لإنشاء_حساب_المستخدم": "Fomu inoda nzvimbo yemhando 'psiwedhi' kugadzira akaunzi yemushandisi.",
+      "حدث_خطأ_أثناء_إضافة_المستخدم_من_الاستكشاف": "Kukanganisa pawedzerwa mushandisi kubva pakutsvagisisa.",
+      "حدث_خطأ_أثناء_تحديث_الصلاحية": "Kukanganisa pakugadzirisa mvumo",
+      "إدارة_المستخدمين_والصلاحيات": "Kutarisira Vashandisi neMvumo",
+      "عرض_جميع_الحسابات_بما_فيها_الطلاب_ومدير_النظام_تعديل_نوع_الص": "Ona akaunzi dzese kusanganisira vadzidzi nemutariri wesisitimu. Gadzirisa mhando yemvumo pano; batanidza nezvikoro nenzvimbo kubva kumapeji emaguta.",
+      "الدور_في_النظام": "Basa muSisitimu",
+      "نوع_صلاحيات_مخصص": "Mhando Yakagadzirwa yeMvumo",
+      "بدون_نوع_صلاحيات": "Pasina Mhando yeMvumo",
+      "تعديل_الصلاحيات": "Gadzirisa Mvumo",
+      "مدير_النظام_وصول_كامل_يرى_كل_الصفحات_وكل_الإجراءات_دون_ربط_ب": "Mutariri weSisitimu (pakupinda kwakakwana) anoona mapeji ese nemabasa ese asina kubatana nemhando yemvumo.",
+      "إذا_تُرك_نوع_الصلاحيات_فارغاً_وليس_المستخدم_مدير_نظام،_فلن_ت": "Kana mhando yemvumo ikasiiwa isina chinhu uye mushandisi asiri mutariri wesisitimu, mapeji haazoratidzwa kusvika mhando yemvumo igadzwe.",
+      "ادخل_كلمة_مرور_المستخدم": "Pinda psiwedhi yemushandisi"
+    },
+    "UserDetailsPage": {
+      "تعذر_تحديث_حالة_التعطيل_تحقق_من_صلاحيات_Firestore": "Kukundikana kugadzirisa mamiriro ekudzimwa. Tarisa mvumo yeFirestore.",
+      "تأكيد_نهائي_لا_يمكن_التراجع_عن_هذا_الإجراء": "Kusimbisa kwekupedzisira: Chiito ichi hachigoni kudzoswa.",
+      "تعذر_حذف_المستخدم": "Kukundikana kudzima mushandisi.",
+      "هذا_البريد_الإلكتروني_مستخدم_مسبقاً": "Imero iyi ishandiswa kare.",
+      "تم_تحديث_بيانات_المستخدم_بنجاح": "Dhata yemushandisi yakagadziridzwa zvakabvumirwa.",
+      "تعذر_حفظ_البيانات_تحقق_من_الصلاحيات": "Kukundikana kuchengetedza dhata. Tarisa mvumo.",
+      "صلاحية_معلقه": "Mvumo Irikumirira",
+      "تفعيل_الحساب_والسماح_بالدخول": "Bvumidza akaunzi uye neumvumo yekupinda",
+      "تعطيل_الحساب_ومنع_فتح_الموقع": "Dzima akaunzi uye urambe kupinda kwewebhusaiti",
+      "اسم_المستخدم": "Zita reMushandisi",
+      "ذكر": "Murume",
+      "أنثى": "Mukadzi",
+      "مثال_MALAWI": "Muenzaniso: MALAWI",
+      "العنوان_أو_المنطقة": "Kero kana Nzvimbo",
+      "أي_ملاحظات_إضافية": "Zvimwe zvinyorwa"
+    },
+    "VillagesPage": {
+      "مهتد": "Akapinda muchiIslam",
+      "مسلم_قديم": "MuMuslim wekare",
+      "يرجى_إدخال_اسم_القرية_واختيار_المنطقة": "Ndokumbira upinde zita rekamusha usarudze nzvimbo",
+      "تم_تحديث_بيانات_القرية_بنجاح": "Dhata yekamusha yakagadziridzwa zvakabvumirwa.",
+      "تمت_إضافة_القرية_بنجاح": "Kamusha kakawedzerwa zvakabvumirwa.",
+      "لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_المهتدين_المسلمين_القدامى": "Hapana chikoro mukamusha uku kunyoresa vapinaIslam/vaMuslim vekare sevadzidzi. Wedzera chikoro kutanga.",
+      "يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_المناطق_لربط_القر": "Fomu yekutsvagisisa inofanira kuva nenzvimbo inobva ku'Nzvimbo' kubatanidza kamusha nenzvimbo yacho.",
+      "لا_يمكن_استخراج_اسم_القرية_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Zita rekamusha hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
+      "تمت_إضافة_القرية_من_نموذج_الاستكشاف_بنجاح": "Kamusha kakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
+      "حدث_خطأ_أثناء_الحفظ": "Kukanganisa pakuchengetedza.",
+      "تم_حذف_القرية_بنجاح": "Kamusha kakadzimiwa zvakabvumirwa.",
+      "تم_حفظ_المدرسة_الافتراضية_للقرية": "Chikoro chehutungamiri chekamusha chakachengetedzwa.",
+      "تعذر_حفظ_المدرسة_الافتراضية": "Kukundikana kuchengetedza chikoro chehutungamiri.",
+      "تمت_إضافة_السجل_وتسجيله_كطالب_في_المدرسة_المحددة": "Rekodhi yakawedzerwa uye ikaregistwa semudzidzi muchikoro chakasarudzwa.",
+      "تعذر_إضافة_السجل": "Kukundikana kuwedzera rekodhi.",
+      "تم_تحديث_السجل": "Rekodhi yakagadziridzwa.",
+      "تعذر_حفظ_التعديل": "Kukundikana kuchengetedza zvigadziriswa.",
+      "تم_حذف_السجل": "Rekodhi yakadzimiwa.",
+      "تعذر_الحذف": "Kudzima kwakundikana.",
+      "إدارة_القرى": "Tarisira Misha",
+      "البيانات_الديموغرافية_والمجموعات": "Dhata yeVanhu neMaboka",
+      "فتح_نموذج_استكشاف_لإدخال_قرية_جديدة": "Vhura fomu yekutsvagisisa kupinda kamusha itsva",
+      "تحديث_القرية": "Gadzirisa Kamusha",
+      "حفظ_القرية": "Chengetedza Kamusha",
+      "إضافة_قرية_من_نموذج_الاستكشاف": "Wedzera Kamusha kubva kuFomu yekutsvagisisa",
+      "تعديل_القرية": "Gadzirisa Kamusha",
+      "حذف_القرية": "Dzima Kamusha",
+      "تم_تحديث_بيانات_نموذج_القرية": "Dhata yefomu yekamusha yakagadziridzwa.",
+      "تأكيد_حذف_القرية": "Simbisa Kudzimwa kweKamusha",
+      "حذف_السجل": "Dzima Rekodhi"
+    },
+    "NoPermissionsPage": {
+      "السلام_عليكم،_أحتاج_تفعيل_الصلاحيات_لحسابي": "Mhoro, ndinoda mvumo yangu yeakaunzi ibvumidzwe.",
+      "تواصل": "Taura"
+    },
+    "NotificationsPage": {
+      "غير_معين": "Isina kugadzwa",
+      "مجموعة_جديدة": "Boka Itsva",
+      "مركز_الإشعارات_والتنبيهات": "Nzvimbo yeZvirevo neZviziviso",
+      "تحديث_فوري_للإشعارات_والمحادثات": "Kugadziridzwa panguva imwe yezvirevo nehurukuro",
+      "جاري_التفعيل": "Kuri kubvumidzwa…",
+      "تفعيل_الآن": "Bvumidza Zvino",
+      "مرسل_غير_معروف": "Mutumiri Asingazivikanwi",
+      "بدون_دور": "Pasina Basa",
+      "إرسال_إشعار_جديد": "Tumira Chirevo Chitsva",
+      "إنشاء_محادثة": "Gadzira Hurukuro"
+    },
+    "SettingsPage": {
+      "تم_تحديث_إعدادات_الملف_الشخصي_بنجاح": "Zvigadzirwa zvechinyorwa chako zvakagadziridzwa zvakabvumirwa!",
+      "حدث_خطأ_أثناء_حفظ_الملف_الشخصي": "Kukanganisa pakuchengetedza chinyorwa chako.",
+      "إعدادات_النظام_والملف_الشخصي": "Zvigadzirwa zveSisitimu neChinyorwa chako",
+      "المظهر_المفضل": "Mararamiro Anodikanwa",
+      "الوضع_النهاري_افتراضي": "Mamiriro emasikati (Muzvinhu)",
+      "الحساب_الشخصي": "Akaunzi Yangu",
+      "الاسم_الكامل_للعرض_داخل_المنصة": "Zita Rechizere (kuratidzwa mudhangwe)",
+      "اكتب_اسمك_الكامل": "Pinda zita rako rechizere",
+      "رقم_هاتف_التواصل_والدخول_المخصص": "Nhamba yerunhare yekutaurirana (nekupinda kwakagadzirwa)",
+      "مثال_77XXXXXXX": "Muenzaniso: 77XXXXXXX",
+      "كلمة_المرور_للدخول_المخصص": "Psiwedhi (yekupinda kwakagadzirwa)",
+      "اختر_كلمة_مرور_للدخول_بها_مع_رقم_الهاتف_لاحقاً": "Sarudza psiwedhi yekupinda nayo nenhamba yerunhare gare gare",
+      "البريد_الإلكتروني_الأساسي": "Imero Huru",
+      "نوع_الصلاحيات_الممنوح_للقراءة_فقط": "Mhando yemvumo yakagadzwa (yekuverenga chete)",
+      "لا_يوجد_نوع_صلاحيات_مخصص": "Hapana mhando yakagadzirwa yemvumo"
+    },
+    "LoginPage": {
+      "فشل_تسجيل_الدخول_يرجى_المحاولة_مرة_أخرى": "Kupinda kwakundikana. Ndokumbira uedze zvakare.",
+      "يرجى_إدخال_رقم_الهاتف_وكلمة_المرور": "Ndokumbira upinde nhamba yerunhare nepsiwedhi yako",
+      "رقم_الهاتف_أو_كلمة_المرور_غير_صحيحة": "Nhamba yerunhare kana psiwedhi haizviregi",
+      "منصة_تعليمية_نفس_وضوح_وتجربة_أدوات_Google": "Dhangwe rekudzidzisa — kujeka kwakafanana nechirevo cheGoogle",
+      "كلمة_المرور": "Psiwedhi",
+      "كلمة_المرور_المخصصة": "Psiwedhi Yakagadzirwa",
+      "تسجيل_الدخول": "Pinda",
+      "أو_المتابعة_بحساب_Google": "Kana kuenderera neakaunzi yeGoogle",
+      "المتابعة_باستخدام_Google": "Enderera neGoogle",
+      "يتم_تفعيل_الصلاحيات_فقط_بعد_تحديد_نوع_الصلاحيات_من_المدير": "Mvumo inobvumidzwa chete mutariri agadzira mhando yemvumo.",
+      "ثبّت_تطبيق_آفاق_على_جهازك": "Isa chirongwa cheAfaq pamudziyo wako",
+      "للتثبيت_شارك_إضافة_إلى_الشاشة_الرئيسية": "Kuisa: Govera → 'Wedzera paSkiriini Huru'",
+      "بالدخول_أنت_توافق_على_شروط_الاستخدام_وسياسة_الخصوصية_لمؤسسة_آفاق": "Nepinda, unobvumira Mitemo yekushandisa neNzira yekuchengetedza ruzivo rweAfaq.",
+      "منصة_آفاق_التعليمية": "Dhangwe reAfaq rekudzidzisa"
+    },
+    "CurriculumPrintPage": {
+      "معرّف_المادة_غير_صالح": "ID yechidzidzo haibvumi",
+      "المادة_غير_موجودة": "Chidzidzo chisina kuwanikwa",
+      "تعذر_تحميل_المنهج": "Kukundikana kuisa chirongwa",
+      "لا_توجد_بيانات": "Hapana dhata",
+      "خطة_التوزيع_الأسبوعي_خمسون_أسبوعاً": "Hurongwa hwekugoverana kwesvondo — Masvondo mashanu"
+    },
+    "StudentDashboardPage": {
+      "نسبة_الحضور": "Mwero wekuvapo",
+      "انضباط_ممتاز": "Kuzvibata Zvakanyanya",
+      "الاختبارات_المنجزة": "Bvunzo Dzakaitwa",
+      "بانتظار_التفوق": "Kumirira Kubwinya",
+      "سجل_المتابعة": "Rekodhi yekuteverera",
+      "تقييمات_حديثة": "Kuyera Kwatsva",
+      "الحالة_الأكاديمية": "Mamiriro eKudzidza",
+      "منتظم": "Akarongeka",
+      "آفاق_2026": "Afaq 2026",
+      "تم_الاختبار_بنجاح": "Bvunzo yakapedzwa zvakabvumirwa"
+    },
+    "StudentProfilePage": {
+      "ملفي_الشخصي": "Chinyorwa changu",
+      "بيانات_حسابك_في_المنصة": "Dhata yeakaunzi yako mudhangwe"
+    },
+    "StudentResultsPage": {
+      "نتائجي_واختباراتي": "Mhedzisiro yangu neBvunzo dzangu",
+      "عرض_جميع_نتائج_الزيارات_والتقييمات_الخاصة_بك": "Ona mhedzisiro dzese dzekushanyira nekuyera kwako"
+    },
+    "SupervisorDashboardPage": {
+      "إحصائيات_زياراتك_ونشاطاتك_في_المناطق_التابعة_لك": "Nhamba dzekushanyira kwako nemabasa munzvimbo dzakarongedzwa",
+      "زيارة_ميدانية_جديدة": "Kushanyira Itsva kuNzvimbo",
+      "سجّل_زيارتك_وارفع_تقريرك_الميداني_بسرعة": "Nyora kushanyira kwako utumirei ripoti yenzvimbo nokukurumidza",
+      "وصول_سريع": "Kupinda Nokukurumidza",
+      "عرض_سجل_الزيارات_السابقة": "Ona Rekodhi yekushanyira kwapfuura",
+      "المناطق_المسندة": "Nzvimbo Dzakarongedzwa",
+      "الزيارات_هذا_الشهر": "Kushanyira (mwedzi uno)",
+      "إجمالي_الزيارات_الميدانية": "Kushanyira Kwese kuNzvimbo",
+      "المدارس_النشطة": "Zvikoro Zvinoshanda"
+    },
+    "SupervisorHistoryPage": {
+      "تعذر_تحديد_هوية_المشرف_أعد_تسجيل_الدخول": "Kukundikana kutsanangura mutariri. Ndokumbira upinde zvakare.",
+      "حدث_خطأ_أثناء_جلب_سجل_زياراتك": "Kukanganisa pakutora rekodhi yekushanyira kwako",
+      "سجل_زياراتي_الميدانية": "Rekodhi yangu yekushanyira kuNzvimbo",
+      "مراجعة_التقارير_والتقييمات_التي_قمت_برفعها_سابقاً": "Ongorora mapoti nekuyera zvakatumiwa pashure"
+    },
+    "SupervisorVisitPage": {
+      "تعذر_تحديد_معرف_المستخدم_الحالي": "Kukundikana kutsanangura ID yemushandisi wariwo.",
+      "لا_توجد_لك_مناطق_إشرافية_مسندة_حالياً_راجع_الإدارة": "Hauna nzvimbo dzekutarira dzakarongedzwa panguva ino. Taura nemasangano.",
+      "تعذر_تحميل_البيانات_الأولية": "Kukundikana kuisa dhata yekutanga.",
+      "تم_التقاط_الموقع_الجغرافي_بنجاح": "Nzvimbo yepasirose yakatorwa zvakabvumirwa.",
+      "يرجى_تفعيل_GPS_ومنح_صلاحية_الموقع_للمتصفح": "Ndokumbira ubvumidza GPS upe mvumo yenzvimbo kubhurauzha.",
+      "يرجى_ملء_البيانات_الأساسية_المدرسة،_المادة،_والدرس": "Ndokumbira uzadze dhata huru (chikoro, chidzidzo, nechidzidzo).",
+      "تم_رفع_تقرير_الزيارة_الميدانية_بنجاح": "Ripoti yekushanyira yenzvimbo yakatumiwa zvakabvumirwa!",
+      "حدث_خطأ_أثناء_رفع_التقرير": "Kukanganisa pakutumira ripoti.",
+      "تسجيل_زيارة_ميدانية": "Nyora Kushanyira kuNzvimbo",
+      "توثيق_تفصيلي_لأداء_المدارس_مع_الموقع_الجغرافي": "Kunyora nekujekesa mabasa ezvikoro nenzvimbo yepasirose",
+      "تقييم_المدرّس_من_5_نجوم": "Kuyera Mudzidzisi (kubva kunyeredzi 5)",
+      "التقييم_العام_للقرية_من_5_نجوم": "Kuyera Kunoteverera Kwese kweKamusha (kubva kunyeredzi 5)",
+      "اكتب_رأيك_العام_عن_الزيارة": "Nyora maonero ako akajairika pamusoro pekushanyira...",
+      "حفظ_التقرير_الميداني_بشكل_نهائي": "Chengetedza ripoti yenzvimbo kupedzisira",
+      "يرجى_التقاط_الموقع_أولاً_لرفع_التقرير": "Ndokumbira utore nzvimbo kutanga kutumira ripoti"
+    },
+    "TeacherDailyLogPage": {
+      "لا_توجد_مدارس_مسجلة_في_النظام_حالياً": "Hapana zvikoro zvakanyoreswa musisitimu panguva ino.",
+      "الحساب_غير_مرتبط_بمدرسة_اطلب_من_الإدارة_تعيينك_في_مدرسة_من_ص": "Akaunzi haina kubatana nechikoro. Kumbira masangano akurongedze muchikoro kubva peji yezvinotsanangura zvechikoro.",
+      "حدث_خطأ_أثناء_الاتصال_بقاعدة_البيانات": "Kukanganisa pakubatana nedhadhabhesi",
+      "حدث_خطأ_أثناء_جلب_طلاب_المدرسة": "Kukanganisa pakutora vadzidzi vechikoro",
+      "يرجى_اختيار_المدرسة_أولاً": "Ndokumbira usarudze chikoro kutanga",
+      "لا_يوجد_طلاب_مسجلون_في_هذه_المدرسة": "Hapana vadzidzi vakanyoreswa muchikoro ichi",
+      "تعذر_تحديد_معرف_المعلم_للحفظ": "Kukundikana kutsanangura ID yemudzidzisi yekuchengetedza.",
+      "حدث_خطأ_أثناء_حفظ_التحضير": "Kukanganisa pakuchengetedza kugadzirira",
+      "صلاحية_شاملة_اختر_أي_مدرسة_ثم_سجّل_التحضير": "Mvumo yese — sarudza chikoro chero uye unyore kuvapo",
+      "المدارس_المعيّنة_لك_فقط_اختر_المدرسة_والفترة_والمواد": "Zvikoro zvako chete — sarudza chikoro, nguva, nezvidzidzo",
+      "طي_الإعداد": "Pfiga Zvigadzirwa",
+      "عرض_الإعداد": "Ratidza Zvigadzirwa",
+      "لا_توجد_مدارس_مسجلة_في_النظام": "Hapana zvikoro zvakanyoreswa musisitimu.",
+      "لا_توجد_مدارس_معيّنة_لحسابك_اطلب_من_الإدارة_تعيينك_في_مدرسة": "Hapana zvikoro zvakagadzwa pakaunzi yako. Kumbira masangano akurongedze muchikoro.",
+      "تاريخ_اليوم": "Zuva reNhasi",
+      "مرجع_الأسبوع": "Referensi yesvondo",
+      "مرجع_الشهر": "Referensi yemwedzi",
+      "مواد_الأسبوع_من_المناهج": "Zvidzidzo zvezvondo kubva muchirongwa",
+      "مواد_الشهر": "Zvidzidzo zvemwedzi",
+      "مواد_اليوم": "Zvidzidzo zvenhasi",
+      "اختر_المنهج": " • Sarudza Chirongwa"
+    },
+    "TeacherDashboardPage": {
+      "جاري_التحميل": "Kuri kuisa...",
+      "حساب_غير_معروف": "Akaunzi Isingazivikanwi",
+      "مدرسة_غير_معروفة": "Chikoro Chisingazivikanwi",
+      "نظرة_عامة_على_نشاطاتك_في_مدرستك_الحالية": "Tarisa mabasa ako muchikoro chako chino",
+      "سجّل_حضور_وغياب_طلابك_اليوم": "Nyora kuvapo nekusipo kwevadzidzi vako nhasi",
+      "ارفع_تقريرك_الأسبوعي_للمدرسة": "Tumira ripoti yako yesvondo yechikoro",
+      "إجمالي_الدارسين_الأعضاء": "Vadzidzi vese (nhengo)",
+      "التحضير_اليومي_المرفوع": "Kugadzirira Kwezuva kwakaTumiwa",
+      "نسبة_الإنجاز": "Mwero wekupedza",
+      "نشط": "Anoshanda",
+      "بانتظار_التحضير": "Kumirira Kugadzirira"
+    },
+    "TeacherStudentDetailPage": {
+      "تعذر_تحميل_بيانات_الدارس": "Kukundikana kuisa dhata yemudzidzi.",
+      "تعذر_حذف_الدارس": "Kukundikana kudzima mudzidzi.",
+      "تأكيد_حذف_الدارس": "Simbisa Kudzimwa kwemudzidzi"
+    },
+    "TeacherStudentsPage": {
+      "حدث_خطأ_أثناء_جلب_الدارسين": "Kukanganisa pakutora vadzidzi",
+      "حسابك_غير_مرتبط_بأي_مدرسة_يرجى_مراجعة_الإدارة": "Akaunzi yako haina kubatana nechikoro chero chipi. Ndokumbira utaure nemasangano.",
+      "حدث_خطأ_أثناء_تحميل_بيانات_المدرسة": "Kukanganisa pakuisa dhata yechikoro",
+      "تم_تحديث_بيانات_الدارس_بنجاح": "Dhata yemudzidzi yakagadziridzwa zvakabvumirwa.",
+      "تمت_إضافة_الدارس_بنجاح": "Mudzidzi wakawedzerwa zvakabvumirwa.",
+      "لا_يمكن_استخراج_اسم_الدارس_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Zita remudzidzi hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine zita.",
+      "تمت_إضافة_الدارس_من_نموذج_الاستكشاف_بنجاح": "Mudzidzi wakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
+      "تم_حذف_الدارس_بنجاح": "Mudzidzi wakadzimiwa zvakabvumirwa.",
+      "إدارة_الحلقات_والدارسين": "Tarisira Maboka neVadzidzi",
+      "قائمة_الدارسين_المسجلين_لديك": "Rondedzero yevadzidzi vakanyoreswa newe",
+      "إضافة_دارس_جديد": "Wedzera Mudzidzi Mutsva",
+      "تعديل_بيانات_الدارس": "Gadzirisa Dhata yemudzidzi",
+      "اسم_الدارس_الرباعي": "Zita Rechizere remudzidzi (mazita mana)",
+      "السن": "Makore",
+      "إضافة_دارس_من_نموذج_الاستكشاف": "Wedzera Mudzidzi kubva kuFomu yekutsvagisisa",
+      "تم_تحديث_بيانات_نموذج_الدارس": "Dhata yefomu yemudzidzi yakagadziridzwa."
+    },
+    "TeacherWeeklyReportPage": {
+      "اكتب_التفاصيل_والملاحظات_هنا": "Nyora zvimwe zvakawanda nezvinyorwa pano...",
+      "تم_حفظ_رفع_التقرير_الأسبوعي_بنجاح_جزاك_الله_خيراً": "Ripoti yesvondo yakatumiwa zvakabvumirwa! Mwari akuodze.",
+      "حدث_خطأ_أثناء_حفظ_التقرير_الأسبوعي": "Kukanganisa pakuchengetedza ripoti yesvondo",
+      "التقرير_الأسبوعي_للأعمال": "Ripoti yeMabasa yesvondo",
+      "توثيق_النشاطات_الدعوية_والمجتمعية": "Kunyora mabasa ekuparidza nesangano",
+      "خطبة_الجمعة": "Preach yeChishanu",
+      "دعوة_غير_المسلمين": "Kuparidza kuvasingarambi Islam",
+      "تعليم_الكبار": "Kudzidzisa Vakuru",
+      "دروس_أسبوعية_في_المسجد": "Zvidzidzo zwesvondo muMosque",
+      "عقود_الزواج": "Zvibvumirano zveMuchato",
+      "أعمال_وأنشطة_أخرى": "Mamwe Mabasa neMabasa"
+    }
+  },
+  "settings": {
+    "language_title": "Mutauro weInterface",
+    "language_hint": "Sarudza mutauro weratidziro yedhangwe — Chirabhu, Chirungu, kana ChiShona.",
+    "language_label": "Mutauro"
+  },
+  "config": {
+    "appNavItems": {
+      "الإعدادات": "Zvigadzirwa",
+      "الرئيسية": "Kumba",
+      "المحافظات": "Madunhu Makuru",
+      "المناطق": "Nzvimbo",
+      "القرى": "Misha",
+      "المدارس": "Zvikoro",
+      "الاستكشاف": "Kutsvagisisa",
+      "المنَاهِج": "Zvirongwa",
+      "المناهج": "Zvirongwa",
+      "التقارير": "Mapoti",
+      "التحضير": "Kuvapo",
+      "المستخدمين": "Vashandisi",
+      "إدارة_الطلاب": "Kutarisira Vadzidzi",
+      "الطلاب": "Vadzidzi",
+      "الإشعارات": "Zvirevo",
+      "أنواع_المستخدمين": "Mhando dzeVashandisi",
+      "الأنواع": "Mhando",
+      "هوية_الموقع": "Chimiro cheWebhusaiti",
+      "الهوية": "Chimiro",
+      "النصوص_الثابتة": "Nyaya Dzakagara",
+      "النصوص": "Nyaya",
+      "أنواع_الاستكشاف": "Mhando dzekutsvagisisa"
+    },
+    "permissionRegistry": {
+      "أنواع_المستخدمين_والصلاحيات": "Mhando dzeVashandisi neMvumo",
+      "إضافة_استكشاف": "Wedzera Kutsvagisisa",
+      "إضافة_نوع_استكشاف": "Wedzera Mhando yekutsvagisisa",
+      "إضافة_محافظة": "Wedzera Dunhu Guru",
+      "عرض_التفاصيل": "Ona Zvimwe",
+      "تعيين_مشرف_للمنطقة": "Gadza Mutariri kuNzvimbo",
+      "إضافة_منطقة": "Wedzera Nzvimbo",
+      "إضافة_مدرسة": "Wedzera Chikoro",
+      "إضافة_طالب": "Wedzera Mudzidzi",
+      "عرض_ملف_الطالب": "Ona Chinyorwa chemudzidzi",
+      "تعديل_بيانات_الطالب": "Gadzirisa Dhata yemudzidzi"
+    }
+  },
+  "layouts": {
+    "AdminLayout": {
+      "تسجيل_الخروج": "Buda",
+      "توسيع_القائمة": "Tandanudza Menyu",
+      "طي_القائمة": "Pfiga Menyu",
+      "الوضع_النهاري": "Mamiriro Emasikati",
+      "الوضع_الليلي": "Mamiriro eUsiku"
+    },
+    "StudentLayout": {
+      "نتائجي": "Mhedzisiro yangu",
+      "ملفي": "Chinyorwa changu",
+      "التعليمية": "Rekudzidzisa",
+      "طالب_نشط": "Mudzidzi Anoshanda"
+    },
+    "SupervisorLayout": {
+      "تسجيل_زيارة": "Nyora Kushanyira",
+      "زيارة": "Kushanyira",
+      "سجل_الزيارات": "Rekodhi yekushanyira",
+      "السجل": "Rekodhi",
+      "بوابة_المشرف_الميداني": "Gedhi reMutariri weNzvimbo",
+      "بوابة_المشرف": "Gedhi reMutariri"
+    },
+    "TeacherLayout": {
+      "آفاق_القرآنية": "Afaq yeQuran",
+      "طلابي": "Vadzidzi vangu",
+      "التحضير_اليومي": "Kuvapo Kwezuva",
+      "التقرير_الأسبوعي": "Ripoti yesvondo",
+      "الأسبوعي": "Yesvondo",
+      "بوابة_المعلم": "Gedhi reMudzidzisi"
+    }
+  },
+  "context": {
+    "siteContentContext": {
+      "آفاق": "Afaq",
+      "لوحة_تحكم_الإدارة": "Puranga yeMasangano"
+    }
+  },
+  "services": {
+    "authService": {
+      "تم_تعطيل_هذا_الحساب_ولا_يمكنه_استخدام_المنصة_تواصل_مع_الإدار": "Akaunzi iyi yakadzimiwa uye haigoni kushandisa dhangwe. Taura nemasangano."
+    }
+  }
+}

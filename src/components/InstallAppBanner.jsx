@@ -3,6 +3,7 @@ import { Download, Share, X } from 'lucide-react';
 import useInstallPrompt from '../hooks/useInstallPrompt';
 
 const InstallAppBanner = () => {
+  const { t } = useAppTranslation();
   const { canPrompt, iosHint, hasNativePrompt, promptInstall, dismiss } = useInstallPrompt();
 
   if (!canPrompt) return null;
@@ -14,7 +15,7 @@ const InstallAppBanner = () => {
   };
 
   return (
-    <div className="install-app-banner" role="region" aria-label="تثبيت التطبيق">
+    <div className="install-app-banner" role="region" aria-label={t('components.InstallAppBanner.تثبيت_التطبيق', 'تثبيت التطبيق')}>
       <div className="install-app-banner__content">
         <div className="install-app-banner__icon" aria-hidden>
           <Download size={20} />
@@ -41,7 +42,7 @@ const InstallAppBanner = () => {
           type="button"
           className="install-app-banner__dismiss"
           onClick={dismiss}
-          aria-label="إغلاق"
+          aria-label={t('components.InstallAppBanner.إغلاق', 'إغلاق')}
         >
           <X size={18} />
         </button>

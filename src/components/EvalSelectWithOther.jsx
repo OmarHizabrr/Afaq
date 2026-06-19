@@ -1,6 +1,7 @@
 import React from 'react';
 import AppSelect from './AppSelect';
 import { EVAL_OTHER_VALUE } from '../utils/reportEvalOptions';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * قائمة تقييم مع خيار «أخرى» يفتح حقل نص حر.
@@ -13,8 +14,10 @@ export default function EvalSelectWithOther({
   onOtherChange,
   options,
   searchable = true,
-  placeholder = 'اكتب التقييم أو الملاحظة...',
+  placeholder,
 }) {
+  const { t } = useAppTranslation();
+  const resolvedPlaceholder = placeholder ?? t('components.EvalSelectWithOther.اكتب_التقييم_أو_الملاحظة', 'اكتب التقييم أو الملاحظة...');
   const isOther = value === EVAL_OTHER_VALUE;
 
   return (
@@ -26,7 +29,7 @@ export default function EvalSelectWithOther({
         onChange={(e) => onChange(e.target.value)}
         className="eval-select-with-other__select"
       >
-        <option value="">— اختر —</option>
+        <option value="">{t('components.EvalSelectWithOther.اختر', '— اختر —')}</option>
         {options.map((opt) => (
           <option key={opt} value={opt}>
             {opt}
@@ -39,7 +42,7 @@ export default function EvalSelectWithOther({
           className="app-input eval-select-with-other__custom"
           value={otherValue}
           onChange={(e) => onOtherChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
         />
       )}
     </div>

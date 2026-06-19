@@ -47,6 +47,7 @@ const emptySchemaRow = (api) => ({
 });
 
 const ExplorationTypesPage = () => {
+  const { t } = useAppTranslation();
   const { can, actorUser } = usePermissions();
   const storageUserId = actorUser?.uid || actorUser?.id || '';
   const [types, setTypes] = useState([]);
@@ -119,7 +120,7 @@ const ExplorationTypesPage = () => {
       setTypes(rows);
     } catch (err) {
       console.error(err);
-      setError('تعذر جلب أنواع الاستكشاف.');
+      setError(t('pages.ExplorationTypesPage.تعذر_جلب_أنواع_الاستكشاف', 'تعذر جلب أنواع الاستكشاف.'));
     } finally {
       setLoading(false);
     }
@@ -190,7 +191,7 @@ const ExplorationTypesPage = () => {
         return f.options.length === 0;
       })
     ) {
-      setError('أي حقل يدوي من نوع «قائمة منسدلة / اختيار متعدد / راديو» يجب أن يحتوي سطراً واحداً على الأقل في الخيارات، أو اختر مصدر بيانات من المنصة.');
+      setError(t('pages.ExplorationTypesPage.أي_حقل_يدوي_من_نوع_قائمة_منسدلة_اختيار_متعدد_راديو_يجب_أن_يح', 'أي حقل يدوي من نوع «قائمة منسدلة / اختيار متعدد / راديو» يجب أن يحتوي سطراً واحداً على الأقل في الخيارات، أو اختر مصدر بيانات من المنصة.'));
       return;
     }
 
@@ -206,7 +207,7 @@ const ExplorationTypesPage = () => {
             schemaFields: schemaFieldsToSave,
           },
         });
-        setSuccess('تم تحديث نوع الاستكشاف.');
+        setSuccess(t('pages.ExplorationTypesPage.تم_تحديث_نوع_الاستكشاف', 'تم تحديث نوع الاستكشاف.'));
       } else {
         const id = api.getNewId('exploration_types');
         await api.setData({
@@ -218,7 +219,7 @@ const ExplorationTypesPage = () => {
             schemaFields: schemaFieldsToSave,
           },
         });
-        setSuccess('تمت إضافة نوع استكشاف جديد.');
+        setSuccess(t('pages.ExplorationTypesPage.تمت_إضافة_نوع_استكشاف_جديد', 'تمت إضافة نوع استكشاف جديد.'));
       }
       invalidateExplorationTypesCache();
       clearForm();
@@ -226,7 +227,7 @@ const ExplorationTypesPage = () => {
       fetchTypes();
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ نوع الاستكشاف.');
+      setError(t('pages.ExplorationTypesPage.تعذر_حفظ_نوع_الاستكشاف', 'تعذر حفظ نوع الاستكشاف.'));
     } finally {
       setSaving(false);
     }
@@ -237,12 +238,12 @@ const ExplorationTypesPage = () => {
       const api = FirestoreApi.Api;
       await api.deleteData(api.getExplorationTypeDoc(id));
       invalidateExplorationTypesCache();
-      setSuccess('تم حذف نوع الاستكشاف.');
+      setSuccess(t('pages.ExplorationTypesPage.تم_حذف_نوع_الاستكشاف', 'تم حذف نوع الاستكشاف.'));
       setError('');
       fetchTypes();
     } catch (err) {
       console.error(err);
-      setError('تعذر حذف نوع الاستكشاف.');
+      setError(t('pages.ExplorationTypesPage.تعذر_حذف_نوع_الاستكشاف', 'تعذر حذف نوع الاستكشاف.'));
     }
   };
 
@@ -271,7 +272,7 @@ const ExplorationTypesPage = () => {
 
   return (
     <div className="exploration-types-page">
-      <PageHeader icon={Tags} title="إدارة أنواع الاستكشاف">
+      <PageHeader icon={Tags} title={t('pages.ExplorationTypesPage.إدارة_أنواع_الاستكشاف', 'إدارة أنواع الاستكشاف')}>
         {can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_add') && (
           <button
             type="button"
@@ -283,7 +284,7 @@ const ExplorationTypesPage = () => {
           >
             <Plus size={18} />
             <span className="exploration-types-toolbar__long">إضافة نوع</span>
-            <span className="exploration-types-toolbar__short">إضافة</span>
+            <span className="exploration-types-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
         )}
       </PageHeader>
@@ -293,7 +294,7 @@ const ExplorationTypesPage = () => {
 
       <FormModal
         open={isAdding || !!isEditing}
-        title={isEditing ? 'تعديل نوع الاستكشاف' : 'إضافة نوع استكشاف'}
+        title={isEditing ? t('pages.ExplorationTypesPage.تعديل_نوع_الاستكشاف', 'تعديل نوع الاستكشاف') : t('config.permissionRegistry.إضافة_نوع_استكشاف', 'إضافة نوع استكشاف')}
         onClose={clearForm}
         size="lg"
         className="exploration-type-modal"
@@ -304,7 +305,7 @@ const ExplorationTypesPage = () => {
             className="app-input"
             value={typeName}
             onChange={(e) => setTypeName(e.target.value)}
-            placeholder="مثال: استكشاف بئر"
+            placeholder={t('pages.ExplorationTypesPage.مثال_استكشاف_بئر', 'مثال: استكشاف بئر')}
             required
           />
           <label className="app-label">وصف مختصر</label>
@@ -312,7 +313,7 @@ const ExplorationTypesPage = () => {
             className="app-input exploration-type-form__textarea"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="تفاصيل إضافية عن النوع (اختياري)"
+            placeholder={t('pages.ExplorationTypesPage.تفاصيل_إضافية_عن_النوع_اختياري', 'تفاصيل إضافية عن النوع (اختياري)')}
           />
 
           <ExplorationTargetPagesPicker value={allowedPageIds} onChange={setAllowedPageIds} />
@@ -350,7 +351,7 @@ const ExplorationTypesPage = () => {
                         className="app-input"
                         value={row.label}
                         onChange={(e) => updateSchemaRow(index, { label: e.target.value })}
-                        placeholder="مثال: عدد الأسر"
+                        placeholder={t('pages.ExplorationTypesPage.مثال_عدد_الأسر', 'مثال: عدد الأسر')}
                       />
                     </div>
                     <div className="exploration-type-editor__field-type">
@@ -380,13 +381,13 @@ const ExplorationTypesPage = () => {
                       مطلوب
                     </label>
                     <div className="exploration-type-editor__row-actions">
-                      <button type="button" className="icon-btn" title="أعلى" onClick={() => moveSchemaRow(index, -1)}>
+                      <button type="button" className="icon-btn" title={t('pages.ExplorationTypesPage.أعلى', 'أعلى')} onClick={() => moveSchemaRow(index, -1)}>
                         <ArrowUp size={16} />
                       </button>
-                      <button type="button" className="icon-btn" title="أسفل" onClick={() => moveSchemaRow(index, 1)}>
+                      <button type="button" className="icon-btn" title={t('pages.ExplorationTypesPage.أسفل', 'أسفل')} onClick={() => moveSchemaRow(index, 1)}>
                         <ArrowDown size={16} />
                       </button>
-                      <button type="button" className="icon-btn" title="حذف الحقل" onClick={() => removeSchemaRow(index)}>
+                      <button type="button" className="icon-btn" title={t('pages.ExplorationTypesPage.حذف_الحقل', 'حذف الحقل')} onClick={() => removeSchemaRow(index)}>
                         <Trash2 size={16} color="var(--danger-color)" />
                       </button>
                     </div>
@@ -526,7 +527,7 @@ const ExplorationTypesPage = () => {
                         className="app-input"
                         value={row.defaultValue}
                         onChange={(e) => updateSchemaRow(index, { defaultValue: e.target.value })}
-                        placeholder="مثال: draft أو معرف داخلي"
+                        placeholder={t('pages.ExplorationTypesPage.مثال_draft_أو_معرف_داخلي', 'مثال: draft أو معرف داخلي')}
                       />
                     </div>
                   )}
@@ -617,10 +618,10 @@ const ExplorationTypesPage = () => {
             return (
               <div key={item.id} className="surface-card surface-card--entity exploration-type-card">
                 <div className="exploration-type-card__body">
-                  <h3 className="exploration-type-card__title">{item.name || 'بدون اسم'}</h3>
-                  <p className="exploration-type-card__desc">{item.description || 'بدون وصف'}</p>
+                  <h3 className="exploration-type-card__title">{item.name || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</h3>
+                  <p className="exploration-type-card__desc">{item.description || t('pages.ExplorationTypesPage.بدون_وصف', 'بدون وصف')}</p>
                   <p className="exploration-type-card__meta">
-                    {n === 0 ? 'يستخدم النموذج الافتراضي الكامل' : `${n} حقل مخصص في النموذج`}
+                    {n === 0 ? t('pages.ExplorationTypesPage.يستخدم_النموذج_الافتراضي_الكامل', 'يستخدم النموذج الافتراضي الكامل') : `${n} حقل مخصص في النموذج`}
                   </p>
                   <div className="exploration-type-card__pages" title={pagesSummary}>
                     <MapPin size={13} aria-hidden />
@@ -640,13 +641,13 @@ const ExplorationTypesPage = () => {
                   <button
                     type="button"
                     className="icon-btn"
-                    title="معاينة الحقول"
+                    title={t('pages.ExplorationTypesPage.معاينة_الحقول', 'معاينة الحقول')}
                     onClick={() => setViewingType(item)}
                   >
                     <Eye size={16} color="var(--accent-color)" />
                   </button>
                   {can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_edit') && (
-                    <button type="button" className="icon-btn" title="تعديل" onClick={() => startEdit(item)}>
+                    <button type="button" className="icon-btn" title={t('components.ExplorationListCard.تعديل', 'تعديل')} onClick={() => startEdit(item)}>
                       <Edit2 size={16} />
                     </button>
                   )}
@@ -654,7 +655,7 @@ const ExplorationTypesPage = () => {
                     <button
                       type="button"
                       className="icon-btn"
-                      title="حذف"
+                      title={t('components.ExplorationListCard.حذف', 'حذف')}
                       onClick={() => setPendingDelete({ id: item.id, name: item.name })}
                     >
                       <Trash2 size={16} color="var(--danger-color)" />
@@ -689,10 +690,10 @@ const ExplorationTypesPage = () => {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        title="تأكيد حذف نوع الاستكشاف"
+        title={t('pages.ExplorationTypesPage.تأكيد_حذف_نوع_الاستكشاف', 'تأكيد حذف نوع الاستكشاف')}
         message={`سيتم حذف النوع "${pendingDelete?.name || ''}" نهائياً.`}
         danger
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {
           const item = pendingDelete;

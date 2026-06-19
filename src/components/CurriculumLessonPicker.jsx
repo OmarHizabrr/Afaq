@@ -23,6 +23,7 @@ const statusClass = (status) => {
 };
 
 const CurriculumLessonPicker = ({ curriculumList = [], entries = [], onChange, reportDate }) => {
+  const { t } = useAppTranslation();
   const expectedWeek = useMemo(() => getExpectedWeekForDate(reportDate ? new Date(reportDate) : new Date()), [reportDate]);
   const progressSummary = useMemo(
     () => summarizeCurriculumProgress(entries, reportDate ? new Date(reportDate) : new Date()),
@@ -109,7 +110,7 @@ const CurriculumLessonPicker = ({ curriculumList = [], entries = [], onChange, r
               {statusIcon(p.status)}
               <span className="curriculum-picker__badge-name">{p.subjectName}</span>
               <span className="curriculum-picker__badge-detail">
-                {p.reportedWeek ? `أسبوع ${p.reportedWeek}` : 'لم يُحدد'} / متوقع {p.expectedWeek}
+                {p.reportedWeek ? `أسبوع ${p.reportedWeek}` : t('components.CurriculumLessonPicker.لم_يُحدد', 'لم يُحدد')} / متوقع {p.expectedWeek}
               </span>
               <span className="curriculum-picker__badge-label">{p.label}</span>
             </div>
@@ -128,7 +129,7 @@ const CurriculumLessonPicker = ({ curriculumList = [], entries = [], onChange, r
             <div key={entry.subjectId} className="curriculum-picker__subject">
               <div className="curriculum-picker__subject-head">
                 <h5>{entry.subjectName}</h5>
-                <button type="button" className="icon-btn" title="إزالة المادة" onClick={() => removeSubject(entry.subjectId)}>
+                <button type="button" className="icon-btn" title={t('components.CurriculumLessonPicker.إزالة_المادة', 'إزالة المادة')} onClick={() => removeSubject(entry.subjectId)}>
                   <Trash2 size={16} color="var(--danger-color)" />
                 </button>
               </div>

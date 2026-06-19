@@ -1,8 +1,11 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
+import useAppTranslation from '../hooks/useAppTranslation';
 
-const AppSelect = ({ className = '', children, searchable = false, placeholder = 'ابحث...', ...props }) => {
+const AppSelect = ({ className = '', children, searchable = false, placeholder, ...props }) => {
+  const { t } = useAppTranslation();
+  const searchPlaceholder = placeholder ?? t('components.AppSelect.ابحث', 'ابحث...');
   const mergedClassName = ['app-select', 'app-select--enhanced', className].filter(Boolean).join(' ');
   const {
     value,
@@ -113,7 +116,7 @@ const AppSelect = ({ className = '', children, searchable = false, placeholder =
             style={menuStyle || undefined}
           >
             {filteredOptions.length === 0 ? (
-              <div className="app-select-search__empty">لا توجد نتائج</div>
+              <div className="app-select-search__empty">{t('components.AppSelect.لا_توجد_نتائج', 'لا توجد نتائج')}</div>
             ) : (
               filteredOptions.map((opt) => (
                 <button
@@ -144,7 +147,7 @@ const AppSelect = ({ className = '', children, searchable = false, placeholder =
         type="text"
         className={mergedClassName}
         value={open ? query : selectedOption?.label || ''}
-        placeholder={placeholder}
+        placeholder={searchPlaceholder}
         onFocus={() => {
           if (disabled) return;
           // Open with full list visible; filtering starts only after typing.

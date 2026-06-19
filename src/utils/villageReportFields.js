@@ -1,3 +1,5 @@
+import translate from '../i18n/translate';
+
 export const emptyVillageReportFields = () => ({
   teacherVillageActivities: [],
   institutionVillageActivities: [],
@@ -30,7 +32,10 @@ export const villageReportToPayload = (fields = {}) => ({
   newConvertsCount: Number(fields.newConvertsCount || 0),
   hasInstitutionProjects: fields.hasInstitutionProjects || '',
   institutionProjectsStatus:
-    fields.hasInstitutionProjects === 'نعم' ? fields.institutionProjectsStatus || '' : '',
+    (fields.hasInstitutionProjects === 'نعم' ||
+      fields.hasInstitutionProjects === translate('components.ExplorationDynamicFieldBlock.نعم', 'نعم'))
+      ? fields.institutionProjectsStatus || ''
+      : '',
   villageNotes: fields.villageNotes || '',
 });
 

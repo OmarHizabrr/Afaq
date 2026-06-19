@@ -9,6 +9,7 @@ import { Star } from 'lucide-react';
  * @param {string} [props.className]
  */
 const StarRatingInput = ({ value, onChange, label, className = '', style, compact = false, readOnly = false }) => {
+  const { t } = useAppTranslation();
   const v = Math.min(5, Math.max(0, Math.round(Number(value) || 0)));
   const starSize = compact ? 22 : 28;
 
@@ -29,13 +30,13 @@ const StarRatingInput = ({ value, onChange, label, className = '', style, compac
         </span>
       ) : null}
       <div className="star-rating-input__row">
-        <div role="group" aria-label={label || 'تقييم بالنجوم'} className="star-rating-input__stars">
+        <div role="group" aria-label={label || t('components.StarRatingInput.تقييم_بالنجوم', 'تقييم بالنجوم')} className="star-rating-input__stars">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
               type="button"
               className="star-rating-input__btn"
-              aria-label={`${star} من 5`}
+              aria-label={t('components.StarRatingInput.نجمة_star_من_5', `${star} من 5`)}
               aria-pressed={star <= v}
               onClick={() => onChange(star)}
             >

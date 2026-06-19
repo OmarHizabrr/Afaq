@@ -22,17 +22,21 @@ import PushNotificationBanner from '../components/PushNotificationBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
+import useAppTranslation from '../hooks/useAppTranslation';
 
-const TEACHER_NAV_ITEMS = [
-  { name: 'الرئيسية', shortName: 'الرئيسية', icon: Home, path: '/teacher', end: true },
-  { name: 'طلابي', shortName: 'طلابي', icon: Users, path: '/teacher/students' },
-  { name: 'التحضير اليومي', shortName: 'التحضير', icon: Calendar, path: '/teacher/daily-log' },
-  { name: 'التقرير الأسبوعي', shortName: 'الأسبوعي', icon: FileText, path: '/teacher/weekly-report' },
-  { name: 'الإشعارات', shortName: 'الإشعارات', icon: Bell, path: '/teacher/notifications' },
-  { name: 'الإعدادات', shortName: 'الإعدادات', icon: Settings, path: '/teacher/settings' },
-];
+function getTeacherNavItems(t) {
+  return [
+    { name: t('config.appNavItems.الرئيسية', 'الرئيسية'), shortName: t('config.appNavItems.الرئيسية', 'الرئيسية'), icon: Home, path: '/teacher', end: true },
+    { name: t('layouts.TeacherLayout.طلابي', 'طلابي'), shortName: t('layouts.TeacherLayout.طلابي', 'طلابي'), icon: Users, path: '/teacher/students' },
+    { name: t('layouts.TeacherLayout.التحضير_اليومي', 'التحضير اليومي'), shortName: t('config.appNavItems.التحضير', 'التحضير'), icon: Calendar, path: '/teacher/daily-log' },
+    { name: t('layouts.TeacherLayout.التقرير_الأسبوعي', 'التقرير الأسبوعي'), shortName: t('layouts.TeacherLayout.الأسبوعي', 'الأسبوعي'), icon: FileText, path: '/teacher/weekly-report' },
+    { name: t('config.appNavItems.الإشعارات', 'الإشعارات'), shortName: t('config.appNavItems.الإشعارات', 'الإشعارات'), icon: Bell, path: '/teacher/notifications' },
+    { name: t('config.appNavItems.الإعدادات', 'الإعدادات'), shortName: t('config.appNavItems.الإعدادات', 'الإعدادات'), icon: Settings, path: '/teacher/settings' },
+  ];
+}
 
 const TeacherLayout = ({ user }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() =>
@@ -86,7 +90,7 @@ const TeacherLayout = ({ user }) => {
     navigate('/');
   };
 
-  const navItems = TEACHER_NAV_ITEMS;
+  const navItems = useMemo(() => getTeacherNavItems(t), [t]);
   const mobileTabs = useMemo(() => getPortalMobileTabs(navItems, 'teacher'), [navItems]);
 
   const closeSidebar = () => {
@@ -107,14 +111,14 @@ const TeacherLayout = ({ user }) => {
       <aside className={`sidebar sidebar--teacher ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
           <div>
-            <h2 className="logo-text logo-text--teacher">بوابة المعلم</h2>
-            <p className="sidebar-header__subtitle">آفاق القرآنية</p>
+            <h2 className="logo-text logo-text--teacher">{t('layouts.TeacherLayout.بوابة_المعلم', 'بوابة المعلم')}</h2>
+            <p className="sidebar-header__subtitle">{t('layouts.TeacherLayout.آفاق_القرآنية', 'آفاق القرآنية')}</p>
           </div>
 
           <button
             className="desktop-collapse-btn"
             onClick={toggleSidebarCollapse}
-            title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+            title={isCollapsed ? t('layouts.AdminLayout.توسيع_القائمة', 'توسيع القائمة') : t('layouts.AdminLayout.طي_القائمة', 'طي القائمة')}
           >
             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
           </button>
@@ -140,9 +144,9 @@ const TeacherLayout = ({ user }) => {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="nav-link" onClick={handleLogout} title="تسجيل الخروج">
+          <div className="nav-link" onClick={handleLogout} title={t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}>
             <LogOut size={20} />
-            <span>تسجيل الخروج</span>
+            <span>{t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}</span>
           </div>
         </div>
       </aside>
@@ -152,20 +156,20 @@ const TeacherLayout = ({ user }) => {
           <div className="topbar__lead">
             {isMobile ? (
               <div className="topbar__brand">
-                <span className="topbar__brand-title">بوابة المعلم</span>
+                <span className="topbar__brand-title">{t('layouts.TeacherLayout.بوابة_المعلم', 'بوابة المعلم')}</span>
               </div>
             ) : null}
           </div>
 
           <div className="topbar__actions">
-            <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
+            <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? t('layouts.AdminLayout.الوضع_النهاري', 'الوضع النهاري') : t('layouts.AdminLayout.الوضع_الليلي', 'الوضع الليلي')}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
             <UserMenuDropdown
               user={user}
               accentTone="success"
-              tagline="بوابة المعلم"
+              tagline={t('layouts.TeacherLayout.بوابة_المعلم', 'بوابة المعلم')}
             />
           </div>
         </header>

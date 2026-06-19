@@ -1,3 +1,5 @@
+import translate from '../i18n/translate';
+
 /** بداية العام الدراسي الافتراضية (1 سبتمبر) */
 const ACADEMIC_YEAR_START_MONTH = 8; // سبتمبر (0-indexed)
 const ACADEMIC_YEAR_START_DAY = 1;
@@ -42,23 +44,38 @@ export function buildCurriculumEntry(subject, selectedWeeks = []) {
   };
 }
 
-export function computeProgressStatus(reportedWeek, expectedWeek) {
+export function computeProgressStatus(reportedWeek, expectedWeek, t = translate) {
   const reported = Number(reportedWeek) || 0;
   const expected = Number(expectedWeek) || 1;
-  if (!reported) return { status: 'unknown', gapWeeks: 0, label: 'لم يُحدد بعد' };
+  if (!reported) {
+    return { status: 'unknown', gapWeeks: 0, label: t('utils.curriculumProgress.لم_يُحدد_بعد', 'لم يُحدد بعد') };
+  }
   const gap = reported - expected;
-  if (gap > 0) return { status: 'ahead', gapWeeks: gap, label: `متقدم ${gap} أسبوع` };
-  if (gap < 0) return { status: 'behind', gapWeeks: gap, label: `متأخر ${Math.abs(gap)} أسبوع` };
-  return { status: 'on_track', gapWeeks: 0, label: 'حسب الخطة' };
+  if (gap > 0) {
+    return {
+      status: 'ahead',
+      gapWeeks: gap,
+      label: t('utils.curriculumProgress.متقدم_gap_أسبوع', `متقدم ${gap} أسبوع`),
+    };
+  }
+  if (gap < 0) {
+    const absGap = Math.abs(gap);
+    return {
+      status: 'behind',
+      gapWeeks: gap,
+      label: t('utils.curriculumProgress.متأخر_Math_abs_gap_أسبوع', `متأخر ${absGap} أسبوع`),
+    };
+  }
+  return { status: 'on_track', gapWeeks: 0, label: t('utils.curriculumProgress.حسب_الخطة', 'حسب الخطة') };
 }
 
-export function summarizeCurriculumProgress(entries, referenceDate = new Date()) {
+export function summarizeCurriculumProgress(entries, referenceDate = new Date(), t = translate) {
   const expectedWeek = getExpectedWeekForDate(referenceDate);
   return (entries || []).map((entry) => {
     const reportedWeek = entry.selectedWeeks?.length
       ? Math.max(...entry.selectedWeeks.map(Number))
       : 0;
-    const progress = computeProgressStatus(reportedWeek, expectedWeek);
+    const progress = computeProgressStatus(reportedWeek, expectedWeek, t);
     return {
       subjectId: entry.subjectId,
       subjectName: entry.subjectName,
@@ -71,12 +88,12 @@ export function summarizeCurriculumProgress(entries, referenceDate = new Date())
   });
 }
 
-export function entriesToLegacyItems(entries) {
+export function entriesToLegacyItems(entries, t = translate) {
   return (entries || []).map((e) => ({
     subjectId: e.subjectId,
     subjectName: e.subjectName,
     content: (e.lessons || [])
-      .map((l) => `أسبوع ${l.week}: ${l.lesson || '—'}`)
+      .map((l) => t('utils.curriculumProgress.أسبوع_l_week_l_lesson', `أسبوع ${l.week}: ${l.lesson || '—'}`))
       .join(' | '),
     selectedWeeks: e.selectedWeeks || [],
     lessons: e.lessons || [],

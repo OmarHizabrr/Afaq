@@ -7,15 +7,24 @@ import { auth, googleProvider } from "../firebase";
 import FirestoreApi from "./firestoreApi";
 import { getDocs, query, where, collection } from "firebase/firestore";
 import { db } from "../firebase";
+import translate from "../i18n/translate";
 
 /** رسالة تُعرض في صفحة الدخول بعد إخراج حساب معطّل */
 export const ACCOUNT_BLOCKED_SESSION_KEY = "afaq_account_blocked";
-export const ACCOUNT_BLOCKED_MESSAGE =
-  "تم تعطيل هذا الحساب ولا يمكنه استخدام المنصة. تواصل مع الإدارة.";
+
+export function getAccountBlockedMessage(t = translate) {
+  return t(
+    'services.authService.تم_تعطيل_هذا_الحساب_ولا_يمكنه_استخدام_المنصة_تواصل_مع_الإدار',
+    'تم تعطيل هذا الحساب ولا يمكنه استخدام المنصة. تواصل مع الإدارة.'
+  );
+}
+
+/** @deprecated prefer getAccountBlockedMessage(t) */
+export const ACCOUNT_BLOCKED_MESSAGE = getAccountBlockedMessage();
 
 function setBlockedSessionMessage() {
   try {
-    sessionStorage.setItem(ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE);
+    sessionStorage.setItem(ACCOUNT_BLOCKED_SESSION_KEY, getAccountBlockedMessage());
   } catch {
     /* ignore */
   }
@@ -40,7 +49,7 @@ class AuthService {
 
       return user;
     } catch (error) {
-      console.error("خطأ في تسجيل الدخول:", error);
+      console.error(translate('services.authService.خطأ_في_تسجيل_الدخول', 'خطأ في تسجيل الدخول:'), error);
       throw error;
     }
   }
@@ -94,7 +103,7 @@ class AuthService {
       const querySnapshot = await getDocs(q);
       
       if (querySnapshot.empty) {
-        throw new Error("رقم الهاتف أو كلمة المرور غير صحيحة.");
+        throw new Error(translate('services.authService.رقم_الهاتف_أو_كلمة_المرور_غير_صحيحة', 'رقم الهاتف أو كلمة المرور غير صحيحة.'));
       }
 
       const userDoc = querySnapshot.docs[0];
@@ -114,7 +123,7 @@ class AuthService {
       return customUser;
 
     } catch (error) {
-      console.error("خطأ في تسجيل الدخول برقم الهاتف:", error);
+      console.error(translate('services.authService.خطأ_في_تسجيل_الدخول_برقم_الهاتف', 'خطأ في تسجيل الدخول برقم الهاتف:'), error);
       throw error;
     }
   }

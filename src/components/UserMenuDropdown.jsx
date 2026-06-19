@@ -23,6 +23,7 @@ function resolvePaths(user) {
 }
 
 const UserMenuDropdown = ({ user, accentTone, tagline }) => {
+  const { t } = useAppTranslation();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ const UserMenuDropdown = ({ user, accentTone, tagline }) => {
         aria-haspopup="menu"
       >
         <div className="user-chip__meta">
-          <p className="user-chip__name">{user?.displayName || 'حسابي'}</p>
+          <p className="user-chip__name">{user?.displayName || t('components.UserMenuDropdown.حسابي', 'حسابي')}</p>
           <p className="user-chip__role">{tagline || user?.email || ''}</p>
         </div>
         <img
@@ -89,7 +90,7 @@ const UserMenuDropdown = ({ user, accentTone, tagline }) => {
             onClick={() => setOpen(false)}
           >
             <User size={18} />
-            <span>الملف الشخصي</span>
+            <span>{t('components.RecipientUserCard.الملف_الشخصي', 'الملف الشخصي')}</span>
           </Link>
           <Link
             role="menuitem"
@@ -103,7 +104,7 @@ const UserMenuDropdown = ({ user, accentTone, tagline }) => {
                 <span className="user-menu-dropdown__badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
               )}
             </span>
-            <span>الإشعارات والمحادثات</span>
+            <span>{t('components.UserMenuDropdown.الإشعارات_والمحادثات', 'الإشعارات والمحادثات')}</span>
           </Link>
           <Link
             role="menuitem"
@@ -112,7 +113,7 @@ const UserMenuDropdown = ({ user, accentTone, tagline }) => {
             onClick={() => setOpen(false)}
           >
             <Settings size={18} />
-            <span>الإعدادات</span>
+            <span>{t('config.appNavItems.الإعدادات', 'الإعدادات')}</span>
           </Link>
           {typeof Notification !== 'undefined' && Notification.permission === 'default' && (
             <button
@@ -122,13 +123,13 @@ const UserMenuDropdown = ({ user, accentTone, tagline }) => {
               onClick={() => requestBrowserPermission()}
             >
               <Volume2 size={18} />
-              <span>تفعيل تنبيهات المتصفح</span>
+              <span>{t('components.UserMenuDropdown.تفعيل_تنبيهات_المتصفح', 'تفعيل تنبيهات المتصفح')}</span>
             </button>
           )}
           <div className="user-menu-dropdown__sep" />
           <button type="button" role="menuitem" className="user-menu-dropdown__item user-menu-dropdown__item--danger" onClick={handleLogout}>
             <LogOut size={18} />
-            <span>تسجيل الخروج</span>
+            <span>{t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}</span>
           </button>
         </div>
       )}

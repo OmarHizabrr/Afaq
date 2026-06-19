@@ -23,6 +23,7 @@ const ExplorationFormSection = ({
   hideTypeSelect = false,
   currentPageId = null,
 }) => {
+  const { t } = useAppTranslation();
   const {
     visibleExplorationTypes,
     typesLoading,
@@ -53,13 +54,13 @@ const ExplorationFormSection = ({
               <p className="exploration-form-section__empty-text">
                 {pageHint
                   ? `لا يوجد نموذج استكشاف مخصّص لصفحة «${pageHint}». راجع «أنواع الاستكشاف» وحدّد الصفحات المسموحة للنموذج، أو أنشئ نوعاً جديداً.`
-                  : 'لا توجد أنواع استكشاف معرَّفة. أضف نوعاً من «أنواع الاستكشاف» قبل استخدام هذا النموذج.'}
+                  : t('components.ExplorationFormSection.لا_توجد_أنواع_استكشاف_معرَّفة_أضف_نوعاً_من_أنواع_الاستكشاف_ق', 'لا توجد أنواع استكشاف معرَّفة. أضف نوعاً من «أنواع الاستكشاف» قبل استخدام هذا النموذج.')}
               </p>
             </div>
           ) : useTypeCards ? (
             <div className="app-field app-field--grow exploration-form-section__type-field">
-              <label className="app-label">نوع الاستكشاف</label>
-              <div className="exploration-form-section__type-grid" role="listbox" aria-label="نوع الاستكشاف">
+              <label className="app-label">{t('components.ExplorationFormSection.نوع_الاستكشاف', 'نوع الاستكشاف')}</label>
+              <div className="exploration-form-section__type-grid" role="listbox" aria-label={t('components.ExplorationFormSection.نوع_الاستكشاف', 'نوع الاستكشاف')}>
                 {visibleExplorationTypes.map((t) => (
                   <button
                     key={t.id}
@@ -80,7 +81,7 @@ const ExplorationFormSection = ({
             </div>
           ) : (
             <div className="app-field app-field--grow exploration-form-section__type-field">
-              <label className="app-label">نوع الاستكشاف</label>
+              <label className="app-label">{t('components.ExplorationFormSection.نوع_الاستكشاف', 'نوع الاستكشاف')}</label>
               <AppSelect
                 searchable
                 value={selectedTypeId}

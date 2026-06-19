@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import FirestoreApi from '../services/firestoreApi';
 import { buildInboxNotificationOptions } from '../utils/notificationDisplay';
+import useAppTranslation from './useAppTranslation';
 
 /**
  * اشتراك صندوق الإشعارات + عدّاد غير المقروء + تنبيهات المتصفح عند إخفاء التبويب.
  */
 export function useNotificationsRealtime(user) {
+  const { t } = useAppTranslation();
   const actorId = user?.uid || user?.id;
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -44,7 +46,7 @@ export function useNotificationsRealtime(user) {
           if (data.isRead) return;
           try {
             new Notification(
-              data.title || 'آفاق',
+              data.title || t('context.siteContentContext.آفاق', 'آفاق'),
               buildInboxNotificationOptions(data, ch.doc.id),
             );
           } catch {
@@ -56,7 +58,7 @@ export function useNotificationsRealtime(user) {
     );
 
     return () => unsub();
-  }, [actorId]);
+  }, [actorId, t]);
 
   return { unreadCount, requestBrowserPermission };
 }

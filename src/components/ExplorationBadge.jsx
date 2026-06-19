@@ -14,6 +14,7 @@ import { useExplorationTypesCache } from '../hooks/useExplorationTypesCache';
  * }} props
  */
 const ExplorationBadge = ({ record, onClick, className, showLabel = true }) => {
+  const { t } = useAppTranslation();
   const typeId = record?.explorationTypeId;
   const hasValues =
     record?.explorationFieldValues &&
@@ -24,7 +25,7 @@ const ExplorationBadge = ({ record, onClick, className, showLabel = true }) => {
   if (!typeId && !hasValues) return null;
 
   const type = typeId ? getById(typeId) : null;
-  const typeName = type?.name || record?.explorationTypeName || 'نموذج الاستكشاف';
+  const typeName = type?.name || record?.explorationTypeName || t('components.ExplorationBadge.نموذج_الاستكشاف', 'نموذج الاستكشاف');
 
   const handleClick = (e) => {
     if (onClick) {
@@ -38,7 +39,7 @@ const ExplorationBadge = ({ record, onClick, className, showLabel = true }) => {
       type="button"
       className={`exploration-badge ${className || ''}`.trim()}
       onClick={handleClick}
-      title="عرض حقول نموذج الاستكشاف"
+      title={t('components.ExplorationBadge.عرض_حقول_نموذج_الاستكشاف', 'عرض حقول نموذج الاستكشاف')}
     >
       <Compass size={13} aria-hidden />
       {showLabel && <span className="exploration-badge__text">{typeName}</span>}

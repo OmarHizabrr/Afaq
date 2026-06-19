@@ -6,8 +6,10 @@ import PageHeader from '../../components/PageHeader';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const GovernorateDetailsPage = () => {
+    const { t } = useAppTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
     const [gov, setGov] = useState(null);
@@ -21,18 +23,15 @@ const GovernorateDetailsPage = () => {
             if (!id) return;
             try {
                 const api = FirestoreApi.Api;
-                // Fetch Governorate
                 const govRef = api.getGovernorateDoc(id);
                 const govDoc = await api.getData(govRef);
                 if (!govDoc) return;
                 setGov({ id, ...govDoc });
 
-                // Fetch Regions in this Gov
                 const allRegions = await api.getCollectionGroupDocuments('regions');
                 const govRegions = allRegions.filter(r => r.data().govId === id).map(r => ({ id: r.id, ...r.data() }));
                 setRegions(govRegions);
 
-                // Fetch Villages in this Gov (Villages are children of Regions in the data structure)
                 const allVillages = await api.getCollectionGroupDocuments('villages');
                 const regIds = govRegions.map(r => r.id);
                 const govVillages = allVillages.filter(v => regIds.includes(v.data().regionId)).map(v => ({ id: v.id, ...v.data() }));
@@ -85,7 +84,7 @@ const GovernorateDetailsPage = () => {
     ]);
 
     if (loading) return <div className="loading-spinner page-loading-lg" />;
-    if (!gov) return <div className="empty-state">المحافظة غير موجودة</div>;
+    if (!gov) return <div className="empty-state">{t('pages.GovernorateDetailsPage.المحافظة_غير_موجودة', 'المحافظة غير موجودة')}</div>;
 
     return (
         <div className="governorate-details-page portal-page">
@@ -93,24 +92,25 @@ const GovernorateDetailsPage = () => {
               topRow={
                 <div className="governorate-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/governorates')}>
-                    <ChevronRight size={20} aria-hidden /> إدارة المحافظات
+                    <ChevronRight size={20} aria-hidden /> {t('pages.GovernorateDetailsPage.إدارة_المحافظات', 'إدارة المحافظات')}
                   </button>
                   <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>محافظة: <span className="page-header-accent">{gov.name}</span></>}
-              subtitle={`الدولة: ${gov.country || 'غير محددة'}`}
+              title={<>{t('pages.GovernorateDetailsPage.محافظة', 'محافظة:')} <span className="page-header-accent">{gov.name}</span></>}
+              subtitle={t('pages.GovernorateDetailsPage.الدولة', `الدولة: ${gov.country || t('pages.GovernorateDetailsPage.غير_محددة', 'غير محددة')}`)}
             />
 
             <div className="governorate-details-grid">
-                {/* Regions List */}
                 <div className="surface-card surface-card--lg governorate-details-panel">
                     <div className="governorate-details-panel__head">
                         <h2 className="governorate-details-panel__title">
-                           <MapPin size={18} color="var(--accent-color)" /> المناطق التابعة
+                           <MapPin size={18} color="var(--accent-color)" /> {t('pages.GovernorateDetailsPage.المناطق_التابعة', 'المناطق التابعة')}
                         </h2>
                     </div>
-                    {regions.length === 0 ? <p className="governorate-details-panel__empty">لا توجد مناطق مضافة لهذه المحافظة.</p> : (
+                    {regions.length === 0 ? (
+                      <p className="governorate-details-panel__empty">{t('pages.GovernorateDetailsPage.لا_مناطق', 'لا توجد مناطق مضافة لهذه المحافظة.')}</p>
+                    ) : (
                         <div className="governorate-details-list">
                            {regions.map(reg => (
                               can(PERMISSION_PAGE_IDS.governorates, 'governorate_region_view') ? (
@@ -133,14 +133,15 @@ const GovernorateDetailsPage = () => {
                     )}
                 </div>
 
-                {/* Villages List */}
                 <div className="surface-card surface-card--lg governorate-details-panel">
                     <div className="governorate-details-panel__head">
                         <h2 className="governorate-details-panel__title">
-                           <Home size={18} color="var(--success-color)" /> القرى التابعة
+                           <Home size={18} color="var(--success-color)" /> {t('pages.GovernorateDetailsPage.القرى_التابعة', 'القرى التابعة')}
                         </h2>
                     </div>
-                    {villages.length === 0 ? <p className="governorate-details-panel__empty">لا توجد قرى مضافة في هذه المحافظة.</p> : (
+                    {villages.length === 0 ? (
+                      <p className="governorate-details-panel__empty">{t('pages.GovernorateDetailsPage.لا_قرى', 'لا توجد قرى مضافة في هذه المحافظة.')}</p>
+                    ) : (
                         <div className="governorate-details-list">
                            {villages.map(vil => (
                               can(PERMISSION_PAGE_IDS.governorates, 'governorate_village_view') ? (

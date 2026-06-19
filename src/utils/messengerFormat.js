@@ -1,3 +1,5 @@
+import translate from '../i18n/translate';
+
 const DAY_MS = 86400000;
 
 function toDate(iso) {
@@ -19,32 +21,32 @@ export function sameCalendarDay(a, b) {
   return startOfDay(da).getTime() === startOfDay(db).getTime();
 }
 
-export function formatMessageTime(iso) {
+export function formatMessageTime(iso, locale = 'ar-EG') {
   const d = toDate(iso);
   if (!d) return '';
-  return d.toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString(locale, { hour: '2-digit', minute: '2-digit' });
 }
 
-export function formatThreadTime(iso) {
+export function formatThreadTime(iso, t = translate) {
   const d = toDate(iso);
   if (!d) return '';
   const now = new Date();
   const diff = startOfDay(now).getTime() - startOfDay(d).getTime();
   if (diff === 0) return formatMessageTime(iso);
-  if (diff === DAY_MS) return 'أمس';
+  if (diff === DAY_MS) return t('utils.messengerFormat.أمس', 'أمس');
   if (diff < 7 * DAY_MS) {
     return d.toLocaleString('ar-EG', { weekday: 'short' });
   }
   return d.toLocaleString('ar-EG', { day: 'numeric', month: 'short' });
 }
 
-export function formatDateSeparator(iso) {
+export function formatDateSeparator(iso, t = translate) {
   const d = toDate(iso);
   if (!d) return '';
   const now = new Date();
   const diff = startOfDay(now).getTime() - startOfDay(d).getTime();
-  if (diff === 0) return 'اليوم';
-  if (diff === DAY_MS) return 'أمس';
+  if (diff === 0) return t('utils.messengerFormat.اليوم', 'اليوم');
+  if (diff === DAY_MS) return t('utils.messengerFormat.أمس', 'أمس');
   return d.toLocaleString('ar-EG', {
     weekday: 'long',
     day: 'numeric',
@@ -53,7 +55,7 @@ export function formatDateSeparator(iso) {
   });
 }
 
-export function buildMessageTimeline(messages) {
+export function buildMessageTimeline(messages, t = translate) {
   const items = [];
   let lastDateKey = '';
 
@@ -61,7 +63,7 @@ export function buildMessageTimeline(messages) {
     const d = toDate(m.createdAt);
     const dateKey = d ? startOfDay(d).toISOString() : '';
     if (dateKey && dateKey !== lastDateKey) {
-      items.push({ kind: 'date', id: `date-${dateKey}`, label: formatDateSeparator(m.createdAt) });
+      items.push({ kind: 'date', id: `date-${dateKey}`, label: formatDateSeparator(m.createdAt, t) });
       lastDateKey = dateKey;
     }
 

@@ -5,7 +5,7 @@ import useSiteContent from '../../context/useSiteContent';
 function normalizeContactUrl(item, messageText = '') {
   const channel = String(item?.channel || '').toLowerCase();
   const raw = String(item?.value || '').trim();
-  const encodedMessage = encodeURIComponent(messageText || 'السلام عليكم، أحتاج تفعيل الصلاحيات لحسابي.');
+  const encodedMessage = encodeURIComponent(messageText || t('pages.NoPermissionsPage.السلام_عليكم،_أحتاج_تفعيل_الصلاحيات_لحسابي', 'السلام عليكم، أحتاج تفعيل الصلاحيات لحسابي.'));
   if (!raw) return '';
   if (/^https?:\/\//i.test(raw)) return raw;
   if (channel === 'whatsapp') return `https://wa.me/${raw.replace(/[^\d]/g, '')}?text=${encodedMessage}`;
@@ -19,6 +19,7 @@ function normalizeContactUrl(item, messageText = '') {
 }
 
 export default function NoPermissionsPage() {
+  const { t } = useAppTranslation();
   const { contacts, contactsMessage } = useSiteContent();
   const list = (Array.isArray(contacts) ? contacts : []).filter((c) => c?.value);
 
@@ -48,7 +49,7 @@ export default function NoPermissionsPage() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <span>{item.label || 'تواصل'}</span>
+                    <span>{item.label || t('pages.NoPermissionsPage.تواصل', 'تواصل')}</span>
                     <span className="no-permissions-card__contact-meta">{item.channel || ''}</span>
                   </a>
                 );

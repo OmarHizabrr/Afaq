@@ -6,14 +6,15 @@ import { saveStrings } from '../../services/siteConfigService';
 import BusyButton from '../../components/BusyButton';
 
 const COPY_KEYS = [
-  { key: 'layout.nav_dashboard', label: 'عنوان: الرئيسية' },
-  { key: 'layout.nav_users', label: 'عنوان: المستخدمين' },
-  { key: 'layout.nav_notifications', label: 'عنوان: الإشعارات' },
-  { key: 'layout.nav_settings', label: 'عنوان: الإعدادات' },
-  { key: 'dashboard.subtitle', label: 'وصف: لوحة التحكم' },
+  { key: 'layout.nav_dashboard', label: t('pages.AdminSiteCopyPage.عنوان_الرئيسية', 'عنوان: الرئيسية') },
+  { key: 'layout.nav_users', label: t('pages.AdminSiteCopyPage.عنوان_المستخدمين', 'عنوان: المستخدمين') },
+  { key: 'layout.nav_notifications', label: t('pages.AdminSiteCopyPage.عنوان_الإشعارات', 'عنوان: الإشعارات') },
+  { key: 'layout.nav_settings', label: t('pages.AdminSiteCopyPage.عنوان_الإعدادات', 'عنوان: الإعدادات') },
+  { key: 'dashboard.subtitle', label: t('pages.AdminSiteCopyPage.وصف_لوحة_التحكم', 'وصف: لوحة التحكم') },
 ];
 
 export default function AdminSiteCopyPage({ user }) {
+  const { t } = useAppTranslation();
   const { strings } = useSiteContent();
   const [drafts, setDrafts] = useState({});
   const [savingKey, setSavingKey] = useState('');
@@ -26,10 +27,10 @@ export default function AdminSiteCopyPage({ user }) {
     setSavingKey(key);
     try {
       await saveStrings(user, { [key]: valueOf(key) });
-      setStatus({ type: 'success', text: 'تم حفظ النص بنجاح.' });
+      setStatus({ type: 'success', text: t('pages.AdminSiteCopyPage.تم_حفظ_النص_بنجاح', 'تم حفظ النص بنجاح.') });
     } catch (err) {
       console.error(err);
-      setStatus({ type: 'error', text: 'تعذر حفظ النص حالياً.' });
+      setStatus({ type: 'error', text: t('pages.AdminSiteCopyPage.تعذر_حفظ_النص_حالياً', 'تعذر حفظ النص حالياً.') });
     } finally {
       setSavingKey('');
     }
@@ -38,8 +39,8 @@ export default function AdminSiteCopyPage({ user }) {
   return (
     <div className="admin-site-copy-page">
       <PageHeader
-        title="النصوص الثابتة"
-        subtitle="عدّل النصوص الثابتة للواجهة بدون تغيير الكود."
+        title={t('config.appNavItems.النصوص_الثابتة', 'النصوص الثابتة')}
+        subtitle={t('pages.AdminSiteCopyPage.عدّل_النصوص_الثابتة_للواجهة_بدون_تغيير_الكود', 'عدّل النصوص الثابتة للواجهة بدون تغيير الكود.')}
         icon={FileText}
       />
       <div className="surface-card admin-site-copy-card">

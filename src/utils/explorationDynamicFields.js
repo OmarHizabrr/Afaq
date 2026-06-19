@@ -1,55 +1,54 @@
 /**
  * حقول الاستكشاف الديناميكية — تعريف الحقول لكل نوع وحفظ القيم في `fieldValues`.
  */
+import translate from '../i18n/translate';
 
-// مصفوفة أنواع حقول الإدخال الشاملة لجميع أنواع البيانات
-export const EXPLORATION_FIELD_TYPES = [
-  // الحقول النصية
-  { value: 'text', label: 'نص قصير' },
-  { value: 'textarea', label: 'نص طويل' },
-  { value: 'email', label: 'بريد إلكتروني' },
-  { value: 'password', label: 'كلمة مرور' },
-  { value: 'url', label: 'رابط إلكتروني' },
-  { value: 'search', label: 'بحث' },
-  { value: 'tel', label: 'رقم هاتف' },
-
-  // الحقول الرقمية والمالية
-  { value: 'number', label: 'رقم' },
-  { value: 'currency', label: 'عملة (رقم عشري)' },
-  { value: 'percentage', label: 'نسبة مئوية' },
-  { value: 'range', label: 'منزلق (Range)' },
-
-  // حقول التاريخ والوقت
-  { value: 'date', label: 'تاريخ' },
-  { value: 'date_range', label: 'تاريخ من — إلى' },
-  { value: 'time', label: 'وقت' },
-  { value: 'datetime-local', label: 'تاريخ ووقت' },
-  { value: 'month', label: 'شهر' },
-  { value: 'week', label: 'أسبوع' },
-
-  // حقول الاختيار والقوائم
-  { value: 'dropdown', label: 'قائمة منسدلة' },
-  { value: 'multi_select', label: 'اختيار متعدد' },
-  { value: 'yes_no', label: 'نعم / لا' },
-  { value: 'checkbox', label: 'مربع اختيار' },
-  { value: 'radio', label: 'زر اختيار (Radio)' },
-  { value: 'switch', label: 'مفتاح تبديل (Switch)' },
-
-  // حقول الوسائط والملفات
-  { value: 'file', label: 'رفع ملف' },
-  { value: 'image', label: 'رفع صورة' },
-  { value: 'video', label: 'رفع فيديو' },
-  { value: 'audio', label: 'رفع ملف صوتي' },
-
-  // حقول متخصصة
-  { value: 'color', label: 'منتقي الألوان' },
-  { value: 'location', label: 'موقع جغرافي (إحداثيات)' },
-  { value: 'signature', label: 'توقيع إلكتروني' },
-  { value: 'rating', label: 'تقييم (Stars)' },
-  { value: 'rich_text', label: 'نص منسق (Editor)' },
-  { value: 'tag', label: 'وسوم (Tags)' },
-  { value: 'hidden', label: 'حقل مخفي' },
+const FIELD_TYPE_DEFS = [
+  { value: 'text', labelKey: 'utils.explorationDynamicFields.نص_قصير', labelFallback: 'نص قصير' },
+  { value: 'textarea', labelKey: 'utils.explorationDynamicFields.نص_طويل', labelFallback: 'نص طويل' },
+  { value: 'email', labelKey: 'utils.explorationDynamicFields.بريد_إلكتروني', labelFallback: 'بريد إلكتروني' },
+  { value: 'password', labelKey: 'utils.explorationDynamicFields.كلمة_مرور', labelFallback: 'كلمة مرور' },
+  { value: 'url', labelKey: 'utils.explorationDynamicFields.رابط_إلكتروني', labelFallback: 'رابط إلكتروني' },
+  { value: 'search', labelKey: 'utils.explorationDynamicFields.بحث', labelFallback: 'بحث' },
+  { value: 'tel', labelKey: 'utils.explorationDynamicFields.رقم_هاتف', labelFallback: 'رقم هاتف' },
+  { value: 'number', labelKey: 'utils.explorationDynamicFields.رقم', labelFallback: 'رقم' },
+  { value: 'currency', labelKey: 'utils.explorationDynamicFields.عملة_رقم_عشري', labelFallback: 'عملة (رقم عشري)' },
+  { value: 'percentage', labelKey: 'utils.explorationDynamicFields.نسبة_مئوية', labelFallback: 'نسبة مئوية' },
+  { value: 'range', labelKey: 'utils.explorationDynamicFields.منزلق_Range', labelFallback: 'منزلق (Range)' },
+  { value: 'date', labelKey: 'utils.explorationDynamicFields.تاريخ', labelFallback: 'تاريخ' },
+  { value: 'date_range', labelKey: 'utils.explorationDynamicFields.تاريخ_من_إلى', labelFallback: 'تاريخ من — إلى' },
+  { value: 'time', labelKey: 'utils.explorationDynamicFields.وقت', labelFallback: 'وقت' },
+  { value: 'datetime-local', labelKey: 'utils.explorationDynamicFields.تاريخ_ووقت', labelFallback: 'تاريخ ووقت' },
+  { value: 'month', labelKey: 'utils.explorationDynamicFields.شهر', labelFallback: 'شهر' },
+  { value: 'week', labelKey: 'utils.explorationDynamicFields.أسبوع', labelFallback: 'أسبوع' },
+  { value: 'dropdown', labelKey: 'utils.explorationDynamicFields.قائمة_منسدلة', labelFallback: 'قائمة منسدلة' },
+  { value: 'multi_select', labelKey: 'utils.explorationDynamicFields.اختيار_متعدد', labelFallback: 'اختيار متعدد' },
+  { value: 'yes_no', labelKey: 'utils.explorationDynamicFields.نعم_لا', labelFallback: 'نعم / لا' },
+  { value: 'checkbox', labelKey: 'utils.explorationDynamicFields.مربع_اختيار', labelFallback: 'مربع اختيار' },
+  { value: 'radio', labelKey: 'utils.explorationDynamicFields.زر_اختيار_Radio', labelFallback: 'زر اختيار (Radio)' },
+  { value: 'switch', labelKey: 'utils.explorationDynamicFields.مفتاح_تبديل_Switch', labelFallback: 'مفتاح تبديل (Switch)' },
+  { value: 'file', labelKey: 'utils.explorationDynamicFields.رفع_ملف', labelFallback: 'رفع ملف' },
+  { value: 'image', labelKey: 'utils.explorationDynamicFields.رفع_صورة', labelFallback: 'رفع صورة' },
+  { value: 'video', labelKey: 'utils.explorationDynamicFields.رفع_فيديو', labelFallback: 'رفع فيديو' },
+  { value: 'audio', labelKey: 'utils.explorationDynamicFields.رفع_ملف_صوتي', labelFallback: 'رفع ملف صوتي' },
+  { value: 'color', labelKey: 'utils.explorationDynamicFields.منتقي_الألوان', labelFallback: 'منتقي الألوان' },
+  { value: 'location', labelKey: 'utils.explorationDynamicFields.موقع_جغرافي_إحداثيات', labelFallback: 'موقع جغرافي (إحداثيات)' },
+  { value: 'signature', labelKey: 'utils.explorationDynamicFields.توقيع_إلكتروني', labelFallback: 'توقيع إلكتروني' },
+  { value: 'rating', labelKey: 'utils.explorationDynamicFields.تقييم_Stars', labelFallback: 'تقييم (Stars)' },
+  { value: 'rich_text', labelKey: 'utils.explorationDynamicFields.نص_منسق_Editor', labelFallback: 'نص منسق (Editor)' },
+  { value: 'tag', labelKey: 'utils.explorationDynamicFields.وسوم_Tags', labelFallback: 'وسوم (Tags)' },
+  { value: 'hidden', labelKey: 'utils.explorationDynamicFields.حقل_مخفي', labelFallback: 'حقل مخفي' },
 ];
+
+export function getExplorationFieldTypes(t = translate) {
+  return FIELD_TYPE_DEFS.map(({ value, labelKey, labelFallback }) => ({
+    value,
+    label: t(labelKey, labelFallback),
+  }));
+}
+
+/** @deprecated prefer getExplorationFieldTypes(t) */
+export const EXPLORATION_FIELD_TYPES = getExplorationFieldTypes();
 
 export const FIELD_TYPE_VALUES = EXPLORATION_FIELD_TYPES.map((t) => t.value);
 
@@ -58,17 +57,31 @@ const ALLOWED_TYPES = new Set(FIELD_TYPE_VALUES);
 /** أنواع تحتاج خياراتاً (سطر لكل خيار في المحرر) */
 export const FIELD_TYPES_WITH_OPTIONS = new Set(['dropdown', 'multi_select', 'radio']);
 
-/** تجميع أنواع الحقول لقائمة الاختيار في محرر النوع */
-export const EXPLORATION_FIELD_TYPE_GROUPS = [
-  { label: 'الحقول النصية', values: ['text', 'textarea', 'email', 'password', 'url', 'search', 'tel'] },
-  { label: 'الرقمية والمالية', values: ['number', 'currency', 'percentage', 'range'] },
-  { label: 'التاريخ والوقت', values: ['date', 'date_range', 'time', 'datetime-local', 'month', 'week'] },
-  { label: 'الاختيار والقوائم', values: ['dropdown', 'multi_select', 'yes_no', 'checkbox', 'radio', 'switch'] },
-  { label: 'الوسائط والملفات', values: ['file', 'image', 'video', 'audio'] },
-  { label: 'متخصصة', values: ['color', 'location', 'signature', 'rating', 'rich_text', 'tag', 'hidden'] },
+const FIELD_TYPE_GROUP_DEFS = [
+  { labelKey: 'utils.explorationDynamicFields.الحقول_النصية', labelFallback: 'الحقول النصية', values: ['text', 'textarea', 'email', 'password', 'url', 'search', 'tel'] },
+  { labelKey: 'utils.explorationDynamicFields.الرقمية_والمالية', labelFallback: 'الرقمية والمالية', values: ['number', 'currency', 'percentage', 'range'] },
+  { labelKey: 'utils.explorationDynamicFields.التاريخ_والوقت', labelFallback: 'التاريخ والوقت', values: ['date', 'date_range', 'time', 'datetime-local', 'month', 'week'] },
+  { labelKey: 'utils.explorationDynamicFields.الاختيار_والقوائم', labelFallback: 'الاختيار والقوائم', values: ['dropdown', 'multi_select', 'yes_no', 'checkbox', 'radio', 'switch'] },
+  { labelKey: 'utils.explorationDynamicFields.الوسائط_والملفات', labelFallback: 'الوسائط والملفات', values: ['file', 'image', 'video', 'audio'] },
+  { labelKey: 'utils.explorationDynamicFields.متخصصة', labelFallback: 'متخصصة', values: ['color', 'location', 'signature', 'rating', 'rich_text', 'tag', 'hidden'] },
 ];
 
-export const EXPLORATION_FIELD_TYPE_LABEL_MAP = new Map(EXPLORATION_FIELD_TYPES.map((t) => [t.value, t.label]));
+export function getExplorationFieldTypeGroups(t = translate) {
+  return FIELD_TYPE_GROUP_DEFS.map(({ labelKey, labelFallback, values }) => ({
+    label: t(labelKey, labelFallback),
+    values,
+  }));
+}
+
+/** @deprecated prefer getExplorationFieldTypeGroups(t) */
+export const EXPLORATION_FIELD_TYPE_GROUPS = getExplorationFieldTypeGroups();
+
+export function getExplorationFieldTypeLabelMap(t = translate) {
+  return new Map(getExplorationFieldTypes(t).map((row) => [row.value, row.label]));
+}
+
+/** @deprecated prefer getExplorationFieldTypeLabelMap(t) */
+export const EXPLORATION_FIELD_TYPE_LABEL_MAP = getExplorationFieldTypeLabelMap();
 
 const STRING_LIKE = new Set([
   'text',
@@ -118,12 +131,21 @@ const OPTION_SOURCE_IDS = new Set([
 ]);
 const VALUE_SOURCE_IDS = new Set(['', 'current_user_id', 'current_user_display']);
 
-/** مصدر قيمة افتراضية لحقول نصية (مع عرض في المعاينة عند توفر المستخدم) */
-export const EXPLORATION_VALUE_SOURCES = [
-  { id: '', label: 'بدون — إدخال يدوي' },
-  { id: 'current_user_id', label: 'من المستخدم الحالي — المعرف' },
-  { id: 'current_user_display', label: 'من المستخدم الحالي — الاسم المعروض' },
+const VALUE_SOURCE_DEFS = [
+  { id: '', labelKey: 'utils.explorationDynamicFields.بدون_إدخال_يدوي', labelFallback: 'بدون — إدخال يدوي' },
+  { id: 'current_user_id', labelKey: 'utils.explorationDynamicFields.من_المستخدم_الحالي_المعرف', labelFallback: 'من المستخدم الحالي — المعرف' },
+  { id: 'current_user_display', labelKey: 'utils.explorationDynamicFields.من_المستخدم_الحالي_الاسم_المعروض', labelFallback: 'من المستخدم الحالي — الاسم المعروض' },
 ];
+
+export function getExplorationValueSources(t = translate) {
+  return VALUE_SOURCE_DEFS.map(({ id, labelKey, labelFallback }) => ({
+    id,
+    label: t(labelKey, labelFallback),
+  }));
+}
+
+/** @deprecated prefer getExplorationValueSources(t) */
+export const EXPLORATION_VALUE_SOURCES = getExplorationValueSources();
 
 function normalizeOptionSourceId(v) {
   return OPTION_SOURCE_IDS.has(v) ? v : 'manual';
@@ -136,7 +158,7 @@ function normalizeValueSourceId(v) {
 
 export { normalizeOptionSourceId, normalizeValueSourceId };
 
-export function normalizeSchemaFields(raw) {
+export function normalizeSchemaFields(raw, t = translate) {
   const list = Array.isArray(raw) ? raw : [];
   return list
     .map((f, index) => {
@@ -147,7 +169,7 @@ export function normalizeSchemaFields(raw) {
       const maxRaw = f?.max === '' || f?.max == null ? null : Number(f.max);
       return {
         id,
-        label: String(f?.label ?? '').trim() || `حقل ${index + 1}`,
+        label: String(f?.label ?? '').trim() || t('utils.explorationDynamicFields.حقل_index_1', `حقل ${index + 1}`),
         fieldType,
         required: Boolean(f?.required),
         placeholder: String(f?.placeholder ?? '').trim(),
@@ -172,6 +194,7 @@ export function normalizeSchemaFields(raw) {
  */
 export function editorSchemaRowsToFields(rows, opts) {
   const ensureId = opts?.ensureId;
+  const t = opts?.t || translate;
   const list = Array.isArray(rows) ? rows : [];
   return list.map((r, i) => {
     const ft = ALLOWED_TYPES.has(r?.fieldType) ? r.fieldType : 'text';
@@ -191,7 +214,7 @@ export function editorSchemaRowsToFields(rows, opts) {
     }
     const field = {
       id,
-      label: String(r?.label ?? '').trim() || `حقل ${i + 1}`,
+      label: String(r?.label ?? '').trim() || t('utils.explorationDynamicFields.حقل_i_1', `حقل ${i + 1}`),
       fieldType: ft,
       required: Boolean(r?.required),
       placeholder: String(r?.placeholder ?? '').trim(),
@@ -268,7 +291,7 @@ function isValidUrl(s) {
   }
 }
 
-export function validateFieldValues(schemaFields, fieldValues) {
+export function validateFieldValues(schemaFields, fieldValues, t = translate) {
   const errs = [];
   for (const f of schemaFields) {
     if (!f.required || f.fieldType === 'hidden') continue;
@@ -276,9 +299,11 @@ export function validateFieldValues(schemaFields, fieldValues) {
 
     if (STRING_LIKE.has(f.fieldType)) {
       if (!String(v ?? '').trim()) errs.push(f.label);
-      else if (f.fieldType === 'email' && !EMAIL_RE.test(String(v).trim())) errs.push(`${f.label} (بريد غير صالح)`);
-      else if (f.fieldType === 'url' && !isValidUrl(String(v).trim())) errs.push(`${f.label} (رابط غير صالح)`);
-      else if (f.fieldType === 'tel' && String(v).trim().length < 3) errs.push(f.label);
+      else if (f.fieldType === 'email' && !EMAIL_RE.test(String(v).trim())) {
+        errs.push(t('utils.explorationDynamicFields.f_label_بريد_غير_صالح', `${f.label} (بريد غير صالح)`));
+      } else if (f.fieldType === 'url' && !isValidUrl(String(v).trim())) {
+        errs.push(t('utils.explorationDynamicFields.f_label_رابط_غير_صالح', `${f.label} (رابط غير صالح)`));
+      } else if (f.fieldType === 'tel' && String(v).trim().length < 3) errs.push(f.label);
     } else if (f.fieldType === 'rating') {
       if (v === '' || v == null) errs.push(f.label);
       else {
@@ -299,8 +324,12 @@ export function validateFieldValues(schemaFields, fieldValues) {
         } else if (f.fieldType === 'percentage' && (n < 0 || n > 100)) {
           errs.push(`${f.label} (0–100)`);
         } else {
-          if (f.min != null && Number.isFinite(f.min) && n < f.min) errs.push(`${f.label} (أقل من الحد الأدنى)`);
-          if (f.max != null && Number.isFinite(f.max) && n > f.max) errs.push(`${f.label} (أكبر من الحد الأقصى)`);
+          if (f.min != null && Number.isFinite(f.min) && n < f.min) {
+            errs.push(t('utils.explorationDynamicFields.f_label_أقل_من_الحد_الأدنى', `${f.label} (أقل من الحد الأدنى)`));
+          }
+          if (f.max != null && Number.isFinite(f.max) && n > f.max) {
+            errs.push(t('utils.explorationDynamicFields.f_label_أكبر_من_الحد_الأقصى', `${f.label} (أكبر من الحد الأقصى)`));
+          }
         }
       }
     } else if (DATE_LIKE.has(f.fieldType)) {
@@ -334,50 +363,52 @@ const MEDIA_LIKE = new Set(['file', 'image', 'video', 'audio', 'signature']);
  * تنسيق قيمة حقل لعرضها للمستخدم بشكل مقروء (قراءة فقط).
  * يعيد سلسلة نصية ملائمة لجميع أنواع الحقول، أو الرمز '—' عند الفراغ.
  */
-export function formatFieldValueForDisplay(field, value) {
-  const t = field?.fieldType || 'text';
+export function formatFieldValueForDisplay(field, value, t = translate) {
+  const ft = field?.fieldType || 'text';
+  const yes = t('components.ExplorationDynamicFieldBlock.نعم', 'نعم');
+  const no = t('components.ExplorationDynamicFieldBlock.لا', 'لا');
 
-  if (t === 'date_range') {
+  if (ft === 'date_range') {
     const from = String(value?.from ?? '').trim();
     const to = String(value?.to ?? '').trim();
     if (!from && !to) return '—';
     return `${from || '…'} ← ${to || '…'}`;
   }
-  if (t === 'location') {
+  if (ft === 'location') {
     const lat = String(value?.lat ?? '').trim();
     const lng = String(value?.lng ?? '').trim();
     if (!lat && !lng) return '—';
     return `(${lat || '—'}, ${lng || '—'})`;
   }
-  if (t === 'multi_select' || t === 'tag') {
+  if (ft === 'multi_select' || ft === 'tag') {
     return Array.isArray(value) && value.length > 0 ? value.join('، ') : '—';
   }
-  if (t === 'checkbox' || t === 'switch') {
-    return value === true ? 'نعم' : 'لا';
+  if (ft === 'checkbox' || ft === 'switch') {
+    return value === true ? yes : no;
   }
-  if (t === 'yes_no') {
-    if (value === 'yes') return 'نعم';
-    if (value === 'no') return 'لا';
+  if (ft === 'yes_no') {
+    if (value === 'yes') return yes;
+    if (value === 'no') return no;
     return '—';
   }
-  if (t === 'password') {
+  if (ft === 'password') {
     return value ? '••••••' : '—';
   }
-  if (t === 'color') {
+  if (ft === 'color') {
     const v = String(value ?? '').trim();
     return v || '—';
   }
-  if (t === 'rating') {
+  if (ft === 'rating') {
     if (value === '' || value == null) return '—';
     const n = Number(value);
     return Number.isFinite(n) ? `${n} / ${field?.max ?? 5}` : '—';
   }
-  if (t === 'percentage') {
+  if (ft === 'percentage') {
     if (value === '' || value == null) return '—';
     const n = Number(value);
     return Number.isFinite(n) ? `${n}%` : '—';
   }
-  if (MEDIA_LIKE.has(t)) {
+  if (MEDIA_LIKE.has(ft)) {
     const v = String(value ?? '').trim();
     return v || '—';
   }

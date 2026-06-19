@@ -3,6 +3,7 @@ import AuthService, { ACCOUNT_BLOCKED_SESSION_KEY, ACCOUNT_BLOCKED_MESSAGE } fro
 import { Phone, Lock, LogIn, Eye, EyeOff, Download, Share } from 'lucide-react';
 import BusyButton from '../components/BusyButton';
 import useInstallPrompt from '../hooks/useInstallPrompt';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const GoogleIcon = () => (
   <svg className="google-icon" viewBox="0 0 48 48">
@@ -14,6 +15,7 @@ const GoogleIcon = () => (
 );
 
 const LoginPage = () => {
+  const { t } = useAppTranslation();
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingCustom, setLoadingCustom] = useState(false);
   const [error, setError] = useState(null);
@@ -44,7 +46,7 @@ const LoginPage = () => {
       if (err?.message === 'ACCOUNT_DISABLED') {
         setError(ACCOUNT_BLOCKED_MESSAGE);
       } else {
-        setError('فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.');
+        setError(t('pages.LoginPage.فشل_تسجيل_الدخول_يرجى_المحاولة_مرة_أخرى', 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.'));
       }
       console.error(err);
     } finally {
@@ -55,7 +57,7 @@ const LoginPage = () => {
   const handleCustomLogin = async (e) => {
     e.preventDefault();
     if (!phone || !password) {
-      setError('يرجى إدخال رقم الهاتف وكلمة المرور');
+      setError(t('pages.LoginPage.يرجى_إدخال_رقم_الهاتف_وكلمة_المرور', 'يرجى إدخال رقم الهاتف وكلمة المرور'));
       return;
     }
     
@@ -67,7 +69,7 @@ const LoginPage = () => {
       if (err?.message === 'ACCOUNT_DISABLED') {
         setError(ACCOUNT_BLOCKED_MESSAGE);
       } else {
-        setError('رقم الهاتف أو كلمة المرور غير صحيحة');
+        setError(t('pages.LoginPage.رقم_الهاتف_أو_كلمة_المرور_غير_صحيحة', 'رقم الهاتف أو كلمة المرور غير صحيحة'));
       }
     } finally {
       setLoadingCustom(false);
@@ -75,13 +77,13 @@ const LoginPage = () => {
   };
 
   return (
-    <main className="welcome-container" dir="rtl">
+    <main className="welcome-container">
       <div className="glow-orb"></div>
       
       <div className="login-card">
         <header className="login-card__header">
-          <h1 className="logo-text">آفاق</h1>
-          <p className="tagline">منصة تعليمية — نفس وضوح وتجربة أدوات Google</p>
+          <h1 className="logo-text">{t('context.siteContentContext.آفاق', 'آفاق')}</h1>
+          <p className="tagline">{t('pages.LoginPage.منصة_تعليمية_نفس_وضوح_وتجربة_أدوات_Google', 'منصة تعليمية — نفس وضوح وتجربة أدوات Google')}</p>
         </header>
 
         <section className="entry-dialog login-entry-dialog">
@@ -92,13 +94,13 @@ const LoginPage = () => {
           )}
 
           <form onSubmit={handleCustomLogin} className="login-form">
-            <label className="login-form__label">رقم الهاتف</label>
+            <label className="login-form__label">{t('pages.SchoolReportPage.رقم_الهاتف', 'رقم الهاتف')}</label>
             <div className="login-form__field-wrap">
               <div className="md-field login-form__field">
                 <Phone size={20} color="var(--text-secondary)" aria-hidden />
                 <input 
                   type="tel" 
-                  placeholder="رقم الهاتف"
+                  placeholder={t('pages.SchoolReportPage.رقم_الهاتف', 'رقم الهاتف')}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                   autoComplete="tel"
@@ -109,13 +111,13 @@ const LoginPage = () => {
               </div>
             </div>
             
-            <label className="login-form__label">كلمة المرور</label>
+            <label className="login-form__label">{t('pages.LoginPage.كلمة_المرور', 'كلمة المرور')}</label>
             <div className="login-form__field-wrap">
               <div className="md-field login-form__field">
                 <Lock size={20} color="var(--text-secondary)" aria-hidden />
                 <input 
                   type={showPassword ? 'text' : 'password'} 
-                  placeholder="كلمة المرور المخصصة"
+                  placeholder={t('pages.LoginPage.كلمة_المرور_المخصصة', 'كلمة المرور المخصصة')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
@@ -124,8 +126,8 @@ const LoginPage = () => {
                   type="button"
                   className="icon-btn login-form__password-toggle"
                   onClick={() => setShowPassword((v) => !v)}
-                  title={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
-                  aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                  title={showPassword ? t('pages.StudentManagementPage.إخفاء_كلمة_المرور', 'إخفاء كلمة المرور') : t('pages.StudentManagementPage.إظهار_كلمة_المرور', 'إظهار كلمة المرور')}
+                  aria-label={showPassword ? t('pages.StudentManagementPage.إخفاء_كلمة_المرور', 'إخفاء كلمة المرور') : t('pages.StudentManagementPage.إظهار_كلمة_المرور', 'إظهار كلمة المرور')}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -135,26 +137,26 @@ const LoginPage = () => {
             <BusyButton type="submit" className="google-btn google-btn--filled" busy={loadingCustom}>
               <span className="btn-inner">
                 <LogIn size={20} />
-                تسجيل الدخول
+                {t('pages.LoginPage.تسجيل_الدخول', 'تسجيل الدخول')}
               </span>
             </BusyButton>
           </form>
 
           <div className="md-divider-label">
             <hr />
-            <span>أو المتابعة بحساب Google</span>
+            <span>{t('pages.LoginPage.أو_المتابعة_بحساب_Google', 'أو المتابعة بحساب Google')}</span>
             <hr />
           </div>
 
           <BusyButton type="button" className="google-btn" onClick={handleGoogleLogin} busy={loadingGoogle}>
             <span className="btn-inner">
               <GoogleIcon />
-              <span>المتابعة باستخدام Google</span>
+              <span>{t('pages.LoginPage.المتابعة_باستخدام_Google', 'المتابعة باستخدام Google')}</span>
             </span>
           </BusyButton>
 
           <p className="app-alert app-alert--info login-form__hint">
-            يتم تفعيل الصلاحيات فقط بعد تحديد نوع الصلاحيات من المدير.
+            {t('pages.LoginPage.يتم_تفعيل_الصلاحيات_فقط_بعد_تحديد_نوع_الصلاحيات_من_المدير', 'يتم تفعيل الصلاحيات فقط بعد تحديد نوع الصلاحيات من المدير.')}
           </p>
 
           {canPrompt && !installed ? (
@@ -162,12 +164,12 @@ const LoginPage = () => {
               {hasNativePrompt ? (
                 <button type="button" className="login-install-hint__btn" onClick={promptInstall}>
                   <Download size={16} />
-                  ثبّت تطبيق آفاق على جهازك
+                  {t('pages.LoginPage.ثبّت_تطبيق_آفاق_على_جهازك', 'ثبّت تطبيق آفاق على جهازك')}
                 </button>
               ) : iosHint ? (
                 <p className="login-install-hint__text">
                   <Share size={14} aria-hidden />
-                  للتثبيت: شارك ← «إضافة إلى الشاشة الرئيسية»
+                  {t('pages.LoginPage.للتثبيت_شارك_إضافة_إلى_الشاشة_الرئيسية', 'للتثبيت: شارك ← «إضافة إلى الشاشة الرئيسية»')}
                 </p>
               ) : null}
             </div>
@@ -175,12 +177,12 @@ const LoginPage = () => {
         </section>
 
         <p className="login-card__legal">
-          بالدخول، أنت توافق على شروط الاستخدام وسياسة الخصوصية لمؤسسة آفاق.
+          {t('pages.LoginPage.بالدخول_أنت_توافق_على_شروط_الاستخدام_وسياسة_الخصوصية_لمؤسسة_آفاق', 'بالدخول، أنت توافق على شروط الاستخدام وسياسة الخصوصية لمؤسسة آفاق.')}
         </p>
       </div>
 
       <footer className="login-page-footer">
-        منصة آفاق التعليمية
+        {t('pages.LoginPage.منصة_آفاق_التعليمية', 'منصة آفاق التعليمية')}
       </footer>
     </main>
   );

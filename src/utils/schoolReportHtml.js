@@ -1,3 +1,7 @@
+import translate from '../i18n/translate';
+import { formatVisitRatingLabel } from './visitRating';
+import { prepPeriodLabel, schoolReportPeriodLabel } from './reportLabels';
+
 const REPORT_STYLES = `
   body { font-family: 'Noto Sans Arabic', Tahoma, Arial, sans-serif; margin: 24px; color: #111827; direction: rtl; }
   h1, h2, h3 { margin: 0 0 10px; }
@@ -23,8 +27,11 @@ export const safeHtml = (value) =>
 
 export { REPORT_STYLES };
 
-import { formatVisitRatingLabel } from './visitRating';
-import { schoolReportPeriodLabel } from './reportLabels';
+const lbl = (t, key, fallback) => t(`utils.schoolReportHtml.${key}`, fallback);
+
+function isYesValue(val, t) {
+  return val === 'نعم' || val === lbl(t, 'نعم', 'نعم');
+}
 
 function formatStarsValue(stars) {
   const n = Number(stars);
@@ -32,25 +39,31 @@ function formatStarsValue(stars) {
   return formatVisitRatingLabel(n);
 }
 
-function teachersRows(teachers) {
-  if (!teachers?.length) return '<tr><td colspan="4">لا يوجد معلمون محددون</td></tr>';
+function teachersRows(teachers, t) {
+  if (!teachers?.length) {
+    return `<tr><td colspan="4">${safeHtml(lbl(t, 'لا_يوجد_معلمون', 'لا يوجد معلمون محددون'))}</td></tr>`;
+  }
   return teachers
     .map(
-      (t, idx) =>
-        `<tr><td>${idx + 1}</td><td>${safeHtml(t.teacherName || '-')}</td><td>${safeHtml(t.phone || '-')}</td><td>${safeHtml(formatStarsValue(t.stars))}</td></tr>`
+      (teacher, idx) =>
+        `<tr><td>${idx + 1}</td><td>${safeHtml(teacher.teacherName || '-')}</td><td>${safeHtml(teacher.phone || '-')}</td><td>${safeHtml(formatStarsValue(teacher.stars))}</td></tr>`
     )
     .join('');
 }
 
-function absentRows(absentStudents) {
-  if (!absentStudents?.length) return '<tr><td colspan="2">لا يوجد غياب محدد</td></tr>';
+function absentRows(absentStudents, t) {
+  if (!absentStudents?.length) {
+    return `<tr><td colspan="2">${safeHtml(lbl(t, 'لا_يوجد_غياب', 'لا يوجد غياب محدد'))}</td></tr>`;
+  }
   return absentStudents
     .map((s, idx) => `<tr><td>${idx + 1}</td><td>${safeHtml(s.studentName || '-')}</td></tr>`)
     .join('');
 }
 
-function starsRows(starAwards) {
-  if (!starAwards?.length) return '<tr><td colspan="3">لا توجد تقييمات نجوم للطلاب</td></tr>';
+function starsRows(starAwards, t) {
+  if (!starAwards?.length) {
+    return `<tr><td colspan="3">${safeHtml(lbl(t, 'لا_تقييمات_نجوم', 'لا توجد تقييمات نجوم للطلاب'))}</td></tr>`;
+  }
   return starAwards
     .map(
       (s, idx) =>
@@ -59,7 +72,7 @@ function starsRows(starAwards) {
     .join('');
 }
 
-function stringListRows(items, emptyLabel = 'لا يوجد') {
+function stringListRows(items, emptyLabel) {
   const list = (items || []).map((item) => String(item ?? '').trim()).filter(Boolean);
   if (!list.length) return `<tr><td colspan="2">${safeHtml(emptyLabel)}</td></tr>`;
   return list
@@ -67,15 +80,16 @@ function stringListRows(items, emptyLabel = 'لا يوجد') {
     .join('');
 }
 
-function stringListSection(title, items, emptyLabel) {
+function stringListSection(title, items, emptyLabel, t) {
+  const resolvedEmpty = emptyLabel ?? lbl(t, 'لا_يوجد', 'لا يوجد');
   return `
   <div class="section">
     <h3>${safeHtml(title)}</h3>
-    <table><thead><tr><th>#</th><th>البيان</th></tr></thead><tbody>${stringListRows(items, emptyLabel)}</tbody></table>
+    <table><thead><tr><th>#</th><th>${safeHtml(lbl(t, 'البيان', 'البيان'))}</th></tr></thead><tbody>${stringListRows(items, resolvedEmpty)}</tbody></table>
   </div>`;
 }
 
-function curriculumRows(rep) {
+function curriculumRows(rep, t) {
   const lessons = rep.lessonCoverage || {};
   const curriculumItems = Array.isArray(rep.curriculumItems)
     ? rep.curriculumItems
@@ -84,7 +98,9 @@ function curriculumRows(rep) {
         subjectName,
         content,
       }));
-  if (!curriculumItems.length) return '<tr><td colspan="2">لا توجد مواد مضافة</td></tr>';
+  if (!curriculumItems.length) {
+    return `<tr><td colspan="2">${safeHtml(lbl(t, 'لا_مواد', 'لا توجد مواد مضافة'))}</td></tr>`;
+  }
   return curriculumItems
     .map(
       (it) =>
@@ -93,13 +109,13 @@ function curriculumRows(rep) {
     .join('');
 }
 
-function progressRows(summary) {
+function progressRows(summary, t) {
   if (!summary?.length) return '';
   return `
     <div class="section">
-      <h3>متابعة المنهج</h3>
+      <h3>${safeHtml(lbl(t, 'متابعة_المنهج', 'متابعة المنهج'))}</h3>
       <table>
-        <thead><tr><th>المادة</th><th>المتوقع</th><th>المُبلّغ</th><th>الحالة</th></tr></thead>
+        <thead><tr><th>${safeHtml(lbl(t, 'المادة', 'المادة'))}</th><th>${safeHtml(lbl(t, 'المتوقع', 'المتوقع'))}</th><th>${safeHtml(lbl(t, 'المُبلّغ', 'المُبلّغ'))}</th><th>${safeHtml(lbl(t, 'الحالة', 'الحالة'))}</th></tr></thead>
         <tbody>
           ${summary
             .map(
@@ -112,76 +128,80 @@ function progressRows(summary) {
     </div>`;
 }
 
-export function buildSchoolReportBodyHtml(rep) {
-  const periodLabel =
-    rep.reportPeriod === 'monthly' ? 'شهري' : rep.reportPeriod === 'weekly' ? 'أسبوعي' : rep.reportPeriod === 'visit' ? 'زيارة ميدانية' : '';
+function metaItem(label, value) {
+  return `<div class="item"><div class="label">${safeHtml(label)}</div><div class="value">${safeHtml(value ?? '-')}</div></div>`;
+}
+
+export function buildSchoolReportBodyHtml(rep, t = translate) {
+  const periodLabel = schoolReportPeriodLabel(rep.reportPeriod, t);
+  const defaultTitle = lbl(t, 'التقرير_الشهري', 'التقرير الشهري عن المدرسة');
   return `
   <div class="title">
-    <h1>${safeHtml(rep.reportTitle || 'التقرير الشهري عن المدرسة')}</h1>
+    <h1>${safeHtml(rep.reportTitle || defaultTitle)}</h1>
     <div>${safeHtml(rep.schoolName || '-')}${periodLabel ? ` — ${periodLabel}` : ''}</div>
   </div>
   <div class="grid">
-    <div class="item"><div class="label">المدرسة</div><div class="value">${safeHtml(rep.schoolName || '-')}</div></div>
-    <div class="item"><div class="label">القرية</div><div class="value">${safeHtml(rep.villageName || '-')}</div></div>
-    <div class="item"><div class="label">نوع التقرير</div><div class="value">${safeHtml(periodLabel || '-')}</div></div>
-    <div class="item"><div class="label">اليوم</div><div class="value">${safeHtml(rep.dayName || '-')}</div></div>
-    <div class="item"><div class="label">التاريخ</div><div class="value">${safeHtml(rep.date || rep.timestamp?.split('T')[0] || '-')}</div></div>
-    <div class="item"><div class="label">المحافظة</div><div class="value">${safeHtml(rep.governorate || '-')}</div></div>
-    <div class="item"><div class="label">الدولة</div><div class="value">${safeHtml(rep.country || '-')}</div></div>
-    <div class="item"><div class="label">وقت الحضور</div><div class="value">${safeHtml(rep.arrivalTime || '-')}</div></div>
-    <div class="item"><div class="label">وقت المغادرة</div><div class="value">${safeHtml(rep.departureTime || '-')}</div></div>
-    <div class="item"><div class="label">عدد الطلاب المسجلين</div><div class="value">${safeHtml(rep.totalStudents ?? '-')}</div></div>
-    <div class="item"><div class="label">عدد الحضور</div><div class="value">${safeHtml(rep.presentCount ?? '-')}</div></div>
-    <div class="item"><div class="label">مراجعة الغياب</div><div class="value">${safeHtml(rep.absenceReview || '-')}</div></div>
-    <div class="item"><div class="label">المشرف</div><div class="value">${safeHtml(rep.supervisorName || '-')}</div></div>
-    <div class="item"><div class="label">مسؤول المشاريع</div><div class="value">${safeHtml(rep.projectsOfficerName || '-')}</div></div>
-    <div class="item"><div class="label">تعمل السوق</div><div class="value">${safeHtml(rep.marketDone || '-')}</div></div>
-    <div class="item"><div class="label">عدد الوجبات</div><div class="value">${safeHtml(rep.mealsCount ?? '-')}</div></div>
-    <div class="item"><div class="label">متوسط تقييم الطلاب</div><div class="value">${safeHtml(rep.studentLevel || '-')}</div></div>
-    <div class="item"><div class="label">نسبة السير على المنهج</div><div class="value">${safeHtml(rep.curriculumProgress || '-')}</div></div>
-    <div class="item"><div class="label">تقييم المدرسة</div><div class="value">${safeHtml(rep.schoolEvaluation || '-')}</div></div>
-    <div class="item"><div class="label">تقييم المعلم (نجوم)</div><div class="value">${safeHtml(rep.teacherEvaluation || '-')}</div></div>
+    ${metaItem(lbl(t, 'المدرسة', 'المدرسة'), rep.schoolName)}
+    ${metaItem(lbl(t, 'القرية', 'القرية'), rep.villageName)}
+    ${metaItem(lbl(t, 'نوع_التقرير', 'نوع التقرير'), periodLabel || '-')}
+    ${metaItem(lbl(t, 'اليوم', 'اليوم'), rep.dayName)}
+    ${metaItem(lbl(t, 'التاريخ', 'التاريخ'), rep.date || rep.timestamp?.split('T')[0])}
+    ${metaItem(lbl(t, 'المحافظة', 'المحافظة'), rep.governorate)}
+    ${metaItem(lbl(t, 'الدولة', 'الدولة'), rep.country)}
+    ${metaItem(lbl(t, 'وقت_الحضور', 'وقت الحضور'), rep.arrivalTime)}
+    ${metaItem(lbl(t, 'وقت_المغادرة', 'وقت المغادرة'), rep.departureTime)}
+    ${metaItem(lbl(t, 'عدد_الطلاب_المسجلين', 'عدد الطلاب المسجلين'), rep.totalStudents)}
+    ${metaItem(lbl(t, 'عدد_الحضور', 'عدد الحضور'), rep.presentCount)}
+    ${metaItem(lbl(t, 'مراجعة_الغياب', 'مراجعة الغياب'), rep.absenceReview)}
+    ${metaItem(lbl(t, 'المشرف', 'المشرف'), rep.supervisorName)}
+    ${metaItem(lbl(t, 'مسؤول_المشاريع', 'مسؤول المشاريع'), rep.projectsOfficerName)}
+    ${metaItem(lbl(t, 'تعمل_السوق', 'تعمل السوق'), rep.marketDone)}
+    ${metaItem(lbl(t, 'عدد_الوجبات', 'عدد الوجبات'), rep.mealsCount)}
+    ${metaItem(lbl(t, 'متوسط_تقييم_الطلاب', 'متوسط تقييم الطلاب'), rep.studentLevel)}
+    ${metaItem(lbl(t, 'نسبة_السير_على_المنهج', 'نسبة السير على المنهج'), rep.curriculumProgress)}
+    ${metaItem(lbl(t, 'تقييم_المدرسة', 'تقييم المدرسة'), rep.schoolEvaluation)}
+    ${metaItem(lbl(t, 'تقييم_المعلم_نجوم', 'تقييم المعلم (نجوم)'), rep.teacherEvaluation)}
   </div>
   <div class="section">
-    <h3>المعلمون وتقييمهم</h3>
-    <table><thead><tr><th>#</th><th>اسم المعلم</th><th>رقم الهاتف</th><th>التقييم</th></tr></thead><tbody>${teachersRows(rep.teachers)}</tbody></table>
+    <h3>${safeHtml(lbl(t, 'المعلمون_وتقييمهم', 'المعلمون وتقييمهم'))}</h3>
+    <table><thead><tr><th>#</th><th>${safeHtml(lbl(t, 'اسم_المعلم', 'اسم المعلم'))}</th><th>${safeHtml(lbl(t, 'رقم_الهاتف', 'رقم الهاتف'))}</th><th>${safeHtml(lbl(t, 'التقييم', 'التقييم'))}</th></tr></thead><tbody>${teachersRows(rep.teachers, t)}</tbody></table>
   </div>
   <div class="section">
-    <h3>تقييم الطلاب بالنجوم</h3>
-    <table><thead><tr><th>#</th><th>الطالب</th><th>التقييم</th></tr></thead><tbody>${starsRows(rep.starAwards)}</tbody></table>
+    <h3>${safeHtml(lbl(t, 'تقييم_الطلاب_بالنجوم', 'تقييم الطلاب بالنجوم'))}</h3>
+    <table><thead><tr><th>#</th><th>${safeHtml(lbl(t, 'الطالب', 'الطالب'))}</th><th>${safeHtml(lbl(t, 'التقييم', 'التقييم'))}</th></tr></thead><tbody>${starsRows(rep.starAwards, t)}</tbody></table>
   </div>
-  ${stringListSection('الطلاب المتفوقون', rep.outstandingStudents, 'لا يوجد طلاب متفوقون')}
+  ${stringListSection(lbl(t, 'الطلاب_المتفوقون', 'الطلاب المتفوقون'), rep.outstandingStudents, lbl(t, 'لا_طلاب_متفوقون', 'لا يوجد طلاب متفوقون'), t)}
   <div class="section">
-    <h3>القرية والنشاطات</h3>
+    <h3>${safeHtml(lbl(t, 'القرية_والنشاطات', 'القرية والنشاطات'))}</h3>
     <div class="grid">
-      <div class="item"><div class="label">عدد من دخل الإسلام جديداً</div><div class="value">${safeHtml(rep.newConvertsCount ?? 0)}</div></div>
-      <div class="item"><div class="label">مشاريع المؤسسة بالقرية</div><div class="value">${safeHtml(rep.hasInstitutionProjects || '-')}</div></div>
+      ${metaItem(lbl(t, 'عدد_من_دخل_الإسلام', 'عدد من دخل الإسلام جديداً'), rep.newConvertsCount ?? 0)}
+      ${metaItem(lbl(t, 'مشاريع_المؤسسة_بالقرية', 'مشاريع المؤسسة بالقرية'), rep.hasInstitutionProjects)}
       ${
-        rep.hasInstitutionProjects === 'نعم'
-          ? `<div class="item" style="grid-column:1/-1"><div class="label">حالة المشاريع</div><div class="value">${safeHtml(rep.institutionProjectsStatus || '-')}</div></div>`
+        isYesValue(rep.hasInstitutionProjects, t)
+          ? metaItem(lbl(t, 'حالة_المشاريع', 'حالة المشاريع'), rep.institutionProjectsStatus)
           : ''
       }
     </div>
   </div>
-  ${stringListSection('أنشطة المعلم في القرية', rep.teacherVillageActivities)}
-  ${stringListSection('أنشطة المؤسسة في القرية', rep.institutionVillageActivities)}
-  ${stringListSection('خطب الجمعة في القرية', rep.fridaySermons)}
+  ${stringListSection(lbl(t, 'أنشطة_المعلم_في_القرية', 'أنشطة المعلم في القرية'), rep.teacherVillageActivities, null, t)}
+  ${stringListSection(lbl(t, 'أنشطة_المؤسسة_في_القرية', 'أنشطة المؤسسة في القرية'), rep.institutionVillageActivities, null, t)}
+  ${stringListSection(lbl(t, 'خطب_الجمعة_في_القرية', 'خطب الجمعة في القرية'), rep.fridaySermons, null, t)}
   <div class="section">
-    <h3>ملاحظات إضافية</h3>
+    <h3>${safeHtml(lbl(t, 'ملاحظات_إضافية', 'ملاحظات إضافية'))}</h3>
     <div class="notes">${safeHtml(rep.notes || rep.villageNotes || '-')}</div>
   </div>
   <div class="section">
-    <h3>الطلاب الغائبون</h3>
-    <table><thead><tr><th>#</th><th>اسم الطالب</th></tr></thead><tbody>${absentRows(rep.absentStudents)}</tbody></table>
+    <h3>${safeHtml(lbl(t, 'الطلاب_الغائبون', 'الطلاب الغائبون'))}</h3>
+    <table><thead><tr><th>#</th><th>${safeHtml(lbl(t, 'اسم_الطالب', 'اسم الطالب'))}</th></tr></thead><tbody>${absentRows(rep.absentStudents, t)}</tbody></table>
   </div>
   <div class="section">
-    <h3>المقررات والمتابعة العلمية</h3>
-    <table><tbody>${curriculumRows(rep)}</tbody></table>
+    <h3>${safeHtml(lbl(t, 'المقررات_والمتابعة', 'المقررات والمتابعة العلمية'))}</h3>
+    <table><tbody>${curriculumRows(rep, t)}</tbody></table>
   </div>
-  ${progressRows(rep.curriculumProgressSummary)}`;
+  ${progressRows(rep.curriculumProgressSummary, t)}`;
 }
 
-export function buildSchoolReportPrintDocument(rep, { autoPrint = true } = {}) {
+export function buildSchoolReportPrintDocument(rep, { autoPrint = true, t = translate } = {}) {
   const printScript = autoPrint
     ? `<script>window.onload=()=>{window.print();setTimeout(()=>window.close(),200);}</script>`
     : '';
@@ -189,22 +209,23 @@ export function buildSchoolReportPrintDocument(rep, { autoPrint = true } = {}) {
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <title>${safeHtml(rep.reportTitle || 'تقرير إشراف مدرسة')}</title>
+  <title>${safeHtml(rep.reportTitle || lbl(t, 'تقرير_إشراف_مدرسة', 'تقرير إشراف مدرسة'))}</title>
   <style>${REPORT_STYLES} @media print { body { margin: 10mm; } }</style>
 </head>
 <body>
-  ${buildSchoolReportBodyHtml(rep)}
+  ${buildSchoolReportBodyHtml(rep, t)}
   ${printScript}
 </body>
 </html>`;
 }
 
-export function buildComprehensiveReportBodyHtml(data) {
+export function buildComprehensiveReportBodyHtml(data, t = translate) {
+  const supervisionFallback = lbl(t, 'تقرير_إشراف', 'تقرير إشراف');
   const schoolReportRows = (data.schoolReports || [])
     .slice(0, 40)
     .map(
       (r) =>
-        `<tr><td>${safeHtml(r.date || r.timestamp?.split('T')[0] || '-')}</td><td>${safeHtml(r.reportTitle || 'تقرير إشراف')}</td><td>${safeHtml(schoolReportPeriodLabel(r.reportPeriod) || '-')}</td><td>${safeHtml(r.supervisorName || '-')}</td><td>${safeHtml(r.presentCount)}/${safeHtml(r.totalStudents)}</td><td>${safeHtml(r.teacherEvaluation || '-')}</td><td>${safeHtml(r.studentLevel || '-')}</td></tr>`
+        `<tr><td>${safeHtml(r.date || r.timestamp?.split('T')[0] || '-')}</td><td>${safeHtml(r.reportTitle || supervisionFallback)}</td><td>${safeHtml(schoolReportPeriodLabel(r.reportPeriod, t) || '-')}</td><td>${safeHtml(r.supervisorName || '-')}</td><td>${safeHtml(r.presentCount)}/${safeHtml(r.totalStudents)}</td><td>${safeHtml(r.teacherEvaluation || '-')}</td><td>${safeHtml(r.studentLevel || '-')}</td></tr>`
     )
     .join('');
 
@@ -223,35 +244,35 @@ export function buildComprehensiveReportBodyHtml(data) {
         Array.isArray(l.curriculumEntries) && l.curriculumEntries.length > 0
           ? l.curriculumEntries.map((e) => e.subjectName).join('، ')
           : l.subjectName || '-';
-      return `<tr><td>${safeHtml(l.date)}</td><td>${safeHtml(subjects)}</td><td>${safeHtml(l.prepPeriod === 'weekly' ? 'أسبوعي' : l.prepPeriod === 'monthly' ? 'شهري' : 'يومي')}</td><td>${safeHtml(l.totalPresent)}/${safeHtml(l.totalStudents)}</td></tr>`;
+      return `<tr><td>${safeHtml(l.date)}</td><td>${safeHtml(subjects)}</td><td>${safeHtml(prepPeriodLabel(l.prepPeriod, t) || '-')}</td><td>${safeHtml(l.totalPresent)}/${safeHtml(l.totalStudents)}</td></tr>`;
     })
     .join('');
 
   return `
   <div class="title">
-    <h1>تقرير شامل عن المدرسة</h1>
+    <h1>${safeHtml(lbl(t, 'تقرير_شامل', 'تقرير شامل عن المدرسة'))}</h1>
     <div>${safeHtml(data.schoolName || '-')}</div>
     <div style="font-size:13px;color:#6b7280;margin-top:4px">${safeHtml(data.villageName || '')}</div>
   </div>
   <div class="grid">
-    <div class="item"><div class="label">تقارير الإشراف</div><div class="value">${safeHtml(data.schoolReports?.length ?? 0)}</div></div>
-    <div class="item"><div class="label">الزيارات الميدانية</div><div class="value">${safeHtml(data.fieldVisits?.length ?? 0)}</div></div>
-    <div class="item"><div class="label">سجلات التحضير</div><div class="value">${safeHtml(data.dailyLogs?.length ?? 0)}</div></div>
-    <div class="item"><div class="label">المهتدون الجدد</div><div class="value">${safeHtml(data.newConvertsCount ?? 0)}</div></div>
+    ${metaItem(lbl(t, 'تقارير_الإشراف', 'تقارير الإشراف'), data.schoolReports?.length ?? 0)}
+    ${metaItem(lbl(t, 'الزيارات_الميدانية', 'الزيارات الميدانية'), data.fieldVisits?.length ?? 0)}
+    ${metaItem(lbl(t, 'سجلات_التحضير', 'سجلات التحضير'), data.dailyLogs?.length ?? 0)}
+    ${metaItem(lbl(t, 'المهتدون_الجدد', 'المهتدون الجدد'), data.newConvertsCount ?? 0)}
   </div>
   ${
     schoolReportRows
-      ? `<div class="section"><h3>تقارير إشراف المدرسة</h3><table><thead><tr><th>التاريخ</th><th>العنوان</th><th>النوع</th><th>المشرف</th><th>الحضور</th><th>تقييم المعلم</th><th>تقييم الطلاب</th></tr></thead><tbody>${schoolReportRows}</tbody></table></div>`
+      ? `<div class="section"><h3>${safeHtml(lbl(t, 'تقارير_إشراف_المدرسة', 'تقارير إشراف المدرسة'))}</h3><table><thead><tr><th>${safeHtml(lbl(t, 'التاريخ', 'التاريخ'))}</th><th>${safeHtml(lbl(t, 'العنوان', 'العنوان'))}</th><th>${safeHtml(lbl(t, 'النوع', 'النوع'))}</th><th>${safeHtml(lbl(t, 'المشرف', 'المشرف'))}</th><th>${safeHtml(lbl(t, 'الحضور', 'الحضور'))}</th><th>${safeHtml(lbl(t, 'تقييم_المعلم', 'تقييم المعلم'))}</th><th>${safeHtml(lbl(t, 'تقييم_الطلاب', 'تقييم الطلاب'))}</th></tr></thead><tbody>${schoolReportRows}</tbody></table></div>`
       : ''
   }
   ${
     visitRows
-      ? `<div class="section"><h3>الزيارات الميدانية</h3><table><thead><tr><th>التاريخ</th><th>المشرف</th><th>المادة</th><th>الأسبوع</th></tr></thead><tbody>${visitRows}</tbody></table></div>`
+      ? `<div class="section"><h3>${safeHtml(lbl(t, 'الزيارات_الميدانية', 'الزيارات الميدانية'))}</h3><table><thead><tr><th>${safeHtml(lbl(t, 'التاريخ', 'التاريخ'))}</th><th>${safeHtml(lbl(t, 'المشرف', 'المشرف'))}</th><th>${safeHtml(lbl(t, 'المادة', 'المادة'))}</th><th>${safeHtml(lbl(t, 'الأسبوع', 'الأسبوع'))}</th></tr></thead><tbody>${visitRows}</tbody></table></div>`
       : ''
   }
   ${
     prepRows
-      ? `<div class="section"><h3>سجلات التحضير</h3><table><thead><tr><th>التاريخ</th><th>المادة</th><th>الفترة</th><th>الحضور</th></tr></thead><tbody>${prepRows}</tbody></table></div>`
+      ? `<div class="section"><h3>${safeHtml(lbl(t, 'سجلات_التحضير', 'سجلات التحضير'))}</h3><table><thead><tr><th>${safeHtml(lbl(t, 'التاريخ', 'التاريخ'))}</th><th>${safeHtml(lbl(t, 'المادة', 'المادة'))}</th><th>${safeHtml(lbl(t, 'الفترة', 'الفترة'))}</th><th>${safeHtml(lbl(t, 'الحضور', 'الحضور'))}</th></tr></thead><tbody>${prepRows}</tbody></table></div>`
       : ''
   }`;
 }

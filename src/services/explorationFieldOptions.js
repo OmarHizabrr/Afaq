@@ -1,19 +1,49 @@
+import translate from '../i18n/translate';
 import { FIELD_TYPES_WITH_OPTIONS, normalizeOptionSourceId } from '../utils/explorationDynamicFields';
 
-/** مصادر خيارات القوائم (قائمة منسدلة / متعدد / راديو) */
-export const EXPLORATION_OPTION_SOURCES = [
-  { id: 'manual', label: 'يدوي — سطر لكل خيار' },
-  { id: 'governorates', label: 'محافظات' },
-  { id: 'regions', label: 'مناطق — اختياري: ربط بحقل محافظة' },
-  { id: 'villages', label: 'قرى — اختياري: ربط بحقل منطقة' },
-  { id: 'schools', label: 'مدارس — اختياري: ربط بحقل قرية أو منطقة' },
-  { id: 'students', label: 'طلاب المدرسة (سجل المدرسة) — اختياري: ربط بحقل مدرسة' },
-  { id: 'curriculum', label: 'مواد المنهج' },
-  { id: 'exploration_types', label: 'أنواع الاستكشاف' },
-  { id: 'new_muslims', label: 'مهتدون ومسلمون قدامى — اختياري: ربط بحقل قرية' },
-  { id: 'permission_profiles', label: 'ملفات الصلاحيات' },
-  { id: 'users', label: 'مستخدمون (حسب الدور)' },
+const OPTION_SOURCE_DEFS = [
+  { id: 'manual', labelKey: 'services.explorationFieldOptions.يدوي_سطر_لكل_خيار', labelFallback: 'يدوي — سطر لكل خيار' },
+  { id: 'governorates', labelKey: 'services.explorationFieldOptions.محافظات', labelFallback: 'محافظات' },
+  {
+    id: 'regions',
+    labelKey: 'services.explorationFieldOptions.مناطق_اختياري_ربط_بحقل_محافظة',
+    labelFallback: 'مناطق — اختياري: ربط بحقل محافظة',
+  },
+  {
+    id: 'villages',
+    labelKey: 'services.explorationFieldOptions.قرى_اختياري_ربط_بحقل_منطقة',
+    labelFallback: 'قرى — اختياري: ربط بحقل منطقة',
+  },
+  {
+    id: 'schools',
+    labelKey: 'services.explorationFieldOptions.مدارس_اختياري_ربط_بحقل_قرية_أو_منطقة',
+    labelFallback: 'مدارس — اختياري: ربط بحقل قرية أو منطقة',
+  },
+  {
+    id: 'students',
+    labelKey: 'services.explorationFieldOptions.طلاب_المدرسة_سجل_المدرسة_اختياري_ربط_بحقل_مدرسة',
+    labelFallback: 'طلاب المدرسة (سجل المدرسة) — اختياري: ربط بحقل مدرسة',
+  },
+  { id: 'curriculum', labelKey: 'services.explorationFieldOptions.مواد_المنهج', labelFallback: 'مواد المنهج' },
+  { id: 'exploration_types', labelKey: 'services.explorationFieldOptions.أنواع_الاستكشاف', labelFallback: 'أنواع الاستكشاف' },
+  {
+    id: 'new_muslims',
+    labelKey: 'services.explorationFieldOptions.مهتدون_ومسلمون_قدامى_اختياري_ربط_بحقل_قرية',
+    labelFallback: 'مهتدون ومسلمون قدامى — اختياري: ربط بحقل قرية',
+  },
+  { id: 'permission_profiles', labelKey: 'services.explorationFieldOptions.ملفات_الصلاحيات', labelFallback: 'ملفات الصلاحيات' },
+  { id: 'users', labelKey: 'services.explorationFieldOptions.مستخدمون_حسب_الدور', labelFallback: 'مستخدمون (حسب الدور)' },
 ];
+
+export function getExplorationOptionSources(t = translate) {
+  return OPTION_SOURCE_DEFS.map(({ id, labelKey, labelFallback }) => ({
+    id,
+    label: t(labelKey, labelFallback),
+  }));
+}
+
+/** @deprecated prefer getExplorationOptionSources(t) */
+export const EXPLORATION_OPTION_SOURCES = getExplorationOptionSources();
 
 /** مصادر تظهر لها قائمة «يعتمد على حقل» في محرر النوع */
 export const EXPLORATION_OPTION_SOURCE_SUPPORTS_DEPENDS = new Set([
@@ -24,14 +54,28 @@ export const EXPLORATION_OPTION_SOURCE_SUPPORTS_DEPENDS = new Set([
   'new_muslims',
 ]);
 
-export const EXPLORATION_USER_ROLE_FILTERS = [
-  { id: 'all', label: 'جميع المستخدمين' },
-  { id: 'teacher', label: 'معلمون' },
-  { id: 'student', label: 'طلاب' },
-  { id: 'admin', label: 'مدراء' },
-  { id: 'system_admin', label: 'مدراء نظام' },
-  { id: 'supervisor', label: 'مشرفون (أي نوع مشرف)' },
+const USER_ROLE_FILTER_DEFS = [
+  { id: 'all', labelKey: 'services.explorationFieldOptions.جميع_المستخدمين', labelFallback: 'جميع المستخدمين' },
+  { id: 'teacher', labelKey: 'services.explorationFieldOptions.معلمون', labelFallback: 'معلمون' },
+  { id: 'student', labelKey: 'services.explorationFieldOptions.طلاب', labelFallback: 'طلاب' },
+  { id: 'admin', labelKey: 'services.explorationFieldOptions.مدراء', labelFallback: 'مدراء' },
+  { id: 'system_admin', labelKey: 'services.explorationFieldOptions.مدراء_نظام', labelFallback: 'مدراء نظام' },
+  {
+    id: 'supervisor',
+    labelKey: 'services.explorationFieldOptions.مشرفون_أي_نوع_مشرف',
+    labelFallback: 'مشرفون (أي نوع مشرف)',
+  },
 ];
+
+export function getExplorationUserRoleFilters(t = translate) {
+  return USER_ROLE_FILTER_DEFS.map(({ id, labelKey, labelFallback }) => ({
+    id,
+    label: t(labelKey, labelFallback),
+  }));
+}
+
+/** @deprecated prefer getExplorationUserRoleFilters(t) */
+export const EXPLORATION_USER_ROLE_FILTERS = getExplorationUserRoleFilters();
 
 /**
  * جلب بيانات المنصة (محافظات، مناطق، قرى، مدارس، طلاب المدرسة، منهج، أنواع استكشاف، مهتدون، صلاحيات، مستخدمون)

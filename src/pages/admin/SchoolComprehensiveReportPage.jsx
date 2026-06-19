@@ -15,6 +15,7 @@ import { formatDailyLogSubjects, schoolReportSummaryLine } from '../../utils/rep
 import { normalizeSchoolReportForDisplay } from '../../utils/schoolReportStars';
 
 const SchoolComprehensiveReportPage = () => {
+  const { t } = useAppTranslation();
   const { id: schoolId } = useParams();
   const navigate = useNavigate();
   const [pdfExporting, setPdfExporting] = useState(false);
@@ -108,7 +109,7 @@ const SchoolComprehensiveReportPage = () => {
             <ChevronRight size={20} aria-hidden /> العودة لتفاصيل المدرسة
           </button>
         }
-        title="تقرير شامل عن المدرسة"
+        title={t('pages.SchoolComprehensiveReportPage.تقرير_شامل_عن_المدرسة', 'تقرير شامل عن المدرسة')}
         subtitle={data.schoolName}
       >
         <div className="school-report-page__toolbar">
@@ -156,7 +157,7 @@ const SchoolComprehensiveReportPage = () => {
         <div className="comprehensive-report-stat">
           <FileText size={22} color="var(--md-primary)" />
           <div>
-            <p>تقارير الإشراف</p>
+            <p>{t('utils.schoolReportExport.تقارير_الإشراف', 'تقارير الإشراف')}</p>
             <h3>{data.schoolReports.length}</h3>
           </div>
         </div>
@@ -193,7 +194,7 @@ const SchoolComprehensiveReportPage = () => {
               {data.schoolReports.map((r) => (
                 <div key={r.id} className="comprehensive-report-row">
                   <div>
-                    <strong>{r.reportTitle || 'تقرير إشراف'}</strong>
+                    <strong>{r.reportTitle || t('pages.SchoolComprehensiveReportPage.تقرير_إشراف', 'تقرير إشراف')}</strong>
                     <p>{r.date || r.timestamp?.split('T')[0]} • {r.supervisorName} • {schoolReportSummaryLine(r)}</p>
                     {r.absenceReview && <span className="comprehensive-report-tag">مراجعة الغياب: {r.absenceReview}</span>}
                   </div>
@@ -215,7 +216,7 @@ const SchoolComprehensiveReportPage = () => {
               {data.fieldVisits.map((v) => (
                 <div key={v.id} className="comprehensive-report-row">
                   <div>
-                    <strong>{v.subjectName || 'زيارة ميدانية'}</strong>
+                    <strong>{v.subjectName || t('pages.ReportDetailsPage.زيارة_ميدانية', 'زيارة ميدانية')}</strong>
                     <p>{v.timestamp?.split('T')[0]} • {v.supervisorName} {v.week ? `• أسبوع ${v.week}` : ''}</p>
                     {v.generalNotes && <p className="comprehensive-report-notes">{v.generalNotes}</p>}
                   </div>
@@ -234,9 +235,9 @@ const SchoolComprehensiveReportPage = () => {
               {data.dailyLogs.map((l) => (
                 <div key={l.id} className="comprehensive-report-row">
                   <div>
-                    <strong>{l.subjectName || 'تحضير'}</strong>
+                    <strong>{l.subjectName || t('pages.SchoolComprehensiveReportPage.تحضير', 'تحضير')}</strong>
                     <p>
-                      {l.date} • {l.prepPeriod === 'weekly' ? 'أسبوعي' : l.prepPeriod === 'monthly' ? 'شهري' : 'يومي'}
+                      {l.date} • {l.prepPeriod === 'weekly' ? t('pages.SchoolComprehensiveReportPage.أسبوعي', 'أسبوعي') : l.prepPeriod === 'monthly' ? t('pages.SchoolComprehensiveReportPage.شهري', 'شهري') : t('pages.SchoolComprehensiveReportPage.يومي', 'يومي')}
                       {l.periodLabel ? ` (${l.periodLabel})` : ''}
                       {' '}• حاضرون {l.totalPresent}/{l.totalStudents}
                     </p>
@@ -254,8 +255,8 @@ const SchoolComprehensiveReportPage = () => {
       <LazyReportPrintPreviewModal
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
-        title="معاينة التقرير الشامل"
-        bodyHtml={buildComprehensiveReportBodyHtml(exportData)}
+        title={t('pages.SchoolComprehensiveReportPage.معاينة_التقرير_الشامل', 'معاينة التقرير الشامل')}
+        bodyHtml={buildComprehensiveReportBodyHtml(exportData, t)}
         pdfExporting={pdfExporting}
         onDownloadPdf={async () => {
           setPdfExporting(true);

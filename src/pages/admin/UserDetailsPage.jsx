@@ -10,6 +10,7 @@ import BusyButton from '../../components/BusyButton';
 import StudentResultCard from '../../components/StudentResultCard';
 
 const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
+  const { t } = useAppTranslation();
     const { id: routeUserId } = useParams();
     const navigate = useNavigate();
     const targetId = routeUserId || selfUser?.uid || selfUser?.id || '';
@@ -163,7 +164,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
             setProfile((p) => ({ ...p, accountDisabled: next }));
         } catch (err) {
             console.error(err);
-            setAdminError('تعذر تحديث حالة التعطيل. تحقق من صلاحيات Firestore.');
+            setAdminError(t('pages.UserDetailsPage.تعذر_تحديث_حالة_التعطيل_تحقق_من_صلاحيات_Firestore', 'تعذر تحديث حالة التعطيل. تحقق من صلاحيات Firestore.'));
         } finally {
             setAdminWorking(false);
         }
@@ -175,7 +176,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
             `حذف المستخدم «${profile.displayName || targetId}» نهائياً من قاعدة البيانات؟ سيتم إزالة عضويات المجموعات وإسناد المشرف إن وُجد.`
         );
         if (!ok) return;
-        if (!window.confirm('تأكيد نهائي: لا يمكن التراجع عن هذا الإجراء.')) return;
+        if (!window.confirm(t('pages.UserDetailsPage.تأكيد_نهائي_لا_يمكن_التراجع_عن_هذا_الإجراء', 'تأكيد نهائي: لا يمكن التراجع عن هذا الإجراء.'))) return;
         setAdminError('');
         try {
             setAdminWorking(true);
@@ -190,7 +191,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
             navigate('/users');
         } catch (err) {
             console.error(err);
-            setAdminError('تعذر حذف المستخدم.');
+            setAdminError(t('pages.UserDetailsPage.تعذر_حذف_المستخدم', 'تعذر حذف المستخدم.'));
             setAdminWorking(false);
         }
     };
@@ -227,7 +228,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                     return String(u.data()?.email || '').trim().toLowerCase() === nextEmail;
                 });
                 if (exists) {
-                    setEditError('هذا البريد الإلكتروني مستخدم مسبقاً.');
+                    setEditError(t('pages.UserDetailsPage.هذا_البريد_الإلكتروني_مستخدم_مسبقاً', 'هذا البريد الإلكتروني مستخدم مسبقاً.'));
                     setEditBusy(false);
                     return;
                 }
@@ -249,11 +250,11 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 userData: viewerUser || undefined,
             });
             setProfile((p) => ({ ...p, ...patch }));
-            setEditSuccess('تم تحديث بيانات المستخدم بنجاح.');
+            setEditSuccess(t('pages.UserDetailsPage.تم_تحديث_بيانات_المستخدم_بنجاح', 'تم تحديث بيانات المستخدم بنجاح.'));
             setIsEditModalOpen(false);
         } catch (err) {
             console.error(err);
-            setEditError('تعذر حفظ البيانات. تحقق من الصلاحيات.');
+            setEditError(t('pages.UserDetailsPage.تعذر_حفظ_البيانات_تحقق_من_الصلاحيات', 'تعذر حفظ البيانات. تحقق من الصلاحيات.'));
         } finally {
             setEditBusy(false);
         }
@@ -263,13 +264,13 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     if (!profile) return <div className="empty-state user-details-empty">المستخدم غير موجود</div>;
 
     const ROLE_LABELS = {
-        system_admin: 'مدير نظام (وصول كامل)',
-        admin: 'مدير النظام',
-        supervisor_arab: 'مشرف عام (عربي)',
-        supervisor_local: 'مشرف منطقة (محلي)',
-        teacher: 'معلم مدرسة',
-        student: 'طالب / دارس',
-        unassigned: 'صلاحية معلقه'
+        system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
+        admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
+        supervisor_arab: t('pages.RegionDetailsPage.مشرف_عام_عربي', 'مشرف عام (عربي)'),
+        supervisor_local: t('pages.RegionDetailsPage.مشرف_منطقة_محلي', 'مشرف منطقة (محلي)'),
+        teacher: t('pages.RegionDetailsPage.معلم_مدرسة', 'معلم مدرسة'),
+        student: t('pages.RegionDetailsPage.طالب_دارس', 'طالب / دارس'),
+        unassigned: t('pages.UserDetailsPage.صلاحية_معلقه', 'صلاحية معلقه')
     };
 
     return (
@@ -290,7 +291,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 <button type="button" className="google-btn google-btn--toolbar" onClick={openEditUserModal}>
                   <Edit2 size={18} />
                   <span className="portal-toolbar__long">تعديل بيانات المستخدم</span>
-                  <span className="portal-toolbar__short">تعديل</span>
+                  <span className="portal-toolbar__short">{t('components.ExplorationListCard.تعديل', 'تعديل')}</span>
                 </button>
               )}
             </PageHeader>
@@ -298,7 +299,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
             {editSuccess && (
               <div className="app-alert app-alert--success app-alert--dismissible user-details-page-alert">
                 <span>{editSuccess}</span>
-                <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setEditSuccess('')}>
+                <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setEditSuccess('')}>
                   <X size={14} />
                 </button>
               </div>
@@ -343,7 +344,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                       >
                                           <span className="btn-inner">
                                             <Ban size={18} aria-hidden />
-                                            {profile.accountDisabled ? 'تفعيل الحساب والسماح بالدخول' : 'تعطيل الحساب ومنع فتح الموقع'}
+                                            {profile.accountDisabled ? t('pages.UserDetailsPage.تفعيل_الحساب_والسماح_بالدخول', 'تفعيل الحساب والسماح بالدخول') : t('pages.UserDetailsPage.تعطيل_الحساب_ومنع_فتح_الموقع', 'تعطيل الحساب ومنع فتح الموقع')}
                                           </span>
                                       </BusyButton>
                                     )}
@@ -369,7 +370,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                                 <Mail size={16} /> {profile.email}
                             </div>
                             <div className="user-details-profile-card__meta-row">
-                                <Phone size={16} /> {profile.phoneNumber || 'لا يوجد رقم'}
+                                <Phone size={16} /> {profile.phoneNumber || t('pages.StudentDetailsPage.لا_يوجد_رقم', 'لا يوجد رقم')}
                             </div>
                             <div className="user-details-profile-card__meta-row">
                                 <Shield size={16} /> المعرف: {profile.id.substring(0, 8)}...
@@ -522,7 +523,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                   className="app-input"
                   value={editForm.displayName}
                   onChange={(e) => setEditForm((p) => ({ ...p, displayName: e.target.value }))}
-                  placeholder="اسم المستخدم"
+                  placeholder={t('pages.UserDetailsPage.اسم_المستخدم', 'اسم المستخدم')}
                 />
               </div>
               <div className="users-modal__field">
@@ -562,9 +563,9 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                   value={editForm.gender}
                   onChange={(e) => setEditForm((p) => ({ ...p, gender: e.target.value }))}
                 >
-                  <option value="">غير محدد</option>
-                  <option value="ذكر">ذكر</option>
-                  <option value="أنثى">أنثى</option>
+                  <option value="">{t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد')}</option>
+                  <option value={t('pages.UserDetailsPage.ذكر', 'ذكر')}>{t('pages.UserDetailsPage.ذكر', 'ذكر')}</option>
+                  <option value={t('pages.UserDetailsPage.أنثى', 'أنثى')}>{t('pages.UserDetailsPage.أنثى', 'أنثى')}</option>
                 </select>
               </div>
               <div className="users-modal__field">
@@ -582,7 +583,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                   className="app-input"
                   value={editForm.country}
                   onChange={(e) => setEditForm((p) => ({ ...p, country: e.target.value }))}
-                  placeholder="مثال: MALAWI"
+                  placeholder={t('pages.UserDetailsPage.مثال_MALAWI', 'مثال: MALAWI')}
                 />
               </div>
               <div className="users-modal__field">
@@ -591,7 +592,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                   className="app-input"
                   value={editForm.address}
                   onChange={(e) => setEditForm((p) => ({ ...p, address: e.target.value }))}
-                  placeholder="العنوان أو المنطقة"
+                  placeholder={t('pages.UserDetailsPage.العنوان_أو_المنطقة', 'العنوان أو المنطقة')}
                 />
               </div>
               <div className="users-modal__field">
@@ -600,7 +601,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                   className="app-input users-modal__textarea"
                   value={editForm.notes}
                   onChange={(e) => setEditForm((p) => ({ ...p, notes: e.target.value }))}
-                  placeholder="أي ملاحظات إضافية"
+                  placeholder={t('pages.UserDetailsPage.أي_ملاحظات_إضافية', 'أي ملاحظات إضافية')}
                 />
               </div>
 

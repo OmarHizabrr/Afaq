@@ -1,7 +1,9 @@
 import React from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-const SupervisorVisitStudentCard = ({ record, onTrackingChange }) => (
+const SupervisorVisitStudentCard = ({ record, onTrackingChange }) => {
+  const { t } = useAppTranslation();
+  return (
   <article
     className={`visit-student-card${record.isPresent ? '' : ' visit-student-card--absent'}${record.isTested ? ' visit-student-card--tested' : ''}`}
   >
@@ -10,8 +12,8 @@ const SupervisorVisitStudentCard = ({ record, onTrackingChange }) => (
         type="button"
         onClick={() => onTrackingChange(record.studentId, 'isPresent', !record.isPresent)}
         className="visit-student-card__presence"
-        title={record.isPresent ? 'تعديل لغائب' : 'حاضر'}
-        aria-label={record.isPresent ? 'حاضر — اضغط للغياب' : 'غائب — اضغط للحضور'}
+        title={record.isPresent ? t('components.SupervisorVisitStudentCard.تعديل_لغائب', 'تعديل لغائب') : t('components.SupervisorVisitStudentCard.حاضر', 'حاضر')}
+        aria-label={record.isPresent ? t('components.SupervisorVisitStudentCard.حاضر_اضغط_للغياب', 'حاضر — اضغط للغياب') : t('components.SupervisorVisitStudentCard.غائب_اضغط_للحضور', 'غائب — اضغط للحضور')}
       >
         {record.isPresent ? (
           <CheckCircle size={24} color="var(--success-color)" />
@@ -30,15 +32,15 @@ const SupervisorVisitStudentCard = ({ record, onTrackingChange }) => (
         disabled={!record.isPresent}
         className={`visit-test-chip visit-student-card__test${record.isTested ? ' visit-test-chip--active' : ''}${!record.isPresent ? ' visit-test-chip--disabled' : ''}`}
       >
-        {record.isTested ? 'اختُبر' : 'اختبار'}
+        {record.isTested ? t('components.SupervisorVisitStudentCard.اختُبر', 'اختُبر') : t('components.SupervisorVisitStudentCard.اختبار', 'اختبار')}
       </button>
     </header>
 
     <label className="visit-student-card__note">
-      <span>ملاحظة التقييم</span>
+      <span>{t('components.SupervisorVisitStudentCard.ملاحظة_التقييم', 'ملاحظة التقييم')}</span>
       <input
         type="text"
-        placeholder="ملاحظات قراءته..."
+        placeholder={t('components.SupervisorVisitStudentCard.ملاحظات_قراءته', 'ملاحظات قراءته...')}
         value={record.note}
         onChange={(e) => onTrackingChange(record.studentId, 'note', e.target.value)}
         disabled={!record.isPresent || !record.isTested}
@@ -47,5 +49,7 @@ const SupervisorVisitStudentCard = ({ record, onTrackingChange }) => (
     </label>
   </article>
 );
+
+};
 
 export default SupervisorVisitStudentCard;

@@ -22,6 +22,7 @@ import {
 } from '../../utils/permissionDataScope';
 
 const StudentManagementPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
@@ -191,7 +192,7 @@ const StudentManagementPage = () => {
               return parts.length ? parts.join(' — ') : '';
             })
             .filter(Boolean)
-            .join('، '),
+            .join(t('components.ExplorationDataModal.،', '، ')),
           activityCount: studentActivity.length,
           lastActivity: latest,
         });
@@ -204,7 +205,7 @@ const StudentManagementPage = () => {
       setStudents(filteredRows);
     } catch (err) {
       console.error(err);
-      setError('تعذر تحميل بيانات إدارة الطلاب.');
+      setError(t('pages.StudentManagementPage.تعذر_تحميل_بيانات_إدارة_الطلاب', 'تعذر تحميل بيانات إدارة الطلاب.'));
     } finally {
       setLoading(false);
     }
@@ -256,11 +257,11 @@ const StudentManagementPage = () => {
 
   const handleSaveStudent = async () => {
     if (!formName.trim()) {
-      setError('اسم الطالب مطلوب.');
+      setError(t('pages.StudentManagementPage.اسم_الطالب_مطلوب', 'اسم الطالب مطلوب.'));
       return;
     }
     if (!editingStudent && (!formPhone.trim() || !formPassword.trim())) {
-      setError('عند إضافة طالب جديد يجب إدخال رقم الهاتف وكلمة المرور.');
+      setError(t('pages.StudentManagementPage.عند_إضافة_طالب_جديد_يجب_إدخال_رقم_الهاتف_وكلمة_المرور', 'عند إضافة طالب جديد يجب إدخال رقم الهاتف وكلمة المرور.'));
       return;
     }
     try {
@@ -345,7 +346,7 @@ const StudentManagementPage = () => {
       await fetchStudentsData();
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ بيانات الطالب.');
+      setError(t('pages.StudentDetailsPage.تعذر_حفظ_بيانات_الطالب', 'تعذر حفظ بيانات الطالب.'));
     } finally {
       setSaving(false);
     }
@@ -359,17 +360,17 @@ const StudentManagementPage = () => {
     }
     const displayName = expForm.deriveDisplayName('');
     if (!displayName) {
-      setError('لا يمكن استخراج اسم الطالب من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      setError(t('pages.StudentManagementPage.لا_يمكن_استخراج_اسم_الطالب_من_حقول_النموذج_أضف_حقلاً_نصياً_ي', 'لا يمكن استخراج اسم الطالب من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".'));
       return;
     }
     const phone = expForm.getValueByType('tel').trim();
     if (!phone) {
-      setError('يحتاج النموذج إلى حقل من نوع «رقم هاتف» لإنشاء حساب الطالب.');
+      setError(t('pages.StudentManagementPage.يحتاج_النموذج_إلى_حقل_من_نوع_رقم_هاتف_لإنشاء_حساب_الطالب', 'يحتاج النموذج إلى حقل من نوع «رقم هاتف» لإنشاء حساب الطالب.'));
       return;
     }
     const password = expForm.getValueByType('password').trim();
     if (!password) {
-      setError('يحتاج النموذج إلى حقل من نوع «كلمة مرور» لإنشاء حساب الطالب.');
+      setError(t('pages.StudentManagementPage.يحتاج_النموذج_إلى_حقل_من_نوع_كلمة_مرور_لإنشاء_حساب_الطالب', 'يحتاج النموذج إلى حقل من نوع «كلمة مرور» لإنشاء حساب الطالب.'));
       return;
     }
     const emailNorm = expForm.getValueByType('email').trim().toLowerCase();
@@ -406,7 +407,7 @@ const StudentManagementPage = () => {
       await fetchStudentsData();
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ الطالب من نموذج الاستكشاف.');
+      setError(t('pages.StudentManagementPage.تعذر_حفظ_الطالب_من_نموذج_الاستكشاف', 'تعذر حفظ الطالب من نموذج الاستكشاف.'));
     } finally {
       setExpSaving(false);
     }
@@ -444,8 +445,8 @@ const StudentManagementPage = () => {
     <div className="portal-page">
       <PageHeader
         icon={GraduationCap}
-        title="الطلاب"
-        subtitle="عرض الارتباطات والتحركات لكل طالب بنمط عضويات المجموعات"
+        title={t('config.appNavItems.الطلاب', 'الطلاب')}
+        subtitle={t('pages.StudentManagementPage.عرض_الارتباطات_والتحركات_لكل_طالب_بنمط_عضويات_المجموعات', 'عرض الارتباطات والتحركات لكل طالب بنمط عضويات المجموعات')}
       >
         {can(PERMISSION_PAGE_IDS.students_management, 'student_management_add') && (
           <button
@@ -459,8 +460,8 @@ const StudentManagementPage = () => {
             }}
           >
             <Plus size={16} />
-            <span className="portal-toolbar__long">إضافة طالب</span>
-            <span className="portal-toolbar__short">إضافة</span>
+            <span className="portal-toolbar__long">{t('config.permissionRegistry.إضافة_طالب', 'إضافة طالب')}</span>
+            <span className="portal-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.students_management, 'student_management_add') &&
@@ -472,7 +473,7 @@ const StudentManagementPage = () => {
           >
             <Compass size={16} />
             <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
-            <span className="portal-toolbar__short">استكشاف</span>
+            <span className="portal-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
       </PageHeader>
@@ -493,7 +494,7 @@ const StudentManagementPage = () => {
               className="app-input student-management-filters__search-input"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="بحث بالاسم أو البريد أو الارتباط..."
+              placeholder={t('pages.StudentManagementPage.بحث_بالاسم_أو_البريد_أو_الارتباط', 'بحث بالاسم أو البريد أو الارتباط...')}
             />
           </div>
           <AppSelect searchable className="student-management-filters__select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
@@ -518,7 +519,7 @@ const StudentManagementPage = () => {
             <table className="md-table student-management-table">
               <thead>
                 <tr>
-                  <th>الطالب</th>
+                  <th>{t('utils.schoolReportExport.الطالب', 'الطالب')}</th>
                   <th>الارتباطات</th>
                   <th>عدد التحركات</th>
                   <th>آخر حركة</th>
@@ -536,8 +537,8 @@ const StudentManagementPage = () => {
                           className="student-management-student-cell__avatar"
                         />
                         <div>
-                          <div className="student-management-student-cell__name">{s.displayName || 'بدون اسم'}</div>
-                          <div className="student-management-student-cell__email">{s.email || 'بدون بريد'}</div>
+                          <div className="student-management-student-cell__name">{s.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</div>
+                          <div className="student-management-student-cell__email">{s.email || t('components.StudentManagementStudentCard.بدون_بريد', 'بدون بريد')}</div>
                           <div className="student-management-student-cell__exploration">
                             {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
                               <ExplorationBadge record={s} onClick={() => setViewingExplorationOf(s)} />
@@ -547,7 +548,7 @@ const StudentManagementPage = () => {
                       </div>
                     </td>
                     <td className="student-management-cell-muted">
-                      {s.membershipText || 'غير مرتبط بأي مجموعة'}
+                      {s.membershipText || t('components.StudentManagementStudentCard.غير_مرتبط_بأي_مجموعة', 'غير مرتبط بأي مجموعة')}
                     </td>
                     <td>
                       <span className="student-management-activity-chip">
@@ -555,16 +556,16 @@ const StudentManagementPage = () => {
                       </span>
                     </td>
                     <td className="student-management-cell-muted">
-                      {s.lastActivity ? new Date(s.lastActivity).toLocaleDateString('ar-EG') : 'لا يوجد'}
+                      {s.lastActivity ? new Date(s.lastActivity).toLocaleDateString('ar-EG') : t('components.StudentManagementStudentCard.لا_يوجد', 'لا يوجد')}
                     </td>
                     <td className="student-management-cell-center">
                       {can(PERMISSION_PAGE_IDS.students_management, 'student_management_view_profile') && (
-                        <button className="icon-btn" onClick={() => navigate(`/students/${s.id}`)} title="عرض ملف الطالب">
+                        <button className="icon-btn" onClick={() => navigate(`/students/${s.id}`)} title={t('config.permissionRegistry.عرض_ملف_الطالب', 'عرض ملف الطالب')}>
                           <Eye size={17} color="var(--accent-color)" />
                         </button>
                       )}
                       {can(PERMISSION_PAGE_IDS.students_management, 'student_management_edit') && (
-                        <button className="icon-btn" onClick={() => openEdit(s)} title="تعديل بيانات الطالب">
+                        <button className="icon-btn" onClick={() => openEdit(s)} title={t('config.permissionRegistry.تعديل_بيانات_الطالب', 'تعديل بيانات الطالب')}>
                           <Edit2 size={16} />
                         </button>
                       )}
@@ -600,11 +601,11 @@ const StudentManagementPage = () => {
           resetForm();
         }}
         size="md"
-        title={editingStudent ? 'تعديل بيانات الطالب' : 'إضافة طالب جديد'}
+        title={editingStudent ? t('config.permissionRegistry.تعديل_بيانات_الطالب', 'تعديل بيانات الطالب') : t('pages.StudentManagementPage.إضافة_طالب_جديد', 'إضافة طالب جديد')}
       >
         <div className="app-form-grid">
           <div className="app-field app-field--grow">
-            <label className="app-label">الاسم الكامل</label>
+            <label className="app-label">{t('pages.UsersPage.الاسم_الكامل', 'الاسم الكامل')}</label>
             <input className="app-input" value={formName} onChange={(e) => setFormName(e.target.value)} />
           </div>
           <div className="app-field app-field--grow">
@@ -618,7 +619,7 @@ const StudentManagementPage = () => {
             />
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">رقم الهاتف {!editingStudent && '(إجباري)'}</label>
+            <label className="app-label">رقم الهاتف {!editingStudent && t('pages.StudentManagementPage.إجباري', '(إجباري)')}</label>
             <input
               className="app-input"
               value={formPhone}
@@ -630,7 +631,7 @@ const StudentManagementPage = () => {
           </div>
           <div className="app-field app-field--grow">
             <label className="app-label">
-              كلمة المرور {!editingStudent ? '(إجباري)' : '(اتركها فارغة للإبقاء على الحالية)'}
+              كلمة المرور {!editingStudent ? t('pages.StudentManagementPage.إجباري', '(إجباري)') : t('pages.StudentManagementPage.اتركها_فارغة_للإبقاء_على_الحالية', '(اتركها فارغة للإبقاء على الحالية)')}
             </label>
             <div className="md-field settings-profile-form__password-field">
               <Lock size={18} color="var(--text-secondary)" aria-hidden />
@@ -640,14 +641,14 @@ const StudentManagementPage = () => {
                 value={formPassword}
                 onChange={(e) => setFormPassword(e.target.value)}
                 autoComplete={editingStudent ? 'new-password' : 'new-password'}
-                placeholder={editingStudent ? '—' : 'كلمة مرور الطالب'}
+                placeholder={editingStudent ? '—' : t('pages.StudentManagementPage.كلمة_مرور_الطالب', 'كلمة مرور الطالب')}
               />
               <button
                 type="button"
                 className="icon-btn settings-profile-form__password-toggle"
                 onClick={() => setShowFormPassword((v) => !v)}
-                title={showFormPassword ? 'إخفاء' : 'إظهار'}
-                aria-label={showFormPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                title={showFormPassword ? t('pages.StudentManagementPage.إخفاء', 'إخفاء') : t('pages.StudentManagementPage.إظهار', 'إظهار')}
+                aria-label={showFormPassword ? t('pages.StudentManagementPage.إخفاء_كلمة_المرور', 'إخفاء كلمة المرور') : t('pages.StudentManagementPage.إظهار_كلمة_المرور', 'إظهار كلمة المرور')}
               >
                 {showFormPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -692,7 +693,7 @@ const StudentManagementPage = () => {
             </div>
           </div>
           <div className="modal-footer-actions modal-footer-actions--spaced">
-            <button type="button" className="google-btn" onClick={() => { setIsAddOpen(false); resetForm(); }}>إلغاء</button>
+            <button type="button" className="google-btn" onClick={() => { setIsAddOpen(false); resetForm(); }}>{t('components.ConfirmDialog.إلغاء', 'إلغاء')}</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSaveStudent} busy={saving}>
               حفظ
             </BusyButton>
@@ -704,7 +705,7 @@ const StudentManagementPage = () => {
         open={isExploringAdding}
         onClose={() => setIsExploringAdding(false)}
         size="lg"
-        title="إضافة طالب من نموذج الاستكشاف"
+        title={t('pages.StudentManagementPage.إضافة_طالب_من_نموذج_الاستكشاف', 'إضافة طالب من نموذج الاستكشاف')}
       >
         <div className="app-form-grid">
           <div className="app-alert app-alert--info">
@@ -715,11 +716,11 @@ const StudentManagementPage = () => {
               controller={expForm}
               actorUser={actorUser}
               storageUserId={storageUserId}
-              heading="حقول نموذج الاستكشاف"
+              heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
               currentPageId={PERMISSION_PAGE_IDS.students_management}
           />
           <div className="modal-footer-actions modal-footer-actions--spaced">
-            <button type="button" className="google-btn" onClick={() => setIsExploringAdding(false)}>إلغاء</button>
+            <button type="button" className="google-btn" onClick={() => setIsExploringAdding(false)}>{t('components.ConfirmDialog.إلغاء', 'إلغاء')}</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleExplorationSaveStudent} busy={expSaving}>
               حفظ
             </BusyButton>
@@ -730,7 +731,7 @@ const StudentManagementPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.displayName || ''}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}

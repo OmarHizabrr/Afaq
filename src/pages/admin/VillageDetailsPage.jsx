@@ -22,6 +22,7 @@ import {
 } from '../../services/villageStudentEnrollment';
 
 const VillageDetailsPage = () => {
+  const { t } = useAppTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
     const [village, setVillage] = useState(null);
@@ -30,12 +31,12 @@ const VillageDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [newName, setNewName] = useState('');
-    const [newType, setNewType] = useState('رجل');
+    const [newType, setNewType] = useState(t('pages.VillageDetailsPage.رجل', 'رجل'));
     const [newMuslimCategory, setNewMuslimCategory] = useState(normalizeMuslimCategory());
     const [addMuslimSchoolIds, setAddMuslimSchoolIds] = useState([]);
     const [editingMuslimId, setEditingMuslimId] = useState(null);
     const [editingName, setEditingName] = useState('');
-    const [editingType, setEditingType] = useState('رجل');
+    const [editingType, setEditingType] = useState(t('pages.VillageDetailsPage.رجل', 'رجل'));
     const [editingMuslimCategory, setEditingMuslimCategory] = useState(normalizeMuslimCategory());
     const [pendingDelete, setPendingDelete] = useState(null);
     const [defaultSchoolId, setDefaultSchoolId] = useState('');
@@ -146,12 +147,12 @@ const VillageDetailsPage = () => {
     const isBornRow = (m) => normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN;
     const convertsOnly = newMuslims.filter((m) => !isBornRow(m));
     const bornOnly = newMuslims.filter(isBornRow);
-    const menCount = convertsOnly.filter((m) => m.type === 'رجل').length;
-    const womenCount = convertsOnly.filter((m) => m.type === 'امرأة').length;
-    const childrenCount = convertsOnly.filter((m) => m.type === 'طفل').length;
-    const bornMen = bornOnly.filter((m) => m.type === 'رجل').length;
-    const bornWomen = bornOnly.filter((m) => m.type === 'امرأة').length;
-    const bornChildren = bornOnly.filter((m) => m.type === 'طفل').length;
+    const menCount = convertsOnly.filter((m) => m.type === t('pages.VillageDetailsPage.رجل', 'رجل')).length;
+    const womenCount = convertsOnly.filter((m) => m.type === t('pages.VillageDetailsPage.امرأة', 'امرأة')).length;
+    const childrenCount = convertsOnly.filter((m) => m.type === t('pages.VillageDetailsPage.طفل', 'طفل')).length;
+    const bornMen = bornOnly.filter((m) => m.type === t('pages.VillageDetailsPage.رجل', 'رجل')).length;
+    const bornWomen = bornOnly.filter((m) => m.type === t('pages.VillageDetailsPage.امرأة', 'امرأة')).length;
+    const bornChildren = bornOnly.filter((m) => m.type === t('pages.VillageDetailsPage.طفل', 'طفل')).length;
 
     const syncVillageCounters = async (nextList) => {
       if (!village?.regionId || !id) return;
@@ -166,7 +167,7 @@ const VillageDetailsPage = () => {
     const handleAddNewMuslim = async () => {
       if (!newName.trim() || !id) return;
       if (schools.length > 0 && addMuslimSchoolIds.length === 0) {
-        window.alert('اختر مدرسة واحدة على الأقل للتسجيل.');
+        window.alert(t('pages.VillageDetailsPage.اختر_مدرسة_واحدة_على_الأقل_للتسجيل', 'اختر مدرسة واحدة على الأقل للتسجيل.'));
         return;
       }
       try {
@@ -362,17 +363,17 @@ const VillageDetailsPage = () => {
                                   onChange={(e) => setNewType(e.target.value)}
                                   className=""
                                 >
-                                  <option value="رجل">رجل</option>
-                                  <option value="امرأة">امرأة</option>
-                                  <option value="طفل">طفل</option>
+                                  <option value="رجل">{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                                  <option value="امرأة">{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                                  <option value="طفل">{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
                                 </AppSelect>
                                 <AppSelect searchable
                                   value={newMuslimCategory}
                                   onChange={(e) => setNewMuslimCategory(normalizeMuslimCategory(e.target.value))}
                                   className=""
                                 >
-                                  <option value="convert">مهتد</option>
-                                  <option value="born">مسلم قديم</option>
+                                  <option value="convert">{t('pages.VillagesPage.مهتد', 'مهتد')}</option>
+                                  <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
                                 </AppSelect>
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
                                   <BusyButton type="button" className="icon-btn" onClick={handleAddNewMuslim} busy={saving} title="إضافة">
@@ -400,17 +401,17 @@ const VillageDetailsPage = () => {
                                               onChange={(e) => setEditingType(e.target.value)}
                                               className=""
                                             >
-                                              <option value="رجل">رجل</option>
-                                              <option value="امرأة">امرأة</option>
-                                              <option value="طفل">طفل</option>
+                                              <option value="رجل">{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                                              <option value="امرأة">{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                                              <option value="طفل">{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
                                             </AppSelect>
                                             <AppSelect searchable
                                               value={editingMuslimCategory}
                                               onChange={(e) => setEditingMuslimCategory(normalizeMuslimCategory(e.target.value))}
                                               className=""
                                             >
-                                              <option value="convert">مهتد</option>
-                                              <option value="born">مسلم قديم</option>
+                                              <option value="convert">{t('pages.VillagesPage.مهتد', 'مهتد')}</option>
+                                              <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
                                             </AppSelect>
                                           </div>
                                           <div className="village-details-new-muslims__item-actions">

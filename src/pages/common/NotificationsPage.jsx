@@ -14,13 +14,13 @@ import usePushNotifications from '../../hooks/usePushNotifications';
 import { getUserProfilePath } from '../../utils/profileLinks';
 
 const ROLE_LABELS = {
-  system_admin: 'مدير نظام (وصول كامل)',
-  admin: 'مدير النظام',
-  supervisor_arab: 'مشرف عام',
-  supervisor_local: 'مشرف منطقة',
-  teacher: 'معلم',
-  student: 'طالب',
-  unassigned: 'غير معين',
+  system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
+  admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
+  supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
+  supervisor_local: t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة'),
+  teacher: t('components.MessengerPanel.معلم', 'معلم'),
+  student: t('components.MessengerPanel.طالب', 'طالب'),
+  unassigned: t('pages.NotificationsPage.غير_معين', 'غير معين'),
 };
 const RECIPIENT_ROLE_FILTER_ORDER = [
   'teacher',
@@ -34,6 +34,7 @@ const RECIPIENT_ROLE_FILTER_ORDER = [
 ];
 
 const NotificationsPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const location = useLocation();
   const actorId = user?.uid || user?.id;
   const [activeTab, setActiveTab] = useState('notifications');
@@ -295,7 +296,7 @@ const NotificationsPage = ({ user }) => {
           data: {
             participants: uniqueParticipants,
             isGroup: uniqueParticipants.length > 2,
-            title: uniqueParticipants.length > 2 ? newChatTitle.trim() || 'مجموعة جديدة' : '',
+            title: uniqueParticipants.length > 2 ? newChatTitle.trim() || t('pages.NotificationsPage.مجموعة_جديدة', 'مجموعة جديدة') : '',
             createdBy: actorId,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -339,7 +340,7 @@ const NotificationsPage = ({ user }) => {
         payload.replyToText = replyTo.text;
         payload.replyToSenderId = replyTo.senderId || '';
         payload.replyToSenderName =
-          replyTo.senderId === actorId ? 'أنت' : replyTo.senderName || '';
+          replyTo.senderId === actorId ? t('components.MessengerPanel.أنت', 'أنت') : replyTo.senderName || '';
       }
       await api.setData({
         docRef: api.getConversationMessageDoc(selectedConversation.id, msgId),
@@ -379,8 +380,8 @@ const NotificationsPage = ({ user }) => {
       <PageHeader
         icon={Bell}
         iconBox
-        title="مركز الإشعارات والتنبيهات"
-        subtitle={isNarrow ? undefined : 'تحديث فوري للإشعارات والمحادثات'}
+        title={t('pages.NotificationsPage.مركز_الإشعارات_والتنبيهات', 'مركز الإشعارات والتنبيهات')}
+        subtitle={isNarrow ? undefined : t('pages.NotificationsPage.تحديث_فوري_للإشعارات_والمحادثات', 'تحديث فوري للإشعارات والمحادثات')}
       >
         <div className="notifications-page__tabs">
           <button
@@ -388,7 +389,7 @@ const NotificationsPage = ({ user }) => {
             className={`btn-md ${activeTab === 'notifications' ? 'btn-md--primary' : 'btn-md--outline'}`}
             onClick={() => setActiveTab('notifications')}
           >
-            <Bell size={16} /> الإشعارات
+            <Bell size={16} /> {t('config.appNavItems.الإشعارات', 'الإشعارات')}
           </button>
           <button
             type="button"
@@ -401,7 +402,7 @@ const NotificationsPage = ({ user }) => {
         <div className="notifications-page__toolbar">
         {recipients.length > 0 && (
           <button type="button" className="btn-md btn-md--outline" onClick={() => { setIsNewChatOpen(true); setChatRoleFilter('all'); }}>
-            <Users size={16} /> محادثة جديدة
+            <Users size={16} /> {t('components.MessengerPanel.محادثة_جديدة', 'محادثة جديدة')}
           </button>
         )}
         {recipients.length > 0 && (
@@ -418,7 +419,7 @@ const NotificationsPage = ({ user }) => {
       </PageHeader>
 
       {needsPushEnable && (
-        <div className="notifications-push-prompt" role="region" aria-label="تفعيل الإشعارات">
+        <div className="notifications-push-prompt" role="region" aria-label={t('components.PushNotificationBanner.تفعيل_الإشعارات', 'تفعيل الإشعارات')}>
           <div className="notifications-push-prompt__text">
             <strong>فعّل إشعارات الجهاز</strong>
             <span>لتصلك المحادثات والتنبيهات فوراً حتى عند إغلاق التطبيق</span>
@@ -429,7 +430,7 @@ const NotificationsPage = ({ user }) => {
             onClick={enablePush}
             disabled={pushBusy}
           >
-            {pushBusy ? 'جاري التفعيل…' : 'تفعيل الآن'}
+            {pushBusy ? t('pages.NotificationsPage.جاري_التفعيل', 'جاري التفعيل…') : t('pages.NotificationsPage.تفعيل_الآن', 'تفعيل الآن')}
           </button>
         </div>
       )}
@@ -463,9 +464,9 @@ const NotificationsPage = ({ user }) => {
                         alt=""
                         className="notif-sender-avatar"
                       />
-                      <span className="notif-sender-name">{n.fromUserName || 'مرسل غير معروف'}</span>
+                      <span className="notif-sender-name">{n.fromUserName || t('pages.NotificationsPage.مرسل_غير_معروف', 'مرسل غير معروف')}</span>
                       <span className="notif-sender-role">
-                        {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || 'بدون دور'}
+                        {ROLE_LABELS[n.fromUserRole] || n.fromUserRole || t('pages.NotificationsPage.بدون_دور', 'بدون دور')}
                       </span>
                     </>
                   }
@@ -498,7 +499,7 @@ const NotificationsPage = ({ user }) => {
                         }}
                         disabled={!n.fromUserId || n.fromUserId === actorId || !recipientsMap[n.fromUserId]}
                       >
-                        رد
+                        {t('components.MessengerPanel.رد', 'رد')}
                       </button>
                     </div>
                   }
@@ -538,7 +539,7 @@ const NotificationsPage = ({ user }) => {
         </div>
       )}
 
-      <FormModal open={isComposeOpen} title="إرسال إشعار جديد" onClose={() => setIsComposeOpen(false)}>
+      <FormModal open={isComposeOpen} title={t('pages.NotificationsPage.إرسال_إشعار_جديد', 'إرسال إشعار جديد')} onClose={() => setIsComposeOpen(false)}>
         <form onSubmit={handleSend} className="notifications-modal-form">
           <label className="app-label">المستلمون</label>
           <div className="notifications-modal__pick-toolbar">
@@ -565,7 +566,7 @@ const NotificationsPage = ({ user }) => {
                 className={`role-filter-btn ${composeRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                 onClick={() => setComposeRoleFilter(rid)}
               >
-                {(rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
+                {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
               </button>
             ))}
           </div>
@@ -592,26 +593,26 @@ const NotificationsPage = ({ user }) => {
             <option value="success">نجاح</option>
             <option value="warning">تنبيه</option>
           </AppSelect>
-          <label className="app-label">العنوان</label>
+          <label className="app-label">{t('utils.schoolReportExport.العنوان', 'العنوان')}</label>
           <input className="app-input notifications-modal__field" value={title} onChange={(e) => setTitle(e.target.value)} />
           <label className="app-label">المحتوى</label>
           <textarea className="app-textarea notifications-modal__field notifications-modal__field--last" value={body} onChange={(e) => setBody(e.target.value)} />
           <div className="modal-footer-actions">
             <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsComposeOpen(false)}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton
               type="submit"
               busy={sending}
               className="google-btn google-btn--filled modal-footer-actions__btn"
             >
-              إرسال
+              {t('components.MessengerPanel.إرسال', 'إرسال')}
             </BusyButton>
           </div>
         </form>
       </FormModal>
 
-      <FormModal open={isNewChatOpen} title="إنشاء محادثة" onClose={() => setIsNewChatOpen(false)}>
+      <FormModal open={isNewChatOpen} title={t('pages.NotificationsPage.إنشاء_محادثة', 'إنشاء محادثة')} onClose={() => setIsNewChatOpen(false)}>
         <form onSubmit={createConversation} className="notifications-modal-form">
           <label className="app-label">العنوان (اختياري للجروب)</label>
           <input className="app-input notifications-modal__field" value={newChatTitle} onChange={(e) => setNewChatTitle(e.target.value)} />
@@ -640,7 +641,7 @@ const NotificationsPage = ({ user }) => {
                 className={`role-filter-btn ${chatRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                 onClick={() => setChatRoleFilter(rid)}
               >
-                {(rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
+                {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : ROLE_LABELS[rid] || rid)} ({recipientRoleCounts[rid] || 0})
               </button>
             ))}
           </div>
@@ -663,7 +664,7 @@ const NotificationsPage = ({ user }) => {
           </div>
           <div className="modal-footer-actions">
             <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsNewChatOpen(false)}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton
               type="submit"

@@ -6,11 +6,12 @@ import { hasValidGps, openGoogleMaps } from '../utils/maps';
  * عرض الإحداثيات مع إمكانية النقر لفتح خرائط Google (مثل تيليجرام/واتساب).
  */
 const MapLocationOpen = ({ gpsLocation, label = 'الموقع الجغرافي', subtitle }) => {
+  const { t } = useAppTranslation();
   if (!hasValidGps(gpsLocation)) {
     return (
       <div className="map-location-open map-location-open--empty">
         <MapPin size={20} color="var(--text-secondary)" aria-hidden />
-        <span>{subtitle || 'لم يتم تسجيل إحداثيات GPS'}</span>
+        <span>{subtitle || t('components.MapLocationOpen.لم_يتم_تسجيل_إحداثيات_GPS', 'لم يتم تسجيل إحداثيات GPS')}</span>
       </div>
     );
   }
@@ -25,7 +26,7 @@ const MapLocationOpen = ({ gpsLocation, label = 'الموقع الجغرافي',
       type="button"
       className="map-location-open map-location-open--clickable"
       onClick={handleOpen}
-      title="فتح في خرائط Google"
+      title={t('components.MapLocationOpen.فتح_في_خرائط_Google', 'فتح في خرائط Google')}
     >
       <MapPin size={22} color="var(--md-primary)" aria-hidden />
       <div className="map-location-open__text">

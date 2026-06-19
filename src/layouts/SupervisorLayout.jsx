@@ -21,16 +21,20 @@ import PushNotificationBanner from '../components/PushNotificationBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
+import useAppTranslation from '../hooks/useAppTranslation';
 
-const SUPERVISOR_NAV_ITEMS = [
-  { name: 'الرئيسية', shortName: 'الرئيسية', icon: Home, path: '/supervisor', end: true },
-  { name: 'تسجيل زيارة', shortName: 'زيارة', icon: MapPin, path: '/supervisor/visit' },
-  { name: 'سجل الزيارات', shortName: 'السجل', icon: FileText, path: '/supervisor/history' },
-  { name: 'الإشعارات', shortName: 'الإشعارات', icon: Bell, path: '/supervisor/notifications' },
-  { name: 'الإعدادات', shortName: 'الإعدادات', icon: Settings, path: '/supervisor/settings' },
-];
+function getSupervisorNavItems(t) {
+  return [
+    { name: t('config.appNavItems.الرئيسية', 'الرئيسية'), shortName: t('config.appNavItems.الرئيسية', 'الرئيسية'), icon: Home, path: '/supervisor', end: true },
+    { name: t('layouts.SupervisorLayout.تسجيل_زيارة', 'تسجيل زيارة'), shortName: t('layouts.SupervisorLayout.زيارة', 'زيارة'), icon: MapPin, path: '/supervisor/visit' },
+    { name: t('layouts.SupervisorLayout.سجل_الزيارات', 'سجل الزيارات'), shortName: t('layouts.SupervisorLayout.السجل', 'السجل'), icon: FileText, path: '/supervisor/history' },
+    { name: t('config.appNavItems.الإشعارات', 'الإشعارات'), shortName: t('config.appNavItems.الإشعارات', 'الإشعارات'), icon: Bell, path: '/supervisor/notifications' },
+    { name: t('config.appNavItems.الإعدادات', 'الإعدادات'), shortName: t('config.appNavItems.الإعدادات', 'الإعدادات'), icon: Settings, path: '/supervisor/settings' },
+  ];
+}
 
 const SupervisorLayout = ({ user }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() =>
@@ -84,7 +88,7 @@ const SupervisorLayout = ({ user }) => {
     navigate('/');
   };
 
-  const navItems = SUPERVISOR_NAV_ITEMS;
+  const navItems = useMemo(() => getSupervisorNavItems(t), [t]);
   const mobileTabs = useMemo(() => getPortalMobileTabs(navItems, 'supervisor'), [navItems]);
 
   const closeSidebar = () => {
@@ -105,14 +109,14 @@ const SupervisorLayout = ({ user }) => {
       <aside className={`sidebar sidebar--supervisor ${isSidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-header__brand-wrap">
-            <h2 className="sidebar-brand-title sidebar-brand-title--compact">بوابة المشرف الميداني</h2>
-            <p className="sidebar-brand-sub">آفاق القرآنية</p>
+            <h2 className="sidebar-brand-title sidebar-brand-title--compact">{t('layouts.SupervisorLayout.بوابة_المشرف_الميداني', 'بوابة المشرف الميداني')}</h2>
+            <p className="sidebar-brand-sub">{t('layouts.TeacherLayout.آفاق_القرآنية', 'آفاق القرآنية')}</p>
           </div>
 
           <button
             className="desktop-collapse-btn"
             onClick={toggleSidebarCollapse}
-            title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+            title={isCollapsed ? t('layouts.AdminLayout.توسيع_القائمة', 'توسيع القائمة') : t('layouts.AdminLayout.طي_القائمة', 'طي القائمة')}
           >
             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
           </button>
@@ -138,9 +142,9 @@ const SupervisorLayout = ({ user }) => {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="nav-link" onClick={handleLogout} title="تسجيل الخروج">
+          <div className="nav-link" onClick={handleLogout} title={t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}>
             <LogOut size={20} />
-            <span>تسجيل الخروج</span>
+            <span>{t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}</span>
           </div>
         </div>
       </aside>
@@ -150,20 +154,20 @@ const SupervisorLayout = ({ user }) => {
           <div className="topbar__lead">
             {isMobile ? (
               <div className="topbar__brand">
-                <span className="topbar__brand-title">بوابة المشرف</span>
+                <span className="topbar__brand-title">{t('layouts.SupervisorLayout.بوابة_المشرف', 'بوابة المشرف')}</span>
               </div>
             ) : null}
           </div>
 
           <div className="topbar__actions">
-            <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
+            <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? t('layouts.AdminLayout.الوضع_النهاري', 'الوضع النهاري') : t('layouts.AdminLayout.الوضع_الليلي', 'الوضع الليلي')}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
             <UserMenuDropdown
               user={user}
               accentTone="primary"
-              tagline={user?.role === 'supervisor_arab' ? 'مشرف عام' : 'مشرف منطقة'}
+              tagline={user?.role === 'supervisor_arab' ? t('components.MessengerPanel.مشرف_عام', 'مشرف عام') : t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة')}
             />
           </div>
         </header>

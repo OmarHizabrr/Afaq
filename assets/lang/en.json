@@ -1,0 +1,986 @@
+{
+  "components": {
+    "BottomTabBar": {
+      "التنقل_السريع": "Quick Navigation",
+      "المزيد_من_القوائم": "More Menus",
+      "المزيد": "More"
+    },
+    "CurriculumLessonPicker": {
+      "لم_يُحدد": "Not specified",
+      "إزالة_المادة": "Remove Subject"
+    },
+    "DailyPrepEditor": {
+      "اختر_المدرسة": "Select School",
+      "المدرسة": "School",
+      "اختيار_المدرسة": "Choose School",
+      "نوع_فترة_التحضير": "Preparation Period Type",
+      "مثال_صفحة_10": "Example: Page 10",
+      "مثال_جزء_عم": "Example: Juz' Amma",
+      "ملاحظة_على_الطالب": "Note on student...",
+      "اكتب_أي_ملاحظات_تريد_إرفاقها_مع_هذا_التحضير": "Write any notes you want to attach with this preparation..."
+    },
+    "DailyPrepStudentCard": {
+      "مقدار_الحفظ": "Memorization Amount",
+      "مقدار_المراجعة": "Review Amount",
+      "ملاحظة": "Note"
+    },
+    "ExplorationBadge": {
+      "نموذج_الاستكشاف": "Exploration Form",
+      "عرض_حقول_نموذج_الاستكشاف": "View exploration form fields"
+    },
+    "ExplorationDataModal": {
+      "تعذر_حفظ_التعديلات": "Failed to save changes.",
+      "بيانات_نموذج_الاستكشاف": "Exploration Form Data",
+      "حقول_نموذج_الاستكشاف": "Exploration Form Fields",
+      "،": ", "
+    },
+    "ExplorationDynamicFieldBlock": {
+      "غير_محدد": "Unspecified",
+      "نعم": "Yes",
+      "لا": "No",
+      "وسم1،_وسم2": "tag1, tag2"
+    },
+    "ExplorationFormSection": {
+      "لا_توجد_أنواع_استكشاف_معرَّفة_أضف_نوعاً_من_أنواع_الاستكشاف_ق": "No exploration types defined. Add a type from 'Exploration Types' before using this form.",
+      "نوع_الاستكشاف": "Exploration Type"
+    },
+    "ExplorationListCard": {
+      "نوع_غير_محدد": "Unspecified Type",
+      "تعديل": "Edit",
+      "حذف": "Delete"
+    },
+    "ExplorationTargetPagesPicker": {
+      "أخرى": "Other",
+      "بدون_تحديد_يظهر_هذا_النموذج_في_كل_الصفحات_التي_تدعم_إضافة_من": "Without selection: this form appears on all pages that support 'Add from Exploration' and in the Exploration section.",
+      "تحديد_كل_الصفحات": "Select All Pages",
+      "إلغاء_التحديد_جميع_الصفحات": "Deselect — All Pages"
+    },
+    "ExplorationTypePreviewModal": {
+      "النموذج_الافتراضي_الكامل": "Full Default Form"
+    },
+    "InstallAppBanner": {
+      "تثبيت_التطبيق": "Install App",
+      "إغلاق": "Close"
+    },
+    "MapLocationOpen": {
+      "لم_يتم_تسجيل_إحداثيات_GPS": "GPS coordinates not recorded",
+      "فتح_في_خرائط_Google": "Open in Google Maps",
+      "الموقع_الجغرافي": "Geographic Location"
+    },
+    "MessengerPanel": {
+      "مدير_نظام": "System Administrator",
+      "مدير": "Manager",
+      "مشرف_عام": "General Supervisor",
+      "مشرف_منطقة": "Regional Supervisor",
+      "معلم": "Teacher",
+      "طالب": "Student",
+      "أنت": "You",
+      "مجموعة": "Group",
+      "محادثة": "Conversation",
+      "أنا": "Me",
+      "ابدأ_المحادثة": "Start conversation…",
+      "رسالة": "Message",
+      "حفظ": "Save",
+      "محادثة_جديدة": "New Conversation",
+      "رد": "Reply",
+      "إرسال": "Send"
+    },
+    "PortalQuickActions": {
+      "اختصارات_سريعة": "Quick Shortcuts"
+    },
+    "PrintDocumentShell": {
+      "معاينة_قبل_الطباعة": "Print Preview",
+      "رجوع": "رجوع",
+      "طباعة_حفظ_pdf": "طباعة / حفظ PDF",
+      "بعد_إغلاق_الطباعة": "بعد إغلاق نافذة الطباعة تبقى هذه الصفحة للمراجعة. يمكنك الطباعة مجدداً عبر الزر أعلاه أو اختصار",
+      "أو": "(أو",
+      "على_ماك": "على ماك).",
+      "منصة_آفاق_التعليمية": "منصة آفاق التعليمية",
+      "آفاق_وثيقة_رسمية": "آفاق — وثيقة رسمية"
+    },
+    "PushNotificationBanner": {
+      "تفعيل_الإشعارات": "Enable Notifications",
+      "تفعيل": "Enable",
+      "لاحقاً": "Later"
+    },
+    "PushNotificationSection": {
+      "الإشعارات_مفعّلة_ومتصلة_بالخادم": "Notifications enabled and connected to server",
+      "الإشعارات_مسموحة_جاري_الربط": "Notifications allowed — connecting…",
+      "إشعارات_المتصفح_مفعّلة": "Browser notifications enabled",
+      "إعادة_ربط_الجهاز": "Reconnect Device",
+      "إشعارات_الجهاز": "إشعارات الجهاز",
+      "المتصفح_لا_يدعم_الإشعارات": "المتصفح الحالي لا يدعم إشعارات النظام.",
+      "لإشعارات_الخلفية_أضف_vapid": "لإشعارات الخلفية (عند إغلاق التطبيق) أضف مفتاح VAPID في إعدادات الخادم.",
+      "الإشعارات_محظورة": "الإشعارات محظورة من إعدادات المتصفح. افتح إعدادات الموقع واسمح بالإشعارات ثم أعد تحميل الصفحة.",
+      "اسمح_بالإشعارات": "اسمح بالإشعارات لتصلك رسائل المحادثات والتنبيهات فوراً.",
+      "تفعيل_الإشعارات": "تفعيل الإشعارات"
+    },
+    "RecipientUserCard": {
+      "تحديد": "Select",
+      "الملف_الشخصي": "Profile",
+      "عرض_الملف_الشخصي": "View Profile",
+      "غير_متاح": "Unavailable"
+    },
+    "StarRatingInput": {
+      "تقييم_بالنجوم": "Star Rating"
+    },
+    "StudentManagementStudentCard": {
+      "بدون_اسم": "No Name",
+      "بدون_بريد": "No Email",
+      "غير_مرتبط_بأي_مجموعة": "Not linked to any group",
+      "لا_يوجد": "None",
+      "الارتباطات": "الارتباطات",
+      "التحركات": "التحركات",
+      "آخر_حركة": "آخر حركة",
+      "الملف": "Profile"
+    },
+    "StudentResultCard": {
+      "تم_الاختبار": "Tested",
+      "لم_يتم": "Not Done",
+      "حاضر": "Present",
+      "غائب": "Absent"
+    },
+    "SupervisorVisitStudentCard": {
+      "تعديل_لغائب": "Edit for Absent",
+      "حاضر": "Present",
+      "حاضر_اضغط_للغياب": "Present — tap to mark absent",
+      "غائب_اضغط_للحضور": "Absent — tap to mark present",
+      "اختُبر": "Tested",
+      "اختبار": "Test",
+      "ملاحظات_قراءته": "Reading notes...",
+      "ملاحظة_التقييم": "ملاحظة التقييم"
+    },
+    "UserMenuDropdown": {
+      "حسابي": "My Account",
+      "الإشعارات_والمحادثات": "الإشعارات والمحادثات",
+      "تفعيل_تنبيهات_المتصفح": "تفعيل تنبيهات المتصفح"
+    },
+    "VillageDefaultSchoolPanel": {
+      "لا_توجد_مدرسة_افتراضية": "No default school",
+      "إضافة_تقرير_المدرسة_الافتراضية": "Add Default School Report",
+      "المدرسة_الافتراضية_للتقرير": "المدرسة الافتراضية للتقرير",
+      "الافتراضي_التلقائي": "الافتراضي التلقائي هو أول مدرسة في القائمة، ويمكن تغييره يدويًا.",
+      "لا_مدارس_مرتبطة": "لا توجد مدارس مرتبطة بهذه القرية.",
+      "إضافة_تقرير_المدرسة": "إضافة تقرير المدرسة الافتراضية",
+      "حفظ_الافتراضي": "حفظ الافتراضي",
+      "تقرير_افتراضي": "تقرير افتراضي",
+      "المدرسة_الافتراضية_الحالية": "المدرسة الافتراضية الحالية:"
+    },
+    "VillageReportDisplay": {
+      "أنشطة_المعلم_في_القرية": "Teacher Activities in Village",
+      "أنشطة_المؤسسة_في_القرية": "Organization Activities in Village",
+      "خطب_الجمعة_في_القرية": "Friday Sermons in Village",
+      "تقرير_القرية": "تقرير القرية"
+    },
+    "VillageReportFields": {
+      "الأنشطة_التي_تمت_في_القرية_من_قبل_المعلم": "Activities carried out in the village by the teacher",
+      "وصف_النشاط": "Activity description...",
+      "إضافة_نشاط": "Add Activity",
+      "لم_تُضف_أنشطة_بعد_اضغط_إضافة_نشاط_لإضافة_نشاط_جديد": "No activities added yet. Press 'Add Activity' to add a new one.",
+      "الأنشطة_التي_تمت_في_القرية_من_قبل_المؤسسة": "Activities carried out in the village by the organization",
+      "موضوع_أو_ملخص_الخطبة": "Sermon topic or summary...",
+      "إضافة_خطبة": "Add Sermon",
+      "لم_تُضف_خطباً_بعد_اضغط_إضافة_خطبة_لإضافة_خطبة_جديدة": "No sermons added yet. Press 'Add Sermon' to add a new one.",
+      "هل_يوجد_مشاريع_للمؤسسة_بالقرية؟": "Are there organization projects in the village?",
+      "اكتب_حالة_المشاريع_وتفاصيلها": "Write project status and details...",
+      "أي_ملاحظات_إضافية_عن_القرية": "Any additional notes about the village...",
+      "القرية_والنشاطات": "القرية والنشاطات",
+      "عدد_من_دخل_الإسلام": "عدد من دخل الإسلام جديداً في القرية",
+      "ما_حالة_المشاريع": "ما حالة المشاريع؟",
+      "ملاحظات_إضافية_القرية": "ملاحظات إضافية (القرية)"
+    },
+    "VillageSchoolCheckboxGroup": {
+      "اختيار_المدارس": "Select Schools"
+    },
+    "VisitReportEditor": {
+      "تقييم_المعلم_من_5_نجوم": "Teacher Rating (out of 5 stars)",
+      "تقييم_القرية_من_5_نجوم": "Village Rating (out of 5 stars)",
+      "ملاحظات_وتوجيهات_عن_الزيارة": "Visit notes and guidance...",
+      "بيانات_الزيارة_الميدانية": "بيانات الزيارة الميدانية",
+      "اختر_المدرسة": "— اختر المدرسة —",
+      "اختر_القرية": "— اختر القرية —",
+      "اختر_المادة": "— اختر المادة —",
+      "الدرس_الأسبوع": "الدرس / الأسبوع",
+      "اختر_الدرس": "— اختر الدرس —",
+      "التقييم_والملاحظات": "التقييم والملاحظات",
+      "ملاحظات_المشرف": "ملاحظات المشرف"
+    },
+    "ConfirmDialog": {
+      "تأكيد": "Confirm",
+      "إلغاء": "Cancel",
+      "تأكيد_الإجراء": "Confirm action"
+    },
+    "ReportTextList": {
+      "إضافة": "Add",
+      "اكتب_النص_هنا": "Type text here...",
+      "لم_تُضف_عناصر_بعد": "No items added yet. Click \"Add\" to add a new item.",
+      "حذف": "Delete"
+    },
+    "AppSelect": {
+      "ابحث": "Search...",
+      "لا_توجد_نتائج": "No results"
+    },
+    "EvalSelectWithOther": {
+      "اكتب_التقييم_أو_الملاحظة": "Enter rating or note...",
+      "اختر": "— Select —"
+    },
+    "InstallAppSection": {
+      "التطبيق_مثبّت": "App installed",
+      "تستخدم_آفاق_كتطبيق_مستقل": "You are using Afaq as a standalone app on your device — quick access from the home screen or desktop.",
+      "تثبيت_التطبيق": "Install app",
+      "ثبّت_آفاق_على_جهازك": "Install Afaq on your phone or computer for quick access without opening the browser each time.",
+      "على_iPhone_iPad": "On iPhone / iPad:",
+      "اضغط_زر_المشاركة": "Tap the Share button",
+      "اختر_إضافة_إلى_الشاشة_الرئيسية": "Choose \"Add to Home Screen\"",
+      "اضغط_إضافة": "Tap \"Add\"",
+      "تثبيت_التطبيق_الآن": "Install app now",
+      "افتح_الموقع_من_Chrome": "Open the site in Chrome or Edge on desktop or Android to see the install option."
+    },
+    "TeacherStudentCard": {
+      "السن": "Age",
+      "الملف": "Profile"
+    },
+    "LazyReportPrintPreviewModal": {
+      "جاري_تحميل_المعاينة": "جاري تحميل المعاينة…"
+    },
+    "ReportDailyRecordCard": {
+      "الحفظ": "الحفظ",
+      "المراجعة": "المراجعة",
+      "ملاحظة": "ملاحظة"
+    },
+    "ReportPrintPreviewModal": {
+      "معاينة_التقرير": "معاينة التقرير",
+      "تحميل_pdf": "تحميل PDF",
+      "تحميل_excel": "تحميل Excel",
+      "طباعة": "طباعة"
+    }
+  },
+  "utils": {
+    "schoolReportExport": {
+      "النوع": "Type",
+      "الحالة": "Status",
+      "تقارير_الإشراف": "Supervision Reports",
+      "الطلاب_المتفوقون": "Outstanding Students",
+      "الهاتف": "Phone",
+      "الطالب": "Student",
+      "العنوان": "Address",
+      "الحضور": "Attendance"
+    },
+    "explorationTargetPages": {
+      "جميع_الصفحات": "All Pages",
+      "استكشاف": "Exploration"
+    },
+    "reportDetailsHtml": {
+      "دخل_الإسلام_جديداً": "Newly Converted to Islam",
+      "مشاريع_المؤسسة": "Organization Projects",
+      "حالة_المشاريع": "Project Status",
+      "المادة": "Subject",
+      "تاريخ_الإرسال": "Submission Date",
+      "الأسبوع": "Week"
+    },
+    "explorationDynamicFields": {
+      "بريد_إلكتروني": "Email",
+      "بحث": "Search"
+    },
+    "chatNotifications": {
+      "مجموعة": "Group",
+      "محادثة": "Conversation"
+    },
+    "curriculumProgress": {
+      "لم_يُحدد_بعد": "Not yet specified",
+      "حسب_الخطة": "On schedule"
+    },
+    "dailyPrepForm": {
+      "الأسبوعي": "Weekly",
+      "الشهري": "Monthly",
+      "اليومي": "Daily",
+      "تاريخ_اليوم": "Today's Date",
+      "مرجع_الأسبوع": "Week Reference",
+      "مرجع_الشهر": "Month Reference",
+      "مواد_الأسبوع_من_المناهج": "Weekly Curriculum Subjects",
+      "مواد_الشهر": "Monthly Subjects",
+      "مواد_اليوم": "Today's Subjects",
+      "طالب": "Student"
+    },
+    "messengerFormat": {
+      "أمس": "Yesterday",
+      "اليوم": "Today"
+    },
+    "permissionDataScope": {
+      "نطاق_عرض_البيانات_في_هذه_الصفحة": "Data view scope on this page",
+      "كل_السجلات_عرض_شامل": "All records (comprehensive view)",
+      "ما_يرتبط_بي_فقط": "Only what's related to me (schools/regions/groups I'm a member of)"
+    },
+    "reportEvalOptions": {
+      "السير_على_المنهج": "Curriculum Progress",
+      "تقييم_المدرسة": "School Evaluation",
+      "التقرير_الشهري_عن_المدرسة": "Monthly School Report"
+    },
+    "reportLabels": {
+      "شهري": "Monthly",
+      "أسبوعي": "Weekly",
+      "زيارة_ميدانية": "Field Visit",
+      "يومي": "Daily",
+      "تقرير_مدرسة": "School Report"
+    }
+  },
+  "pages": {
+    "RegionDetailsPage": {
+      "الكل": "All",
+      "مدير_نظام_وصول_كامل": "System Administrator (Full Access)",
+      "مدير_النظام": "System Administrator",
+      "مشرف_عام_عربي": "General Supervisor (Arabic)",
+      "مشرف_منطقة_محلي": "Regional Supervisor (Local)",
+      "معلم_مدرسة": "School Teacher",
+      "طالب_دارس": "Student / Learner",
+      "صلاحية_معلقة": "Pending Permission",
+      "حدث_خطأ_أثناء_التعيين": "An error occurred during assignment.",
+      "تعذر_إزالة_المشرف_من_المنطقة": "Failed to remove supervisor from the region.",
+      "تعيين_مشرف": "Assign Supervisor",
+      "عرض_الملف": "View File",
+      "إزالة_من_المنطقة": "Remove from Region",
+      "بحث_بالاسم_أو_البريد": "Search by name or email..."
+    },
+    "SchoolReportPage": {
+      "ملاحظات_إضافية": "Additional Notes",
+      "القرية": "Village",
+      "التاريخ": "Date",
+      "تقييم_المعلم": "Teacher Rating",
+      "الأحد": "Sunday",
+      "الإثنين": "Monday",
+      "الثلاثاء": "Tuesday",
+      "الأربعاء": "Wednesday",
+      "الخميس": "Thursday",
+      "الجمعة": "Friday",
+      "السبت": "Saturday",
+      "حفظ_التعديلات": "Save Changes",
+      "حفظ_التقرير": "Save Report",
+      "رقم_الهاتف": "Phone Number"
+    },
+    "AdminBrandingPage": {
+      "تم_حفظ_هوية_الموقع_بنجاح": "Site branding saved successfully.",
+      "تعذر_حفظ_الهوية_حالياً،_حاول_مرة_أخرى": "Failed to save branding. Please try again.",
+      "تعديل_اسم_المنصة_والعنوان_والنص_الظاهر_في_رأس_لوحة_التحكم": "Edit the platform name, title, and text displayed in the dashboard header.",
+      "إضافة_وسيلة_تواصل": "Add Contact Method",
+      "مثال_يرجى_التواصل_مع_الإدارة_عبر_الوسائل_التالية_لتفعيل_الصل": "Example: Please contact the administration via the following channels to activate permissions.",
+      "المسمى_مثال_مدير_المنصة": "Title (Example: Platform Manager)",
+      "رقم_أو_رابط_الحساب": "Account number or link"
+    },
+    "AdminReportsPage": {
+      "التقارير_الأسبوعية": "Weekly Reports",
+      "زيارات_المشرفين": "Supervisor Visits",
+      "تقارير_المدارس": "School Reports",
+      "أسبوع": "Week",
+      "شهر": "Month",
+      "3_أشهر": "3 Months",
+      "6_أشهر": "6 Months",
+      "سنة": "Year",
+      "كل_الفترات": "All Periods",
+      "حدث_خطأ_أثناء_جلب_التقارير": "Error fetching reports",
+      "تعذر_تحديد_مسار_المستند_للحذف": "Failed to determine document path for deletion.",
+      "فشل_حذف_التقرير": "Failed to delete report.",
+      "مراجعة_التقارير_الميدانية": "Review Field Reports",
+      "متابعة_أداء_المعلمين_والمشرفين_من_لوحة_واحدة": "Track teacher and supervisor performance from one dashboard",
+      "البحث_باسم_المعلم_أو_المشرف": "Search by teacher or supervisor name...",
+      "فلترة_حسب_المدرسة": "Filter by school...",
+      "المشرف": "Supervisor",
+      "المعلم": "Teacher",
+      "تقرير_أعمال_أسبوعي": "Weekly Activity Report",
+      "عرض_التفاصيل_الكاملة": "View Full Details",
+      "تقرير_المدرسة": "School Report"
+    },
+    "AdminSiteCopyPage": {
+      "عنوان_الرئيسية": "Title: Home",
+      "عنوان_المستخدمين": "Title: Users",
+      "عنوان_الإشعارات": "Title: Notifications",
+      "عنوان_الإعدادات": "Title: Settings",
+      "وصف_لوحة_التحكم": "Description: Dashboard",
+      "تم_حفظ_النص_بنجاح": "Text saved successfully.",
+      "تعذر_حفظ_النص_حالياً": "Failed to save text at this time.",
+      "عدّل_النصوص_الثابتة_للواجهة_بدون_تغيير_الكود": "Edit static interface text without changing the code."
+    },
+    "AdminUserTypesPage": {
+      "نوع_جديد": "New Type",
+      "تم_حفظ_نوع_المستخدم_والصلاحيات": "User type and permissions saved.",
+      "تعذر_حفظ_نوع_المستخدم_حالياً": "Failed to save user type at this time.",
+      "تم_حذف_نوع_المستخدم": "User type deleted.",
+      "تعذر_حذف_نوع_المستخدم": "Failed to delete user type.",
+      "أنشئ_نوعاً،_ثم_فعّل_الصفحات_والإجراءات_التي_تظهر_له": "Create a type, then enable the pages and actions visible to it.",
+      "حذف_النوع": "Delete Type"
+    },
+    "CurriculumPage": {
+      "حدث_خطأ_أثناء_جلب_المناهج": "Error fetching curricula",
+      "تمت_إضافة_المادة_بنجاح": "Subject added successfully.",
+      "حدث_خطأ_أثناء_إضافة_المادة": "Error adding subject",
+      "لا_يمكن_استخراج_اسم_المادة_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Cannot extract subject name from form fields. Add a text field containing \"name\".",
+      "تمت_إضافة_المادة_من_نموذج_الاستكشاف_بنجاح": "Subject added from exploration form successfully.",
+      "حدث_خطأ_أثناء_إضافة_المادة_من_الاستكشاف": "Error adding subject from exploration",
+      "تم_حذف_المادة_بنجاح": "Subject deleted successfully.",
+      "لا_يمكن_الحذف_في_الوقت_الحالي": "Cannot delete at this time.",
+      "تجاهل_التعديلات_غير_المحفوظة": "Discard Unsaved Changes",
+      "لديك_تعديلات_حالية_غير_محفوظة_هل_تريد_تجاهلها_وفتح_مادة_أخرى": "You have unsaved changes. Do you want to discard them and open another subject?",
+      "تجاهل_وفتح": "Discard and Open",
+      "يرجى_إدخال_اسم_المادة_قبل_الحفظ": "Please enter the subject name before saving",
+      "تم_حفظ_توزيع_المنهج_بنجاح": "Curriculum distribution saved successfully.",
+      "حدث_خطأ_أثناء_حفظ_المنهج": "Error saving curriculum",
+      "إدارة_المناهج_الأساسية": "Manage Core Curricula",
+      "توزيع_خطة_الأسابيع_٥٠_أسبوعاً": "Weekly Plan Distribution (50 Weeks)",
+      "إضافة_مادة_جديدة": "Add New Subject",
+      "اسم_المادة_مثال_العقيدة": "Subject name (example: Aqeedah)",
+      "إضافة_مادة_من_نموذج_الاستكشاف": "Add Subject from Exploration Form",
+      "طباعة_الخطة_أو_حفظ_PDF_صفحة_منفصلة": "Print plan or save as PDF (separate page)",
+      "تأكيد_حذف_المادة": "Confirm Subject Deletion",
+      "حذف_نهائي": "Permanent Delete",
+      "حذف_المادة_نهائياً": "Permanently Delete Subject",
+      "مثال_العقيدة": "Example: Aqeedah",
+      "حدد_الدرس_أو_الهدف": "Specify the lesson or objective...",
+      "بيانات_النموذج": "Form Data",
+      "تم_تحديث_بيانات_نموذج_المادة": "Subject form data updated."
+    },
+    "DashboardPage": {
+      "لوحة_التحكم_الرئيسية": "Main Dashboard",
+      "نظرة_عامة_على_الإحصائيات_الحيوية_للمنصة": "Overview of key platform statistics",
+      "المشرفين": "Supervisors",
+      "عرض_المستخدمين": "View Users",
+      "عرض_القرى": "View Villages",
+      "عرض_المناطق": "View Regions",
+      "عرض_المدارس": "View Schools",
+      "المدرسين": "Teachers",
+      "إجمالي_الطلاب": "Total Students",
+      "المهتدون_الجدد": "New Converts",
+      "عرض_سجل_المهتدين_في_القرى": "View Convert Records in Villages",
+      "مدرسة_غير_محددة": "Unspecified School",
+      "عضو_غير_معروف": "Unknown Member"
+    },
+    "ExplorationsPage": {
+      "تعذر_تحميل_بيانات_الاستكشاف": "Failed to load exploration data.",
+      "يرجى_اختيار_نوع_الاستكشاف": "Please select an exploration type.",
+      "تم_تحديث_الاستكشاف": "Exploration updated.",
+      "تمت_إضافة_الاستكشاف_بنجاح": "Exploration added successfully.",
+      "تعذر_حفظ_الاستكشاف": "Failed to save exploration.",
+      "تم_حذف_الاستكشاف": "Exploration deleted.",
+      "تعذر_حذف_الاستكشاف": "Failed to delete exploration.",
+      "نموذج_مخصص": "Custom Form",
+      "قسم_الاستكشاف": "Exploration Section",
+      "ابحث_بالنوع_أو_المشرف_أو_الحقول_أو_القرية": "Search by type, supervisor, fields, or village...",
+      "تعديل_الاستكشاف": "Edit Exploration",
+      "إضافة_استكشاف_جديد": "Add New Exploration",
+      "تأكيد_حذف_الاستكشاف": "Confirm Exploration Deletion"
+    },
+    "ExplorationTypesPage": {
+      "تعذر_جلب_أنواع_الاستكشاف": "Failed to fetch exploration types.",
+      "أي_حقل_يدوي_من_نوع_قائمة_منسدلة_اختيار_متعدد_راديو_يجب_أن_يح": "Any manual field of type 'dropdown / multi-select / radio' must contain at least one line in options, or choose a platform data source.",
+      "تم_تحديث_نوع_الاستكشاف": "Exploration type updated.",
+      "تمت_إضافة_نوع_استكشاف_جديد": "New exploration type added.",
+      "تعذر_حفظ_نوع_الاستكشاف": "Failed to save exploration type.",
+      "تم_حذف_نوع_الاستكشاف": "Exploration type deleted.",
+      "تعذر_حذف_نوع_الاستكشاف": "Failed to delete exploration type.",
+      "إدارة_أنواع_الاستكشاف": "Manage Exploration Types",
+      "تعديل_نوع_الاستكشاف": "Edit Exploration Type",
+      "مثال_استكشاف_بئر": "Example: Well Survey",
+      "تفاصيل_إضافية_عن_النوع_اختياري": "Additional details about the type (optional)",
+      "مثال_عدد_الأسر": "Example: Number of Households",
+      "أعلى": "Up",
+      "أسفل": "Down",
+      "حذف_الحقل": "Delete Field",
+      "مثال_draft_أو_معرف_داخلي": "Example: draft or internal ID",
+      "بدون_وصف": "No description",
+      "يستخدم_النموذج_الافتراضي_الكامل": "Uses the full default form",
+      "معاينة_الحقول": "Preview Fields",
+      "تأكيد_حذف_نوع_الاستكشاف": "Confirm Exploration Type Deletion"
+    },
+    "GovernoratesPage": {
+      "حدث_خطأ_أثناء_جلب_البيانات": "Error fetching data",
+      "تمت_إضافة_المحافظة_بنجاح": "Governorate added successfully.",
+      "حدث_خطأ_أثناء_الإضافة": "Error during addition",
+      "تم_تحديث_المحافظة_بنجاح": "Governorate updated successfully.",
+      "حدث_خطأ_أثناء_التحديث": "Error during update",
+      "لا_يمكن_استخراج_اسم_المحافظة_من_حقول_النموذج_أضف_حقلاً_نصياً": "Cannot extract governorate name from form fields. Add a text field containing \"name\" within the form.",
+      "تمت_إضافة_المحافظة_من_نموذج_الاستكشاف_بنجاح": "Governorate added from exploration form successfully.",
+      "تم_حذف_المحافظة_بنجاح": "Governorate deleted successfully.",
+      "إدارة_المحافظات": "Manage Governorates",
+      "تعديل_المحافظة": "Edit Governorate",
+      "اسم_المحافظة_مثال_صنعاء": "Governorate name (example: Sanaa)",
+      "الدولة_مثال_MALAWI": "Country (example: MALAWI)",
+      "تحديث": "Update",
+      "إضافة_محافظة_من_نموذج_الاستكشاف": "Add Governorate from Exploration Form",
+      "تم_تحديث_بيانات_نموذج_المحافظة": "Governorate form data updated.",
+      "تأكيد_حذف_المحافظة": "Confirm Governorate Deletion"
+    },
+    "GovernorateDetailsPage": {
+      "غير_محددة": "Unspecified",
+      "المحافظة_غير_موجودة": "المحافظة غير موجودة",
+      "إدارة_المحافظات": "إدارة المحافظات",
+      "محافظة": "محافظة:",
+      "المناطق_التابعة": "المناطق التابعة",
+      "لا_مناطق": "لا توجد مناطق مضافة لهذه المحافظة.",
+      "القرى_التابعة": "القرى التابعة",
+      "لا_قرى": "لا توجد قرى مضافة في هذه المحافظة."
+    },
+    "RegionsPage": {
+      "يرجى_إدخال_اسم_المنطقة_واختيار_المحافظة": "Please enter the region name and select the governorate",
+      "تمت_إضافة_المنطقة_بنجاح": "Region added successfully.",
+      "تم_تحديث_المنطقة_بنجاح": "Region updated successfully.",
+      "تم_حذف_المنطقة_بنجاح": "Region deleted successfully.",
+      "يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_المحافظات_لاختيار": "The exploration form must contain a field sourced from 'Governorates' to select the parent governorate.",
+      "لا_يمكن_استخراج_اسم_المنطقة_من_حقول_النموذج_أضف_حقلاً_نصياً_": "Cannot extract region name from form fields. Add a text field containing \"name\".",
+      "تمت_إضافة_المنطقة_من_نموذج_الاستكشاف_بنجاح": "Region added from exploration form successfully.",
+      "غير_معروف": "Unknown",
+      "إدارة_المناطق": "Manage Regions",
+      "تعديل_المنطقة": "Edit Region",
+      "اسم_المنطقة_مثال_أزال": "Region name (example: Azal)",
+      "إضافة_منطقة_من_نموذج_الاستكشاف": "Add Region from Exploration Form",
+      "تم_تحديث_بيانات_نموذج_المنطقة": "Region form data updated.",
+      "تأكيد_حذف_المنطقة": "Confirm Region Deletion"
+    },
+    "ReportDetailsPage": {
+      "زيارة_ميدانية": "Field Visit",
+      "تحضير_يومي": "Daily Preparation",
+      "تقرير_أسبوعي": "Weekly Report",
+      "تعذر_جلب_طلاب_المدرسة": "Failed to fetch school students.",
+      "تعذر_تحديد_مسار_المستند": "Failed to determine document path.",
+      "بيانات_تعديل_الزيارة_غير_جاهزة_بعد": "Visit edit data is not ready yet.",
+      "يرجى_اختيار_المدرسة_من_القائمة": "Please select a school from the list.",
+      "يرجى_اختيار_القرية_من_القائمة": "Please select a village from the list.",
+      "يرجى_اختيار_المادة_من_القائمة": "Please select a subject from the list.",
+      "يرجى_اختيار_الدرس_الأسبوع_من_القائمة": "Please select the lesson/week from the list.",
+      "بيانات_التعديل_غير_جاهزة_بعد": "Edit data is not ready yet.",
+      "اختر_مادة_واحدة_أو_أكثر_من_المناهج_وحدّد_الأسبوع_الدرس_لكل_م": "Select one or more subjects from curricula and specify the week/lesson for each subject",
+      "يرجى_اختيار_المدرسة": "Please select a school",
+      "تنسيق_JSON_لبيانات_التقرير_غير_صالح": "Invalid JSON format for report data.",
+      "فشل_الحفظ_تحقق_من_قواعد_Firestore": "Save failed. Check Firestore rules.",
+      "حذف_هذا_التقرير_نهائياً؟_لا_يمكن_التراجع_عن_العملية": "Permanently delete this report? This action cannot be undone.",
+      "تعذر_حذف_التقرير": "Failed to delete report.",
+      "الموقع_الجغرافي_للزيارة": "Visit Geographic Location",
+      "لم_يتم_تسجيل_إحداثيات_GPS_لهذا_التقرير": "GPS coordinates were not recorded for this report"
+    },
+    "StudentDetailsPage": {
+      "غائب": "Absent",
+      "مادة_غير_محددة": "Unspecified Subject",
+      "بدون_مدرسة": "No School",
+      "تعذر_تحميل_ملف_الطالب": "Failed to load student profile.",
+      "تعذر_حفظ_بيانات_الطالب": "Failed to save student data.",
+      "كل_بيانات_الطالب_وارتباطاته_بالمدارس_والمناطق": "All student data and their links to schools and regions",
+      "لا_يوجد_رقم": "No phone number",
+      "لا_يوجد_بريد": "No email"
+    },
+    "SchoolComprehensiveReportPage": {
+      "تقرير_شامل_عن_المدرسة": "Comprehensive School Report",
+      "تقرير_إشراف": "Supervision Report",
+      "تحضير": "Preparation",
+      "أسبوعي": "Weekly",
+      "شهري": "Monthly",
+      "يومي": "Daily",
+      "معاينة_التقرير_الشامل": "Preview Comprehensive Report"
+    },
+    "SchoolDetailsPage": {
+      "نوع_الحلقة_كبار": "Circle Type: Adults",
+      "نوع_الحلقة_صغار": "Circle Type: Children",
+      "نوع_الحلقة_غير_محدد": "Circle Type: Unspecified",
+      "غير_معيّن": "Unassigned",
+      "مستخدم": "User",
+      "حدث_خطأ_أثناء_التعيين_الجماعي": "Error during bulk assignment.",
+      "تعذر_إزالة_العضو_من_المدرسة": "Failed to remove member from school.",
+      "تم_حذف_التقرير_بنجاح": "Report deleted successfully.",
+      "الكادر_التعليمي": "Teaching Staff",
+      "التقارير_الميدانية": "Field Reports",
+      "بحث_في_الكادر": "Search staff...",
+      "إضافة_عضو_للمدرسة": "Add Member to School",
+      "بحث_في_الطلاب": "Search students...",
+      "بحث_بالعنوان_المشرف_التاريخ": "Search by title/supervisor/date...",
+      "لا_توجد_تقارير_محفوظة_لهذه_المدرسة_حتى_الآن": "No reports saved for this school yet.",
+      "لا_توجد_نتائج_مطابقة_للفلاتر_الحالية": "No results matching the current filters.",
+      "بحث_عن_مستخدم_الاسم_أو_البريد": "Search for a user (name or email)...",
+      "مرتبط_بمدرسة_أخرى": "(linked to another school)",
+      "معاينة_تقرير_المدرسة": "Preview School Report"
+    },
+    "SchoolsPage": {
+      "كبار": "Adults",
+      "صغار": "Children",
+      "يرجى_إدخال_اسم_المدرسة_واختيار_القرية_ونوع_المدرسة_كبار_صغار": "Please enter the school name and select the village and school type (Adults / Children)",
+      "تعذر_تحديد_مسار_المدرسة_في_القاعدة_أعد_تحميل_الصفحة_وحاول_مر": "Failed to determine school path in the database. Reload the page and try again.",
+      "تم_تحديث_المدرسة_بنجاح": "School updated successfully.",
+      "تمت_إضافة_المدرسة_بنجاح": "School added successfully.",
+      "حدث_خطأ_أثناء_الحفظ": "Error during saving",
+      "يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_القرى_لربط_المدرس": "The exploration form must contain a field sourced from 'Villages' to link the school to its village.",
+      "لا_يمكن_استخراج_اسم_المدرسة_من_حقول_النموذج_أضف_حقلاً_نصياً_": "Cannot extract school name from form fields. Add a text field containing \"name\".",
+      "تمت_إضافة_المدرسة_من_نموذج_الاستكشاف_بنجاح": "School added from exploration form successfully.",
+      "تم_حذف_المدرسة_بنجاح": "School deleted successfully.",
+      "إدارة_المدارس": "Manage Schools",
+      "تعديل_المدرسة": "Edit School",
+      "مثال_مدرسة_النور": "Example: Al-Noor School",
+      "فاعل_خير": "Benefactor",
+      "إضافة_مدرسة_من_نموذج_الاستكشاف": "Add School from Exploration Form",
+      "تعذر_تحديد_مسار_المدرسة_في_القاعدة": "Failed to determine school path in the database.",
+      "تم_تحديث_بيانات_نموذج_المدرسة": "School form data updated.",
+      "تأكيد_حذف_المدرسة": "Confirm School Deletion"
+    },
+    "VillageDetailsPage": {
+      "الاسم": "Name",
+      "رجل": "Male",
+      "امرأة": "Female",
+      "طفل": "Child",
+      "اختر_مدرسة_واحدة_على_الأقل_للتسجيل": "Select at least one school for registration.",
+      "لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_الطالب_تلقائياً": "No school in this village to register the student automatically.",
+      "إجمالي_السكان": "Total Population",
+      "مسلم_قديم": " · Long-time Muslim",
+      "مهتد": " · New Convert"
+    },
+    "StudentManagementPage": {
+      "تعذر_تحميل_بيانات_إدارة_الطلاب": "Failed to load student management data.",
+      "اسم_الطالب_مطلوب": "Student name is required.",
+      "عند_إضافة_طالب_جديد_يجب_إدخال_رقم_الهاتف_وكلمة_المرور": "When adding a new student, a phone number and password must be entered.",
+      "لا_يمكن_استخراج_اسم_الطالب_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Cannot extract student name from form fields. Add a text field containing \"name\".",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_رقم_هاتف_لإنشاء_حساب_الطالب": "The form needs a field of type 'phone number' to create a student account.",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_كلمة_مرور_لإنشاء_حساب_الطالب": "The form needs a field of type 'password' to create a student account.",
+      "تعذر_حفظ_الطالب_من_نموذج_الاستكشاف": "Failed to save student from exploration form.",
+      "عرض_الارتباطات_والتحركات_لكل_طالب_بنمط_عضويات_المجموعات": "View links and movements for each student in group membership style",
+      "بحث_بالاسم_أو_البريد_أو_الارتباط": "Search by name, email, or link...",
+      "إضافة_طالب_جديد": "Add New Student",
+      "إجباري": "(Required)",
+      "اتركها_فارغة_للإبقاء_على_الحالية": "(Leave blank to keep current)",
+      "كلمة_مرور_الطالب": "Student Password",
+      "إخفاء": "Hide",
+      "إظهار": "Show",
+      "إخفاء_كلمة_المرور": "Hide Password",
+      "إظهار_كلمة_المرور": "Show Password",
+      "إضافة_طالب_من_نموذج_الاستكشاف": "Add Student from Exploration Form"
+    },
+    "UsersPage": {
+      "الاسم_الكامل": "Full Name",
+      "يرجى_إدخال_الاسم_ورقم_الهاتف_وكلمة_المرور_للمستخدم": "Please enter the name, phone number, and password for the user.",
+      "حدث_خطأ_أثناء_إضافة_المستخدم_الجديد": "Error adding new user.",
+      "لا_يمكن_استخراج_اسم_المستخدم_من_حقول_النموذج_أضف_حقلاً_نصياً": "Cannot extract username from form fields. Add a text field containing \"name\".",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_رقم_هاتف_لرقم_المستخدم": "The form needs a field of type 'phone number' for the user's number.",
+      "يحتاج_النموذج_إلى_حقل_من_نوع_كلمة_مرور_لإنشاء_حساب_المستخدم": "The form needs a field of type 'password' to create a user account.",
+      "حدث_خطأ_أثناء_إضافة_المستخدم_من_الاستكشاف": "Error adding user from exploration.",
+      "حدث_خطأ_أثناء_تحديث_الصلاحية": "Error updating permission",
+      "إدارة_المستخدمين_والصلاحيات": "User and Permission Management",
+      "عرض_جميع_الحسابات_بما_فيها_الطلاب_ومدير_النظام_تعديل_نوع_الص": "View all accounts including students and system admin. Edit permission types here; link to schools and regions from those group pages.",
+      "الدور_في_النظام": "System Role",
+      "نوع_صلاحيات_مخصص": "Custom Permission Type",
+      "بدون_نوع_صلاحيات": "No Permission Type",
+      "تعديل_الصلاحيات": "Edit Permissions",
+      "مدير_النظام_وصول_كامل_يرى_كل_الصفحات_وكل_الإجراءات_دون_ربط_ب": "The System Administrator (full access) sees all pages and all actions without being linked to a permission type.",
+      "إذا_تُرك_نوع_الصلاحيات_فارغاً_وليس_المستخدم_مدير_نظام،_فلن_ت": "If the permission type is left empty and the user is not a system administrator, pages will not be shown to them until a permission type is assigned.",
+      "ادخل_كلمة_مرور_المستخدم": "Enter user password"
+    },
+    "UserDetailsPage": {
+      "تعذر_تحديث_حالة_التعطيل_تحقق_من_صلاحيات_Firestore": "Failed to update disabled status. Check Firestore permissions.",
+      "تأكيد_نهائي_لا_يمكن_التراجع_عن_هذا_الإجراء": "Final confirmation: This action cannot be undone.",
+      "تعذر_حذف_المستخدم": "Failed to delete user.",
+      "هذا_البريد_الإلكتروني_مستخدم_مسبقاً": "This email is already in use.",
+      "تم_تحديث_بيانات_المستخدم_بنجاح": "User data updated successfully.",
+      "تعذر_حفظ_البيانات_تحقق_من_الصلاحيات": "Failed to save data. Check permissions.",
+      "صلاحية_معلقه": "Pending Permission",
+      "تفعيل_الحساب_والسماح_بالدخول": "Activate account and allow access",
+      "تعطيل_الحساب_ومنع_فتح_الموقع": "Deactivate account and block site access",
+      "اسم_المستخدم": "Username",
+      "ذكر": "Male",
+      "أنثى": "Female",
+      "مثال_MALAWI": "Example: MALAWI",
+      "العنوان_أو_المنطقة": "Address or Region",
+      "أي_ملاحظات_إضافية": "Any additional notes"
+    },
+    "VillagesPage": {
+      "مهتد": "New Convert",
+      "مسلم_قديم": "Long-time Muslim",
+      "يرجى_إدخال_اسم_القرية_واختيار_المنطقة": "Please enter the village name and select the region",
+      "تم_تحديث_بيانات_القرية_بنجاح": "Village data updated successfully.",
+      "تمت_إضافة_القرية_بنجاح": "Village added successfully.",
+      "لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_المهتدين_المسلمين_القدامى": "No school in this village to register converts/long-time Muslims as students. Add a school first.",
+      "يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_المناطق_لربط_القر": "The exploration form must contain a field sourced from 'Regions' to link the village to its region.",
+      "لا_يمكن_استخراج_اسم_القرية_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Cannot extract village name from form fields. Add a text field containing \"name\".",
+      "تمت_إضافة_القرية_من_نموذج_الاستكشاف_بنجاح": "Village added from exploration form successfully.",
+      "حدث_خطأ_أثناء_الحفظ": "Error during saving.",
+      "تم_حذف_القرية_بنجاح": "Village deleted successfully.",
+      "تم_حفظ_المدرسة_الافتراضية_للقرية": "Default school for village saved.",
+      "تعذر_حفظ_المدرسة_الافتراضية": "Failed to save default school.",
+      "تمت_إضافة_السجل_وتسجيله_كطالب_في_المدرسة_المحددة": "Record added and registered as a student in the selected school.",
+      "تعذر_إضافة_السجل": "Failed to add record.",
+      "تم_تحديث_السجل": "Record updated.",
+      "تعذر_حفظ_التعديل": "Failed to save changes.",
+      "تم_حذف_السجل": "Record deleted.",
+      "تعذر_الحذف": "Deletion failed.",
+      "إدارة_القرى": "Manage Villages",
+      "البيانات_الديموغرافية_والمجموعات": "Demographic Data and Groups",
+      "فتح_نموذج_استكشاف_لإدخال_قرية_جديدة": "Open exploration form to enter a new village",
+      "تحديث_القرية": "Update Village",
+      "حفظ_القرية": "Save Village",
+      "إضافة_قرية_من_نموذج_الاستكشاف": "Add Village from Exploration Form",
+      "تعديل_القرية": "Edit Village",
+      "حذف_القرية": "Delete Village",
+      "تم_تحديث_بيانات_نموذج_القرية": "Village form data updated.",
+      "تأكيد_حذف_القرية": "Confirm Village Deletion",
+      "حذف_السجل": "Delete Record"
+    },
+    "NoPermissionsPage": {
+      "السلام_عليكم،_أحتاج_تفعيل_الصلاحيات_لحسابي": "Hello, I need my account permissions activated.",
+      "تواصل": "Contact"
+    },
+    "NotificationsPage": {
+      "غير_معين": "Unassigned",
+      "مجموعة_جديدة": "New Group",
+      "مركز_الإشعارات_والتنبيهات": "Notifications and Alerts Center",
+      "تحديث_فوري_للإشعارات_والمحادثات": "Real-time updates for notifications and conversations",
+      "جاري_التفعيل": "Activating…",
+      "تفعيل_الآن": "Activate Now",
+      "مرسل_غير_معروف": "Unknown Sender",
+      "بدون_دور": "No Role",
+      "إرسال_إشعار_جديد": "Send New Notification",
+      "إنشاء_محادثة": "Create Conversation"
+    },
+    "SettingsPage": {
+      "تم_تحديث_إعدادات_الملف_الشخصي_بنجاح": "Profile settings updated successfully!",
+      "حدث_خطأ_أثناء_حفظ_الملف_الشخصي": "Error saving profile.",
+      "إعدادات_النظام_والملف_الشخصي": "System and Profile Settings",
+      "المظهر_المفضل": "Preferred Appearance",
+      "الوضع_النهاري_افتراضي": "Day Mode (Default)",
+      "الحساب_الشخصي": "Personal Account",
+      "الاسم_الكامل_للعرض_داخل_المنصة": "Full Name (for display within the platform)",
+      "اكتب_اسمك_الكامل": "Enter your full name",
+      "رقم_هاتف_التواصل_والدخول_المخصص": "Contact phone number (and custom login)",
+      "مثال_77XXXXXXX": "Example: 77XXXXXXX",
+      "كلمة_المرور_للدخول_المخصص": "Password (for custom login)",
+      "اختر_كلمة_مرور_للدخول_بها_مع_رقم_الهاتف_لاحقاً": "Choose a password to log in with your phone number later",
+      "البريد_الإلكتروني_الأساسي": "Primary Email",
+      "نوع_الصلاحيات_الممنوح_للقراءة_فقط": "Granted permission type (read only)",
+      "لا_يوجد_نوع_صلاحيات_مخصص": "No custom permission type"
+    },
+    "LoginPage": {
+      "فشل_تسجيل_الدخول_يرجى_المحاولة_مرة_أخرى": "Login failed. Please try again.",
+      "يرجى_إدخال_رقم_الهاتف_وكلمة_المرور": "Please enter your phone number and password",
+      "رقم_الهاتف_أو_كلمة_المرور_غير_صحيحة": "Incorrect phone number or password",
+      "منصة_تعليمية_نفس_وضوح_وتجربة_أدوات_Google": "Educational platform — the same clarity and experience as Google tools",
+      "كلمة_المرور": "Password",
+      "كلمة_المرور_المخصصة": "Custom Password",
+      "تسجيل_الدخول": "Sign In",
+      "أو_المتابعة_بحساب_Google": "Or continue with Google account",
+      "المتابعة_باستخدام_Google": "Continue with Google",
+      "يتم_تفعيل_الصلاحيات_فقط_بعد_تحديد_نوع_الصلاحيات_من_المدير": "Permissions are activated only after the administrator assigns a permission type.",
+      "ثبّت_تطبيق_آفاق_على_جهازك": "Install the Afaq app on your device",
+      "للتثبيت_شارك_إضافة_إلى_الشاشة_الرئيسية": "To install: Share → 'Add to Home Screen'",
+      "بالدخول_أنت_توافق_على_شروط_الاستخدام_وسياسة_الخصوصية_لمؤسسة_آفاق": "By signing in, you agree to the Terms of Use and Privacy Policy of Afaq.",
+      "منصة_آفاق_التعليمية": "Afaq Educational Platform"
+    },
+    "CurriculumPrintPage": {
+      "معرّف_المادة_غير_صالح": "Invalid subject ID",
+      "المادة_غير_موجودة": "Subject not found",
+      "تعذر_تحميل_المنهج": "Failed to load curriculum",
+      "لا_توجد_بيانات": "No data available",
+      "خطة_التوزيع_الأسبوعي_خمسون_أسبوعاً": "Weekly Distribution Plan — Fifty Weeks"
+    },
+    "StudentDashboardPage": {
+      "نسبة_الحضور": "Attendance Rate",
+      "انضباط_ممتاز": "Excellent Discipline",
+      "الاختبارات_المنجزة": "Completed Tests",
+      "بانتظار_التفوق": "Awaiting Excellence",
+      "سجل_المتابعة": "Follow-up Record",
+      "تقييمات_حديثة": "Recent Assessments",
+      "الحالة_الأكاديمية": "Academic Status",
+      "منتظم": "Regular",
+      "آفاق_2026": "Afaq 2026",
+      "تم_الاختبار_بنجاح": "Test completed successfully"
+    },
+    "StudentProfilePage": {
+      "ملفي_الشخصي": "My Profile",
+      "بيانات_حسابك_في_المنصة": "Your account data on the platform"
+    },
+    "StudentResultsPage": {
+      "نتائجي_واختباراتي": "My Results and Tests",
+      "عرض_جميع_نتائج_الزيارات_والتقييمات_الخاصة_بك": "View all your visit results and assessments"
+    },
+    "SupervisorDashboardPage": {
+      "إحصائيات_زياراتك_ونشاطاتك_في_المناطق_التابعة_لك": "Statistics of your visits and activities in your assigned regions",
+      "زيارة_ميدانية_جديدة": "New Field Visit",
+      "سجّل_زيارتك_وارفع_تقريرك_الميداني_بسرعة": "Record your visit and submit your field report quickly",
+      "وصول_سريع": "Quick Access",
+      "عرض_سجل_الزيارات_السابقة": "View Previous Visit History",
+      "المناطق_المسندة": "Assigned Regions",
+      "الزيارات_هذا_الشهر": "Visits (This Month)",
+      "إجمالي_الزيارات_الميدانية": "Total Field Visits",
+      "المدارس_النشطة": "Active Schools"
+    },
+    "SupervisorHistoryPage": {
+      "تعذر_تحديد_هوية_المشرف_أعد_تسجيل_الدخول": "Failed to identify the supervisor. Please sign in again.",
+      "حدث_خطأ_أثناء_جلب_سجل_زياراتك": "Error fetching your visit history",
+      "سجل_زياراتي_الميدانية": "My Field Visit History",
+      "مراجعة_التقارير_والتقييمات_التي_قمت_برفعها_سابقاً": "Review the reports and assessments you previously submitted"
+    },
+    "SupervisorVisitPage": {
+      "تعذر_تحديد_معرف_المستخدم_الحالي": "Failed to determine current user ID.",
+      "لا_توجد_لك_مناطق_إشرافية_مسندة_حالياً_راجع_الإدارة": "You have no assigned supervisory regions at this time. Contact administration.",
+      "تعذر_تحميل_البيانات_الأولية": "Failed to load initial data.",
+      "تم_التقاط_الموقع_الجغرافي_بنجاح": "Geographic location captured successfully.",
+      "يرجى_تفعيل_GPS_ومنح_صلاحية_الموقع_للمتصفح": "Please enable GPS and grant location permission to the browser.",
+      "يرجى_ملء_البيانات_الأساسية_المدرسة،_المادة،_والدرس": "Please fill in the basic data (school, subject, and lesson).",
+      "تم_رفع_تقرير_الزيارة_الميدانية_بنجاح": "Field visit report submitted successfully!",
+      "حدث_خطأ_أثناء_رفع_التقرير": "Error submitting the report.",
+      "تسجيل_زيارة_ميدانية": "Record Field Visit",
+      "توثيق_تفصيلي_لأداء_المدارس_مع_الموقع_الجغرافي": "Detailed documentation of school performance with geographic location",
+      "تقييم_المدرّس_من_5_نجوم": "Teacher Rating (out of 5 stars)",
+      "التقييم_العام_للقرية_من_5_نجوم": "Overall Village Rating (out of 5 stars)",
+      "اكتب_رأيك_العام_عن_الزيارة": "Write your general feedback about the visit...",
+      "حفظ_التقرير_الميداني_بشكل_نهائي": "Save the field report as final",
+      "يرجى_التقاط_الموقع_أولاً_لرفع_التقرير": "Please capture location first to submit the report"
+    },
+    "TeacherDailyLogPage": {
+      "لا_توجد_مدارس_مسجلة_في_النظام_حالياً": "No schools registered in the system at this time.",
+      "الحساب_غير_مرتبط_بمدرسة_اطلب_من_الإدارة_تعيينك_في_مدرسة_من_ص": "Account is not linked to a school. Ask administration to assign you to a school from the school details page.",
+      "حدث_خطأ_أثناء_الاتصال_بقاعدة_البيانات": "Error connecting to the database",
+      "حدث_خطأ_أثناء_جلب_طلاب_المدرسة": "Error fetching school students",
+      "يرجى_اختيار_المدرسة_أولاً": "Please select a school first",
+      "لا_يوجد_طلاب_مسجلون_في_هذه_المدرسة": "No students registered in this school",
+      "تعذر_تحديد_معرف_المعلم_للحفظ": "Failed to determine teacher ID for saving.",
+      "حدث_خطأ_أثناء_حفظ_التحضير": "Error saving preparation",
+      "صلاحية_شاملة_اختر_أي_مدرسة_ثم_سجّل_التحضير": "Full access — select any school and record attendance",
+      "المدارس_المعيّنة_لك_فقط_اختر_المدرسة_والفترة_والمواد": "Your assigned schools only — select school, period, and subjects",
+      "طي_الإعداد": "Collapse Setup",
+      "عرض_الإعداد": "Show Setup",
+      "لا_توجد_مدارس_مسجلة_في_النظام": "No schools registered in the system.",
+      "لا_توجد_مدارس_معيّنة_لحسابك_اطلب_من_الإدارة_تعيينك_في_مدرسة": "No schools assigned to your account. Ask administration to assign you to a school.",
+      "تاريخ_اليوم": "Today's Date",
+      "مرجع_الأسبوع": "Week Reference",
+      "مرجع_الشهر": "Month Reference",
+      "مواد_الأسبوع_من_المناهج": "Weekly Curriculum Subjects",
+      "مواد_الشهر": "Monthly Subjects",
+      "مواد_اليوم": "Today's Subjects",
+      "اختر_المنهج": " • Select Curriculum"
+    },
+    "TeacherDashboardPage": {
+      "جاري_التحميل": "Loading...",
+      "حساب_غير_معروف": "Unknown Account",
+      "مدرسة_غير_معروفة": "Unknown School",
+      "نظرة_عامة_على_نشاطاتك_في_مدرستك_الحالية": "Overview of your activities in your current school",
+      "سجّل_حضور_وغياب_طلابك_اليوم": "Record your students' attendance and absence today",
+      "ارفع_تقريرك_الأسبوعي_للمدرسة": "Submit your weekly school report",
+      "إجمالي_الدارسين_الأعضاء": "Total Learners (Members)",
+      "التحضير_اليومي_المرفوع": "Daily Attendance Submitted",
+      "نسبة_الإنجاز": "Completion Rate",
+      "نشط": "Active",
+      "بانتظار_التحضير": "Awaiting Attendance"
+    },
+    "TeacherStudentDetailPage": {
+      "تعذر_تحميل_بيانات_الدارس": "Failed to load learner data.",
+      "تعذر_حذف_الدارس": "Failed to delete learner.",
+      "تأكيد_حذف_الدارس": "Confirm Learner Deletion"
+    },
+    "TeacherStudentsPage": {
+      "حدث_خطأ_أثناء_جلب_الدارسين": "Error fetching learners",
+      "حسابك_غير_مرتبط_بأي_مدرسة_يرجى_مراجعة_الإدارة": "Your account is not linked to any school. Please contact administration.",
+      "حدث_خطأ_أثناء_تحميل_بيانات_المدرسة": "Error loading school data",
+      "تم_تحديث_بيانات_الدارس_بنجاح": "Learner data updated successfully.",
+      "تمت_إضافة_الدارس_بنجاح": "Learner added successfully.",
+      "لا_يمكن_استخراج_اسم_الدارس_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Cannot extract learner name from form fields. Add a text field containing name.",
+      "تمت_إضافة_الدارس_من_نموذج_الاستكشاف_بنجاح": "Learner added from exploration form successfully.",
+      "تم_حذف_الدارس_بنجاح": "Learner deleted successfully.",
+      "إدارة_الحلقات_والدارسين": "Manage Circles and Learners",
+      "قائمة_الدارسين_المسجلين_لديك": "List of learners registered with you",
+      "إضافة_دارس_جديد": "Add New Learner",
+      "تعديل_بيانات_الدارس": "Edit Learner Data",
+      "اسم_الدارس_الرباعي": "Learner's Full Four-Part Name",
+      "السن": "Age",
+      "إضافة_دارس_من_نموذج_الاستكشاف": "Add Learner from Exploration Form",
+      "تم_تحديث_بيانات_نموذج_الدارس": "Learner form data updated."
+    },
+    "TeacherWeeklyReportPage": {
+      "اكتب_التفاصيل_والملاحظات_هنا": "Write details and notes here...",
+      "تم_حفظ_رفع_التقرير_الأسبوعي_بنجاح_جزاك_الله_خيراً": "Weekly report submitted successfully! May God reward you.",
+      "حدث_خطأ_أثناء_حفظ_التقرير_الأسبوعي": "Error saving weekly report",
+      "التقرير_الأسبوعي_للأعمال": "Weekly Activity Report",
+      "توثيق_النشاطات_الدعوية_والمجتمعية": "Documenting outreach and community activities",
+      "خطبة_الجمعة": "Friday Sermon",
+      "دعوة_غير_المسلمين": "Outreach to Non-Muslims",
+      "تعليم_الكبار": "Adult Education",
+      "دروس_أسبوعية_في_المسجد": "Weekly Mosque Lessons",
+      "عقود_الزواج": "Marriage Contracts",
+      "أعمال_وأنشطة_أخرى": "Other Works and Activities"
+    }
+  },
+  "settings": {
+    "language_title": "Interface Language",
+    "language_hint": "Choose the platform display language — Arabic, English, or ChiShona.",
+    "language_label": "Language"
+  },
+  "config": {
+    "appNavItems": {
+      "الإعدادات": "Settings",
+      "الرئيسية": "Home",
+      "المحافظات": "Governorates",
+      "المناطق": "Regions",
+      "القرى": "Villages",
+      "المدارس": "Schools",
+      "الاستكشاف": "Exploration",
+      "المنَاهِج": "Curricula",
+      "المناهج": "Curricula",
+      "التقارير": "Reports",
+      "التحضير": "Attendance",
+      "المستخدمين": "Users",
+      "إدارة_الطلاب": "Student Management",
+      "الطلاب": "Students",
+      "الإشعارات": "Notifications",
+      "أنواع_المستخدمين": "User Types",
+      "الأنواع": "Types",
+      "هوية_الموقع": "Site Branding",
+      "الهوية": "Branding",
+      "النصوص_الثابتة": "Static Texts",
+      "النصوص": "Texts",
+      "أنواع_الاستكشاف": "Exploration Types"
+    },
+    "permissionRegistry": {
+      "أنواع_المستخدمين_والصلاحيات": "User Types and Permissions",
+      "إضافة_استكشاف": "Add Exploration",
+      "إضافة_نوع_استكشاف": "Add Exploration Type",
+      "إضافة_محافظة": "Add Governorate",
+      "عرض_التفاصيل": "View Details",
+      "تعيين_مشرف_للمنطقة": "Assign Supervisor to Region",
+      "إضافة_منطقة": "Add Region",
+      "إضافة_مدرسة": "Add School",
+      "إضافة_طالب": "Add Student",
+      "عرض_ملف_الطالب": "View Student Profile",
+      "تعديل_بيانات_الطالب": "Edit Student Data"
+    }
+  },
+  "layouts": {
+    "AdminLayout": {
+      "تسجيل_الخروج": "Sign Out",
+      "توسيع_القائمة": "Expand Menu",
+      "طي_القائمة": "Collapse Menu",
+      "الوضع_النهاري": "Day Mode",
+      "الوضع_الليلي": "Night Mode"
+    },
+    "StudentLayout": {
+      "نتائجي": "My Results",
+      "ملفي": "My Profile",
+      "التعليمية": "Educational",
+      "طالب_نشط": "Active Student"
+    },
+    "SupervisorLayout": {
+      "تسجيل_زيارة": "Record Visit",
+      "زيارة": "Visit",
+      "سجل_الزيارات": "Visit History",
+      "السجل": "History",
+      "بوابة_المشرف_الميداني": "Field Supervisor Portal",
+      "بوابة_المشرف": "Supervisor Portal"
+    },
+    "TeacherLayout": {
+      "آفاق_القرآنية": "Afaq Quranic",
+      "طلابي": "My Students",
+      "التحضير_اليومي": "Daily Attendance",
+      "التقرير_الأسبوعي": "Weekly Report",
+      "الأسبوعي": "Weekly",
+      "بوابة_المعلم": "Teacher Portal"
+    }
+  },
+  "context": {
+    "siteContentContext": {
+      "آفاق": "Afaq",
+      "لوحة_تحكم_الإدارة": "Administration Dashboard"
+    }
+  },
+  "services": {
+    "authService": {
+      "تم_تعطيل_هذا_الحساب_ولا_يمكنه_استخدام_المنصة_تواصل_مع_الإدار": "This account has been disabled and cannot use the platform. Contact administration."
+    }
+  }
+}

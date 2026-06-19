@@ -1,5 +1,6 @@
 import { getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
 import { buildFcmNotificationOptions } from '../utils/notificationDisplay';
+import translate from '../i18n/translate';
 import { app } from '../firebase';
 import FirestoreApi from './firestoreApi';
 
@@ -63,7 +64,7 @@ function attachForegroundHandler(messaging) {
   if (foregroundHandlerAttached) return;
   foregroundHandlerAttached = true;
   onMessage(messaging, (payload) => {
-    const title = payload.notification?.title || 'آفاق';
+    const title = payload.notification?.title || translate('services.pushMessaging.آفاق', 'آفاق');
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
       new Notification(title, buildFcmNotificationOptions(payload));
     }

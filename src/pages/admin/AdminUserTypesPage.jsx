@@ -12,6 +12,7 @@ import { DATA_SCOPE_ALL, DATA_SCOPE_MEMBERSHIP, normalizeDataScope } from '../..
 import BusyButton from '../../components/BusyButton';
 
 export default function AdminUserTypesPage({ user }) {
+  const { t } = useAppTranslation();
   const [list, setList] = useState([]);
   const [selectedId, setSelectedId] = useState('');
   const [name, setName] = useState('');
@@ -39,7 +40,7 @@ export default function AdminUserTypesPage({ user }) {
   const createNew = () => {
     const id = FirestoreApi.Api.getNewId('permission_profiles');
     setSelectedId(id);
-    setName('نوع جديد');
+    setName(t('pages.AdminUserTypesPage.نوع_جديد', 'نوع جديد'));
     setPages({});
   };
 
@@ -96,10 +97,10 @@ export default function AdminUserTypesPage({ user }) {
         name,
         pages,
       });
-      setStatus({ type: 'success', text: 'تم حفظ نوع المستخدم والصلاحيات.' });
+      setStatus({ type: 'success', text: t('pages.AdminUserTypesPage.تم_حفظ_نوع_المستخدم_والصلاحيات', 'تم حفظ نوع المستخدم والصلاحيات.') });
     } catch (err) {
       console.error(err);
-      setStatus({ type: 'error', text: 'تعذر حفظ نوع المستخدم حالياً.' });
+      setStatus({ type: 'error', text: t('pages.AdminUserTypesPage.تعذر_حفظ_نوع_المستخدم_حالياً', 'تعذر حفظ نوع المستخدم حالياً.') });
     } finally {
       setSaving(false);
     }
@@ -112,10 +113,10 @@ export default function AdminUserTypesPage({ user }) {
     try {
       await deletePermissionProfile(selectedId);
       setSelectedId('');
-      setStatus({ type: 'success', text: 'تم حذف نوع المستخدم.' });
+      setStatus({ type: 'success', text: t('pages.AdminUserTypesPage.تم_حذف_نوع_المستخدم', 'تم حذف نوع المستخدم.') });
     } catch (err) {
       console.error(err);
-      setStatus({ type: 'error', text: 'تعذر حذف نوع المستخدم.' });
+      setStatus({ type: 'error', text: t('pages.AdminUserTypesPage.تعذر_حذف_نوع_المستخدم', 'تعذر حذف نوع المستخدم.') });
     } finally {
       setSaving(false);
     }
@@ -124,8 +125,8 @@ export default function AdminUserTypesPage({ user }) {
   return (
     <div className={`admin-user-types-page${selectedId ? ' admin-user-types-page--has-mobile-save' : ''}`}>
       <PageHeader
-        title="أنواع المستخدمين والصلاحيات"
-        subtitle="أنشئ نوعاً، ثم فعّل الصفحات والإجراءات التي تظهر له."
+        title={t('config.permissionRegistry.أنواع_المستخدمين_والصلاحيات', 'أنواع المستخدمين والصلاحيات')}
+        subtitle={t('pages.AdminUserTypesPage.أنشئ_نوعاً،_ثم_فعّل_الصفحات_والإجراءات_التي_تظهر_له', 'أنشئ نوعاً، ثم فعّل الصفحات والإجراءات التي تظهر له.')}
         icon={Shield}
       />
 
@@ -138,8 +139,8 @@ export default function AdminUserTypesPage({ user }) {
       <div className="admin-user-types-layout">
         <section className="surface-card admin-user-types-sidebar">
           <div className="admin-user-types-sidebar__head">
-            <strong>الأنواع</strong>
-            <button type="button" className="icon-btn" onClick={createNew} title="نوع جديد">+</button>
+            <strong>{t('config.appNavItems.الأنواع', 'الأنواع')}</strong>
+            <button type="button" className="icon-btn" onClick={createNew} title={t('pages.AdminUserTypesPage.نوع_جديد', 'نوع جديد')}>+</button>
           </div>
           <div className="admin-user-types-sidebar__list">
             {list.map((item) => (
@@ -173,7 +174,7 @@ export default function AdminUserTypesPage({ user }) {
                   حفظ النوع
                 </BusyButton>
                 {selected && (
-                  <BusyButton type="button" className="icon-btn" onClick={remove} title="حذف النوع" busy={saving}>
+                  <BusyButton type="button" className="icon-btn" onClick={remove} title={t('pages.AdminUserTypesPage.حذف_النوع', 'حذف النوع')} busy={saving}>
                     <Trash2 size={18} color="var(--danger-color)" />
                   </BusyButton>
                 )}
@@ -255,7 +256,7 @@ export default function AdminUserTypesPage({ user }) {
               type="button"
               className="icon-btn admin-user-types-mobile-save-bar__delete"
               onClick={remove}
-              title="حذف النوع"
+              title={t('pages.AdminUserTypesPage.حذف_النوع', 'حذف النوع')}
               busy={saving}
             >
               <Trash2 size={18} color="var(--danger-color)" />

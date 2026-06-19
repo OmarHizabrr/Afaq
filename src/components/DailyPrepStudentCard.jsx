@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import AppSelect from './AppSelect';
 import AttendanceStatusIcon from './AttendanceStatusIcon';
-import { ATTENDANCE_STATUSES, isAttendancePresent } from '../utils/attendanceStatus';
+import useAppTranslation from '../hooks/useAppTranslation';
+import { getAttendanceStatuses, isAttendancePresent } from '../utils/attendanceStatus';
 
 const DailyPrepStudentCard = ({ record, onStatusChange, onTrackingChange }) => {
+  const { t } = useAppTranslation();
+  const attendanceStatuses = useMemo(() => getAttendanceStatuses(t), [t]);
   const present = isAttendancePresent(record);
   const status = record.attendanceStatus || (present ? 'present' : 'absent');
 
@@ -20,9 +23,9 @@ const DailyPrepStudentCard = ({ record, onStatusChange, onTrackingChange }) => {
           value={status}
           onChange={(e) => onStatusChange(record.studentId, e.target.value)}
           className={`daily-prep-status-select daily-prep-status-select--${status} daily-prep-student-card__status`}
-          aria-label={`حالة ${record.name}`}
+          aria-label={t('components.DailyPrepEditor.حالة_record_name', `حالة ${record.name}`)}
         >
-          {ATTENDANCE_STATUSES.map((s) => (
+          {attendanceStatuses.map((s) => (
             <option key={s.value} value={s.value}>
               {s.label}
             </option>
@@ -32,33 +35,33 @@ const DailyPrepStudentCard = ({ record, onStatusChange, onTrackingChange }) => {
 
       <div className="daily-prep-student-card__fields">
         <label className="daily-prep-student-card__field">
-          <span>مقدار الحفظ</span>
+          <span>{t('components.DailyPrepStudentCard.مقدار_الحفظ', 'مقدار الحفظ')}</span>
           <input
             type="text"
             className="app-input daily-prep-table__input daily-prep-table__input--mem"
-            placeholder={present ? 'مثال: صفحة 10' : '—'}
+            placeholder={present ? t('components.DailyPrepEditor.مثال_صفحة_10', 'مثال: صفحة 10') : '—'}
             value={record.memorization}
             onChange={(e) => onTrackingChange(record.studentId, 'memorization', e.target.value)}
             disabled={!present}
           />
         </label>
         <label className="daily-prep-student-card__field">
-          <span>مقدار المراجعة</span>
+          <span>{t('components.DailyPrepStudentCard.مقدار_المراجعة', 'مقدار المراجعة')}</span>
           <input
             type="text"
             className="app-input daily-prep-table__input daily-prep-table__input--rev"
-            placeholder={present ? 'مثال: جزء عم' : '—'}
+            placeholder={present ? t('components.DailyPrepEditor.مثال_جزء_عم', 'مثال: جزء عم') : '—'}
             value={record.review}
             onChange={(e) => onTrackingChange(record.studentId, 'review', e.target.value)}
             disabled={!present}
           />
         </label>
         <label className="daily-prep-student-card__field daily-prep-student-card__field--full">
-          <span>ملاحظة</span>
+          <span>{t('components.DailyPrepStudentCard.ملاحظة', 'ملاحظة')}</span>
           <input
             type="text"
             className="app-input daily-prep-table__input"
-            placeholder="ملاحظة على الطالب..."
+            placeholder={t('components.DailyPrepEditor.ملاحظة_على_الطالب', 'ملاحظة على الطالب...')}
             value={record.note || ''}
             onChange={(e) => onTrackingChange(record.studentId, 'note', e.target.value)}
           />

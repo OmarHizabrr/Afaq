@@ -7,6 +7,7 @@ import { saveBranding, saveContacts } from '../../services/siteConfigService';
 import BusyButton from '../../components/BusyButton';
 
 export default function AdminBrandingPage({ user }) {
+  const { t } = useAppTranslation();
   const { branding, contacts, contactsMessage } = useSiteContent();
   const [siteName, setSiteName] = useState('');
   const [siteTitle, setSiteTitle] = useState('');
@@ -40,10 +41,10 @@ export default function AdminBrandingPage({ user }) {
         saveBranding(user, { siteName, siteTitle, logoText, adminSubtitle }),
         saveContacts(user, contactsDraft, contactsMessageDraft),
       ]);
-      setStatus({ type: 'success', text: 'تم حفظ هوية الموقع بنجاح.' });
+      setStatus({ type: 'success', text: t('pages.AdminBrandingPage.تم_حفظ_هوية_الموقع_بنجاح', 'تم حفظ هوية الموقع بنجاح.') });
     } catch (err) {
       console.error(err);
-      setStatus({ type: 'error', text: 'تعذر حفظ الهوية حالياً، حاول مرة أخرى.' });
+      setStatus({ type: 'error', text: t('pages.AdminBrandingPage.تعذر_حفظ_الهوية_حالياً،_حاول_مرة_أخرى', 'تعذر حفظ الهوية حالياً، حاول مرة أخرى.') });
     } finally {
       setSaving(false);
     }
@@ -52,8 +53,8 @@ export default function AdminBrandingPage({ user }) {
   return (
     <div className="admin-branding-page admin-settings-page--has-mobile-save">
       <PageHeader
-        title="هوية الموقع"
-        subtitle="تعديل اسم المنصة والعنوان والنص الظاهر في رأس لوحة التحكم."
+        title={t('config.appNavItems.هوية_الموقع', 'هوية الموقع')}
+        subtitle={t('pages.AdminBrandingPage.تعديل_اسم_المنصة_والعنوان_والنص_الظاهر_في_رأس_لوحة_التحكم', 'تعديل اسم المنصة والعنوان والنص الظاهر في رأس لوحة التحكم.')}
         icon={Palette}
       />
 
@@ -93,7 +94,7 @@ export default function AdminBrandingPage({ user }) {
                   { id: `c_${Date.now()}`, label: '', channel: 'whatsapp', value: '' },
                 ])
               }
-              title="إضافة وسيلة تواصل"
+              title={t('pages.AdminBrandingPage.إضافة_وسيلة_تواصل', 'إضافة وسيلة تواصل')}
               busy={saving}
             >
               <Plus size={18} />
@@ -105,7 +106,7 @@ export default function AdminBrandingPage({ user }) {
               <textarea
                 className="app-textarea"
                 rows={3}
-                placeholder="مثال: يرجى التواصل مع الإدارة عبر الوسائل التالية لتفعيل الصلاحيات."
+                placeholder={t('pages.AdminBrandingPage.مثال_يرجى_التواصل_مع_الإدارة_عبر_الوسائل_التالية_لتفعيل_الصل', 'مثال: يرجى التواصل مع الإدارة عبر الوسائل التالية لتفعيل الصلاحيات.')}
                 value={contactsMessageDraft}
                 onChange={(e) => setContactsMessageDraft(e.target.value)}
               />
@@ -114,7 +115,7 @@ export default function AdminBrandingPage({ user }) {
               <div key={item.id || idx} className="admin-branding-contacts__row">
                 <input
                   className="app-input"
-                  placeholder="المسمى (مثال: مدير المنصة)"
+                  placeholder={t('pages.AdminBrandingPage.المسمى_مثال_مدير_المنصة', 'المسمى (مثال: مدير المنصة)')}
                   value={item.label || ''}
                   onChange={(e) =>
                     setContactsDraft((prev) =>
@@ -134,15 +135,15 @@ export default function AdminBrandingPage({ user }) {
                   <option value="whatsapp">واتساب</option>
                   <option value="telegram">تلجرام</option>
                   <option value="phone">اتصال هاتفي</option>
-                  <option value="email">بريد إلكتروني</option>
+                  <option value="email">{t('utils.explorationDynamicFields.بريد_إلكتروني', 'بريد إلكتروني')}</option>
                   <option value="instagram">انستغرام</option>
                   <option value="facebook">فيسبوك</option>
                   <option value="x">X / تويتر</option>
-                  <option value="other">أخرى</option>
+                  <option value="other">{t('components.ExplorationTargetPagesPicker.أخرى', 'أخرى')}</option>
                 </AppSelect>
                 <input
                   className="app-input"
-                  placeholder="رقم أو رابط الحساب"
+                  placeholder={t('pages.AdminBrandingPage.رقم_أو_رابط_الحساب', 'رقم أو رابط الحساب')}
                   value={item.value || ''}
                   onChange={(e) =>
                     setContactsDraft((prev) =>
@@ -153,7 +154,7 @@ export default function AdminBrandingPage({ user }) {
                 <BusyButton
                   type="button"
                   className="icon-btn"
-                  title="حذف"
+                  title={t('components.ExplorationListCard.حذف', 'حذف')}
                   onClick={() => setContactsDraft((prev) => prev.filter((_, i) => i !== idx))}
                   busy={saving}
                 >

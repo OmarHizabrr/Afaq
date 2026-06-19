@@ -21,19 +21,19 @@ import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath, forma
 import { enrichDailyPrepReportsBatch } from '../../utils/enrichDailyPrepReport';
 
 const TAB_LABELS = {
-  daily: 'التحضير',
-  weekly: 'التقارير الأسبوعية',
-  visits: 'زيارات المشرفين',
-  school: 'تقارير المدارس',
+  daily: t('config.appNavItems.التحضير', 'التحضير'),
+  weekly: t('pages.AdminReportsPage.التقارير_الأسبوعية', 'التقارير الأسبوعية'),
+  visits: t('pages.AdminReportsPage.زيارات_المشرفين', 'زيارات المشرفين'),
+  school: t('pages.AdminReportsPage.تقارير_المدارس', 'تقارير المدارس'),
 };
 
 const PRESET_KEYS = [
-  { key: 'week', label: 'أسبوع' },
-  { key: 'month', label: 'شهر' },
-  { key: 'quarter', label: '3 أشهر' },
-  { key: 'halfyear', label: '6 أشهر' },
-  { key: 'year', label: 'سنة' },
-  { key: 'all', label: 'كل الفترات' },
+  { key: 'week', label: t('pages.AdminReportsPage.أسبوع', 'أسبوع') },
+  { key: 'month', label: t('pages.AdminReportsPage.شهر', 'شهر') },
+  { key: 'quarter', label: t('pages.AdminReportsPage.3_أشهر', '3 أشهر') },
+  { key: 'halfyear', label: t('pages.AdminReportsPage.6_أشهر', '6 أشهر') },
+  { key: 'year', label: t('pages.AdminReportsPage.سنة', 'سنة') },
+  { key: 'all', label: t('pages.AdminReportsPage.كل_الفترات', 'كل الفترات') },
 ];
 
 const PRESET_DAYS = {
@@ -73,6 +73,7 @@ function getReportTimeMs(r) {
 }
 
 const AdminReportsPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser } = perm;
@@ -145,7 +146,7 @@ const AdminReportsPage = () => {
       setReports(data);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء جلب التقارير');
+      setError(t('pages.AdminReportsPage.حدث_خطأ_أثناء_جلب_التقارير', 'حدث خطأ أثناء جلب التقارير'));
     } finally {
       setLoading(false);
     }
@@ -216,7 +217,7 @@ const AdminReportsPage = () => {
     if (!window.confirm('حذف هذا التقرير نهائياً؟ لا يمكن التراجع.')) return;
     const docRef = deleteReportDocRef(rpt);
     if (!docRef) {
-      setError('تعذر تحديد مسار المستند للحذف.');
+      setError(t('pages.AdminReportsPage.تعذر_تحديد_مسار_المستند_للحذف', 'تعذر تحديد مسار المستند للحذف.'));
       return;
     }
     try {
@@ -224,20 +225,20 @@ const AdminReportsPage = () => {
       await fetchReports(activeTab);
     } catch (err) {
       console.error(err);
-      setError('فشل حذف التقرير.');
+      setError(t('pages.AdminReportsPage.فشل_حذف_التقرير', 'فشل حذف التقرير.'));
     }
   };
 
   const periodLabel =
-    datePreset === 'all' ? 'كل الفترات' : dateFrom && dateTo ? `${dateFrom} ← ${dateTo}` : '—';
+    datePreset === 'all' ? t('pages.AdminReportsPage.كل_الفترات', 'كل الفترات') : dateFrom && dateTo ? `${dateFrom} ← ${dateTo}` : '—';
 
   return (
     <div className="admin-reports-page">
       <PageHeader
         className="no-print"
         icon={FileText}
-        title="مراجعة التقارير الميدانية"
-        subtitle="متابعة أداء المعلمين والمشرفين من لوحة واحدة"
+        title={t('pages.AdminReportsPage.مراجعة_التقارير_الميدانية', 'مراجعة التقارير الميدانية')}
+        subtitle={t('pages.AdminReportsPage.متابعة_أداء_المعلمين_والمشرفين_من_لوحة_واحدة', 'متابعة أداء المعلمين والمشرفين من لوحة واحدة')}
       />
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.reports) === DATA_SCOPE_MEMBERSHIP && (
@@ -288,7 +289,7 @@ const AdminReportsPage = () => {
         <div className="admin-reports-filters__field">
           <input
             type="text"
-            placeholder="البحث باسم المعلم أو المشرف..."
+            placeholder={t('pages.AdminReportsPage.البحث_باسم_المعلم_أو_المشرف', 'البحث باسم المعلم أو المشرف...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="app-input admin-reports-filters__input"
@@ -298,7 +299,7 @@ const AdminReportsPage = () => {
         <div className="admin-reports-filters__field">
           <input
             type="text"
-            placeholder="فلترة حسب المدرسة..."
+            placeholder={t('pages.AdminReportsPage.فلترة_حسب_المدرسة', 'فلترة حسب المدرسة...')}
             value={filterSchool}
             onChange={(e) => setFilterSchool(e.target.value)}
             className="app-input admin-reports-filters__input"
@@ -403,7 +404,7 @@ const AdminReportsPage = () => {
 
               <div className="admin-reports-list__meta-wrap">
                 <div className="admin-reports-list__meta-block">
-                  <p className="admin-reports-list__meta-label">التاريخ</p>
+                  <p className="admin-reports-list__meta-label">{t('pages.SchoolReportPage.التاريخ', 'التاريخ')}</p>
                   <p className="admin-reports-list__meta-value">
                     {rpt.date || rpt.periodLabel || rpt.submissionDate?.split('T')[0] || rpt.timestamp?.split('T')[0]}
                     {activeTab === 'daily' && rpt.periodStart && rpt.periodEnd && rpt.periodStart !== rpt.periodEnd && (
@@ -415,7 +416,7 @@ const AdminReportsPage = () => {
                 </div>
                 <div className="admin-reports-list__meta-block">
                   <p className="admin-reports-list__meta-label">
-                    {activeTab === 'visits' || activeTab === 'school' ? 'المشرف' : 'المعلم'}
+                    {activeTab === 'visits' || activeTab === 'school' ? t('pages.AdminReportsPage.المشرف', 'المشرف') : t('pages.AdminReportsPage.المعلم', 'المعلم')}
                   </p>
                   <p className="admin-reports-list__meta-value">
                     {rpt.supervisorName ||
@@ -425,7 +426,7 @@ const AdminReportsPage = () => {
                 </div>
                 {rpt.schoolName && (
                   <div className="admin-reports-list__meta-block">
-                    <p className="admin-reports-list__meta-label">المدرسة</p>
+                    <p className="admin-reports-list__meta-label">{t('components.DailyPrepEditor.المدرسة', 'المدرسة')}</p>
                     <p className="admin-reports-list__meta-value admin-reports-list__meta-value--medium">{rpt.schoolName}</p>
                   </div>
                 )}
@@ -435,7 +436,7 @@ const AdminReportsPage = () => {
                     {activeTab === 'daily'
                       ? `${prepPeriodLabel(rpt.prepPeriod)} • ${rpt.attendanceSummary || `حضور ${rpt.totalPresent ?? '—'}/${rpt.totalStudents ?? '—'}`}${formatDailyLogSubjects(rpt) ? ` • ${formatDailyLogSubjects(rpt)}` : rpt.lessonName ? ` • ${rpt.lessonName}` : ''}${rpt.prepNotes ? ' • ملاحظات' : ''}`
                       : activeTab === 'weekly'
-                        ? 'تقرير أعمال أسبوعي'
+                        ? t('pages.AdminReportsPage.تقرير_أعمال_أسبوعي', 'تقرير أعمال أسبوعي')
                         : activeTab === 'school'
                           ? `${rpt.reportTitle || 'تقرير المدرسة'} • ${schoolReportSummaryLine(rpt)}`
                           : `تقييم الأداء: ${formatVisitRatingLabel(rpt.teacherRating)}`}

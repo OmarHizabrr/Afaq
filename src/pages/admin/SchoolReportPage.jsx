@@ -63,7 +63,7 @@ import {
   studentLevelSummaryFromStars,
 } from '../../utils/schoolReportStars';
 
-const DAY_OPTIONS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const DAY_OPTIONS = [t('pages.SchoolReportPage.الأحد', 'الأحد'), t('pages.SchoolReportPage.الإثنين', 'الإثنين'), t('pages.SchoolReportPage.الثلاثاء', 'الثلاثاء'), t('pages.SchoolReportPage.الأربعاء', 'الأربعاء'), t('pages.SchoolReportPage.الخميس', 'الخميس'), t('pages.SchoolReportPage.الجمعة', 'الجمعة'), t('pages.SchoolReportPage.السبت', 'السبت')];
 
 const emptyEvalOthers = () => ({
   curriculumProgressOther: '',
@@ -92,6 +92,7 @@ const ReportField = ({ label, children, span = 1 }) => (
 );
 
 const SchoolReportPage = () => {
+  const { t } = useAppTranslation();
   const { id: schoolId, reportId } = useParams();
   const [searchParams] = useSearchParams();
   const ownerIdParam = searchParams.get('ownerId') || '';
@@ -662,7 +663,7 @@ const SchoolReportPage = () => {
           >
             <Save size={16} />
             <span className="portal-toolbar__long">{isEditing ? 'حفظ التعديلات' : 'حفظ التقرير'}</span>
-            <span className="portal-toolbar__short">حفظ</span>
+            <span className="portal-toolbar__short">{t('components.MessengerPanel.حفظ', 'حفظ')}</span>
           </BusyButton>
           )}
         </div>
@@ -729,7 +730,7 @@ const SchoolReportPage = () => {
 
           {/* القسم 2: الموقع */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title"><MapPin size={18} /> الموقع الجغرافي</h3>
+            <h3 className="school-report-section__title"><MapPin size={18} /> {t('components.MapLocationOpen.الموقع_الجغرافي', 'الموقع الجغرافي')}</h3>
             <div className="report-field-grid report-field-grid--2">
               <ReportField label="القرية"><input className="app-input" value={form.village} readOnly /></ReportField>
               <ReportField label="المنطقة"><input className="app-input" value={geoDefaults.regionName} readOnly /></ReportField>
@@ -825,7 +826,7 @@ const SchoolReportPage = () => {
 
           {/* الطلاب المتفوقون */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title">الطلاب المتفوقون</h3>
+            <h3 className="school-report-section__title">{t('utils.schoolReportExport.الطلاب_المتفوقون', 'الطلاب المتفوقون')}</h3>
             {!readOnly && (
               <p className="school-report-section__sub">أضف أسماء الطلاب المتفوقين — يمكنك الكتابة أو الاختيار من قائمة الطلاب.</p>
             )}
@@ -1016,7 +1017,7 @@ const SchoolReportPage = () => {
                       <Clock size={14} />
                       <span>{v.timestamp?.split('T')[0] || v.date}</span>
                     </div>
-                    <p className="school-report-visits__item-title">{v.subjectName || v.reportTitle || 'زيارة ميدانية'}</p>
+                    <p className="school-report-visits__item-title">{v.subjectName || v.reportTitle || t('pages.ReportDetailsPage.زيارة_ميدانية', 'زيارة ميدانية')}</p>
                     <p className="school-report-visits__item-meta">
                       {v.supervisorName} {v.week ? `• أسبوع ${v.week}` : ''}
                     </p>
@@ -1048,8 +1049,8 @@ const SchoolReportPage = () => {
       <LazyReportPrintPreviewModal
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
-        title="معاينة تقرير المدرسة"
-        bodyHtml={buildSchoolReportBodyHtml(buildExportable())}
+        title={t('pages.SchoolDetailsPage.معاينة_تقرير_المدرسة', 'معاينة تقرير المدرسة')}
+        bodyHtml={buildSchoolReportBodyHtml(buildExportable(), t)}
         pdfExporting={pdfExporting}
         onDownloadPdf={async () => {
           setPdfExporting(true);
@@ -1075,7 +1076,7 @@ const SchoolReportPage = () => {
             onClick={handleSave}
           >
             <Save size={18} />
-            {isEditing ? 'حفظ التعديلات' : 'حفظ التقرير'}
+            {isEditing ? t('pages.SchoolReportPage.حفظ_التعديلات', 'حفظ التعديلات') : t('pages.SchoolReportPage.حفظ_التقرير', 'حفظ التقرير')}
           </BusyButton>
         </div>
       ) : null}

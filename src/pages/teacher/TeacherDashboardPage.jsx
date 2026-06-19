@@ -19,13 +19,14 @@ const StatCard = ({ title, value, icon: Icon, tone, loading }) => (
 );
 
 const TeacherDashboardPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const actorId = user?.uid || user?.id;
   const [stats, setStats] = useState({
     studentsCount: 0,
     dailyLogsCount: 0,
     weeklyReportsCount: 0,
-    schoolName: 'جاري التحميل...'
+    schoolName: t('pages.TeacherDashboardPage.جاري_التحميل', 'جاري التحميل...')
   });
   const [recentLogs, setRecentLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,7 @@ const TeacherDashboardPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         if (!actorId) {
-          setStats(prev => ({ ...prev, schoolName: 'حساب غير معروف' }));
+          setStats(prev => ({ ...prev, schoolName: t('pages.TeacherDashboardPage.حساب_غير_معروف', 'حساب غير معروف') }));
           setLoading(false);
           return;
         }
@@ -53,7 +54,7 @@ const TeacherDashboardPage = ({ user }) => {
           setStats(prev => ({
             ...prev,
             studentsCount: docsStu.length,
-            schoolName: mySchool ? mySchool.data().name : 'مدرسة غير معروفة'
+            schoolName: mySchool ? mySchool.data().name : t('pages.TeacherDashboardPage.مدرسة_غير_معروفة', 'مدرسة غير معروفة')
           }));
         }
 
@@ -88,7 +89,7 @@ const TeacherDashboardPage = ({ user }) => {
     <div className="portal-page teacher-dashboard-page">
       <PageHeader
         title={<span className="page-header-accent--success">لوحة شرف المعلم</span>}
-        subtitle="نظرة عامة على نشاطاتك في مدرستك الحالية"
+        subtitle={t('pages.TeacherDashboardPage.نظرة_عامة_على_نشاطاتك_في_مدرستك_الحالية', 'نظرة عامة على نشاطاتك في مدرستك الحالية')}
       />
 
       <div className="portal-school-chip-wrap">
@@ -102,35 +103,35 @@ const TeacherDashboardPage = ({ user }) => {
         <PortalFeaturedAction
           to="/teacher/daily-log"
           icon={Calendar}
-          title="التحضير اليومي"
-          subtitle="سجّل حضور وغياب طلابك اليوم"
-          badge="وصول سريع"
+          title={t('layouts.TeacherLayout.التحضير_اليومي', 'التحضير اليومي')}
+          subtitle={t('pages.TeacherDashboardPage.سجّل_حضور_وغياب_طلابك_اليوم', 'سجّل حضور وغياب طلابك اليوم')}
+          badge={t('pages.SupervisorDashboardPage.وصول_سريع', 'وصول سريع')}
           tone="success"
         />
         <PortalFeaturedAction
           to="/teacher/weekly-report"
           icon={FileText}
-          title="تقرير المدرسة"
-          subtitle="ارفع تقريرك الأسبوعي للمدرسة"
-          badge="وصول سريع"
+          title={t('pages.AdminReportsPage.تقرير_المدرسة', 'تقرير المدرسة')}
+          subtitle={t('pages.TeacherDashboardPage.ارفع_تقريرك_الأسبوعي_للمدرسة', 'ارفع تقريرك الأسبوعي للمدرسة')}
+          badge={t('pages.SupervisorDashboardPage.وصول_سريع', 'وصول سريع')}
           tone="primary"
         />
       </div>
 
       <PortalQuickActions
         actions={[
-          { path: '/teacher/daily-log', label: 'التحضير اليومي', icon: Calendar, tone: 'success' },
-          { path: '/teacher/students', label: 'طلابي', icon: Users },
-          { path: '/teacher/weekly-report', label: 'التقرير الأسبوعي', icon: FileText },
-          { path: '/teacher/notifications', label: 'الإشعارات', icon: Bell },
+          { path: '/teacher/daily-log', label: t('layouts.TeacherLayout.التحضير_اليومي', 'التحضير اليومي'), icon: Calendar, tone: 'success' },
+          { path: '/teacher/students', label: t('layouts.TeacherLayout.طلابي', 'طلابي'), icon: Users },
+          { path: '/teacher/weekly-report', label: t('layouts.TeacherLayout.التقرير_الأسبوعي', 'التقرير الأسبوعي'), icon: FileText },
+          { path: '/teacher/notifications', label: t('config.appNavItems.الإشعارات', 'الإشعارات'), icon: Bell },
         ]}
       />
 
       <div className="portal-stats-grid">
-        <StatCard title="إجمالي الدارسين (الأعضاء)" value={stats.studentsCount} icon={Users} tone="success" loading={loading} />
-        <StatCard title="التحضير اليومي المرفوع" value={stats.dailyLogsCount} icon={Calendar} tone="blue" loading={loading} />
-        <StatCard title="التقارير الأسبوعية" value={stats.weeklyReportsCount} icon={FileText} tone="amber" loading={loading} />
-        <StatCard title="نسبة الإنجاز" value={stats.dailyLogsCount > 0 ? 'نشط' : 'بانتظار التحضير'} icon={Activity} tone="purple" loading={loading} />
+        <StatCard title={t('pages.TeacherDashboardPage.إجمالي_الدارسين_الأعضاء', 'إجمالي الدارسين (الأعضاء)')} value={stats.studentsCount} icon={Users} tone="success" loading={loading} />
+        <StatCard title={t('pages.TeacherDashboardPage.التحضير_اليومي_المرفوع', 'التحضير اليومي المرفوع')} value={stats.dailyLogsCount} icon={Calendar} tone="blue" loading={loading} />
+        <StatCard title={t('pages.AdminReportsPage.التقارير_الأسبوعية', 'التقارير الأسبوعية')} value={stats.weeklyReportsCount} icon={FileText} tone="amber" loading={loading} />
+        <StatCard title={t('pages.TeacherDashboardPage.نسبة_الإنجاز', 'نسبة الإنجاز')} value={stats.dailyLogsCount > 0 ? t('pages.TeacherDashboardPage.نشط', 'نشط') : t('pages.TeacherDashboardPage.بانتظار_التحضير', 'بانتظار التحضير')} icon={Activity} tone="purple" loading={loading} />
       </div>
 
       <div className="portal-section-grid">

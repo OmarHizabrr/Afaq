@@ -9,13 +9,13 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 
 const ROLE_LABELS = {
-    system_admin: 'مدير نظام (وصول كامل)',
-    admin: 'مدير النظام',
-    supervisor_arab: 'مشرف عام (عربي)',
-    supervisor_local: 'مشرف منطقة (محلي)',
-    teacher: 'معلم مدرسة',
-    student: 'طالب / دارس',
-    unassigned: 'صلاحية معلقة'
+    system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
+    admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
+    supervisor_arab: t('pages.RegionDetailsPage.مشرف_عام_عربي', 'مشرف عام (عربي)'),
+    supervisor_local: t('pages.RegionDetailsPage.مشرف_منطقة_محلي', 'مشرف منطقة (محلي)'),
+    teacher: t('pages.RegionDetailsPage.معلم_مدرسة', 'معلم مدرسة'),
+    student: t('pages.RegionDetailsPage.طالب_دارس', 'طالب / دارس'),
+    unassigned: t('pages.RegionDetailsPage.صلاحية_معلقة', 'صلاحية معلقة')
 };
 const ASSIGN_ROLE_FILTER_ORDER = [
     'teacher',
@@ -29,6 +29,7 @@ const ASSIGN_ROLE_FILTER_ORDER = [
 ];
 
 const RegionDetailsPage = () => {
+  const { t } = useAppTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
     const [region, setRegion] = useState(null);
@@ -144,7 +145,7 @@ const RegionDetailsPage = () => {
             setAssignMsg(`تم تعيين ${userToAssign.displayName || 'المستخدم'} بنجاح. يمكنك تعيين مشرفين آخرين.`);
         } catch (err) {
             console.error(err);
-            setError('حدث خطأ أثناء التعيين.');
+            setError(t('pages.RegionDetailsPage.حدث_خطأ_أثناء_التعيين', 'حدث خطأ أثناء التعيين.'));
         } finally {
             setAssigning(false);
         }
@@ -198,7 +199,7 @@ const RegionDetailsPage = () => {
             setAssignMsg(`تمت إزالة «${label}» من المنطقة.`);
         } catch (err) {
             console.error(err);
-            setError('تعذر إزالة المشرف من المنطقة.');
+            setError(t('pages.RegionDetailsPage.تعذر_إزالة_المشرف_من_المنطقة', 'تعذر إزالة المشرف من المنطقة.'));
         } finally {
             setAssigning(false);
         }
@@ -298,7 +299,7 @@ const RegionDetailsPage = () => {
                            <Users size={18} color="var(--success-color)" /> أعضاء المنطقة
                         </h2>
                         {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
-                          <button type="button" className="icon-btn" title="تعيين مشرف" onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
+                          <button type="button" className="icon-btn" title={t('pages.RegionDetailsPage.تعيين_مشرف', 'تعيين مشرف')} onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                         )}
                     </div>
                     {supervisors.length === 0 ? <p className="region-details-panel__empty">لا يوجد أعضاء مسجّلون لهذه المنطقة حالياً.</p> : (
@@ -311,10 +312,10 @@ const RegionDetailsPage = () => {
                                  </div>
                                  <div className="region-details-item__actions">
                                  {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_view_profile') && (
-                                   <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/users/${sup.id}`)} className="icon-btn" title={t('pages.RegionDetailsPage.عرض_الملف', 'عرض الملف')}><Info size={16}/></button>
                                  )}
                                  {can(PERMISSION_PAGE_IDS.regions, 'region_supervisor_assign') && (
-                                   <BusyButton type="button" onClick={() => removeSupervisorFromRegion(sup)} className="icon-btn" title="إزالة من المنطقة" busy={assigning}>
+                                   <BusyButton type="button" onClick={() => removeSupervisorFromRegion(sup)} className="icon-btn" title={t('pages.RegionDetailsPage.إزالة_من_المنطقة', 'إزالة من المنطقة')} busy={assigning}>
                                      <Trash2 size={16} color="var(--danger-color)" />
                                    </BusyButton>
                                  )}
@@ -330,8 +331,8 @@ const RegionDetailsPage = () => {
                 <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="region-assign-title" onClick={() => setIsModalOpen(false)}>
                     <div className="modal-card modal-card--sm" onClick={e => e.stopPropagation()}>
                         <div className="region-assign-modal__head">
-                            <h3 id="region-assign-title" className="region-assign-modal__title">تعيين مشرف للمنطقة</h3>
-                            <button type="button" onClick={() => setIsModalOpen(false)} className="icon-btn" aria-label="إغلاق"><X size={20}/></button>
+                            <h3 id="region-assign-title" className="region-assign-modal__title">{t('config.permissionRegistry.تعيين_مشرف_للمنطقة', 'تعيين مشرف للمنطقة')}</h3>
+                            <button type="button" onClick={() => setIsModalOpen(false)} className="icon-btn" aria-label={t('components.InstallAppBanner.إغلاق', 'إغلاق')}><X size={20}/></button>
                         </div>
                         <p className="region-assign-modal__lead">
                           المنطقة هي مجموعة (group): يُسجَّل العضو في <code>members/{'{'}معرف_المنطقة{'}'}/members/{'{'}userId{'}'}</code> مع المرآة{' '}
@@ -343,7 +344,7 @@ const RegionDetailsPage = () => {
                             <button
                               type="button"
                               className="icon-btn app-alert__dismiss"
-                              title="إغلاق"
+                              title={t('components.InstallAppBanner.إغلاق', 'إغلاق')}
                               onClick={() => setAssignMsg('')}
                             >
                               <X size={14} />
@@ -356,7 +357,7 @@ const RegionDetailsPage = () => {
                             <button
                               type="button"
                               className="icon-btn app-alert__dismiss"
-                              title="إغلاق"
+                              title={t('components.InstallAppBanner.إغلاق', 'إغلاق')}
                               onClick={() => setError('')}
                             >
                               <X size={14} />
@@ -368,7 +369,7 @@ const RegionDetailsPage = () => {
                             <Search size={18} color="var(--text-secondary)" aria-hidden />
                             <input
                               type="search"
-                              placeholder="بحث بالاسم أو البريد..."
+                              placeholder={t('pages.RegionDetailsPage.بحث_بالاسم_أو_البريد', 'بحث بالاسم أو البريد...')}
                               value={searchTerm}
                               onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -381,7 +382,7 @@ const RegionDetailsPage = () => {
                               className={`role-filter-btn ${assignRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                               onClick={() => setAssignRoleFilter(rid)}
                             >
-                              {(rid === 'all' ? 'الكل' : ROLE_LABELS[rid] || rid)} ({assignRoleCounts[rid] || 0})
+                              {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : ROLE_LABELS[rid] || rid)} ({assignRoleCounts[rid] || 0})
                             </button>
                           ))}
                         </div>

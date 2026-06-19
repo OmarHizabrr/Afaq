@@ -1,3 +1,5 @@
+import translate from '../i18n/translate';
+
 export const PERMISSION_PAGE_IDS = {
   dashboard: 'dashboard',
   governorates: 'governorates',
@@ -228,5 +230,33 @@ export function pageSupportsDataScope(pageId) {
 export function getPermissionPageIdFromPath(pathname) {
   if (!pathname || typeof pathname !== 'string') return null;
   return mapByPath.get(pathname) || null;
+}
+
+function toRegistryKey(text) {
+  return String(text)
+    .replace(/[()]/g, '')
+    .replace(/\s*\/\s*/g, '_')
+    .replace(/\s+/g, '_')
+    .replace(/_+/g, '_')
+    .trim();
+}
+
+function translatePermissionLabel(t, label) {
+  const suffix = toRegistryKey(label);
+  const fromNav = t(`config.appNavItems.${suffix}`, '');
+  if (fromNav && fromNav !== `config.appNavItems.${suffix}`) return fromNav;
+  return t(`config.permissionRegistry.${suffix}`, label);
+}
+
+/** PERMISSION_PAGES مع تسميات مترجمة — المعرفات والمسارات من PERMISSION_PAGES الأصلية */
+export function getPermissionPages(t = translate) {
+  return PERMISSION_PAGES.map((page) => ({
+    ...page,
+    label: translatePermissionLabel(t, page.label),
+    actions: (page.actions || []).map((action) => ({
+      ...action,
+      label: translatePermissionLabel(t, action.label),
+    })),
+  }));
 }
 

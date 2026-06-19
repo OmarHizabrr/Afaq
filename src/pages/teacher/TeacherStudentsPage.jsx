@@ -18,6 +18,7 @@ import { EXPLORATION_BRIDGE_ACTION_IDS } from "../../config/permissionRegistry";
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "");
 
 const TeacherStudentsPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { explorationBridgeAllowed } = usePermissions();
@@ -51,7 +52,7 @@ const TeacherStudentsPage = ({ user }) => {
       setError("");
     } catch (err) {
       console.error(err);
-      setError("حدث خطأ أثناء جلب الدارسين");
+      setError(t('pages.TeacherStudentsPage.حدث_خطأ_أثناء_جلب_الدارسين', 'حدث خطأ أثناء جلب الدارسين'));
       setStudents([]);
     } finally {
       setLoading(false);
@@ -68,7 +69,7 @@ const TeacherStudentsPage = ({ user }) => {
         if (!ids.length) {
           setSchoolOptions([]);
           setActiveSchoolId("");
-          setError("حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.");
+          setError(t('pages.TeacherStudentsPage.حسابك_غير_مرتبط_بأي_مدرسة_يرجى_مراجعة_الإدارة', 'حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.'));
           setStudents([]);
           setSchoolReady(true);
           return;
@@ -88,7 +89,7 @@ const TeacherStudentsPage = ({ user }) => {
         setError("");
       } catch (err) {
         console.error(err);
-        setError("حدث خطأ أثناء تحميل بيانات المدرسة");
+        setError(t('pages.TeacherStudentsPage.حدث_خطأ_أثناء_تحميل_بيانات_المدرسة', 'حدث خطأ أثناء تحميل بيانات المدرسة'));
       } finally {
         if (!cancelled) setSchoolReady(true);
       }
@@ -177,13 +178,13 @@ const TeacherStudentsPage = ({ user }) => {
       setIsAdding(false);
       setIsEditing(null);
       setSuccess(
-        isEditing ? "تم تحديث بيانات الدارس بنجاح." : "تمت إضافة الدارس بنجاح.",
+        isEditing ? t('pages.TeacherStudentsPage.تم_تحديث_بيانات_الدارس_بنجاح', 'تم تحديث بيانات الدارس بنجاح.') : t('pages.TeacherStudentsPage.تمت_إضافة_الدارس_بنجاح', 'تمت إضافة الدارس بنجاح.'),
       );
       setError("");
       reloadStudents();
     } catch (err) {
       console.error(err);
-      setError("حدث خطأ أثناء الحفظ");
+      setError(t('pages.SchoolsPage.حدث_خطأ_أثناء_الحفظ', 'حدث خطأ أثناء الحفظ'));
       setLoading(false);
     }
   };
@@ -193,12 +194,12 @@ const TeacherStudentsPage = ({ user }) => {
     if (!activeSchoolId || !actorId || expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join("، ")}`);
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const studentName = expForm.deriveDisplayName('');
     if (!studentName) {
-      setError('لا يمكن استخراج اسم الدارس من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      setError(t('pages.TeacherStudentsPage.لا_يمكن_استخراج_اسم_الدارس_من_حقول_النموذج_أضف_حقلاً_نصياً_ي', 'لا يمكن استخراج اسم الدارس من حقول النموذج. أضف حقلاً نصياً يحوي اسم.'));
       return;
     }
     const ageRaw = expForm.getValueByType('number');
@@ -234,12 +235,12 @@ const TeacherStudentsPage = ({ user }) => {
 
       setIsExploringAdding(false);
       expForm.reset();
-      setSuccess("تمت إضافة الدارس من نموذج الاستكشاف بنجاح.");
+      setSuccess(t('pages.TeacherStudentsPage.تمت_إضافة_الدارس_من_نموذج_الاستكشاف_بنجاح', 'تمت إضافة الدارس من نموذج الاستكشاف بنجاح.'));
       setError("");
       reloadStudents();
     } catch (err) {
       console.error(err);
-      setError("حدث خطأ أثناء الحفظ");
+      setError(t('pages.SchoolsPage.حدث_خطأ_أثناء_الحفظ', 'حدث خطأ أثناء الحفظ'));
     } finally {
       setExpSaving(false);
     }
@@ -278,12 +279,12 @@ const TeacherStudentsPage = ({ user }) => {
         api.deleteData(link2),
       ]);
 
-      setSuccess("تم حذف الدارس بنجاح.");
+      setSuccess(t('pages.TeacherStudentsPage.تم_حذف_الدارس_بنجاح', 'تم حذف الدارس بنجاح.'));
       setError("");
       reloadStudents();
     } catch (err) {
       console.error(err);
-      setError("لا يمكن الحذف في الوقت الحالي.");
+      setError(t('pages.CurriculumPage.لا_يمكن_الحذف_في_الوقت_الحالي', 'لا يمكن الحذف في الوقت الحالي.'));
     }
   };
 
@@ -313,8 +314,8 @@ const TeacherStudentsPage = ({ user }) => {
       <PageHeader
         icon={Users}
         iconColor="var(--success-color)"
-        title="إدارة الحلقات والدارسين"
-        subtitle="قائمة الدارسين المسجلين لديك"
+        title={t('pages.TeacherStudentsPage.إدارة_الحلقات_والدارسين', 'إدارة الحلقات والدارسين')}
+        subtitle={t('pages.TeacherStudentsPage.قائمة_الدارسين_المسجلين_لديك', 'قائمة الدارسين المسجلين لديك')}
       >
         <>
           <button
@@ -328,8 +329,8 @@ const TeacherStudentsPage = ({ user }) => {
             }}
           >
             <UserPlus size={18} />
-            <span className="portal-toolbar__long">إضافة دارس جديد</span>
-            <span className="portal-toolbar__short">إضافة</span>
+            <span className="portal-toolbar__long">{t('pages.TeacherStudentsPage.إضافة_دارس_جديد', 'إضافة دارس جديد')}</span>
+            <span className="portal-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
           {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
             <button
@@ -339,7 +340,7 @@ const TeacherStudentsPage = ({ user }) => {
             >
               <Compass size={18} />
               <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
-              <span className="portal-toolbar__short">استكشاف</span>
+              <span className="portal-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
             </button>
           )}
         </>
@@ -358,7 +359,7 @@ const TeacherStudentsPage = ({ user }) => {
 
       {schoolOptions.length > 1 && activeSchoolId && (
         <div className="surface-card portal-filter-card teacher-students-page__filter">
-          <label className="app-label">المدرسة</label>
+          <label className="app-label">{t('components.DailyPrepEditor.المدرسة', 'المدرسة')}</label>
           <AppSelect
             className="app-select"
             value={activeSchoolId}
@@ -376,24 +377,24 @@ const TeacherStudentsPage = ({ user }) => {
       {/* Add/Edit Modal */}
       <FormModal
         open={isAdding}
-        title={isEditing ? "تعديل بيانات الدارس" : "إضافة دارس جديد"}
+        title={isEditing ? t('pages.TeacherStudentsPage.تعديل_بيانات_الدارس', 'تعديل بيانات الدارس') : t('pages.TeacherStudentsPage.إضافة_دارس_جديد', 'إضافة دارس جديد')}
         onClose={() => setIsAdding(false)}
       >
         <form onSubmit={handleAdd}>
           <label className="app-label">اسم الدارس</label>
           <input
             type="text"
-            placeholder="اسم الدارس الرباعي"
+            placeholder={t('pages.TeacherStudentsPage.اسم_الدارس_الرباعي', 'اسم الدارس الرباعي')}
             value={studentName}
             onChange={(e) => setStudentName(e.target.value)}
             required
             autoFocus
             className="app-input portal-form-field--spaced"
           />
-          <label className="app-label">السن</label>
+          <label className="app-label">{t('pages.TeacherStudentsPage.السن', 'السن')}</label>
           <input
             type="number"
-            placeholder="السن"
+            placeholder={t('pages.TeacherStudentsPage.السن', 'السن')}
             value={studentAge}
             onChange={(e) => setStudentAge(e.target.value)}
             className="app-input portal-form-field--spaced-lg"
@@ -404,14 +405,14 @@ const TeacherStudentsPage = ({ user }) => {
               className="google-btn google-btn--inline"
               onClick={() => setIsAdding(false)}
             >
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton
               type="submit"
               busy={loading}
               className="google-btn google-btn--filled google-btn--inline google-btn--success"
             >
-              {isEditing ? "تحديث" : "حفظ"}
+              {isEditing ? t('pages.GovernoratesPage.تحديث', 'تحديث') : t('components.MessengerPanel.حفظ', 'حفظ')}
             </BusyButton>
           </div>
         </form>
@@ -419,7 +420,7 @@ const TeacherStudentsPage = ({ user }) => {
 
       <FormModal
         open={isExploringAdding}
-        title="إضافة دارس من نموذج الاستكشاف"
+        title={t('pages.TeacherStudentsPage.إضافة_دارس_من_نموذج_الاستكشاف', 'إضافة دارس من نموذج الاستكشاف')}
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd}>
@@ -427,19 +428,19 @@ const TeacherStudentsPage = ({ user }) => {
             controller={expForm}
             actorUser={user}
             storageUserId={actorId}
-            heading="حقول نموذج الاستكشاف"
+            heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
             currentPageId="teacher_students"
           />
           <div className="portal-form-footer portal-form-footer--modal">
             <button type="button" className="google-btn google-btn--inline" onClick={() => setIsExploringAdding(false)}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton
               type="submit"
               busy={expSaving}
               className="google-btn google-btn--filled google-btn--inline google-btn--success"
             >
-              حفظ
+              {t('components.MessengerPanel.حفظ', 'حفظ')}
             </BusyButton>
           </div>
         </form>
@@ -459,8 +460,8 @@ const TeacherStudentsPage = ({ user }) => {
               <table className="md-table portal-table">
                 <thead>
                   <tr>
-                    <th>الاسم</th>
-                    <th className="portal-table__col-narrow">السن</th>
+                    <th>{t('pages.VillageDetailsPage.الاسم', 'الاسم')}</th>
+                    <th className="portal-table__col-narrow">{t('pages.TeacherStudentsPage.السن', 'السن')}</th>
                     <th className="portal-table__col-actions">إجراءات</th>
                   </tr>
                 </thead>
@@ -486,14 +487,14 @@ const TeacherStudentsPage = ({ user }) => {
                           onClick={() =>
                             navigate(`/teacher/students/${student.id}`)
                           }
-                          title="عرض الملف الشخصي"
+                          title={t('components.RecipientUserCard.عرض_الملف_الشخصي', 'عرض الملف الشخصي')}
                         >
                           <Eye size={18} color="var(--accent-color)" />
                         </button>
                         <button
                           className="icon-btn"
                           onClick={() => handleEditClick(student)}
-                          title="تعديل"
+                          title={t('components.ExplorationListCard.تعديل', 'تعديل')}
                         >
                           <Edit2 size={18} />
                         </button>
@@ -505,7 +506,7 @@ const TeacherStudentsPage = ({ user }) => {
                               name: student.studentName,
                             })
                           }
-                          title="حذف"
+                          title={t('components.ExplorationListCard.حذف', 'حذف')}
                         >
                           <Trash2 size={18} color="var(--danger-color)" />
                         </button>
@@ -535,9 +536,9 @@ const TeacherStudentsPage = ({ user }) => {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        title="تأكيد حذف الدارس"
+        title={t('pages.TeacherStudentDetailPage.تأكيد_حذف_الدارس', 'تأكيد حذف الدارس')}
         message={`سيتم حذف الدارس "${pendingDelete?.name || ""}" من السجل.`}
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         danger
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {
@@ -550,7 +551,7 @@ const TeacherStudentsPage = ({ user }) => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.studentName || ''}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.studentName || ''}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={user}
         storageUserId={actorId}
@@ -588,7 +589,7 @@ const TeacherStudentsPage = ({ user }) => {
               userData: user || {},
             }),
           ]);
-          setSuccess('تم تحديث بيانات نموذج الدارس.');
+          setSuccess(t('pages.TeacherStudentsPage.تم_تحديث_بيانات_نموذج_الدارس', 'تم تحديث بيانات نموذج الدارس.'));
           setError('');
           reloadStudents();
         }}

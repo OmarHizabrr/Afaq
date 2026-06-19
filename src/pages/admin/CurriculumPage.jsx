@@ -15,6 +15,7 @@ import { useExplorationForm } from '../../hooks/useExplorationForm';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 
 const CurriculumPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const { can, actorUser, explorationBridgeAllowed } = usePermissions();
@@ -72,7 +73,7 @@ const CurriculumPage = () => {
       setSubjects(data);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء جلب المناهج');
+      setError(t('pages.CurriculumPage.حدث_خطأ_أثناء_جلب_المناهج', 'حدث خطأ أثناء جلب المناهج'));
     } finally {
       setLoading(false);
     }
@@ -107,12 +108,12 @@ const CurriculumPage = () => {
 
       setNewSubjectName('');
       setIsAdding(false);
-      setSuccess('تمت إضافة المادة بنجاح.');
+      setSuccess(t('pages.CurriculumPage.تمت_إضافة_المادة_بنجاح', 'تمت إضافة المادة بنجاح.'));
       setError('');
       fetchSubjects();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء إضافة المادة');
+      setError(t('pages.CurriculumPage.حدث_خطأ_أثناء_إضافة_المادة', 'حدث خطأ أثناء إضافة المادة'));
       setLoading(false);
     }
   };
@@ -128,7 +129,7 @@ const CurriculumPage = () => {
     const fallbackName = expForm.selectedType?.name ? `مادة - ${expForm.selectedType.name}` : '';
     const derivedName = expForm.deriveDisplayName(fallbackName);
     if (!derivedName) {
-      setError('لا يمكن استخراج اسم المادة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      setError(t('pages.CurriculumPage.لا_يمكن_استخراج_اسم_المادة_من_حقول_النموذج_أضف_حقلاً_نصياً_ي', 'لا يمكن استخراج اسم المادة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".'));
       return;
     }
 
@@ -155,12 +156,12 @@ const CurriculumPage = () => {
 
       setIsExploringAdding(false);
       expForm.reset();
-      setSuccess('تمت إضافة المادة من نموذج الاستكشاف بنجاح.');
+      setSuccess(t('pages.CurriculumPage.تمت_إضافة_المادة_من_نموذج_الاستكشاف_بنجاح', 'تمت إضافة المادة من نموذج الاستكشاف بنجاح.'));
       setError('');
       fetchSubjects();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء إضافة المادة من الاستكشاف');
+      setError(t('pages.CurriculumPage.حدث_خطأ_أثناء_إضافة_المادة_من_الاستكشاف', 'حدث خطأ أثناء إضافة المادة من الاستكشاف'));
     } finally {
       setExpSaving(false);
     }
@@ -170,21 +171,21 @@ const CurriculumPage = () => {
     try {
       const api = FirestoreApi.Api;
       await api.deleteData(api.getCurriculumDoc(id));
-      setSuccess('تم حذف المادة بنجاح.');
+      setSuccess(t('pages.CurriculumPage.تم_حذف_المادة_بنجاح', 'تم حذف المادة بنجاح.'));
       setError('');
       fetchSubjects();
     } catch (err) {
       console.error(err);
-      setError('لا يمكن الحذف في الوقت الحالي.');
+      setError(t('pages.CurriculumPage.لا_يمكن_الحذف_في_الوقت_الحالي', 'لا يمكن الحذف في الوقت الحالي.'));
     }
   };
 
   const startEditingWeeks = (subject) => {
     if (editingSubject && editingSubject.id !== subject.id) {
       setConfirmConfig({
-        title: 'تجاهل التعديلات غير المحفوظة',
-        message: 'لديك تعديلات حالية غير محفوظة. هل تريد تجاهلها وفتح مادة أخرى؟',
-        confirmLabel: 'تجاهل وفتح',
+        title: t('pages.CurriculumPage.تجاهل_التعديلات_غير_المحفوظة', 'تجاهل التعديلات غير المحفوظة'),
+        message: t('pages.CurriculumPage.لديك_تعديلات_حالية_غير_محفوظة_هل_تريد_تجاهلها_وفتح_مادة_أخرى', 'لديك تعديلات حالية غير محفوظة. هل تريد تجاهلها وفتح مادة أخرى؟'),
+        confirmLabel: t('pages.CurriculumPage.تجاهل_وفتح', 'تجاهل وفتح'),
         danger: true,
         onConfirm: () => {
           openSubjectEditor(subject);
@@ -207,7 +208,7 @@ const CurriculumPage = () => {
 
     const name = editingSubjectName.trim();
     if (!name) {
-      setError('يرجى إدخال اسم المادة قبل الحفظ');
+      setError(t('pages.CurriculumPage.يرجى_إدخال_اسم_المادة_قبل_الحفظ', 'يرجى إدخال اسم المادة قبل الحفظ'));
       return;
     }
 
@@ -220,13 +221,13 @@ const CurriculumPage = () => {
         data: { name, weeks: editingWeeks },
       });
       
-      setSuccess('تم حفظ توزيع المنهج بنجاح.');
+      setSuccess(t('pages.CurriculumPage.تم_حفظ_توزيع_المنهج_بنجاح', 'تم حفظ توزيع المنهج بنجاح.'));
       setError('');
       setEditingSubject(null);
       fetchSubjects();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء حفظ المنهج');
+      setError(t('pages.CurriculumPage.حدث_خطأ_أثناء_حفظ_المنهج', 'حدث خطأ أثناء حفظ المنهج'));
       setLoading(false);
     }
   };
@@ -244,13 +245,13 @@ const CurriculumPage = () => {
     <div className={`curriculum-page${isMobile && expandedId ? ' curriculum-page--editing' : ''}`}>
       <PageHeader
         icon={BookOpen}
-        title="إدارة المناهج الأساسية"
-        subtitle="توزيع خطة الأسابيع (٥٠ أسبوعاً)"
+        title={t('pages.CurriculumPage.إدارة_المناهج_الأساسية', 'إدارة المناهج الأساسية')}
+        subtitle={t('pages.CurriculumPage.توزيع_خطة_الأسابيع_٥٠_أسبوعاً', 'توزيع خطة الأسابيع (٥٠ أسبوعاً)')}
       >
         {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_add_subject') && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => setIsAdding(true)}>
             <Plus size={18} />
-            <span>إضافة مادة جديدة</span>
+            <span>{t('pages.CurriculumPage.إضافة_مادة_جديدة', 'إضافة مادة جديدة')}</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_add_subject') &&
@@ -264,7 +265,7 @@ const CurriculumPage = () => {
           >
             <Compass size={18} />
             <span className="curriculum-toolbar__long">إضافة من الاستكشاف</span>
-            <span className="curriculum-toolbar__short">استكشاف</span>
+            <span className="curriculum-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
       </PageHeader>
@@ -275,13 +276,13 @@ const CurriculumPage = () => {
       {/* Add New Subject Modal */}
       <FormModal
         open={isAdding}
-        title="إضافة مادة جديدة"
+        title={t('pages.CurriculumPage.إضافة_مادة_جديدة', 'إضافة مادة جديدة')}
         onClose={() => setIsAdding(false)}
       >
         <form onSubmit={handleAddSubject}>
           <input 
             type="text" 
-            placeholder="اسم المادة (مثال: العقيدة)"
+            placeholder={t('pages.CurriculumPage.اسم_المادة_مثال_العقيدة', 'اسم المادة (مثال: العقيدة)')}
             value={newSubjectName}
             onChange={(e) => setNewSubjectName(e.target.value)}
             autoFocus
@@ -300,7 +301,7 @@ const CurriculumPage = () => {
 
       <FormModal
         open={isExploringAdding}
-        title="إضافة مادة من نموذج الاستكشاف"
+        title={t('pages.CurriculumPage.إضافة_مادة_من_نموذج_الاستكشاف', 'إضافة مادة من نموذج الاستكشاف')}
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAddSubject}>
@@ -308,7 +309,7 @@ const CurriculumPage = () => {
             controller={expForm}
             actorUser={actorUser}
             storageUserId={storageUserId}
-            heading="حقول نموذج الاستكشاف"
+            heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
             currentPageId={PERMISSION_PAGE_IDS.curriculum}
           />
           <div className="curriculum-modal-actions curriculum-modal-actions--spaced">
@@ -370,7 +371,7 @@ const CurriculumPage = () => {
                             e.stopPropagation();
                             navigate(`/print/curriculum/${subject.id}`, { state: { autoPrint: true } });
                           }}
-                          title="طباعة الخطة أو حفظ PDF (صفحة منفصلة)"
+                          title={t('pages.CurriculumPage.طباعة_الخطة_أو_حفظ_PDF_صفحة_منفصلة', 'طباعة الخطة أو حفظ PDF (صفحة منفصلة)')}
                         >
                           <Printer size={18} color="var(--md-primary)" />
                         </button>
@@ -381,14 +382,14 @@ const CurriculumPage = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setConfirmConfig({
-                              title: 'تأكيد حذف المادة',
+                              title: t('pages.CurriculumPage.تأكيد_حذف_المادة', 'تأكيد حذف المادة'),
                               message: `سيتم حذف مادة "${subject.name}" وخطة الأسابيع بالكامل.`,
-                              confirmLabel: 'حذف نهائي',
+                              confirmLabel: t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي'),
                               danger: true,
                               onConfirm: () => handleDeleteSubject(subject.id, subject.name)
                             });
                           }} 
-                          title="حذف المادة نهائياً"
+                          title={t('pages.CurriculumPage.حذف_المادة_نهائياً', 'حذف المادة نهائياً')}
                         >
                           <Trash2 size={18} color="var(--danger-color)" />
                         </button>
@@ -408,7 +409,7 @@ const CurriculumPage = () => {
                         type="text"
                         value={editingSubjectName}
                         onChange={(e) => setEditingSubjectName(e.target.value)}
-                        placeholder="مثال: العقيدة"
+                        placeholder={t('pages.CurriculumPage.مثال_العقيدة', 'مثال: العقيدة')}
                         autoComplete="off"
                         className="app-input"
                       />
@@ -438,7 +439,7 @@ const CurriculumPage = () => {
                           </div>
                           <input 
                             type="text" 
-                            placeholder="حدد الدرس أو الهدف..."
+                            placeholder={t('pages.CurriculumPage.حدد_الدرس_أو_الهدف', 'حدد الدرس أو الهدف...')}
                             value={wConfig.lesson}
                             onChange={(e) => handleWeekChange(index, e.target.value)}
                             className="curriculum-editor__week-input"
@@ -486,7 +487,7 @@ const CurriculumPage = () => {
         open={!!confirmConfig}
         title={confirmConfig?.title}
         message={confirmConfig?.message}
-        confirmLabel={confirmConfig?.confirmLabel || 'تأكيد'}
+        confirmLabel={confirmConfig?.confirmLabel || t('components.ConfirmDialog.تأكيد', 'تأكيد')}
         danger={!!confirmConfig?.danger}
         onCancel={() => setConfirmConfig(null)}
         onConfirm={async () => {
@@ -499,7 +500,7 @@ const CurriculumPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name || ''}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name || ''}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
@@ -522,7 +523,7 @@ const CurriculumPage = () => {
             },
             userData: actorUser || {},
           });
-          setSuccess('تم تحديث بيانات نموذج المادة.');
+          setSuccess(t('pages.CurriculumPage.تم_تحديث_بيانات_نموذج_المادة', 'تم تحديث بيانات نموذج المادة.'));
           setError('');
           fetchSubjects();
         }}

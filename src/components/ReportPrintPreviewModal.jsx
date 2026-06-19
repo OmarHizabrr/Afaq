@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { X, Printer, FileDown, FileSpreadsheet } from 'lucide-react';
 import BusyButton from './BusyButton';
 import { REPORT_STYLES } from '../utils/schoolReportHtml';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * معاينة تقرير HTML (RTL) قبل الطباعة أو التحميل.
@@ -9,14 +10,18 @@ import { REPORT_STYLES } from '../utils/schoolReportHtml';
 export default function ReportPrintPreviewModal({
   open,
   onClose,
-  title = 'معاينة التقرير',
+  title,
   bodyHtml,
   onDownloadPdf,
   onDownloadExcel,
   pdfExporting = false,
-  pdfLabel = 'تحميل PDF',
-  excelLabel = 'تحميل Excel',
+  pdfLabel,
+  excelLabel,
 }) {
+  const { t } = useAppTranslation();
+  const resolvedTitle = title ?? t('components.ReportPrintPreviewModal.معاينة_التقرير', 'معاينة التقرير');
+  const resolvedPdfLabel = pdfLabel ?? t('components.ReportPrintPreviewModal.تحميل_pdf', 'تحميل PDF');
+  const resolvedExcelLabel = excelLabel ?? t('components.ReportPrintPreviewModal.تحميل_excel', 'تحميل Excel');
   const iframeRef = useRef(null);
 
   if (!open || !bodyHtml) return null;
@@ -25,7 +30,7 @@ export default function ReportPrintPreviewModal({
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <title>${title}</title>
+  <title>${resolvedTitle}</title>
   <style>${REPORT_STYLES}</style>
 </head>
 <body>${bodyHtml}</body>
@@ -42,33 +47,33 @@ export default function ReportPrintPreviewModal({
     <div className="modal-overlay report-preview-overlay" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="modal-card modal-card--xl report-preview-modal" onClick={(e) => e.stopPropagation()}>
         <div className="report-preview-modal__head">
-          <h2 className="report-preview-modal__title">{title}</h2>
-          <button type="button" className="icon-btn" onClick={onClose} title="إغلاق">
+          <h2 className="report-preview-modal__title">{resolvedTitle}</h2>
+          <button type="button" className="icon-btn" onClick={onClose} title={t('components.InstallAppBanner.إغلاق', 'إغلاق')}>
             <X size={20} />
           </button>
         </div>
         <iframe
           ref={iframeRef}
           className="report-preview-modal__frame"
-          title={title}
+          title={resolvedTitle}
           srcDoc={srcDoc}
         />
         <div className="report-preview-modal__actions">
           <button type="button" className="google-btn google-btn--filled" onClick={handlePrint}>
-            <Printer size={16} /> طباعة
+            <Printer size={16} /> {t('components.ReportPrintPreviewModal.طباعة', 'طباعة')}
           </button>
           {onDownloadPdf && (
             <BusyButton type="button" className="google-btn" busy={pdfExporting} onClick={onDownloadPdf}>
-              <FileDown size={16} /> {pdfLabel}
+              <FileDown size={16} /> {resolvedPdfLabel}
             </BusyButton>
           )}
           {onDownloadExcel && (
             <button type="button" className="google-btn" onClick={onDownloadExcel}>
-              <FileSpreadsheet size={16} /> {excelLabel}
+              <FileSpreadsheet size={16} /> {resolvedExcelLabel}
             </button>
           )}
           <button type="button" className="google-btn" onClick={onClose}>
-            إغلاق
+            {t('components.InstallAppBanner.إغلاق', 'إغلاق')}
           </button>
         </div>
       </div>

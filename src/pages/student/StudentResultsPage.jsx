@@ -6,6 +6,7 @@ import AppSelect from '../../components/AppSelect';
 import StudentResultCard from '../../components/StudentResultCard';
 
 const StudentResultsPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const actorId = user?.uid || user?.id;
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
@@ -28,8 +29,8 @@ const StudentResultsPage = ({ user }) => {
           if (!hit) return;
           data.push({
             id: doc.id,
-            schoolName: report.schoolName || 'غير محدد',
-            subjectName: report.subjectName || 'غير محدد',
+            schoolName: report.schoolName || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد'),
+            subjectName: report.subjectName || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد'),
             date: report.timestamp || '',
             isPresent: !!hit.isPresent,
             isTested: !!hit.isTested,
@@ -57,7 +58,7 @@ const StudentResultsPage = ({ user }) => {
 
   return (
     <div className="portal-page portal-page--results student-results-page">
-      <PageHeader icon={FileText} title="نتائجي واختباراتي" subtitle="عرض جميع نتائج الزيارات والتقييمات الخاصة بك" />
+      <PageHeader icon={FileText} title={t('pages.StudentResultsPage.نتائجي_واختباراتي', 'نتائجي واختباراتي')} subtitle={t('pages.StudentResultsPage.عرض_جميع_نتائج_الزيارات_والتقييمات_الخاصة_بك', 'عرض جميع نتائج الزيارات والتقييمات الخاصة بك')} />
 
       <div className="surface-card portal-filter-card">
         <label className="app-label">تصفية حسب المدرسة</label>
@@ -78,10 +79,10 @@ const StudentResultsPage = ({ user }) => {
               <table className="md-table portal-table--wide">
                 <thead>
                   <tr>
-                    <th>المدرسة</th>
-                    <th>المادة</th>
-                    <th>التاريخ</th>
-                    <th>الحضور</th>
+                    <th>{t('components.DailyPrepEditor.المدرسة', 'المدرسة')}</th>
+                    <th>{t('utils.reportDetailsHtml.المادة', 'المادة')}</th>
+                    <th>{t('pages.SchoolReportPage.التاريخ', 'التاريخ')}</th>
+                    <th>{t('utils.schoolReportExport.الحضور', 'الحضور')}</th>
                     <th>الاختبار</th>
                     <th>ملاحظة</th>
                   </tr>
@@ -94,12 +95,12 @@ const StudentResultsPage = ({ user }) => {
                       <td><Calendar size={14} className="table-cell-icon" /> {r.date ? new Date(r.date).toLocaleDateString('ar-EG') : '-'}</td>
                       <td>
                         {r.isPresent ? (
-                          <span className="status-text--success"><CheckCircle2 size={14} /> حاضر</span>
+                          <span className="status-text--success"><CheckCircle2 size={14} /> {t('components.SupervisorVisitStudentCard.حاضر', 'حاضر')}</span>
                         ) : (
-                          <span className="status-text--danger"><XCircle size={14} /> غائب</span>
+                          <span className="status-text--danger"><XCircle size={14} /> {t('pages.StudentDetailsPage.غائب', 'غائب')}</span>
                         )}
                       </td>
-                      <td>{r.isTested ? 'تم الاختبار' : 'لم يتم'}</td>
+                      <td>{r.isTested ? t('components.StudentResultCard.تم_الاختبار', 'تم الاختبار') : t('components.StudentResultCard.لم_يتم', 'لم يتم')}</td>
                       <td className="cell-muted">{r.note || '-'}</td>
                     </tr>
                   ))}

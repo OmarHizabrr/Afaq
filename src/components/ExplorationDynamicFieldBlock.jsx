@@ -3,9 +3,9 @@ import AppSelect from './AppSelect';
 import { uploadExplorationFieldFile } from '../services/storageApi';
 
 const yesNo = [
-  { value: '', label: 'غير محدد' },
-  { value: 'yes', label: 'نعم' },
-  { value: 'no', label: 'لا' },
+  { value: '', label: t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد') },
+  { value: 'yes', label: t('components.ExplorationDynamicFieldBlock.نعم', 'نعم') },
+  { value: 'no', label: t('components.ExplorationDynamicFieldBlock.لا', 'لا') },
 ];
 
 function maxBytesForFieldType(t) {
@@ -179,6 +179,7 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
 }
 
 export default function ExplorationDynamicFieldBlock({ fields, values, onChange, storageUserId, variant = 'default', actorUser = null }) {
+  const { t } = useAppTranslation();
   const [uploadingFieldId, setUploadingFieldId] = useState(null);
 
   useEffect(() => {
@@ -576,13 +577,13 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
         }
 
         if (f.fieldType === 'tag') {
-          const str = Array.isArray(v) ? v.join('، ') : '';
+          const str = Array.isArray(v) ? v.join(t('components.ExplorationDataModal.،', '، ')) : '';
           return wrap(
             <>
               {commonLabel}
               <input
                 className={`app-input${variant === 'sheet' ? ' exploration-field-sheet__input' : ''}`}
-                placeholder={f.placeholder || 'وسم1، وسم2'}
+                placeholder={f.placeholder || t('components.ExplorationDynamicFieldBlock.وسم1،_وسم2', 'وسم1، وسم2')}
                 value={str}
                 onChange={(e) =>
                   onChange(

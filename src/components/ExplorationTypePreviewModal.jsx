@@ -29,6 +29,7 @@ const ExplorationTypePreviewModal = ({
   actorUser,
   storageUserId,
 }) => {
+  const { t } = useAppTranslation();
   const schemaFields = useMemo(
     () => normalizeSchemaFields(type?.schemaFields || type?.fields || []),
     [type]
@@ -101,7 +102,7 @@ const ExplorationTypePreviewModal = ({
       <div className="exploration-type-preview__meta-row">
         <span className="exploration-type-preview__meta-pill">{pagesSummary}</span>
         <span className="exploration-type-preview__meta-pill exploration-type-preview__meta-pill--muted">
-          {usesDefaultForm ? 'النموذج الافتراضي الكامل' : `${schemaFields.length} حقل`}
+          {usesDefaultForm ? t('components.ExplorationTypePreviewModal.النموذج_الافتراضي_الكامل', 'النموذج الافتراضي الكامل') : `${schemaFields.length} حقل`}
         </span>
       </div>
 
@@ -188,7 +189,7 @@ const ExplorationTypePreviewModal = ({
               onClick={onEdit}
             >
               <Edit2 size={16} aria-hidden />
-              <span>تعديل</span>
+              <span>{t('components.ExplorationListCard.تعديل', 'تعديل')}</span>
             </button>
           )}
           {canDelete && onDelete && (
@@ -198,7 +199,7 @@ const ExplorationTypePreviewModal = ({
               onClick={onDelete}
             >
               <Trash2 size={16} aria-hidden />
-              <span>حذف</span>
+              <span>{t('components.ExplorationListCard.حذف', 'حذف')}</span>
             </button>
           )}
         </div>

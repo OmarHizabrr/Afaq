@@ -20,6 +20,7 @@ import {
 } from '../../utils/permissionDataScope';
 
 const RegionsPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
@@ -65,7 +66,7 @@ const RegionsPage = () => {
       setRegions(regData);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء جلب البيانات');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_جلب_البيانات', 'حدث خطأ أثناء جلب البيانات'));
     } finally {
       setLoading(false);
     }
@@ -80,7 +81,7 @@ const RegionsPage = () => {
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!regionName.trim() || !selectedGovId) {
-      setError('يرجى إدخال اسم المنطقة واختيار المحافظة');
+      setError(t('pages.RegionsPage.يرجى_إدخال_اسم_المنطقة_واختيار_المحافظة', 'يرجى إدخال اسم المنطقة واختيار المحافظة'));
       return;
     }
 
@@ -103,18 +104,18 @@ const RegionsPage = () => {
       setSelectedGovId('');
       setIsAdding(false);
       setError('');
-      setSuccess('تمت إضافة المنطقة بنجاح.');
+      setSuccess(t('pages.RegionsPage.تمت_إضافة_المنطقة_بنجاح', 'تمت إضافة المنطقة بنجاح.'));
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الإضافة');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_الإضافة', 'حدث خطأ أثناء الإضافة'));
     }
   };
 
   const handleEdit = async (e) => {
     e.preventDefault();
     if (!regionName.trim() || !selectedGovId || !isEditing) {
-      setError('يرجى إدخال اسم المنطقة واختيار المحافظة');
+      setError(t('pages.RegionsPage.يرجى_إدخال_اسم_المنطقة_واختيار_المحافظة', 'يرجى إدخال اسم المنطقة واختيار المحافظة'));
       return;
     }
 
@@ -134,11 +135,11 @@ const RegionsPage = () => {
       setSelectedGovId('');
       setIsEditing(null);
       setError('');
-      setSuccess('تم تحديث المنطقة بنجاح.');
+      setSuccess(t('pages.RegionsPage.تم_تحديث_المنطقة_بنجاح', 'تم تحديث المنطقة بنجاح.'));
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء التحديث');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_التحديث', 'حدث خطأ أثناء التحديث'));
     }
   };
 
@@ -154,12 +155,12 @@ const RegionsPage = () => {
       const api = FirestoreApi.Api;
       const docRef = api.getRegionDoc(region.govId, region.id);
       await api.deleteData(docRef);
-      setSuccess('تم حذف المنطقة بنجاح.');
+      setSuccess(t('pages.RegionsPage.تم_حذف_المنطقة_بنجاح', 'تم حذف المنطقة بنجاح.'));
       setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('لا يمكن الحذف في الوقت الحالي.');
+      setError(t('pages.CurriculumPage.لا_يمكن_الحذف_في_الوقت_الحالي', 'لا يمكن الحذف في الوقت الحالي.'));
     }
   };
 
@@ -173,13 +174,13 @@ const RegionsPage = () => {
     }
     const govId = expForm.getValueBySource('governorates');
     if (!govId) {
-      setError('يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «المحافظات» لاختيار المحافظة الأم.');
+      setError(t('pages.RegionsPage.يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_المحافظات_لاختيار', 'يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «المحافظات» لاختيار المحافظة الأم.'));
       return;
     }
     const fallbackName = expForm.selectedType?.name ? `منطقة - ${expForm.selectedType.name}` : '';
     const derivedName = expForm.deriveDisplayName(fallbackName);
     if (!derivedName) {
-      setError('لا يمكن استخراج اسم المنطقة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      setError(t('pages.RegionsPage.لا_يمكن_استخراج_اسم_المنطقة_من_حقول_النموذج_أضف_حقلاً_نصياً_', 'لا يمكن استخراج اسم المنطقة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".'));
       return;
     }
     setExpSaving(true);
@@ -199,12 +200,12 @@ const RegionsPage = () => {
       });
       setIsExploringAdding(false);
       expForm.reset();
-      setSuccess('تمت إضافة المنطقة من نموذج الاستكشاف بنجاح.');
+      setSuccess(t('pages.RegionsPage.تمت_إضافة_المنطقة_من_نموذج_الاستكشاف_بنجاح', 'تمت إضافة المنطقة من نموذج الاستكشاف بنجاح.'));
       setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الإضافة');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_الإضافة', 'حدث خطأ أثناء الإضافة'));
     } finally {
       setExpSaving(false);
     }
@@ -212,17 +213,17 @@ const RegionsPage = () => {
 
   const getGovName = (govId) => {
     const gov = governorates.find(g => g.id === govId);
-    return gov ? gov.name : 'غير معروف';
+    return gov ? gov.name : t('pages.RegionsPage.غير_معروف', 'غير معروف');
   };
 
   return (
     <div className="regions-page geo-page">
-      <PageHeader icon={MapPin} title="إدارة المناطق">
+      <PageHeader icon={MapPin} title={t('pages.RegionsPage.إدارة_المناطق', 'إدارة المناطق')}>
         {can(PERMISSION_PAGE_IDS.regions, 'region_add') && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
             <Plus size={18} />
-            <span className="geo-toolbar__long">إضافة منطقة</span>
-            <span className="geo-toolbar__short">إضافة</span>
+            <span className="geo-toolbar__long">{t('config.permissionRegistry.إضافة_منطقة', 'إضافة منطقة')}</span>
+            <span className="geo-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.regions, 'region_add') &&
@@ -234,7 +235,7 @@ const RegionsPage = () => {
           >
             <Compass size={18} />
             <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
-            <span className="geo-toolbar__short">استكشاف</span>
+            <span className="geo-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
       </PageHeader>
@@ -250,7 +251,7 @@ const RegionsPage = () => {
       {/* Add/Edit Modal */}
       <FormModal
         open={isAdding || !!isEditing}
-        title={isEditing ? 'تعديل المنطقة' : 'إضافة منطقة'}
+        title={isEditing ? t('pages.RegionsPage.تعديل_المنطقة', 'تعديل المنطقة') : t('config.permissionRegistry.إضافة_منطقة', 'إضافة منطقة')}
         onClose={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}
       >
         <form onSubmit={isEditing ? handleEdit : handleAdd} className="geo-form">
@@ -267,7 +268,7 @@ const RegionsPage = () => {
 
           <input 
             type="text" 
-            placeholder="اسم المنطقة (مثال: أزال)"
+            placeholder={t('pages.RegionsPage.اسم_المنطقة_مثال_أزال', 'اسم المنطقة (مثال: أزال)')}
             value={regionName}
             onChange={(e) => setRegionName(e.target.value)}
             className="app-input geo-form__field"
@@ -277,7 +278,7 @@ const RegionsPage = () => {
               إلغاء
             </button>
             <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled modal-footer-actions__btn">
-              {isEditing ? 'تحديث' : 'حفظ'}
+              {isEditing ? t('pages.GovernoratesPage.تحديث', 'تحديث') : t('components.MessengerPanel.حفظ', 'حفظ')}
             </BusyButton>
           </div>
         </form>
@@ -285,7 +286,7 @@ const RegionsPage = () => {
 
       <FormModal
         open={isExploringAdding}
-        title="إضافة منطقة من نموذج الاستكشاف"
+        title={t('pages.RegionsPage.إضافة_منطقة_من_نموذج_الاستكشاف', 'إضافة منطقة من نموذج الاستكشاف')}
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd}>
@@ -296,7 +297,7 @@ const RegionsPage = () => {
             controller={expForm}
             actorUser={actorUser}
             storageUserId={storageUserId}
-            heading="حقول نموذج الاستكشاف"
+            heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
             currentPageId={PERMISSION_PAGE_IDS.regions}
           />
           <div className="modal-footer-actions modal-footer-actions--spaced">
@@ -335,17 +336,17 @@ const RegionsPage = () => {
               </div>
               <div className="geo-entity-card__actions">
                 {can(PERMISSION_PAGE_IDS.regions, 'region_view') && (
-                  <button className="icon-btn" onClick={() => navigate(`/regions/${region.id}`)} title="عرض التفاصيل">
+                  <button className="icon-btn" onClick={() => navigate(`/regions/${region.id}`)} title={t('config.permissionRegistry.عرض_التفاصيل', 'عرض التفاصيل')}>
                     <Eye size={16} color="var(--accent-color)" />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.regions, 'region_edit') && (
-                  <button className="icon-btn" onClick={() => startEdit(region)} title="تعديل">
+                  <button className="icon-btn" onClick={() => startEdit(region)} title={t('components.ExplorationListCard.تعديل', 'تعديل')}>
                     <Edit2 size={16} />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.regions, 'region_delete') && (
-                  <button className="icon-btn" onClick={() => setPendingDelete(region)} title="حذف">
+                  <button className="icon-btn" onClick={() => setPendingDelete(region)} title={t('components.ExplorationListCard.حذف', 'حذف')}>
                     <Trash2 size={16} color="var(--danger-color)" />
                   </button>
                 )}
@@ -358,7 +359,7 @@ const RegionsPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
@@ -394,7 +395,7 @@ const RegionsPage = () => {
               userData: actorUser || {},
             });
           }
-          setSuccess('تم تحديث بيانات نموذج المنطقة.');
+          setSuccess(t('pages.RegionsPage.تم_تحديث_بيانات_نموذج_المنطقة', 'تم تحديث بيانات نموذج المنطقة.'));
           setError('');
           fetchData();
         }}
@@ -402,9 +403,9 @@ const RegionsPage = () => {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        title="تأكيد حذف المنطقة"
+        title={t('pages.RegionsPage.تأكيد_حذف_المنطقة', 'تأكيد حذف المنطقة')}
         message={`سيتم حذف المنطقة "${pendingDelete?.name || ''}" نهائياً.`}
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         danger
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {

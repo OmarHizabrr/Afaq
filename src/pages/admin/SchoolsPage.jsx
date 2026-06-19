@@ -21,13 +21,14 @@ import {
 } from '../../utils/permissionDataScope';
 
 const SCHOOL_LEVEL_OPTIONS = [
-  { value: 'adults', label: 'كبار' },
-  { value: 'children', label: 'صغار' },
+  { value: 'adults', label: t('pages.SchoolsPage.كبار', 'كبار') },
+  { value: 'children', label: t('pages.SchoolsPage.صغار', 'صغار') },
 ];
 
-const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?.label || 'غير محدد';
+const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?.label || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد');
 
 const SchoolsPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
@@ -98,7 +99,7 @@ const SchoolsPage = () => {
       setSchools(schoolsRows);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء جلب البيانات');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_جلب_البيانات', 'حدث خطأ أثناء جلب البيانات'));
     } finally {
       setLoading(false);
     }
@@ -118,7 +119,7 @@ const SchoolsPage = () => {
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!schoolName.trim() || !selectedVilId || !schoolLevel) {
-      setError('يرجى إدخال اسم المدرسة واختيار القرية ونوع المدرسة (كبار / صغار)');
+      setError(t('pages.SchoolsPage.يرجى_إدخال_اسم_المدرسة_واختيار_القرية_ونوع_المدرسة_كبار_صغار', 'يرجى إدخال اسم المدرسة واختيار القرية ونوع المدرسة (كبار / صغار)'));
       return;
     }
 
@@ -136,7 +137,7 @@ const SchoolsPage = () => {
       if (isEditing) {
         const pathVid = isEditing.pathVillageId || isEditing.villageId;
         if (!pathVid) {
-          setError('تعذر تحديد مسار المدرسة في القاعدة. أعد تحميل الصفحة وحاول مرة أخرى.');
+          setError(t('pages.SchoolsPage.تعذر_تحديد_مسار_المدرسة_في_القاعدة_أعد_تحميل_الصفحة_وحاول_مر', 'تعذر تحديد مسار المدرسة في القاعدة. أعد تحميل الصفحة وحاول مرة أخرى.'));
           setLoading(false);
           return;
         }
@@ -164,11 +165,11 @@ const SchoolsPage = () => {
       setIsAdding(false);
       setIsEditing(null);
       setError('');
-      setSuccess(isEditing ? 'تم تحديث المدرسة بنجاح.' : 'تمت إضافة المدرسة بنجاح.');
+      setSuccess(isEditing ? t('pages.SchoolsPage.تم_تحديث_المدرسة_بنجاح', 'تم تحديث المدرسة بنجاح.') : t('pages.SchoolsPage.تمت_إضافة_المدرسة_بنجاح', 'تمت إضافة المدرسة بنجاح.'));
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الحفظ');
+      setError(t('pages.SchoolsPage.حدث_خطأ_أثناء_الحفظ', 'حدث خطأ أثناء الحفظ'));
       setLoading(false);
     }
   };
@@ -183,13 +184,13 @@ const SchoolsPage = () => {
     }
     const villageId = expForm.getValueBySource('villages');
     if (!villageId) {
-      setError('يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «القرى» لربط المدرسة بقريتها.');
+      setError(t('pages.SchoolsPage.يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_القرى_لربط_المدرس', 'يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «القرى» لربط المدرسة بقريتها.'));
       return;
     }
     const fallbackName = expForm.selectedType?.name ? `مدرسة - ${expForm.selectedType.name}` : '';
     const derivedName = expForm.deriveDisplayName(fallbackName);
     if (!derivedName) {
-      setError('لا يمكن استخراج اسم المدرسة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      setError(t('pages.SchoolsPage.لا_يمكن_استخراج_اسم_المدرسة_من_حقول_النموذج_أضف_حقلاً_نصياً_', 'لا يمكن استخراج اسم المدرسة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".'));
       return;
     }
     setExpSaving(true);
@@ -212,11 +213,11 @@ const SchoolsPage = () => {
       setIsExploringAdding(false);
       expForm.reset();
       setError('');
-      setSuccess('تمت إضافة المدرسة من نموذج الاستكشاف بنجاح.');
+      setSuccess(t('pages.SchoolsPage.تمت_إضافة_المدرسة_من_نموذج_الاستكشاف_بنجاح', 'تمت إضافة المدرسة من نموذج الاستكشاف بنجاح.'));
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الحفظ');
+      setError(t('pages.SchoolsPage.حدث_خطأ_أثناء_الحفظ', 'حدث خطأ أثناء الحفظ'));
     } finally {
       setExpSaving(false);
     }
@@ -243,23 +244,23 @@ const SchoolsPage = () => {
       const vid = schoolDoc.pathVillageId || schoolDoc.villageId;
       const docRef = api.getSchoolDoc(vid, id);
       await api.deleteData(docRef);
-      setSuccess('تم حذف المدرسة بنجاح.');
+      setSuccess(t('pages.SchoolsPage.تم_حذف_المدرسة_بنجاح', 'تم حذف المدرسة بنجاح.'));
       setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('لا يمكن الحذف في الوقت الحالي.');
+      setError(t('pages.CurriculumPage.لا_يمكن_الحذف_في_الوقت_الحالي', 'لا يمكن الحذف في الوقت الحالي.'));
     }
   };
 
   const getVillageName = (vilId) => {
     const vil = villages.find(v => v.id === vilId);
-    return vil ? vil.villageName : 'غير معروف';
+    return vil ? vil.villageName : t('pages.RegionsPage.غير_معروف', 'غير معروف');
   };
 
   return (
     <div className="schools-page geo-page">
-      <PageHeader icon={School} title="إدارة المدارس">
+      <PageHeader icon={School} title={t('pages.SchoolsPage.إدارة_المدارس', 'إدارة المدارس')}>
         {can(PERMISSION_PAGE_IDS.schools, 'school_add') && (
           <button
             type="button"
@@ -275,8 +276,8 @@ const SchoolsPage = () => {
             }}
           >
             <Plus size={18} />
-            <span className="geo-toolbar__long">إضافة مدرسة</span>
-            <span className="geo-toolbar__short">إضافة</span>
+            <span className="geo-toolbar__long">{t('config.permissionRegistry.إضافة_مدرسة', 'إضافة مدرسة')}</span>
+            <span className="geo-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.schools, 'school_add') &&
@@ -288,7 +289,7 @@ const SchoolsPage = () => {
           >
             <Compass size={18} />
             <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
-            <span className="geo-toolbar__short">استكشاف</span>
+            <span className="geo-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
       </PageHeader>
@@ -304,7 +305,7 @@ const SchoolsPage = () => {
       {/* Add/Edit Modal */}
       <FormModal
         open={isAdding}
-        title={isEditing ? 'تعديل المدرسة' : 'إضافة مدرسة'}
+        title={isEditing ? t('pages.SchoolsPage.تعديل_المدرسة', 'تعديل المدرسة') : t('config.permissionRegistry.إضافة_مدرسة', 'إضافة مدرسة')}
         onClose={() => setIsAdding(false)}
       >
         <form onSubmit={handleAdd} className="schools-form">
@@ -321,7 +322,7 @@ const SchoolsPage = () => {
           </AppSelect>
 
           <label className="app-label">اسم المدرسة (مطلوب)</label>
-          <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder="مثال: مدرسة النور" />
+          <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder={t('pages.SchoolsPage.مثال_مدرسة_النور', 'مثال: مدرسة النور')} />
 
           <label className="app-label">نوع المدرسة (مطلوب)</label>
           <AppSelect searchable
@@ -338,7 +339,7 @@ const SchoolsPage = () => {
           </AppSelect>
 
           <label className="app-label">اسم المتبرع (اختياري)</label>
-          <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input schools-form__field-gap-lg" placeholder="فاعل خير" />
+          <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input schools-form__field-gap-lg" placeholder={t('pages.SchoolsPage.فاعل_خير', 'فاعل خير')} />
 
           <div className="schools-form__actions">
             <button type="button" onClick={() => setIsAdding(false)} className="google-btn schools-form__action-btn">
@@ -353,7 +354,7 @@ const SchoolsPage = () => {
 
       <FormModal
         open={isExploringAdding}
-        title="إضافة مدرسة من نموذج الاستكشاف"
+        title={t('pages.SchoolsPage.إضافة_مدرسة_من_نموذج_الاستكشاف', 'إضافة مدرسة من نموذج الاستكشاف')}
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd} className="schools-form">
@@ -364,7 +365,7 @@ const SchoolsPage = () => {
             controller={expForm}
             actorUser={actorUser}
             storageUserId={storageUserId}
-            heading="حقول نموذج الاستكشاف"
+            heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
             currentPageId={PERMISSION_PAGE_IDS.schools}
           />
 
@@ -405,17 +406,17 @@ const SchoolsPage = () => {
               </div>
               <div className="schools-card__actions">
                 {can(PERMISSION_PAGE_IDS.schools, 'school_view') && (
-                  <button className="icon-btn" onClick={() => navigate(`/schools/${sch.id}`)} title="عرض التفاصيل">
+                  <button className="icon-btn" onClick={() => navigate(`/schools/${sch.id}`)} title={t('config.permissionRegistry.عرض_التفاصيل', 'عرض التفاصيل')}>
                     <Eye size={16} color="var(--accent-color)" />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.schools, 'school_edit') && (
-                  <button className="icon-btn" onClick={() => handleEditClick(sch)} title="تعديل">
+                  <button className="icon-btn" onClick={() => handleEditClick(sch)} title={t('components.ExplorationListCard.تعديل', 'تعديل')}>
                     <Edit2 size={16} />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.schools, 'school_delete') && (
-                  <button className="icon-btn" onClick={() => setPendingDelete({ id: sch.id, name: sch.name })} title="حذف">
+                  <button className="icon-btn" onClick={() => setPendingDelete({ id: sch.id, name: sch.name })} title={t('components.ExplorationListCard.حذف', 'حذف')}>
                     <Trash2 size={16} color="var(--danger-color)" />
                   </button>
                 )}
@@ -428,7 +429,7 @@ const SchoolsPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
@@ -442,7 +443,7 @@ const SchoolsPage = () => {
           if (!target) return;
           const api = FirestoreApi.Api;
           const pathVid = target.pathVillageId || target.villageId;
-          if (!pathVid) throw new Error('تعذر تحديد مسار المدرسة في القاعدة.');
+          if (!pathVid) throw new Error(t('pages.SchoolsPage.تعذر_تحديد_مسار_المدرسة_في_القاعدة', 'تعذر تحديد مسار المدرسة في القاعدة.'));
           const nextVillageId = controller.getValueBySource('villages') || pathVid;
           const nextData = {
             name: derivedName || target.name || '',
@@ -466,7 +467,7 @@ const SchoolsPage = () => {
               userData: actorUser || {},
             });
           }
-          setSuccess('تم تحديث بيانات نموذج المدرسة.');
+          setSuccess(t('pages.SchoolsPage.تم_تحديث_بيانات_نموذج_المدرسة', 'تم تحديث بيانات نموذج المدرسة.'));
           setError('');
           fetchData();
         }}
@@ -474,9 +475,9 @@ const SchoolsPage = () => {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        title="تأكيد حذف المدرسة"
+        title={t('pages.SchoolsPage.تأكيد_حذف_المدرسة', 'تأكيد حذف المدرسة')}
         message={`سيتم حذف مدرسة "${pendingDelete?.name || ''}" نهائياً.`}
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         danger
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {

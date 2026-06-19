@@ -4,15 +4,17 @@ import { LayoutGrid } from 'lucide-react';
 import { useNotificationBadge } from '../context/NotificationsBadgeContext';
 import { PERMISSION_PAGE_IDS } from '../config/permissionRegistry';
 import { isMoreTabActive, isNavPathActive } from '../utils/mobileNavTabs';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const BottomTabBar = ({ tabs, onMoreClick }) => {
+  const { t } = useAppTranslation();
   const location = useLocation();
   const { unreadCount } = useNotificationBadge();
   const tabPaths = tabs.map((t) => t.path);
   const moreActive = isMoreTabActive(tabPaths, location.pathname);
 
   return (
-    <nav className="bottom-tab-bar" aria-label="التنقل السريع">
+    <nav className="bottom-tab-bar" aria-label={t('components.BottomTabBar.التنقل_السريع', 'التنقل السريع')}>
       {tabs.map((item) => {
         const active = isNavPathActive(item.path, location.pathname, { end: item.end });
         const showBadge =
@@ -31,7 +33,7 @@ const BottomTabBar = ({ tabs, onMoreClick }) => {
             <span className="bottom-tab-bar__icon-wrap">
               <item.icon size={22} strokeWidth={active ? 2.25 : 2} aria-hidden />
               {showBadge ? (
-                <span className="bottom-tab-bar__badge" aria-label={`${unreadCount} غير مقروء`}>
+                <span className="bottom-tab-bar__badge" aria-label={t('components.BottomTabBar.unread_badge', `${unreadCount} غير مقروء`)}>
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               ) : null}
@@ -45,13 +47,13 @@ const BottomTabBar = ({ tabs, onMoreClick }) => {
         type="button"
         className={`bottom-tab-bar__item bottom-tab-bar__item--more ${moreActive ? 'bottom-tab-bar__item--active' : ''}`}
         onClick={onMoreClick}
-        aria-label="المزيد من القوائم"
+        aria-label={t('components.BottomTabBar.المزيد_من_القوائم', 'المزيد من القوائم')}
         aria-expanded={moreActive}
       >
         <span className="bottom-tab-bar__icon-wrap">
           <LayoutGrid size={22} strokeWidth={moreActive ? 2.25 : 2} aria-hidden />
         </span>
-        <span className="bottom-tab-bar__label">المزيد</span>
+        <span className="bottom-tab-bar__label">{t('components.BottomTabBar.المزيد', 'المزيد')}</span>
       </button>
     </nav>
   );

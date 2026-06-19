@@ -25,6 +25,7 @@ function normalizeWeeks(raw) {
 }
 
 export default function CurriculumPrintPage() {
+  const { t } = useAppTranslation();
   const { subjectId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,7 +42,7 @@ export default function CurriculumPrintPage() {
 
     const load = async () => {
       if (!subjectId) {
-        setError('معرّف المادة غير صالح');
+        setError(t('pages.CurriculumPrintPage.معرّف_المادة_غير_صالح', 'معرّف المادة غير صالح'));
         setLoading(false);
         return;
       }
@@ -53,13 +54,13 @@ export default function CurriculumPrintPage() {
         if (cancelled) return;
         if (!data) {
           setSubject(null);
-          setError('المادة غير موجودة');
+          setError(t('pages.CurriculumPrintPage.المادة_غير_موجودة', 'المادة غير موجودة'));
         } else {
           setSubject({ id: subjectId, ...data });
         }
       } catch (e) {
         console.error(e);
-        if (!cancelled) setError('تعذر تحميل المنهج');
+        if (!cancelled) setError(t('pages.CurriculumPrintPage.تعذر_تحميل_المنهج', 'تعذر تحميل المنهج'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -106,7 +107,7 @@ export default function CurriculumPrintPage() {
     return (
       <div className="print-shell print-shell--plain">
         <div className="surface-card print-shell__error-card">
-          <p className="print-shell__error-text">{error || 'لا توجد بيانات'}</p>
+          <p className="print-shell__error-text">{error || t('pages.CurriculumPrintPage.لا_توجد_بيانات', 'لا توجد بيانات')}</p>
           <button type="button" className="google-btn google-btn--filled" onClick={handleBack}>
             العودة إلى المناهج
           </button>
@@ -118,7 +119,7 @@ export default function CurriculumPrintPage() {
   return (
     <PrintDocumentShell
       documentTitle={subject.name}
-      subtitle="خطة التوزيع الأسبوعي — خمسون أسبوعاً"
+      subtitle={t('pages.CurriculumPrintPage.خطة_التوزيع_الأسبوعي_خمسون_أسبوعاً', 'خطة التوزيع الأسبوعي — خمسون أسبوعاً')}
       metaLines={[`تاريخ إصدار العرض: ${printedAt}`]}
       onBack={handleBack}
     >
@@ -126,7 +127,7 @@ export default function CurriculumPrintPage() {
         <thead>
           <tr>
             <th scope="col" className="print-table__col-week">
-              الأسبوع
+              {t('utils.reportDetailsHtml.الأسبوع', 'الأسبوع')}
             </th>
             <th scope="col">الدرس / الهدف التعليمي</th>
           </tr>

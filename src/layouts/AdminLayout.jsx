@@ -19,12 +19,14 @@ import useSiteContent from '../context/useSiteContent';
 import { getAppNavItems, filterVisibleNavItems } from '../config/appNavItems';
 import { getMobileNavTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const AdminLayout = ({ user }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { canAccessPage } = usePermissions();
-  const { branding, str } = useSiteContent();
+  const { branding } = useSiteContent();
   const [isDarkMode, setIsDarkMode] = useState(() =>
     typeof window !== 'undefined' && (localStorage.getItem('afaq-theme') || 'light') === 'dark'
   );
@@ -82,7 +84,7 @@ const AdminLayout = ({ user }) => {
     navigate('/');
   };
 
-  const navItems = useMemo(() => getAppNavItems(str), [str]);
+  const navItems = useMemo(() => getAppNavItems(t), [t]);
   const visibleNavItems = useMemo(
     () => filterVisibleNavItems(navItems, { canAccessPage, user }),
     [navItems, canAccessPage, user]
@@ -115,17 +117,17 @@ const AdminLayout = ({ user }) => {
         <div className="sidebar-header">
           <div>
             <h2 className="logo-text">
-              {branding.logoText || branding.siteName || 'آفاق'}
+              {branding.logoText || branding.siteName || t('context.siteContentContext.آفاق', 'آفاق')}
             </h2>
             <p className="sidebar-header__subtitle">
-              {branding.adminSubtitle || 'لوحة تحكم الإدارة'}
+              {branding.adminSubtitle || t('context.siteContentContext.لوحة_تحكم_الإدارة', 'لوحة تحكم الإدارة')}
             </p>
           </div>
 
           <button
             className="desktop-collapse-btn"
             onClick={toggleSidebarCollapse}
-            title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+            title={isCollapsed ? t('layouts.AdminLayout.توسيع_القائمة', 'توسيع القائمة') : t('layouts.AdminLayout.طي_القائمة', 'طي القائمة')}
           >
             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
           </button>
@@ -150,9 +152,9 @@ const AdminLayout = ({ user }) => {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="nav-link" onClick={handleLogout} title="تسجيل الخروج">
+          <div className="nav-link" onClick={handleLogout} title={t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}>
             <LogOut size={20} />
-            <span>تسجيل الخروج</span>
+            <span>{t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}</span>
           </div>
         </div>
       </aside>
@@ -163,14 +165,14 @@ const AdminLayout = ({ user }) => {
             {isMobile ? (
               <div className="topbar__brand">
                 <span className="topbar__brand-title">
-                  {branding.logoText || branding.siteName || 'آفاق'}
+                  {branding.logoText || branding.siteName || t('context.siteContentContext.آفاق', 'آفاق')}
                 </span>
               </div>
             ) : null}
           </div>
 
           <div className="topbar__actions">
-            <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
+            <button className="icon-btn" onClick={toggleTheme} title={isDarkMode ? t('layouts.AdminLayout.الوضع_النهاري', 'الوضع النهاري') : t('layouts.AdminLayout.الوضع_الليلي', 'الوضع الليلي')}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 

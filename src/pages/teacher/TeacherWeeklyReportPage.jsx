@@ -9,6 +9,7 @@ import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 
 const ReportItem = ({ title, fieldPath, state, onChange }) => {
+  const { t } = useAppTranslation();
   const isActive = state[fieldPath]?.isActive || false;
 
   return (
@@ -32,7 +33,7 @@ const ReportItem = ({ title, fieldPath, state, onChange }) => {
         <div className="teacher-weekly-item__body">
           <textarea
             className="app-input teacher-weekly-item__textarea"
-            placeholder="اكتب التفاصيل والملاحظات هنا..."
+            placeholder={t('pages.TeacherWeeklyReportPage.اكتب_التفاصيل_والملاحظات_هنا', 'اكتب التفاصيل والملاحظات هنا...')}
             value={state[fieldPath]?.details || ''}
             onChange={(e) => onChange(fieldPath, 'details', e.target.value)}
           />
@@ -102,7 +103,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
 
   const handleSaveReport = async () => {
     if (!actorId) {
-      setError('تعذر تحديد معرف المعلم للحفظ.');
+      setError(t('pages.TeacherDailyLogPage.تعذر_تحديد_معرف_المعلم_للحفظ', 'تعذر تحديد معرف المعلم للحفظ.'));
       return;
     }
     try {
@@ -113,7 +114,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
       const api = FirestoreApi.Api;
       const schoolId = activeSchoolId || (await api.resolveUserSchoolId(user));
       if (!schoolId) {
-        setError('حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.');
+        setError(t('pages.TeacherStudentsPage.حسابك_غير_مرتبط_بأي_مدرسة_يرجى_مراجعة_الإدارة', 'حسابك غير مرتبط بأي مدرسة. يرجى مراجعة الإدارة.'));
         setLoading(false);
         return;
       }
@@ -132,11 +133,11 @@ const TeacherWeeklyReportPage = ({ user }) => {
         },
       });
 
-      setSuccess('تم حفظ رفع التقرير الأسبوعي بنجاح! جزاك الله خيراً.');
+      setSuccess(t('pages.TeacherWeeklyReportPage.تم_حفظ_رفع_التقرير_الأسبوعي_بنجاح_جزاك_الله_خيراً', 'تم حفظ رفع التقرير الأسبوعي بنجاح! جزاك الله خيراً.'));
       setReportState(initialReportState);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء حفظ التقرير الأسبوعي');
+      setError(t('pages.TeacherWeeklyReportPage.حدث_خطأ_أثناء_حفظ_التقرير_الأسبوعي', 'حدث خطأ أثناء حفظ التقرير الأسبوعي'));
     } finally {
       setLoading(false);
     }
@@ -147,8 +148,8 @@ const TeacherWeeklyReportPage = ({ user }) => {
       <PageHeader
         icon={FileText}
         iconColor="var(--success-color)"
-        title="التقرير الأسبوعي للأعمال"
-        subtitle="توثيق النشاطات الدعوية والمجتمعية"
+        title={t('pages.TeacherWeeklyReportPage.التقرير_الأسبوعي_للأعمال', 'التقرير الأسبوعي للأعمال')}
+        subtitle={t('pages.TeacherWeeklyReportPage.توثيق_النشاطات_الدعوية_والمجتمعية', 'توثيق النشاطات الدعوية والمجتمعية')}
       />
 
       {error && <div className="app-alert app-alert--error teacher-weekly-alert">{error}</div>}
@@ -177,12 +178,12 @@ const TeacherWeeklyReportPage = ({ user }) => {
       )}
 
       <div className="teacher-weekly-list">
-      <ReportItem title="خطبة الجمعة" fieldPath="fridaySermon" state={reportState} onChange={handleStateChange} />
-      <ReportItem title="دعوة غير المسلمين" fieldPath="dawah" state={reportState} onChange={handleStateChange} />
-      <ReportItem title="تعليم الكبار" fieldPath="adultEducation" state={reportState} onChange={handleStateChange} />
-      <ReportItem title="دروس أسبوعية في المسجد" fieldPath="mosqueLesson" state={reportState} onChange={handleStateChange} />
-      <ReportItem title="عقود الزواج" fieldPath="marriageContract" state={reportState} onChange={handleStateChange} />
-      <ReportItem title="أعمال وأنشطة أخرى" fieldPath="others" state={reportState} onChange={handleStateChange} />
+      <ReportItem title={t('pages.TeacherWeeklyReportPage.خطبة_الجمعة', 'خطبة الجمعة')} fieldPath="fridaySermon" state={reportState} onChange={handleStateChange} />
+      <ReportItem title={t('pages.TeacherWeeklyReportPage.دعوة_غير_المسلمين', 'دعوة غير المسلمين')} fieldPath="dawah" state={reportState} onChange={handleStateChange} />
+      <ReportItem title={t('pages.TeacherWeeklyReportPage.تعليم_الكبار', 'تعليم الكبار')} fieldPath="adultEducation" state={reportState} onChange={handleStateChange} />
+      <ReportItem title={t('pages.TeacherWeeklyReportPage.دروس_أسبوعية_في_المسجد', 'دروس أسبوعية في المسجد')} fieldPath="mosqueLesson" state={reportState} onChange={handleStateChange} />
+      <ReportItem title={t('pages.TeacherWeeklyReportPage.عقود_الزواج', 'عقود الزواج')} fieldPath="marriageContract" state={reportState} onChange={handleStateChange} />
+      <ReportItem title={t('pages.TeacherWeeklyReportPage.أعمال_وأنشطة_أخرى', 'أعمال وأنشطة أخرى')} fieldPath="others" state={reportState} onChange={handleStateChange} />
       </div>
 
       {!isMobile && (

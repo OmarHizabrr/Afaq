@@ -14,16 +14,16 @@ import { loadSchoolReportExport } from '../../utils/loadSchoolReportExport';
 import LazyReportPrintPreviewModal from '../../components/LazyReportPrintPreviewModal';
 
 const schoolLevelSubtitle = (sl) =>
-  sl === 'adults' ? 'نوع الحلقة: كبار' : sl === 'children' ? 'نوع الحلقة: صغار' : 'نوع الحلقة: غير محدد';
+  sl === 'adults' ? t('pages.SchoolDetailsPage.نوع_الحلقة_كبار', 'نوع الحلقة: كبار') : sl === 'children' ? t('pages.SchoolDetailsPage.نوع_الحلقة_صغار', 'نوع الحلقة: صغار') : t('pages.SchoolDetailsPage.نوع_الحلقة_غير_محدد', 'نوع الحلقة: غير محدد');
 
 const USER_ROLE_LABELS = {
-  system_admin: 'مدير نظام (وصول كامل)',
-  admin: 'مدير النظام',
-  supervisor_arab: 'مشرف عام',
-  supervisor_local: 'مشرف منطقة',
-  teacher: 'معلم',
-  student: 'طالب',
-  unassigned: 'غير معيّن',
+  system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
+  admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
+  supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
+  supervisor_local: t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة'),
+  teacher: t('components.MessengerPanel.معلم', 'معلم'),
+  student: t('components.MessengerPanel.طالب', 'طالب'),
+  unassigned: t('pages.SchoolDetailsPage.غير_معيّن', 'غير معيّن'),
 };
 const ASSIGN_ROLE_FILTER_ORDER = [
   'teacher',
@@ -36,9 +36,10 @@ const ASSIGN_ROLE_FILTER_ORDER = [
   'all',
 ];
 
-const userRoleLabel = (role) => USER_ROLE_LABELS[role] || role || 'مستخدم';
+const userRoleLabel = (role) => USER_ROLE_LABELS[role] || role || t('pages.SchoolDetailsPage.مستخدم', 'مستخدم');
 
 const SchoolDetailsPage = () => {
+  const { t } = useAppTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -209,7 +210,7 @@ const SchoolDetailsPage = () => {
         fetchSchoolDetails();
       } catch (err) {
         console.error(err);
-        setAssignError('حدث خطأ أثناء التعيين.');
+        setAssignError(t('pages.RegionDetailsPage.حدث_خطأ_أثناء_التعيين', 'حدث خطأ أثناء التعيين.'));
       } finally {
         setAssigning(false);
       }
@@ -230,7 +231,7 @@ const SchoolDetailsPage = () => {
         fetchSchoolDetails();
       } catch (err) {
         console.error(err);
-        setAssignError('حدث خطأ أثناء التعيين الجماعي.');
+        setAssignError(t('pages.SchoolDetailsPage.حدث_خطأ_أثناء_التعيين_الجماعي', 'حدث خطأ أثناء التعيين الجماعي.'));
       } finally {
         setAssigning(false);
       }
@@ -290,7 +291,7 @@ const SchoolDetailsPage = () => {
         await fetchSchoolDetails();
       } catch (err) {
         console.error(err);
-        setAssignError('تعذر إزالة العضو من المدرسة.');
+        setAssignError(t('pages.SchoolDetailsPage.تعذر_إزالة_العضو_من_المدرسة', 'تعذر إزالة العضو من المدرسة.'));
       } finally {
         setAssigning(false);
       }
@@ -315,11 +316,11 @@ const SchoolDetailsPage = () => {
       try {
         const api = FirestoreApi.Api;
         await api.deleteData(api.getSupervisorReportDoc(reportItem.ownerId, reportItem.id));
-        setReportSuccess('تم حذف التقرير بنجاح.');
+        setReportSuccess(t('pages.SchoolDetailsPage.تم_حذف_التقرير_بنجاح', 'تم حذف التقرير بنجاح.'));
         await fetchSchoolDetails();
       } catch (err) {
         console.error(err);
-        setReportError('تعذر حذف التقرير.');
+        setReportError(t('pages.ReportDetailsPage.تعذر_حذف_التقرير', 'تعذر حذف التقرير.'));
       } finally {
         setReportWorkingId('');
       }
@@ -442,7 +443,7 @@ const SchoolDetailsPage = () => {
             {reportError && (
               <div className="app-alert app-alert--error app-alert--dismissible school-details-page-alert">
                 <span>{reportError}</span>
-                <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setReportError('')}>
+                <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setReportError('')}>
                   <X size={14} />
                 </button>
               </div>
@@ -450,16 +451,16 @@ const SchoolDetailsPage = () => {
             {reportSuccess && (
               <div className="app-alert app-alert--success app-alert--dismissible school-details-page-alert">
                 <span>{reportSuccess}</span>
-                <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setReportSuccess('')}>
+                <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setReportSuccess('')}>
                   <X size={14} />
                 </button>
               </div>
             )}
 
             <div className="school-details-stats-row">
-                {renderStatCard('إجمالي الطلاب', students.length, Users, 'amber')}
-                {renderStatCard('الكادر التعليمي', staff.length, School, 'success')}
-                {renderStatCard('التقارير الميدانية', schoolReports.length, FileText, 'accent')}
+                {renderStatCard(t('pages.DashboardPage.إجمالي_الطلاب', 'إجمالي الطلاب'), students.length, Users, 'amber')}
+                {renderStatCard(t('pages.SchoolDetailsPage.الكادر_التعليمي', 'الكادر التعليمي'), staff.length, School, 'success')}
+                {renderStatCard(t('pages.SchoolDetailsPage.التقارير_الميدانية', 'التقارير الميدانية'), schoolReports.length, FileText, 'accent')}
             </div>
 
             <div className="school-details-grid">
@@ -474,21 +475,21 @@ const SchoolDetailsPage = () => {
                                 <Search size={14} className="school-details-panel__search-icon" />
                                 <input 
                                     type="text" 
-                                    placeholder="بحث في الكادر..." 
+                                    placeholder={t('pages.SchoolDetailsPage.بحث_في_الكادر', 'بحث في الكادر...')} 
                                     value={staffSearch}
                                     onChange={(e) => setStaffSearch(e.target.value)}
                                     className="school-details-panel__search-input"
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
+                              <button className="icon-btn" title={t('pages.SchoolDetailsPage.إضافة_عضو_للمدرسة', 'إضافة عضو للمدرسة')} onClick={() => { setIsModalOpen(true); setSelectedIds([]); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                             )}
                         </div>
                     </div>
                     {assignError && (
                       <div className="app-alert app-alert--error app-alert--dismissible school-details-page-alert">
                         <span>{assignError}</span>
-                        <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setAssignError('')}>
+                        <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setAssignError('')}>
                           <X size={14} />
                         </button>
                       </div>
@@ -529,14 +530,14 @@ const SchoolDetailsPage = () => {
                                 <Search size={14} className="school-details-panel__search-icon" />
                                 <input 
                                     type="text" 
-                                    placeholder="بحث في الطلاب..." 
+                                    placeholder={t('pages.SchoolDetailsPage.بحث_في_الطلاب', 'بحث في الطلاب...')} 
                                     value={studentSearch}
                                     onChange={(e) => setStudentSearch(e.target.value)}
                                     className="school-details-panel__search-input"
                                 />
                             </div>
                             {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                              <button className="icon-btn" title="إضافة عضو للمدرسة" onClick={() => { setIsModalOpen(true); setSelectedIds([]); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
+                              <button className="icon-btn" title={t('pages.SchoolDetailsPage.إضافة_عضو_للمدرسة', 'إضافة عضو للمدرسة')} onClick={() => { setIsModalOpen(true); setSelectedIds([]); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                             )}
                         </div>
                     </div>
@@ -575,7 +576,7 @@ const SchoolDetailsPage = () => {
               <div className="school-details-report-filters">
                 <input
                   className="app-input"
-                  placeholder="بحث بالعنوان/المشرف/التاريخ..."
+                  placeholder={t('pages.SchoolDetailsPage.بحث_بالعنوان_المشرف_التاريخ', 'بحث بالعنوان/المشرف/التاريخ...')}
                   value={reportQuery}
                   onChange={(e) => setReportQuery(e.target.value)}
                 />
@@ -598,8 +599,8 @@ const SchoolDetailsPage = () => {
               {filteredReports.length === 0 ? (
                 <p className="school-details-panel__empty">
                   {schoolReports.length === 0
-                    ? 'لا توجد تقارير محفوظة لهذه المدرسة حتى الآن.'
-                    : 'لا توجد نتائج مطابقة للفلاتر الحالية.'}
+                    ? t('pages.SchoolDetailsPage.لا_توجد_تقارير_محفوظة_لهذه_المدرسة_حتى_الآن', 'لا توجد تقارير محفوظة لهذه المدرسة حتى الآن.')
+                    : t('pages.SchoolDetailsPage.لا_توجد_نتائج_مطابقة_للفلاتر_الحالية', 'لا توجد نتائج مطابقة للفلاتر الحالية.')}
                 </p>
               ) : (
                 <div className="school-details-members-list">
@@ -608,7 +609,7 @@ const SchoolDetailsPage = () => {
                       <div className="school-details-member-item__body">
                         <h4 className="school-details-member-item__name">{rep.reportTitle || 'تقرير إشراف مدرسة'}</h4>
                         <p className="school-details-member-item__sub">
-                          {rep.date || rep.timestamp?.split('T')[0] || '-'} • المشرف: {rep.supervisorName || 'غير محدد'} • {schoolReportSummaryLine(rep)}
+                          {rep.date || rep.timestamp?.split('T')[0] || '-'} • المشرف: {rep.supervisorName || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد')} • {schoolReportSummaryLine(rep)}
                         </p>
                       </div>
                       <div className="school-details-member-item__actions">
@@ -658,7 +659,7 @@ const SchoolDetailsPage = () => {
                             <Search size={18} className="school-details-assign-modal__search-icon" />
                             <input 
                               type="text" 
-                              placeholder="بحث عن مستخدم (الاسم أو البريد)..." 
+                              placeholder={t('pages.SchoolDetailsPage.بحث_عن_مستخدم_الاسم_أو_البريد', 'بحث عن مستخدم (الاسم أو البريد)...')} 
                               value={searchTerm}
                               onChange={(e) => setSearchTerm(e.target.value)}
                               className="app-input school-details-assign-modal__search-input"
@@ -723,7 +724,7 @@ const SchoolDetailsPage = () => {
                                         <div>
                                             <div className="school-details-assign-modal__item-name">{u.displayName}</div>
                                             <div className="school-details-assign-modal__item-sub">
-                                              {userRoleLabel(u.role)} {u.schoolId && u.schoolId !== id ? '(مرتبط بمدرسة أخرى)' : ''}
+                                              {userRoleLabel(u.role)} {u.schoolId && u.schoolId !== id ? t('pages.SchoolDetailsPage.مرتبط_بمدرسة_أخرى', '(مرتبط بمدرسة أخرى)') : ''}
                                             </div>
                                         </div>
                                     </div>
@@ -746,8 +747,8 @@ const SchoolDetailsPage = () => {
             <LazyReportPrintPreviewModal
               open={Boolean(printPreviewRep)}
               onClose={() => setPrintPreviewRep(null)}
-              title="معاينة تقرير المدرسة"
-              bodyHtml={printPreviewRep ? buildSchoolReportBodyHtml(printPreviewRep) : ''}
+              title={t('pages.SchoolDetailsPage.معاينة_تقرير_المدرسة', 'معاينة تقرير المدرسة')}
+              bodyHtml={printPreviewRep ? buildSchoolReportBodyHtml(printPreviewRep, t) : ''}
               pdfExporting={printPdfExporting}
               onDownloadPdf={async () => {
                 if (!printPreviewRep) return;

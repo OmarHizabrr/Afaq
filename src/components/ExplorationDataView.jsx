@@ -22,6 +22,7 @@ const ExplorationDataView = ({
   explorationFieldValues,
   compact = false,
 }) => {
+  const { t } = useAppTranslation();
   const { getById, loading } = useExplorationTypesCache(true);
   const type = explorationTypeId ? getById(explorationTypeId) : null;
 
@@ -50,7 +51,7 @@ const ExplorationDataView = ({
     <div className={`exploration-data-view ${compact ? 'exploration-data-view--compact' : ''}`.trim()}>
       {displayTypeName && (
         <div className="exploration-data-view__type">
-          <span className="exploration-data-view__type-label">النوع</span>
+          <span className="exploration-data-view__type-label">{t('utils.schoolReportExport.النوع', 'النوع')}</span>
           <span className="exploration-data-view__type-name">{displayTypeName}</span>
         </div>
       )}

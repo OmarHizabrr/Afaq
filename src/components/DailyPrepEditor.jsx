@@ -31,6 +31,7 @@ export default function DailyPrepEditor({
   studentsLoading = false,
   onSchoolChange,
 }) {
+  const { t } = useAppTranslation();
   const {
     schoolId = '',
     prepPeriod = 'weekly',
@@ -106,7 +107,7 @@ export default function DailyPrepEditor({
 
         <div className="daily-prep-setup__school">
           <label className="app-label" htmlFor="daily-prep-edit-school">
-            {broadSchoolPick ? 'اختر المدرسة' : 'المدرسة'}
+            {broadSchoolPick ? t('components.DailyPrepEditor.اختر_المدرسة', 'اختر المدرسة') : t('components.DailyPrepEditor.المدرسة', 'المدرسة')}
           </label>
           {schoolOptions.length === 0 ? (
             <p className="daily-prep-setup__hint">لا توجد مدارس متاحة.</p>
@@ -124,7 +125,7 @@ export default function DailyPrepEditor({
               ))}
             </AppSelect>
           ) : (
-            <div className="daily-prep-school-grid" role="listbox" aria-label="اختيار المدرسة">
+            <div className="daily-prep-school-grid" role="listbox" aria-label={t('components.DailyPrepEditor.اختيار_المدرسة', 'اختيار المدرسة')}>
               {schoolOptions.map((o) => (
                 <button
                   key={o.id}
@@ -144,7 +145,7 @@ export default function DailyPrepEditor({
 
         <div className="daily-prep-setup__period">
           <span className="app-label">نوع الفترة</span>
-          <div className="prep-period-chips" role="group" aria-label="نوع فترة التحضير">
+          <div className="prep-period-chips" role="group" aria-label={t('components.DailyPrepEditor.نوع_فترة_التحضير', 'نوع فترة التحضير')}>
             {PREP_PERIOD_OPTIONS.map((o) => {
               const Icon = o.Icon;
               return (
@@ -285,7 +286,7 @@ export default function DailyPrepEditor({
                         <input
                           type="text"
                           className="app-input daily-prep-table__input daily-prep-table__input--mem"
-                          placeholder={present ? 'مثال: صفحة 10' : '—'}
+                          placeholder={present ? t('components.DailyPrepEditor.مثال_صفحة_10', 'مثال: صفحة 10') : '—'}
                           value={record.memorization || ''}
                           onChange={(e) =>
                             handleTrackingChange(record.studentId, 'memorization', e.target.value)
@@ -297,7 +298,7 @@ export default function DailyPrepEditor({
                         <input
                           type="text"
                           className="app-input daily-prep-table__input daily-prep-table__input--rev"
-                          placeholder={present ? 'مثال: جزء عم' : '—'}
+                          placeholder={present ? t('components.DailyPrepEditor.مثال_جزء_عم', 'مثال: جزء عم') : '—'}
                           value={record.review || ''}
                           onChange={(e) =>
                             handleTrackingChange(record.studentId, 'review', e.target.value)
@@ -309,7 +310,7 @@ export default function DailyPrepEditor({
                         <input
                           type="text"
                           className="app-input daily-prep-table__input"
-                          placeholder="ملاحظة على الطالب..."
+                          placeholder={t('components.DailyPrepEditor.ملاحظة_على_الطالب', 'ملاحظة على الطالب...')}
                           value={record.note || ''}
                           onChange={(e) => handleTrackingChange(record.studentId, 'note', e.target.value)}
                         />
@@ -329,7 +330,7 @@ export default function DailyPrepEditor({
               id="prep-edit-session-notes"
               className="app-input daily-prep-session-notes__input"
               rows={3}
-              placeholder="اكتب أي ملاحظات تريد إرفاقها مع هذا التحضير..."
+              placeholder={t('components.DailyPrepEditor.اكتب_أي_ملاحظات_تريد_إرفاقها_مع_هذا_التحضير', 'اكتب أي ملاحظات تريد إرفاقها مع هذا التحضير...')}
               value={prepNotes}
               onChange={(e) => patch({ prepNotes: e.target.value })}
             />

@@ -1,18 +1,24 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 import BusyButton from './BusyButton';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const ConfirmDialog = ({
   open,
-  title = 'تأكيد الإجراء',
+  title,
   message = '',
-  confirmLabel = 'تأكيد',
-  cancelLabel = 'إلغاء',
+  confirmLabel,
+  cancelLabel,
   danger = false,
   loading = false,
   onConfirm,
   onCancel,
 }) => {
+  const { t } = useAppTranslation();
+  const resolvedTitle = title ?? t('components.ConfirmDialog.تأكيد_الإجراء', 'تأكيد الإجراء');
+  const resolvedConfirm = confirmLabel ?? t('components.ConfirmDialog.تأكيد', 'تأكيد');
+  const resolvedCancel = cancelLabel ?? t('components.ConfirmDialog.إلغاء', 'إلغاء');
+
   if (!open) return null;
 
   return (
@@ -21,11 +27,11 @@ const ConfirmDialog = ({
         <div className="confirm-dialog__icon">
           <AlertTriangle size={22} color={danger ? 'var(--danger-color)' : 'var(--warning-color)'} />
         </div>
-        <h3 className="confirm-dialog__title">{title}</h3>
+        <h3 className="confirm-dialog__title">{resolvedTitle}</h3>
         <p className="confirm-dialog__message">{message}</p>
         <div className="confirm-dialog__actions">
           <BusyButton type="button" className="btn-md btn-md--outline" onClick={onCancel} busy={loading}>
-            {cancelLabel}
+            {resolvedCancel}
           </BusyButton>
           <BusyButton
             type="button"
@@ -33,7 +39,7 @@ const ConfirmDialog = ({
             onClick={onConfirm}
             busy={loading}
           >
-            {confirmLabel}
+            {resolvedConfirm}
           </BusyButton>
         </div>
       </div>

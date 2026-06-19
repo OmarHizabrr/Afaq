@@ -9,6 +9,7 @@ function avatarSrc(u) {
 }
 
 const RecipientUserCard = ({ user: u, checked, onToggle, profileHref, roleLabel }) => {
+  const { t } = useAppTranslation();
   return (
     <div
       role="button"
@@ -31,7 +32,7 @@ const RecipientUserCard = ({ user: u, checked, onToggle, profileHref, roleLabel 
           onToggle(e.target.checked);
         }}
         className="recipient-user-card__check"
-        aria-label="تحديد"
+        aria-label={t('components.RecipientUserCard.تحديد', 'تحديد')}
       />
       <img className="recipient-user-card__avatar" src={avatarSrc(u)} alt="" />
       <div className="recipient-user-card__body">
@@ -46,14 +47,14 @@ const RecipientUserCard = ({ user: u, checked, onToggle, profileHref, roleLabel 
         <Link
           to={profileHref}
           className="recipient-user-card__profile"
-          title="الملف الشخصي"
-          aria-label="عرض الملف الشخصي"
+          title={t('components.RecipientUserCard.الملف_الشخصي', 'الملف الشخصي')}
+          aria-label={t('components.RecipientUserCard.عرض_الملف_الشخصي', 'عرض الملف الشخصي')}
           onClick={(e) => e.stopPropagation()}
         >
           <Eye size={20} />
         </Link>
       ) : (
-        <span className="recipient-user-card__profile recipient-user-card__profile--disabled" title="غير متاح">
+        <span className="recipient-user-card__profile recipient-user-card__profile--disabled" title={t('components.RecipientUserCard.غير_متاح', 'غير متاح')}>
           <Eye size={20} />
         </span>
       )}

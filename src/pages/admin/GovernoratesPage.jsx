@@ -19,6 +19,7 @@ import {
 } from '../../utils/permissionDataScope';
 
 const GovernoratesPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
@@ -66,7 +67,7 @@ const GovernoratesPage = () => {
       setGovernorates(data);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء جلب البيانات');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_جلب_البيانات', 'حدث خطأ أثناء جلب البيانات'));
     } finally {
       setLoading(false);
     }
@@ -114,12 +115,12 @@ const GovernoratesPage = () => {
       setGovName('');
       setGovCountry('');
       setIsAdding(false);
-      setSuccess('تمت إضافة المحافظة بنجاح.');
+      setSuccess(t('pages.GovernoratesPage.تمت_إضافة_المحافظة_بنجاح', 'تمت إضافة المحافظة بنجاح.'));
       setError('');
       fetchGovernorates(); // Refresh list
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الإضافة');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_الإضافة', 'حدث خطأ أثناء الإضافة'));
     } finally {
       setSaving(false);
     }
@@ -142,12 +143,12 @@ const GovernoratesPage = () => {
       setGovName('');
       setGovCountry('');
       setIsEditing(null);
-      setSuccess('تم تحديث المحافظة بنجاح.');
+      setSuccess(t('pages.GovernoratesPage.تم_تحديث_المحافظة_بنجاح', 'تم تحديث المحافظة بنجاح.'));
       setError('');
       fetchGovernorates();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء التحديث');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_التحديث', 'حدث خطأ أثناء التحديث'));
     } finally {
       setSaving(false);
     }
@@ -171,7 +172,7 @@ const GovernoratesPage = () => {
     const fallbackName = expForm.selectedType?.name ? `محافظة - ${expForm.selectedType.name}` : '';
     const derivedName = expForm.deriveDisplayName(fallbackName);
     if (!derivedName) {
-      setError('لا يمكن استخراج اسم المحافظة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم" داخل النموذج.');
+      setError(t('pages.GovernoratesPage.لا_يمكن_استخراج_اسم_المحافظة_من_حقول_النموذج_أضف_حقلاً_نصياً', 'لا يمكن استخراج اسم المحافظة من حقول النموذج. أضف حقلاً نصياً يحوي "اسم" داخل النموذج.'));
       return;
     }
     setExpSaving(true);
@@ -191,12 +192,12 @@ const GovernoratesPage = () => {
       });
       setIsExploringAdding(false);
       expForm.reset();
-      setSuccess('تمت إضافة المحافظة من نموذج الاستكشاف بنجاح.');
+      setSuccess(t('pages.GovernoratesPage.تمت_إضافة_المحافظة_من_نموذج_الاستكشاف_بنجاح', 'تمت إضافة المحافظة من نموذج الاستكشاف بنجاح.'));
       setError('');
       fetchGovernorates();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء الإضافة');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_الإضافة', 'حدث خطأ أثناء الإضافة'));
     } finally {
       setExpSaving(false);
     }
@@ -207,23 +208,23 @@ const GovernoratesPage = () => {
       const api = FirestoreApi.Api;
       const docRef = api.getGovernorateDoc(id);
       await api.deleteData(docRef);
-      setSuccess('تم حذف المحافظة بنجاح.');
+      setSuccess(t('pages.GovernoratesPage.تم_حذف_المحافظة_بنجاح', 'تم حذف المحافظة بنجاح.'));
       setError('');
       fetchGovernorates();
     } catch (err) {
       console.error(err);
-      setError('لا يمكن الحذف في الوقت الحالي.');
+      setError(t('pages.CurriculumPage.لا_يمكن_الحذف_في_الوقت_الحالي', 'لا يمكن الحذف في الوقت الحالي.'));
     }
   };
 
   return (
     <div className="governorates-page geo-page">
-      <PageHeader icon={Map} title="إدارة المحافظات">
+      <PageHeader icon={Map} title={t('pages.GovernoratesPage.إدارة_المحافظات', 'إدارة المحافظات')}>
         {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => { setIsAdding(true); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
             <Plus size={18} />
-            <span className="geo-toolbar__long">إضافة محافظة</span>
-            <span className="geo-toolbar__short">إضافة</span>
+            <span className="geo-toolbar__long">{t('config.permissionRegistry.إضافة_محافظة', 'إضافة محافظة')}</span>
+            <span className="geo-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.governorates, 'governorate_add') &&
@@ -231,7 +232,7 @@ const GovernoratesPage = () => {
           <button type="button" className="google-btn google-btn--toolbar" onClick={openExplorationModal}>
             <Compass size={18} />
             <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
-            <span className="geo-toolbar__short">استكشاف</span>
+            <span className="geo-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
       </PageHeader>
@@ -239,7 +240,7 @@ const GovernoratesPage = () => {
       {showScopeNotice && ready && pageDataScope(PERMISSION_PAGE_IDS.governorates) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info app-alert--dismissible geo-page-alert">
           <span>عرض محدود: المحافظات الظاهرة مرتبطة بمناطق مجموعاتك (عضوية منطقة أو ما يترتب عليها).</span>
-          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setShowScopeNotice(false)}>
+          <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setShowScopeNotice(false)}>
             <X size={14} />
           </button>
         </div>
@@ -247,7 +248,7 @@ const GovernoratesPage = () => {
       {error && (
         <div className="app-alert app-alert--error app-alert--dismissible geo-page-alert">
           <span>{error}</span>
-          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setError('')}>
+          <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setError('')}>
             <X size={14} />
           </button>
         </div>
@@ -255,7 +256,7 @@ const GovernoratesPage = () => {
       {success && (
         <div className="app-alert app-alert--success app-alert--dismissible geo-page-alert">
           <span>{success}</span>
-          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setSuccess('')}>
+          <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setSuccess('')}>
             <X size={14} />
           </button>
         </div>
@@ -264,13 +265,13 @@ const GovernoratesPage = () => {
       {/* Add/Edit Modal */}
       <FormModal
         open={isAdding || !!isEditing}
-        title={isEditing ? 'تعديل المحافظة' : 'إضافة محافظة'}
+        title={isEditing ? t('pages.GovernoratesPage.تعديل_المحافظة', 'تعديل المحافظة') : t('config.permissionRegistry.إضافة_محافظة', 'إضافة محافظة')}
         onClose={() => { setIsAdding(false); setIsEditing(null); setGovName(''); setGovCountry(''); }}
       >
         <form onSubmit={isEditing ? handleEdit : handleAdd} className="geo-form">
           <input 
             type="text" 
-            placeholder="اسم المحافظة (مثال: صنعاء)"
+            placeholder={t('pages.GovernoratesPage.اسم_المحافظة_مثال_صنعاء', 'اسم المحافظة (مثال: صنعاء)')}
             value={govName}
             onChange={(e) => setGovName(e.target.value)}
             autoFocus
@@ -278,7 +279,7 @@ const GovernoratesPage = () => {
           />
           <input
             type="text"
-            placeholder="الدولة (مثال: MALAWI)"
+            placeholder={t('pages.GovernoratesPage.الدولة_مثال_MALAWI', 'الدولة (مثال: MALAWI)')}
             value={govCountry}
             onChange={(e) => setGovCountry(e.target.value)}
             className="app-input geo-form__field"
@@ -291,7 +292,7 @@ const GovernoratesPage = () => {
             </button>
             <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled modal-footer-actions__btn">
               <span className="modal-footer-actions__btn-inner">
-                <Save size={14} aria-hidden /> {isEditing ? 'تحديث' : 'حفظ'}
+                <Save size={14} aria-hidden /> {isEditing ? t('pages.GovernoratesPage.تحديث', 'تحديث') : t('components.MessengerPanel.حفظ', 'حفظ')}
               </span>
             </BusyButton>
           </div>
@@ -300,7 +301,7 @@ const GovernoratesPage = () => {
 
       <FormModal
         open={isExploringAdding}
-        title="إضافة محافظة من نموذج الاستكشاف"
+        title={t('pages.GovernoratesPage.إضافة_محافظة_من_نموذج_الاستكشاف', 'إضافة محافظة من نموذج الاستكشاف')}
         onClose={() => setIsExploringAdding(false)}
       >
         <form onSubmit={handleExplorationAdd}>
@@ -308,7 +309,7 @@ const GovernoratesPage = () => {
             controller={expForm}
             actorUser={actorUser}
             storageUserId={storageUserId}
-            heading="حقول نموذج الاستكشاف"
+            heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
             currentPageId={PERMISSION_PAGE_IDS.governorates}
           />
           <div className="modal-footer-actions modal-footer-actions--spaced">
@@ -337,7 +338,7 @@ const GovernoratesPage = () => {
                 <h3 className="geo-entity-card__title">{gov.name}</h3>
                 <span className="geo-entity-card__id">ID: {gov.id.substring(0,8)}...</span>
                 <div className="geo-entity-card__meta">
-                  الدولة: {gov.country || 'غير محددة'}
+                  الدولة: {gov.country || t('pages.GovernorateDetailsPage.غير_محددة', 'غير محددة')}
                 </div>
                 <div className="geo-entity-card__badge">
                   {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.view) && (
@@ -347,17 +348,17 @@ const GovernoratesPage = () => {
               </div>
               <div className="geo-entity-card__actions">
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_view') && (
-                  <button type="button" className="icon-btn" onClick={() => navigate(`/governorates/${gov.id}`)} title="عرض التفاصيل">
+                  <button type="button" className="icon-btn" onClick={() => navigate(`/governorates/${gov.id}`)} title={t('config.permissionRegistry.عرض_التفاصيل', 'عرض التفاصيل')}>
                     <Eye size={16} color="var(--accent-color)" />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_edit') && (
-                  <button type="button" className="icon-btn" onClick={() => startEdit(gov)} title="تعديل">
+                  <button type="button" className="icon-btn" onClick={() => startEdit(gov)} title={t('components.ExplorationListCard.تعديل', 'تعديل')}>
                     <Edit2 size={16} />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.governorates, 'governorate_delete') && (
-                  <button type="button" className="icon-btn" onClick={() => setPendingDelete({ id: gov.id, name: gov.name })} title="حذف">
+                  <button type="button" className="icon-btn" onClick={() => setPendingDelete({ id: gov.id, name: gov.name })} title={t('components.ExplorationListCard.حذف', 'حذف')}>
                     <Trash2 size={16} color="var(--danger-color)" />
                   </button>
                 )}
@@ -370,7 +371,7 @@ const GovernoratesPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.name}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
@@ -393,7 +394,7 @@ const GovernoratesPage = () => {
             },
             userData: actorUser || {},
           });
-          setSuccess('تم تحديث بيانات نموذج المحافظة.');
+          setSuccess(t('pages.GovernoratesPage.تم_تحديث_بيانات_نموذج_المحافظة', 'تم تحديث بيانات نموذج المحافظة.'));
           setError('');
           fetchGovernorates();
         }}
@@ -401,9 +402,9 @@ const GovernoratesPage = () => {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        title="تأكيد حذف المحافظة"
+        title={t('pages.GovernoratesPage.تأكيد_حذف_المحافظة', 'تأكيد حذف المحافظة')}
         message={`سيتم حذف المحافظة "${pendingDelete?.name || ''}" نهائياً.`}
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         danger
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {

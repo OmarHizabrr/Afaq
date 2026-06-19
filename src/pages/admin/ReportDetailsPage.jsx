@@ -69,12 +69,13 @@ function resolveReportDocRef(api, type, ownerId, reportId) {
 }
 
 const TYPE_LABELS = {
-  visit: 'زيارة ميدانية',
-  daily: 'تحضير يومي',
-  weekly: 'تقرير أسبوعي'
+  visit: t('pages.ReportDetailsPage.زيارة_ميدانية', 'زيارة ميدانية'),
+  daily: t('pages.ReportDetailsPage.تحضير_يومي', 'تحضير يومي'),
+  weekly: t('pages.ReportDetailsPage.تقرير_أسبوعي', 'تقرير أسبوعي')
 };
 
 const ReportDetailsPage = ({ viewerUser = null }) => {
+  const { t } = useAppTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
@@ -283,7 +284,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       );
     } catch (err) {
       console.error(err);
-      setAdminError('تعذر جلب طلاب المدرسة.');
+      setAdminError(t('pages.ReportDetailsPage.تعذر_جلب_طلاب_المدرسة', 'تعذر جلب طلاب المدرسة.'));
     } finally {
       setEditStudentsLoading(false);
     }
@@ -307,7 +308,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
     const api = FirestoreApi.Api;
     const docRef = resolveReportDocRef(api, report.type, report._ownerId, report.id);
     if (!docRef) {
-      setAdminError('تعذر تحديد مسار المستند.');
+      setAdminError(t('pages.ReportDetailsPage.تعذر_تحديد_مسار_المستند', 'تعذر تحديد مسار المستند.'));
       return;
     }
     setSaving(true);
@@ -316,27 +317,27 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       let data = {};
       if (report.type === 'visit') {
         if (!visitEdit) {
-          setAdminError('بيانات تعديل الزيارة غير جاهزة بعد.');
+          setAdminError(t('pages.ReportDetailsPage.بيانات_تعديل_الزيارة_غير_جاهزة_بعد', 'بيانات تعديل الزيارة غير جاهزة بعد.'));
           setSaving(false);
           return;
         }
         if (!visitEdit.schoolId) {
-          setAdminError('يرجى اختيار المدرسة من القائمة.');
+          setAdminError(t('pages.ReportDetailsPage.يرجى_اختيار_المدرسة_من_القائمة', 'يرجى اختيار المدرسة من القائمة.'));
           setSaving(false);
           return;
         }
         if (!visitEdit.villageId) {
-          setAdminError('يرجى اختيار القرية من القائمة.');
+          setAdminError(t('pages.ReportDetailsPage.يرجى_اختيار_القرية_من_القائمة', 'يرجى اختيار القرية من القائمة.'));
           setSaving(false);
           return;
         }
         if (!visitEdit.subjectId) {
-          setAdminError('يرجى اختيار المادة من القائمة.');
+          setAdminError(t('pages.ReportDetailsPage.يرجى_اختيار_المادة_من_القائمة', 'يرجى اختيار المادة من القائمة.'));
           setSaving(false);
           return;
         }
         if (!visitEdit.week) {
-          setAdminError('يرجى اختيار الدرس/الأسبوع من القائمة.');
+          setAdminError(t('pages.ReportDetailsPage.يرجى_اختيار_الدرس_الأسبوع_من_القائمة', 'يرجى اختيار الدرس/الأسبوع من القائمة.'));
           setSaving(false);
           return;
         }
@@ -347,7 +348,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         };
       } else if (report.type === 'daily') {
         if (!dailyEdit) {
-          setAdminError('بيانات التعديل غير جاهزة بعد.');
+          setAdminError(t('pages.ReportDetailsPage.بيانات_التعديل_غير_جاهزة_بعد', 'بيانات التعديل غير جاهزة بعد.'));
           setSaving(false);
           return;
         }
@@ -355,12 +356,12 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
           (e) => (e.selectedWeeks || []).length > 0
         );
         if (!hasCurriculum) {
-          setAdminError('اختر مادة واحدة أو أكثر من المناهج وحدّد الأسبوع/الدرس لكل مادة');
+          setAdminError(t('pages.ReportDetailsPage.اختر_مادة_واحدة_أو_أكثر_من_المناهج_وحدّد_الأسبوع_الدرس_لكل_م', 'اختر مادة واحدة أو أكثر من المناهج وحدّد الأسبوع/الدرس لكل مادة'));
           setSaving(false);
           return;
         }
         if (!dailyEdit.schoolId) {
-          setAdminError('يرجى اختيار المدرسة');
+          setAdminError(t('pages.ReportDetailsPage.يرجى_اختيار_المدرسة', 'يرجى اختيار المدرسة'));
           setSaving(false);
           return;
         }
@@ -384,7 +385,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             ? JSON.parse(weeklyEdit.reportDataJson)
             : {};
         } catch {
-          setAdminError('تنسيق JSON لبيانات التقرير غير صالح.');
+          setAdminError(t('pages.ReportDetailsPage.تنسيق_JSON_لبيانات_التقرير_غير_صالح', 'تنسيق JSON لبيانات التقرير غير صالح.'));
           setSaving(false);
           return;
         }
@@ -402,7 +403,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       editSchoolInitRef.current = null;
     } catch (err) {
       console.error(err);
-      setAdminError('فشل الحفظ. تحقق من قواعد Firestore.');
+      setAdminError(t('pages.ReportDetailsPage.فشل_الحفظ_تحقق_من_قواعد_Firestore', 'فشل الحفظ. تحقق من قواعد Firestore.'));
     } finally {
       setSaving(false);
     }
@@ -418,7 +419,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
     );
     if (!docRef) return;
     if (
-      !window.confirm('حذف هذا التقرير نهائياً؟ لا يمكن التراجع عن العملية.')
+      !window.confirm(t('pages.ReportDetailsPage.حذف_هذا_التقرير_نهائياً؟_لا_يمكن_التراجع_عن_العملية', 'حذف هذا التقرير نهائياً؟ لا يمكن التراجع عن العملية.'))
     ) {
       return;
     }
@@ -430,7 +431,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       else navigate(-1);
     } catch (err) {
       console.error(err);
-      setAdminError('تعذر حذف التقرير.');
+      setAdminError(t('pages.ReportDetailsPage.تعذر_حذف_التقرير', 'تعذر حذف التقرير.'));
     } finally {
       setSaving(false);
     }
@@ -483,8 +484,8 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
       ? `تحضير ${prepPeriodLabel(report.prepPeriod)}`
       : TYPE_LABELS[report.type] || report.type;
 
-  const reportBodyHtml = buildReportDetailsBodyHtml(report);
-  const previewTitle = reportDetailsPreviewTitle(report);
+  const reportBodyHtml = buildReportDetailsBodyHtml(report, t);
+  const previewTitle = reportDetailsPreviewTitle(report, t);
 
   return (
     <div className={`report-details-page portal-page${isMobile && editMode ? ' report-details-page--has-mobile-save' : ''}`}>
@@ -610,7 +611,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               </div>
             </div>
             <div className="report-summary-field">
-              <p className="report-summary-field__label">المدرسة</p>
+              <p className="report-summary-field__label">{t('components.DailyPrepEditor.المدرسة', 'المدرسة')}</p>
               <div className="report-summary-field__row">
                 <School size={18} color="var(--accent-color)" aria-hidden />
                 <strong className="report-summary-field__value">{report.schoolName || '—'}</strong>
@@ -618,7 +619,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             </div>
             {report.type === 'visit' && report.villageName && (
               <div className="report-summary-field">
-                <p className="report-summary-field__label">القرية</p>
+                <p className="report-summary-field__label">{t('pages.SchoolReportPage.القرية', 'القرية')}</p>
                 <div className="report-summary-field__row">
                   <School size={18} color="var(--md-primary)" aria-hidden />
                   <strong className="report-summary-field__value">{report.villageName}</strong>
@@ -686,7 +687,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         {editMode && isAdmin && report.type === 'weekly' && (
           <div className="report-edit-form">
             <label className="app-field app-field--grow">
-              <span className="app-label">تاريخ الإرسال</span>
+              <span className="app-label">{t('utils.reportDetailsHtml.تاريخ_الإرسال', 'تاريخ الإرسال')}</span>
               <input
                 type="date"
                 value={weeklyEdit.submissionDate}
@@ -723,7 +724,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             <div className="report-visit-scores">
               <div className="stat-tile report-visit-score-card">
                 <Star size={24} className="report-visit-score-card__icon report-visit-score-card__icon--warning" aria-hidden />
-                <p className="report-visit-score-card__label">تقييم المعلم</p>
+                <p className="report-visit-score-card__label">{t('pages.SchoolReportPage.تقييم_المعلم', 'تقييم المعلم')}</p>
                 <h2 className="report-visit-score-card__value report-visit-score-card__value--warning">
                   {formatVisitRatingLabel(report.teacherRating)}
                 </h2>
@@ -769,9 +770,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                       </div>
                       <div className="report-visit-student-card__stats">
                         {st.isPresent ? (
-                          <span className="report-status-chip report-status-chip--present"><CheckCircle2 size={14} aria-hidden /> حاضر</span>
+                          <span className="report-status-chip report-status-chip--present"><CheckCircle2 size={14} aria-hidden /> {t('components.SupervisorVisitStudentCard.حاضر', 'حاضر')}</span>
                         ) : (
-                          <span className="report-status-chip report-status-chip--absent"><XCircle size={14} aria-hidden /> غائب</span>
+                          <span className="report-status-chip report-status-chip--absent"><XCircle size={14} aria-hidden /> {t('pages.StudentDetailsPage.غائب', 'غائب')}</span>
                         )}
                         <div className="report-points-badge">
                           {st.points || 0} نقطة
@@ -825,7 +826,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                   <thead>
                     <tr>
                       <th>اسم الطالب</th>
-                      <th>الحالة</th>
+                      <th>{t('utils.schoolReportExport.الحالة', 'الحالة')}</th>
                       <th>الحفظ</th>
                       <th>المراجعة</th>
                       <th>ملاحظة</th>
@@ -890,8 +891,8 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
       <MapLocationOpen
         gpsLocation={report.gpsLocation}
-        label="الموقع الجغرافي للزيارة"
-        subtitle="لم يتم تسجيل إحداثيات GPS لهذا التقرير"
+        label={t('pages.ReportDetailsPage.الموقع_الجغرافي_للزيارة', 'الموقع الجغرافي للزيارة')}
+        subtitle={t('pages.ReportDetailsPage.لم_يتم_تسجيل_إحداثيات_GPS_لهذا_التقرير', 'لم يتم تسجيل إحداثيات GPS لهذا التقرير')}
       />
 
       {isMobile && editMode && isAdmin && (canEditReport || canDeleteReport) ? (

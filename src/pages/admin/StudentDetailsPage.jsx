@@ -11,6 +11,7 @@ import BusyButton from '../../components/BusyButton';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 
 const StudentDetailsPage = () => {
+  const { t } = useAppTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { can, ready, pageDataScope, membershipGroupIds, membershipLoading } = usePermissions();
@@ -77,8 +78,8 @@ const StudentDetailsPage = () => {
             return {
               id: d.id,
               date: data.timestamp?.split('T')[0] || '',
-              subjectName: data.subjectName || 'مادة غير محددة',
-              schoolName: data.schoolName || 'بدون مدرسة',
+              subjectName: data.subjectName || t('pages.StudentDetailsPage.مادة_غير_محددة', 'مادة غير محددة'),
+              schoolName: data.schoolName || t('pages.StudentDetailsPage.بدون_مدرسة', 'بدون مدرسة'),
               isPresent: !!record.isPresent,
               isTested: !!record.isTested,
               note: record.note || '',
@@ -89,7 +90,7 @@ const StudentDetailsPage = () => {
         setActivity(studentActivity);
       } catch (err) {
         console.error(err);
-        setError('تعذر تحميل ملف الطالب.');
+        setError(t('pages.StudentDetailsPage.تعذر_تحميل_ملف_الطالب', 'تعذر تحميل ملف الطالب.'));
       } finally {
         setLoading(false);
       }
@@ -115,7 +116,7 @@ const StudentDetailsPage = () => {
       setStudent((prev) => ({ ...prev, displayName: editName.trim(), phoneNumber: editPhone.trim(), email: editEmail.trim() }));
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ بيانات الطالب.');
+      setError(t('pages.StudentDetailsPage.تعذر_حفظ_بيانات_الطالب', 'تعذر حفظ بيانات الطالب.'));
     } finally {
       setSaving(false);
     }
@@ -145,8 +146,8 @@ const StudentDetailsPage = () => {
             </button>
           </div>
         )}
-        title={<>ملف الطالب: <span className="page-header-accent">{student.displayName || 'بدون اسم'}</span></>}
-        subtitle="كل بيانات الطالب وارتباطاته بالمدارس والمناطق"
+        title={<>ملف الطالب: <span className="page-header-accent">{student.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</span></>}
+        subtitle={t('pages.StudentDetailsPage.كل_بيانات_الطالب_وارتباطاته_بالمدارس_والمناطق', 'كل بيانات الطالب وارتباطاته بالمدارس والمناطق')}
       />
 
       {error && <div className="app-alert app-alert--error">{error}</div>}
@@ -159,17 +160,17 @@ const StudentDetailsPage = () => {
               alt=""
               className="user-details-profile-card__avatar"
             />
-            <h2 className="user-details-profile-card__name">{student.displayName || 'بدون اسم'}</h2>
-            <span className="user-details-profile-card__role">طالب</span>
+            <h2 className="user-details-profile-card__name">{student.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</h2>
+            <span className="user-details-profile-card__role">{t('components.MessengerPanel.طالب', 'طالب')}</span>
 
             {canEdit && (
               <div className="user-details-profile-card__edit-form">
                 <div className="app-field app-field--grow">
-                  <label className="app-label">الاسم</label>
+                  <label className="app-label">{t('pages.VillageDetailsPage.الاسم', 'الاسم')}</label>
                   <input className="app-input" value={editName} onChange={(e) => setEditName(e.target.value)} />
                 </div>
                 <div className="app-field app-field--grow">
-                  <label className="app-label">الهاتف</label>
+                  <label className="app-label">{t('utils.schoolReportExport.الهاتف', 'الهاتف')}</label>
                   <input className="app-input" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} />
                 </div>
                 <div className="app-field app-field--grow">
@@ -188,9 +189,9 @@ const StudentDetailsPage = () => {
             )}
 
             <div className="user-details-profile-card__meta">
-              <div className="user-details-profile-card__meta-row"><User size={16} /> {student.displayName || 'بدون اسم'}</div>
-              <div className="user-details-profile-card__meta-row"><Phone size={16} /> {student.phoneNumber || 'لا يوجد رقم'}</div>
-              <div className="user-details-profile-card__meta-row"><Mail size={16} /> {student.email || 'لا يوجد بريد'}</div>
+              <div className="user-details-profile-card__meta-row"><User size={16} /> {student.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</div>
+              <div className="user-details-profile-card__meta-row"><Phone size={16} /> {student.phoneNumber || t('pages.StudentDetailsPage.لا_يوجد_رقم', 'لا يوجد رقم')}</div>
+              <div className="user-details-profile-card__meta-row"><Mail size={16} /> {student.email || t('pages.StudentDetailsPage.لا_يوجد_بريد', 'لا يوجد بريد')}</div>
             </div>
           </div>
         </div>

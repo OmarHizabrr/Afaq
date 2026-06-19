@@ -21,16 +21,20 @@ import PushNotificationBanner from '../components/PushNotificationBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
+import useAppTranslation from '../hooks/useAppTranslation';
 
-const STUDENT_MENU_ITEMS = [
-  { icon: Home, label: 'الرئيسية', shortName: 'الرئيسية', path: '/student', end: true },
-  { icon: Award, label: 'نتائجي', shortName: 'نتائجي', path: '/student/results' },
-  { icon: Bell, label: 'الإشعارات', shortName: 'الإشعارات', path: '/student/notifications' },
-  { icon: User, label: 'ملفي', shortName: 'ملفي', path: '/student/profile' },
-  { icon: Settings, label: 'الإعدادات', shortName: 'الإعدادات', path: '/student/settings' },
-];
+function getStudentMenuItems(t) {
+  return [
+    { icon: Home, label: t('config.appNavItems.الرئيسية', 'الرئيسية'), shortName: t('config.appNavItems.الرئيسية', 'الرئيسية'), path: '/student', end: true },
+    { icon: Award, label: t('layouts.StudentLayout.نتائجي', 'نتائجي'), shortName: t('layouts.StudentLayout.نتائجي', 'نتائجي'), path: '/student/results' },
+    { icon: Bell, label: t('config.appNavItems.الإشعارات', 'الإشعارات'), shortName: t('config.appNavItems.الإشعارات', 'الإشعارات'), path: '/student/notifications' },
+    { icon: User, label: t('layouts.StudentLayout.ملفي', 'ملفي'), shortName: t('layouts.StudentLayout.ملفي', 'ملفي'), path: '/student/profile' },
+    { icon: Settings, label: t('config.appNavItems.الإعدادات', 'الإعدادات'), shortName: t('config.appNavItems.الإعدادات', 'الإعدادات'), path: '/student/settings' },
+  ];
+}
 
 const StudentLayout = ({ user }) => {
+  const { t } = useAppTranslation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() =>
     typeof window !== 'undefined' && localStorage.getItem('afaq-sidebar-collapsed') === 'true'
@@ -87,7 +91,7 @@ const StudentLayout = ({ user }) => {
     }
   };
 
-  const menuItems = STUDENT_MENU_ITEMS;
+  const menuItems = useMemo(() => getStudentMenuItems(t), [t]);
   const mobileTabs = useMemo(() => getPortalMobileTabs(menuItems, 'student'), [menuItems]);
 
   const closeSidebar = () => {
@@ -116,14 +120,14 @@ const StudentLayout = ({ user }) => {
                   className="sidebar-student-avatar__img"
                 />
               </div>
-              <h3 className="sidebar-brand-title sidebar-brand-title--student">{user?.displayName?.split(/\s+/)[0] || 'طالب'}</h3>
+              <h3 className="sidebar-brand-title sidebar-brand-title--student">{user?.displayName?.split(/\s+/)[0] || t('components.MessengerPanel.طالب', 'طالب')}</h3>
             </div>
           )}
 
           <button
             className="desktop-collapse-btn"
             onClick={toggleSidebarCollapse}
-            title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+            title={isCollapsed ? t('layouts.AdminLayout.توسيع_القائمة', 'توسيع القائمة') : t('layouts.AdminLayout.طي_القائمة', 'طي القائمة')}
           >
             {isCollapsed ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
           </button>
@@ -151,7 +155,7 @@ const StudentLayout = ({ user }) => {
         <div className="sidebar-footer">
           <div className="nav-link nav-link--danger" onClick={handleLogout}>
             <LogOut size={20} />
-            <span>تسجيل الخروج</span>
+            <span>{t('layouts.AdminLayout.تسجيل_الخروج', 'تسجيل الخروج')}</span>
           </div>
         </div>
       </aside>
@@ -162,21 +166,21 @@ const StudentLayout = ({ user }) => {
             {isMobile ? (
               <div className="topbar__brand">
                 <span className="topbar__brand-title">
-                  آفاق <span className="student-topbar-title__accent">التعليمية</span>
+                  {t('context.siteContentContext.آفاق', 'آفاق')} <span className="student-topbar-title__accent">{t('layouts.StudentLayout.التعليمية', 'التعليمية')}</span>
                 </span>
               </div>
             ) : (
               <h2 className="student-topbar-title">
-                آفاق <span className="student-topbar-title__accent">التعليمية</span>
+                {t('context.siteContentContext.آفاق', 'آفاق')} <span className="student-topbar-title__accent">{t('layouts.StudentLayout.التعليمية', 'التعليمية')}</span>
               </h2>
             )}
           </div>
 
           <div className="topbar__actions topbar__actions--tight">
-            <button type="button" className="icon-btn" onClick={toggleTheme} title={isDarkMode ? 'الوضع النهاري' : 'الوضع الليلي'}>
+            <button type="button" className="icon-btn" onClick={toggleTheme} title={isDarkMode ? t('layouts.AdminLayout.الوضع_النهاري', 'الوضع النهاري') : t('layouts.AdminLayout.الوضع_الليلي', 'الوضع الليلي')}>
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <UserMenuDropdown user={user} tagline="طالب نشط" />
+            <UserMenuDropdown user={user} tagline={t('layouts.StudentLayout.طالب_نشط', 'طالب نشط')} />
           </div>
         </header>
 

@@ -21,6 +21,7 @@ import {
 } from '../../utils/reportLabels';
 
 const StatCard = ({ title, value, icon, tone, loading, onClick, hint }) => {
+  const { t } = useAppTranslation();
   const IconComponent = icon;
   const interactive = Boolean(onClick);
   const Tag = interactive ? 'button' : 'div';
@@ -235,7 +236,7 @@ const DashboardPage = () => {
 
   return (
     <div className="dashboard-page">
-      <PageHeader title="لوحة التحكم الرئيسية" subtitle="نظرة عامة على الإحصائيات الحيوية للمنصة" />
+      <PageHeader title={t('pages.DashboardPage.لوحة_التحكم_الرئيسية', 'لوحة التحكم الرئيسية')} subtitle={t('pages.DashboardPage.نظرة_عامة_على_الإحصائيات_الحيوية_للمنصة', 'نظرة عامة على الإحصائيات الحيوية للمنصة')} />
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.dashboard) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info dashboard-page-alert">
@@ -245,13 +246,13 @@ const DashboardPage = () => {
 
       {/* Stats Grid */}
       <div className="dashboard-stats-grid">
-        <StatCard title="المشرفين" value={stats.supervisors} icon={Users} tone="emerald" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
-        <StatCard title="القرى" value={stats.villages} icon={Home} tone="pink" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض القرى')} />
-        <StatCard title="المناطق" value={stats.regions} icon={Map} tone="blue" loading={loading} {...statNav(PERMISSION_PAGE_IDS.regions, '/regions', 'عرض المناطق')} />
-        <StatCard title="المدارس" value={stats.schools} icon={School} tone="amber" loading={loading} {...statNav(PERMISSION_PAGE_IDS.schools, '/schools', 'عرض المدارس')} />
-        <StatCard title="المدرسين" value={stats.teachers} icon={FileText} tone="purple" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', 'عرض المستخدمين')} />
-        <StatCard title="إجمالي الطلاب" value={stats.students} icon={UserCheck} tone="success" loading={loading} {...statNav(PERMISSION_PAGE_IDS.students_management, '/students-management', 'إدارة الطلاب')} />
-        <StatCard title="المهتدون الجدد" value={stats.newConverts} icon={HeartHandshake} tone="pink" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', 'عرض سجل المهتدين في القرى')} />
+        <StatCard title={t('pages.DashboardPage.المشرفين', 'المشرفين')} value={stats.supervisors} icon={Users} tone="emerald" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', t('pages.DashboardPage.عرض_المستخدمين', 'عرض المستخدمين'))} />
+        <StatCard title={t('config.appNavItems.القرى', 'القرى')} value={stats.villages} icon={Home} tone="pink" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', t('pages.DashboardPage.عرض_القرى', 'عرض القرى'))} />
+        <StatCard title={t('config.appNavItems.المناطق', 'المناطق')} value={stats.regions} icon={Map} tone="blue" loading={loading} {...statNav(PERMISSION_PAGE_IDS.regions, '/regions', t('pages.DashboardPage.عرض_المناطق', 'عرض المناطق'))} />
+        <StatCard title={t('config.appNavItems.المدارس', 'المدارس')} value={stats.schools} icon={School} tone="amber" loading={loading} {...statNav(PERMISSION_PAGE_IDS.schools, '/schools', t('pages.DashboardPage.عرض_المدارس', 'عرض المدارس'))} />
+        <StatCard title={t('pages.DashboardPage.المدرسين', 'المدرسين')} value={stats.teachers} icon={FileText} tone="purple" loading={loading} {...statNav(PERMISSION_PAGE_IDS.users, '/users', t('pages.DashboardPage.عرض_المستخدمين', 'عرض المستخدمين'))} />
+        <StatCard title={t('pages.DashboardPage.إجمالي_الطلاب', 'إجمالي الطلاب')} value={stats.students} icon={UserCheck} tone="success" loading={loading} {...statNav(PERMISSION_PAGE_IDS.students_management, '/students-management', t('config.appNavItems.إدارة_الطلاب', 'إدارة الطلاب'))} />
+        <StatCard title={t('pages.DashboardPage.المهتدون_الجدد', 'المهتدون الجدد')} value={stats.newConverts} icon={HeartHandshake} tone="pink" loading={loading} {...statNav(PERMISSION_PAGE_IDS.villages, '/villages', t('pages.DashboardPage.عرض_سجل_المهتدين_في_القرى', 'عرض سجل المهتدين في القرى'))} />
       </div>
 
       {/* Recent Activity Section */}
@@ -297,9 +298,9 @@ const DashboardPage = () => {
                         <div className={`dashboard-activity-item__badge activity-badge--${badgeTone}`}>
                             {badgeLabel}
                         </div>
-                        <h4 className="dashboard-activity-item__school">{act.schoolName || 'مدرسة غير محددة'}</h4>
+                        <h4 className="dashboard-activity-item__school">{act.schoolName || t('pages.DashboardPage.مدرسة_غير_محددة', 'مدرسة غير محددة')}</h4>
                         <p className="dashboard-activity-item__author">
-                           بواسطة: {act.supervisorName || act.teacherName || 'عضو غير معروف'}
+                           بواسطة: {act.supervisorName || act.teacherName || t('pages.DashboardPage.عضو_غير_معروف', 'عضو غير معروف')}
                         </p>
                         {act.type === 'daily' && act.lessonName && (
                           <p className="dashboard-activity-item__extra">{act.lessonName}</p>

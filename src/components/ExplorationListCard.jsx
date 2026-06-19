@@ -1,10 +1,12 @@
 import React from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 
-const ExplorationListCard = ({ item, subtitle, canEdit, canDelete, onEdit, onDelete }) => (
+const ExplorationListCard = ({ item, subtitle, canEdit, canDelete, onEdit, onDelete }) => {
+  const { t } = useAppTranslation();
+  return (
   <article className="surface-card exploration-card">
     <div className="exploration-card__body">
-      <h3 className="exploration-card__title">{item.explorationTypeName || 'نوع غير محدد'}</h3>
+      <h3 className="exploration-card__title">{item.explorationTypeName || t('components.ExplorationListCard.نوع_غير_محدد', 'نوع غير محدد')}</h3>
       <p className="exploration-card__location">
         {item.governorateName || '-'} / {item.regionName || '-'} / {item.villageName || '-'}
       </p>
@@ -12,17 +14,19 @@ const ExplorationListCard = ({ item, subtitle, canEdit, canDelete, onEdit, onDel
     </div>
     <div className="exploration-card__actions">
       {canEdit ? (
-        <button type="button" className="icon-btn" title="تعديل" onClick={onEdit}>
+        <button type="button" className="icon-btn" title={t('components.ExplorationListCard.تعديل', 'تعديل')} onClick={onEdit}>
           <Edit2 size={16} />
         </button>
       ) : null}
       {canDelete ? (
-        <button type="button" className="icon-btn" title="حذف" onClick={onDelete}>
+        <button type="button" className="icon-btn" title={t('components.ExplorationListCard.حذف', 'حذف')} onClick={onDelete}>
           <Trash2 size={16} color="var(--danger-color)" />
         </button>
       ) : null}
     </div>
   </article>
 );
+
+};
 
 export default ExplorationListCard;

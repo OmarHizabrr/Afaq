@@ -32,6 +32,7 @@ import {
 } from '../../services/villageStudentEnrollment';
 
 const VillagesPage = () => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
@@ -56,13 +57,13 @@ const VillagesPage = () => {
   /** لوحة المهتدين السريعة داخل البطاقة */
   const [nmQuickVillageId, setNmQuickVillageId] = useState(null);
   const [nmDraftName, setNmDraftName] = useState('');
-  const [nmDraftType, setNmDraftType] = useState('رجل');
+  const [nmDraftType, setNmDraftType] = useState(t('pages.VillageDetailsPage.رجل', 'رجل'));
   const [nmDraftCategory, setNmDraftCategory] = useState(normalizeMuslimCategory());
   /** مدارس القرية المختارة للتسجيل السريع (افتراضي أول مدرسة) */
   const [nmDraftSchoolIds, setNmDraftSchoolIds] = useState([]);
   const [nmEditingId, setNmEditingId] = useState(null);
   const [nmEditingName, setNmEditingName] = useState('');
-  const [nmEditingType, setNmEditingType] = useState('رجل');
+  const [nmEditingType, setNmEditingType] = useState(t('pages.VillageDetailsPage.رجل', 'رجل'));
   const [nmEditingCategory, setNmEditingCategory] = useState(normalizeMuslimCategory());
   const [nmSaving, setNmSaving] = useState(false);
 
@@ -80,7 +81,7 @@ const VillagesPage = () => {
   // Dynamic Array for new muslims before saving
   const [newMuslims, setNewMuslims] = useState([]);
   const [muslimName, setMuslimName] = useState('');
-  const [muslimType, setMuslimType] = useState('رجل');
+  const [muslimType, setMuslimType] = useState(t('pages.VillageDetailsPage.رجل', 'رجل'));
   const [muslimCategoryForm, setMuslimCategoryForm] = useState(normalizeMuslimCategory());
   /** عند تعديل القرية: المدارس التي يُسجَّل فيها كل سجل جديد من نموذج القرية */
   const [villageModalSchoolIds, setVillageModalSchoolIds] = useState([]);
@@ -97,13 +98,13 @@ const VillagesPage = () => {
   /* سجل المهتدين والمسلمين القدامى ضمن نفس المودال */
   const [expNewMuslims, setExpNewMuslims] = useState([]);
   const [expMuslimName, setExpMuslimName] = useState('');
-  const [expMuslimType, setExpMuslimType] = useState('رجل');
+  const [expMuslimType, setExpMuslimType] = useState(t('pages.VillageDetailsPage.رجل', 'رجل'));
   const [expMuslimCategoryForm, setExpMuslimCategoryForm] = useState(normalizeMuslimCategory());
 
   const resetExplorationNewMuslims = () => {
     setExpNewMuslims([]);
     setExpMuslimName('');
-    setExpMuslimType('رجل');
+    setExpMuslimType(t('pages.VillageDetailsPage.رجل', 'رجل'));
     setExpMuslimCategoryForm(normalizeMuslimCategory());
   };
 
@@ -134,7 +135,7 @@ const VillagesPage = () => {
       .map((m) => ({
         id: m.id,
         name: (m.name || '').trim(),
-        type: m.type || 'رجل',
+        type: m.type || t('pages.VillageDetailsPage.رجل', 'رجل'),
         muslimCategory: normalizeMuslimCategory(m.muslimCategory),
       }))
       .filter((m) => m.name.length > 0);
@@ -274,7 +275,7 @@ const VillagesPage = () => {
           id: doc.id,
           villageId,
           name: data.name || '',
-          type: data.type || 'رجل',
+          type: data.type || t('pages.VillageDetailsPage.رجل', 'رجل'),
           muslimCategory: normalizeMuslimCategory(data.muslimCategory),
           enrolledSchoolId: data.enrolledSchoolId || enrolledSchoolIds[0] || '',
           enrolledSchoolIds,
@@ -283,7 +284,7 @@ const VillagesPage = () => {
       setNewMuslimsDocsByVillage(grouped);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء جلب البيانات');
+      setError(t('pages.GovernoratesPage.حدث_خطأ_أثناء_جلب_البيانات', 'حدث خطأ أثناء جلب البيانات'));
     } finally {
       setLoading(false);
     }
@@ -332,7 +333,7 @@ const VillagesPage = () => {
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!formData.villageName.trim() || !selectedRegId) {
-      setError('يرجى إدخال اسم القرية واختيار المنطقة');
+      setError(t('pages.VillagesPage.يرجى_إدخال_اسم_القرية_واختيار_المنطقة', 'يرجى إدخال اسم القرية واختيار المنطقة'));
       return;
     }
 
@@ -380,14 +381,14 @@ const VillagesPage = () => {
       setIsEditing(null);
       setVillageModalSchoolIds([]);
       setError('');
-      setSuccess(isEditing ? 'تم تحديث بيانات القرية بنجاح.' : 'تمت إضافة القرية بنجاح.');
+      setSuccess(isEditing ? t('pages.VillagesPage.تم_تحديث_بيانات_القرية_بنجاح', 'تم تحديث بيانات القرية بنجاح.') : t('pages.VillagesPage.تمت_إضافة_القرية_بنجاح', 'تمت إضافة القرية بنجاح.'));
       fetchData();
     } catch (err) {
       console.error(err);
       if (err.code === 'NO_SCHOOL_IN_VILLAGE') {
-        setError('لا توجد مدرسة في هذه القرية لتسجيل المهتدين/المسلمين القدامى كطلاب. أضف مدرسة أولاً.');
+        setError(t('pages.VillagesPage.لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_المهتدين_المسلمين_القدامى', 'لا توجد مدرسة في هذه القرية لتسجيل المهتدين/المسلمين القدامى كطلاب. أضف مدرسة أولاً.'));
       } else {
-        setError('حدث خطأ أثناء الحفظ');
+        setError(t('pages.SchoolsPage.حدث_خطأ_أثناء_الحفظ', 'حدث خطأ أثناء الحفظ'));
       }
       setLoading(false);
     }
@@ -403,13 +404,13 @@ const VillagesPage = () => {
     }
     const regionId = expForm.getValueBySource('regions');
     if (!regionId) {
-      setError('يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «المناطق» لربط القرية بمنطقتها.');
+      setError(t('pages.VillagesPage.يجب_أن_يحتوي_نموذج_الاستكشاف_على_حقل_مصدره_المناطق_لربط_القر', 'يجب أن يحتوي نموذج الاستكشاف على حقل مصدره «المناطق» لربط القرية بمنطقتها.'));
       return;
     }
     const fallbackName = expForm.selectedType?.name ? `قرية - ${expForm.selectedType.name}` : '';
     const derivedVillageName = expForm.deriveDisplayName(fallbackName);
     if (!derivedVillageName) {
-      setError('لا يمكن استخراج اسم القرية من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".');
+      setError(t('pages.VillagesPage.لا_يمكن_استخراج_اسم_القرية_من_حقول_النموذج_أضف_حقلاً_نصياً_ي', 'لا يمكن استخراج اسم القرية من حقول النموذج. أضف حقلاً نصياً يحوي "اسم".'));
       return;
     }
 
@@ -447,14 +448,14 @@ const VillagesPage = () => {
       setIsExploringAdding(false);
       resetExplorationNewMuslims();
       expForm.reset();
-      setSuccess('تمت إضافة القرية من نموذج الاستكشاف بنجاح.');
+      setSuccess(t('pages.VillagesPage.تمت_إضافة_القرية_من_نموذج_الاستكشاف_بنجاح', 'تمت إضافة القرية من نموذج الاستكشاف بنجاح.'));
       fetchData();
     } catch (err) {
       console.error(err);
       if (err?.code === 'NO_SCHOOL_IN_VILLAGE') {
-        setError('لا توجد مدرسة في هذه القرية لتسجيل المهتدين/المسلمين القدامى كطلاب. أضف مدرسة أولاً.');
+        setError(t('pages.VillagesPage.لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_المهتدين_المسلمين_القدامى', 'لا توجد مدرسة في هذه القرية لتسجيل المهتدين/المسلمين القدامى كطلاب. أضف مدرسة أولاً.'));
       } else {
-        setError('حدث خطأ أثناء الحفظ.');
+        setError(t('pages.VillagesPage.حدث_خطأ_أثناء_الحفظ', 'حدث خطأ أثناء الحفظ.'));
       }
     } finally {
       setExpSavingExploration(false);
@@ -498,18 +499,18 @@ const VillagesPage = () => {
       
       const docRef = api.getVillageDoc(villageDoc.regionId, id);
       await api.deleteData(docRef);
-      setSuccess('تم حذف القرية بنجاح.');
+      setSuccess(t('pages.VillagesPage.تم_حذف_القرية_بنجاح', 'تم حذف القرية بنجاح.'));
       setError('');
       fetchData();
     } catch (err) {
       console.error(err);
-      setError('لا يمكن الحذف في الوقت الحالي.');
+      setError(t('pages.CurriculumPage.لا_يمكن_الحذف_في_الوقت_الحالي', 'لا يمكن الحذف في الوقت الحالي.'));
     }
   };
 
   const getRegionName = (regId) => {
     const reg = regions.find(r => r.id === regId);
-    return reg ? reg.name : 'غير معروف';
+    return reg ? reg.name : t('pages.RegionsPage.غير_معروف', 'غير معروف');
   };
 
   const handleSaveDefaultSchool = async (vil, schoolId) => {
@@ -525,10 +526,10 @@ const VillagesPage = () => {
       setVillages((prev) =>
         prev.map((v) => (v.id === vil.id ? { ...v, defaultSchoolId: schoolId } : v))
       );
-      setSuccess('تم حفظ المدرسة الافتراضية للقرية.');
+      setSuccess(t('pages.VillagesPage.تم_حفظ_المدرسة_الافتراضية_للقرية', 'تم حفظ المدرسة الافتراضية للقرية.'));
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ المدرسة الافتراضية.');
+      setError(t('pages.VillagesPage.تعذر_حفظ_المدرسة_الافتراضية', 'تعذر حفظ المدرسة الافتراضية.'));
     } finally {
       setSavingDefaultSchoolForVillageId('');
     }
@@ -549,7 +550,7 @@ const VillagesPage = () => {
   const cancelNmQuickEdit = () => {
     setNmEditingId(null);
     setNmEditingName('');
-    setNmEditingType('رجل');
+    setNmEditingType(t('pages.VillageDetailsPage.رجل', 'رجل'));
     setNmEditingCategory(normalizeMuslimCategory());
   };
 
@@ -577,7 +578,7 @@ const VillagesPage = () => {
     const opening = nmQuickVillageId !== vilId;
     setNmQuickVillageId((v) => (v === vilId ? null : vilId));
     setNmDraftName('');
-    setNmDraftType('رجل');
+    setNmDraftType(t('pages.VillageDetailsPage.رجل', 'رجل'));
     setNmDraftCategory(normalizeMuslimCategory());
     const sch = schoolsByVillage[vilId] || [];
     setNmDraftSchoolIds(opening && sch.length ? [sch[0].id] : []);
@@ -587,7 +588,7 @@ const VillagesPage = () => {
   const startNmQuickEdit = (m) => {
     setNmEditingId(m.id);
     setNmEditingName(m.name || '');
-    setNmEditingType(m.type || 'رجل');
+    setNmEditingType(m.type || t('pages.VillageDetailsPage.رجل', 'رجل'));
     setNmEditingCategory(normalizeMuslimCategory(m.muslimCategory));
   };
 
@@ -595,7 +596,7 @@ const VillagesPage = () => {
     if (!nmDraftName.trim() || nmQuickVillageId !== vil.id) return;
     const schList = schoolsByVillage[vil.id] || [];
     if (schList.length && nmDraftSchoolIds.length === 0) {
-      setError('اختر مدرسة واحدة على الأقل للتسجيل.');
+      setError(t('pages.VillageDetailsPage.اختر_مدرسة_واحدة_على_الأقل_للتسجيل', 'اختر مدرسة واحدة على الأقل للتسجيل.'));
       return;
     }
     setNmSaving(true);
@@ -638,20 +639,20 @@ const VillagesPage = () => {
       patchVillageNewMuslims(vil.id, list);
       await syncVillageNewMuslimCounters(vil.regionId, vil.id, list);
       setNmDraftName('');
-      setNmDraftType('رجل');
+      setNmDraftType(t('pages.VillageDetailsPage.رجل', 'رجل'));
       setNmDraftCategory(normalizeMuslimCategory());
       setNmDraftSchoolIds(schList.length ? [schList[0].id] : []);
       setSuccess(
         schoolIds.length > 1
           ? `تمت إضافة السجل وتسجيله كطالب في ${schoolIds.length} مدارس.`
-          : 'تمت إضافة السجل وتسجيله كطالب في المدرسة المحددة.'
+          : t('pages.VillagesPage.تمت_إضافة_السجل_وتسجيله_كطالب_في_المدرسة_المحددة', 'تمت إضافة السجل وتسجيله كطالب في المدرسة المحددة.')
       );
     } catch (err) {
       console.error(err);
       if (err.code === 'NO_SCHOOL_IN_VILLAGE') {
-        setError('لا توجد مدرسة في هذه القرية لتسجيل الطالب تلقائياً.');
+        setError(t('pages.VillageDetailsPage.لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_الطالب_تلقائياً', 'لا توجد مدرسة في هذه القرية لتسجيل الطالب تلقائياً.'));
       } else {
-        setError('تعذر إضافة السجل.');
+        setError(t('pages.VillagesPage.تعذر_إضافة_السجل', 'تعذر إضافة السجل.'));
       }
     } finally {
       setNmSaving(false);
@@ -687,10 +688,10 @@ const VillagesPage = () => {
       patchVillageNewMuslims(vil.id, list);
       await syncVillageNewMuslimCounters(vil.regionId, vil.id, list);
       cancelNmQuickEdit();
-      setSuccess('تم تحديث السجل.');
+      setSuccess(t('pages.VillagesPage.تم_تحديث_السجل', 'تم تحديث السجل.'));
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ التعديل.');
+      setError(t('pages.VillagesPage.تعذر_حفظ_التعديل', 'تعذر حفظ التعديل.'));
     } finally {
       setNmSaving(false);
     }
@@ -706,10 +707,10 @@ const VillagesPage = () => {
       patchVillageNewMuslims(vil.id, list);
       await syncVillageNewMuslimCounters(vil.regionId, vil.id, list);
       if (nmEditingId === m.id) cancelNmQuickEdit();
-      setSuccess('تم حذف السجل.');
+      setSuccess(t('pages.VillagesPage.تم_حذف_السجل', 'تم حذف السجل.'));
     } catch (err) {
       console.error(err);
-      setError('تعذر الحذف.');
+      setError(t('pages.VillagesPage.تعذر_الحذف', 'تعذر الحذف.'));
     } finally {
       setNmSaving(false);
     }
@@ -717,7 +718,7 @@ const VillagesPage = () => {
 
   return (
     <div className="villages-page">
-      <PageHeader icon={Home} title="إدارة القرى" subtitle="البيانات الديموغرافية والمجموعات">
+      <PageHeader icon={Home} title={t('pages.VillagesPage.إدارة_القرى', 'إدارة القرى')} subtitle={t('pages.VillagesPage.البيانات_الديموغرافية_والمجموعات', 'البيانات الديموغرافية والمجموعات')}>
         {can(PERMISSION_PAGE_IDS.villages, 'village_add') && (
           <button
             type="button"
@@ -729,7 +730,7 @@ const VillagesPage = () => {
               setFormData({ villageName: '', groupName: '', ltiName: '', populationCount: '', muslimsCount: '', nonMuslimsCount: '' });
               setNewMuslims([]);
               setMuslimName('');
-              setMuslimType('رجل');
+              setMuslimType(t('pages.VillageDetailsPage.رجل', 'رجل'));
               setMuslimCategoryForm(normalizeMuslimCategory());
               setVillageModalSchoolIds([]);
               setNmQuickVillageId(null);
@@ -746,11 +747,11 @@ const VillagesPage = () => {
             type="button"
             className="google-btn google-btn--toolbar"
             onClick={openExplorationAddModal}
-            title="فتح نموذج استكشاف لإدخال قرية جديدة"
+            title={t('pages.VillagesPage.فتح_نموذج_استكشاف_لإدخال_قرية_جديدة', 'فتح نموذج استكشاف لإدخال قرية جديدة')}
           >
             <Compass size={18} />
             <span className="villages-toolbar__long">إضافة من نموذج الاستكشاف</span>
-            <span className="villages-toolbar__short">استكشاف</span>
+            <span className="villages-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
       </PageHeader>
@@ -763,7 +764,7 @@ const VillagesPage = () => {
       {error && (
         <div className="app-alert app-alert--error villages-alert app-alert--dismissible">
           <span>{error}</span>
-          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setError('')}>
+          <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setError('')}>
             <X size={14} />
           </button>
         </div>
@@ -771,7 +772,7 @@ const VillagesPage = () => {
       {success && (
         <div className="app-alert app-alert--success villages-alert app-alert--dismissible">
           <span>{success}</span>
-          <button type="button" className="icon-btn app-alert__dismiss" title="إغلاق" onClick={() => setSuccess('')}>
+          <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setSuccess('')}>
             <X size={14} />
           </button>
         </div>
@@ -816,7 +817,7 @@ const VillagesPage = () => {
           <h3 className="villages-form__title">الإحصائيات السكانية</h3>
           <div className="villages-form__grid villages-form__grid--stats">
             <div className="app-field app-field--grow">
-              <label className="app-label">إجمالي السكان</label>
+              <label className="app-label">{t('pages.VillageDetailsPage.إجمالي_السكان', 'إجمالي السكان')}</label>
               <input name="populationCount" type="number" min="0" value={formData.populationCount} onChange={handleInputChange} className="app-input" />
             </div>
             <div className="app-field app-field--grow">
@@ -860,22 +861,22 @@ const VillagesPage = () => {
           
           <div className="villages-form__new-muslim-row">
             <div className="app-field app-field--grow">
-              <label className="app-label">الاسم</label>
+              <label className="app-label">{t('pages.VillageDetailsPage.الاسم', 'الاسم')}</label>
               <input type="text" value={muslimName} onChange={(e) => setMuslimName(e.target.value)} className="app-input" onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewMuslimToList())} />
             </div>
             <div className="app-field villages-form__new-muslim-type">
-              <label className="app-label">النوع</label>
+              <label className="app-label">{t('utils.schoolReportExport.النوع', 'النوع')}</label>
               <AppSelect searchable value={muslimType} onChange={(e) => setMuslimType(e.target.value)}>
-                <option value="رجل">رجل</option>
-                <option value="امرأة">امرأة</option>
-                <option value="طفل">طفل</option>
+                <option value={t('pages.VillageDetailsPage.رجل', 'رجل')}>{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                <option value={t('pages.VillageDetailsPage.امرأة', 'امرأة')}>{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                <option value={t('pages.VillageDetailsPage.طفل', 'طفل')}>{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
               </AppSelect>
             </div>
             <div className="app-field villages-form__new-muslim-type">
               <label className="app-label">التصنيف</label>
               <AppSelect searchable value={muslimCategoryForm} onChange={(e) => setMuslimCategoryForm(normalizeMuslimCategory(e.target.value))}>
                 <option value="convert">مهتد جديد</option>
-                <option value="born">مسلم قديم</option>
+                <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
               </AppSelect>
             </div>
             <button type="button" onClick={addNewMuslimToList} className="google-btn google-btn--toolbar villages-form__new-muslim-btn">
@@ -891,7 +892,7 @@ const VillagesPage = () => {
                     {m.name} — <span className="villages-form__new-muslims-type">{m.type}</span>
                     {' '}
                     <span className="villages-form__new-muslims-type villages-form__new-muslims-type--muted">
-                      ({normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN ? 'مسلم قديم' : 'مهتد'})
+                      ({normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN ? t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم') : t('pages.VillagesPage.مهتد', 'مهتد')})
                     </span>
                   </span>
                   <X
@@ -914,7 +915,7 @@ const VillagesPage = () => {
               busy={loading}
               className="google-btn google-btn--filled villages-form__action-btn villages-form__action-btn--primary"
             >
-              {isEditing ? 'تحديث القرية' : 'حفظ القرية'}
+              {isEditing ? t('pages.VillagesPage.تحديث_القرية', 'تحديث القرية') : t('pages.VillagesPage.حفظ_القرية', 'حفظ القرية')}
             </BusyButton>
           </div>
           </form>
@@ -923,7 +924,7 @@ const VillagesPage = () => {
       {/* Exploration-driven Add Modal — يحفظ القرية في `villages` مع explorationFieldValues */}
       <FormModal
         open={isExploringAdding}
-        title="إضافة قرية من نموذج الاستكشاف"
+        title={t('pages.VillagesPage.إضافة_قرية_من_نموذج_الاستكشاف', 'إضافة قرية من نموذج الاستكشاف')}
         size="lg"
         onClose={() => setIsExploringAdding(false)}
       >
@@ -936,7 +937,7 @@ const VillagesPage = () => {
             controller={expForm}
             actorUser={actorUser}
             storageUserId={storageUserId}
-            heading="حقول نموذج الاستكشاف"
+            heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
             currentPageId={PERMISSION_PAGE_IDS.villages}
           />
 
@@ -956,7 +957,7 @@ const VillagesPage = () => {
 
           <div className="villages-form__new-muslim-row">
             <div className="app-field app-field--grow">
-              <label className="app-label">الاسم</label>
+              <label className="app-label">{t('pages.VillageDetailsPage.الاسم', 'الاسم')}</label>
               <input
                 type="text"
                 value={expMuslimName}
@@ -966,15 +967,15 @@ const VillagesPage = () => {
               />
             </div>
             <div className="app-field villages-form__new-muslim-type">
-              <label className="app-label">النوع</label>
+              <label className="app-label">{t('utils.schoolReportExport.النوع', 'النوع')}</label>
               <AppSelect
                 searchable
                 value={expMuslimType}
                 onChange={(e) => setExpMuslimType(e.target.value)}
               >
-                <option value="رجل">رجل</option>
-                <option value="امرأة">امرأة</option>
-                <option value="طفل">طفل</option>
+                <option value={t('pages.VillageDetailsPage.رجل', 'رجل')}>{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                <option value={t('pages.VillageDetailsPage.امرأة', 'امرأة')}>{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                <option value={t('pages.VillageDetailsPage.طفل', 'طفل')}>{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
               </AppSelect>
             </div>
             <div className="app-field villages-form__new-muslim-type">
@@ -985,7 +986,7 @@ const VillagesPage = () => {
                 onChange={(e) => setExpMuslimCategoryForm(normalizeMuslimCategory(e.target.value))}
               >
                 <option value="convert">مهتد جديد</option>
-                <option value="born">مسلم قديم</option>
+                <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
               </AppSelect>
             </div>
             <button
@@ -1008,7 +1009,7 @@ const VillagesPage = () => {
                     {m.name} — <span className="villages-form__new-muslims-type">{m.type}</span>
                     {' '}
                     <span className="villages-form__new-muslims-type villages-form__new-muslims-type--muted">
-                      ({normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN ? 'مسلم قديم' : 'مهتد'})
+                      ({normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN ? t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم') : t('pages.VillagesPage.مهتد', 'مهتد')})
                     </span>
                   </span>
                   <X
@@ -1064,14 +1065,14 @@ const VillagesPage = () => {
             <div key={vil.id} className="surface-card surface-card--village">
               <div className="villages-card__actions">
                 {can(PERMISSION_PAGE_IDS.villages, 'village_view') && (
-                  <button className="icon-btn" onClick={() => navigate(`/villages/${vil.id}`)} title="عرض التفاصيل الكاملة">
+                  <button className="icon-btn" onClick={() => navigate(`/villages/${vil.id}`)} title={t('pages.AdminReportsPage.عرض_التفاصيل_الكاملة', 'عرض التفاصيل الكاملة')}>
                     <Eye size={16} color="var(--accent-color)" />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.villages, 'village_report_quick_add') && (
                   <button
                     className="icon-btn"
-                    title="إضافة تقرير المدرسة الافتراضية"
+                    title={t('components.VillageDefaultSchoolPanel.إضافة_تقرير_المدرسة_الافتراضية', 'إضافة تقرير المدرسة الافتراضية')}
                     disabled={!defaultSchoolByVillage[vil.id]}
                     onClick={() => navigate(`/schools/${defaultSchoolByVillage[vil.id]}?composeReport=1`)}
                   >
@@ -1079,12 +1080,12 @@ const VillagesPage = () => {
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.villages, 'village_edit') && (
-                  <button className="icon-btn" onClick={() => handleEditClick(vil)} title="تعديل القرية">
+                  <button className="icon-btn" onClick={() => handleEditClick(vil)} title={t('pages.VillagesPage.تعديل_القرية', 'تعديل القرية')}>
                     <Edit2 size={16} />
                   </button>
                 )}
                 {can(PERMISSION_PAGE_IDS.villages, 'village_delete') && (
-                  <button className="icon-btn" onClick={() => setPendingDelete({ id: vil.id, name: vil.villageName })} title="حذف القرية">
+                  <button className="icon-btn" onClick={() => setPendingDelete({ id: vil.id, name: vil.villageName })} title={t('pages.VillagesPage.حذف_القرية', 'حذف القرية')}>
                     <Trash2 size={16} color="var(--danger-color)" />
                   </button>
                 )}
@@ -1105,12 +1106,12 @@ const VillagesPage = () => {
                 <div><Users size={14} /> السكان: {vil.populationCount}</div>
                 <div>مسلمين: {vil.muslimsCount}</div>
                 <div className="villages-card__stats-danger">غير المسلمين: {vil.nonMuslimsCount}</div>
-                <div className="villages-card__stats-success">مهتدين (رجال): {convertsList.filter((m) => m.type === 'رجل').length}</div>
-                <div className="villages-card__stats-success">مهتدين (نساء): {convertsList.filter((m) => m.type === 'امرأة').length}</div>
-                <div className="villages-card__stats-success">مهتدين (أطفال): {convertsList.filter((m) => m.type === 'طفل').length}</div>
-                <div className="villages-card__stats-success">مسلمون قدامى (رجال): {bornList.filter((m) => m.type === 'رجل').length}</div>
-                <div className="villages-card__stats-success">مسلمون قدامى (نساء): {bornList.filter((m) => m.type === 'امرأة').length}</div>
-                <div className="villages-card__stats-success">مسلمون قدامى (أطفال): {bornList.filter((m) => m.type === 'طفل').length}</div>
+                <div className="villages-card__stats-success">مهتدين (رجال): {convertsList.filter((m) => m.type === t('pages.VillageDetailsPage.رجل', 'رجل')).length}</div>
+                <div className="villages-card__stats-success">مهتدين (نساء): {convertsList.filter((m) => m.type === t('pages.VillageDetailsPage.امرأة', 'امرأة')).length}</div>
+                <div className="villages-card__stats-success">مهتدين (أطفال): {convertsList.filter((m) => m.type === t('pages.VillageDetailsPage.طفل', 'طفل')).length}</div>
+                <div className="villages-card__stats-success">مسلمون قدامى (رجال): {bornList.filter((m) => m.type === t('pages.VillageDetailsPage.رجل', 'رجل')).length}</div>
+                <div className="villages-card__stats-success">مسلمون قدامى (نساء): {bornList.filter((m) => m.type === t('pages.VillageDetailsPage.امرأة', 'امرأة')).length}</div>
+                <div className="villages-card__stats-success">مسلمون قدامى (أطفال): {bornList.filter((m) => m.type === t('pages.VillageDetailsPage.طفل', 'طفل')).length}</div>
               </div>
 
               <div className="villages-card__meta">
@@ -1182,7 +1183,7 @@ const VillagesPage = () => {
                       type="text"
                       value={nmDraftName}
                       onChange={(e) => setNmDraftName(e.target.value)}
-                      placeholder="الاسم"
+                      placeholder={t('pages.VillageDetailsPage.الاسم', 'الاسم')}
                       className="app-input"
                       disabled={nmSaving}
                       onKeyDown={(e) => {
@@ -1197,17 +1198,17 @@ const VillagesPage = () => {
                       onChange={(e) => setNmDraftType(e.target.value)}
                       disabled={nmSaving}
                     >
-                      <option value="رجل">رجل</option>
-                      <option value="امرأة">امرأة</option>
-                      <option value="طفل">طفل</option>
+                      <option value={t('pages.VillageDetailsPage.رجل', 'رجل')}>{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                      <option value={t('pages.VillageDetailsPage.امرأة', 'امرأة')}>{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                      <option value={t('pages.VillageDetailsPage.طفل', 'طفل')}>{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
                     </AppSelect>
                     <AppSelect searchable
                       value={nmDraftCategory}
                       onChange={(e) => setNmDraftCategory(normalizeMuslimCategory(e.target.value))}
                       disabled={nmSaving}
                     >
-                      <option value="convert">مهتد</option>
-                      <option value="born">مسلم قديم</option>
+                      <option value="convert">{t('pages.VillagesPage.مهتد', 'مهتد')}</option>
+                      <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
                     </AppSelect>
                     {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
                       <button
@@ -1242,28 +1243,28 @@ const VillagesPage = () => {
                                 onChange={(e) => setNmEditingType(e.target.value)}
                                 disabled={nmSaving}
                               >
-                                <option value="رجل">رجل</option>
-                                <option value="امرأة">امرأة</option>
-                                <option value="طفل">طفل</option>
+                                <option value={t('pages.VillageDetailsPage.رجل', 'رجل')}>{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                                <option value={t('pages.VillageDetailsPage.امرأة', 'امرأة')}>{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                                <option value={t('pages.VillageDetailsPage.طفل', 'طفل')}>{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
                               </AppSelect>
                               <AppSelect searchable
                                 value={nmEditingCategory}
                                 onChange={(e) => setNmEditingCategory(normalizeMuslimCategory(e.target.value))}
                                 disabled={nmSaving}
                               >
-                                <option value="convert">مهتد</option>
-                                <option value="born">مسلم قديم</option>
+                                <option value="convert">{t('pages.VillagesPage.مهتد', 'مهتد')}</option>
+                                <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
                               </AppSelect>
                               <button
                                 type="button"
                                 className="icon-btn"
-                                title="حفظ"
+                                title={t('components.MessengerPanel.حفظ', 'حفظ')}
                                 disabled={nmSaving}
                                 onClick={() => handleQuickSaveNewMuslim(vil)}
                               >
                                 <Save size={16} color="var(--success-color)" />
                               </button>
-                              <button type="button" className="icon-btn" title="إلغاء" disabled={nmSaving} onClick={cancelNmQuickEdit}>
+                              <button type="button" className="icon-btn" title={t('components.ConfirmDialog.إلغاء', 'إلغاء')} disabled={nmSaving} onClick={cancelNmQuickEdit}>
                                 <X size={16} />
                               </button>
                             </>
@@ -1274,13 +1275,13 @@ const VillagesPage = () => {
                                 <span className="villages-quick-panel__item-type">
                                   ({m.type})
                                   {normalizeMuslimCategory(m.muslimCategory) === MUSLIM_CATEGORY_BORN
-                                    ? ' · مسلم قديم'
-                                    : ' · مهتد'}
+                                    ? t('pages.VillageDetailsPage.مسلم_قديم', ' · مسلم قديم')
+                                    : t('pages.VillageDetailsPage.مهتد', ' · مهتد')}
                                 </span>
                               </span>
                               <span className="villages-quick-panel__item-actions">
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
-                                  <button type="button" className="icon-btn" title="تعديل" disabled={nmSaving} onClick={() => startNmQuickEdit(m)}>
+                                  <button type="button" className="icon-btn" title={t('components.ExplorationListCard.تعديل', 'تعديل')} disabled={nmSaving} onClick={() => startNmQuickEdit(m)}>
                                     <Edit2 size={16} />
                                   </button>
                                 )}
@@ -1288,7 +1289,7 @@ const VillagesPage = () => {
                                   <button
                                     type="button"
                                     className="icon-btn"
-                                    title="حذف"
+                                    title={t('components.ExplorationListCard.حذف', 'حذف')}
                                     disabled={nmSaving}
                                     onClick={() => setPendingNewMuslimDelete({ vil, m })}
                                   >
@@ -1313,7 +1314,7 @@ const VillagesPage = () => {
       <ExplorationDataModal
         open={!!viewingExplorationOf}
         onClose={() => setViewingExplorationOf(null)}
-        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.villageName}` : 'بيانات النموذج'}
+        title={viewingExplorationOf ? `بيانات النموذج — ${viewingExplorationOf.villageName}` : t('pages.CurriculumPage.بيانات_النموذج', 'بيانات النموذج')}
         record={viewingExplorationOf}
         actorUser={actorUser}
         storageUserId={storageUserId}
@@ -1351,7 +1352,7 @@ const VillagesPage = () => {
               userData: actorUser || {},
             });
           }
-          setSuccess('تم تحديث بيانات نموذج القرية.');
+          setSuccess(t('pages.VillagesPage.تم_تحديث_بيانات_نموذج_القرية', 'تم تحديث بيانات نموذج القرية.'));
           setError('');
           fetchData();
         }}
@@ -1359,9 +1360,9 @@ const VillagesPage = () => {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        title="تأكيد حذف القرية"
+        title={t('pages.VillagesPage.تأكيد_حذف_القرية', 'تأكيد حذف القرية')}
         message={`سيتم حذف قرية "${pendingDelete?.name || ''}" وكل السجلات المرتبطة بها.`}
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         danger
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {
@@ -1373,13 +1374,13 @@ const VillagesPage = () => {
 
       <ConfirmDialog
         open={!!pendingNewMuslimDelete}
-        title="حذف السجل"
+        title={t('pages.VillagesPage.حذف_السجل', 'حذف السجل')}
         message={
           pendingNewMuslimDelete
             ? `حذف «${pendingNewMuslimDelete.m.name}» من سجل القرية «${pendingNewMuslimDelete.vil.villageName}» وإزالة حساب الطالب وارتباطاته؟`
             : ''
         }
-        confirmLabel="حذف"
+        confirmLabel={t('components.ExplorationListCard.حذف', 'حذف')}
         danger
         onCancel={() => setPendingNewMuslimDelete(null)}
         onConfirm={async () => {

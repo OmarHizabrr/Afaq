@@ -53,12 +53,13 @@ const defaultForm = () => ({
 });
 
 const yesNo = [
-  { value: '', label: 'غير محدد' },
-  { value: 'yes', label: 'نعم' },
-  { value: 'no', label: 'لا' },
+  { value: '', label: t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد') },
+  { value: 'yes', label: t('components.ExplorationDynamicFieldBlock.نعم', 'نعم') },
+  { value: 'no', label: t('components.ExplorationDynamicFieldBlock.لا', 'لا') },
 ];
 
 const numberOrZero = (v) => {
+  const { t } = useAppTranslation();
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 };
@@ -178,7 +179,7 @@ const ExplorationsPage = () => {
       setExplorations(expRows);
     } catch (err) {
       console.error(err);
-      setError('تعذر تحميل بيانات الاستكشاف.');
+      setError(t('pages.ExplorationsPage.تعذر_تحميل_بيانات_الاستكشاف', 'تعذر تحميل بيانات الاستكشاف.'));
     } finally {
       setLoading(false);
     }
@@ -284,7 +285,7 @@ const ExplorationsPage = () => {
   const saveExploration = async (e) => {
     e.preventDefault();
     if (!form.explorationTypeId || saving) {
-      setError('يرجى اختيار نوع الاستكشاف.');
+      setError(t('pages.ExplorationsPage.يرجى_اختيار_نوع_الاستكشاف', 'يرجى اختيار نوع الاستكشاف.'));
       return;
     }
 
@@ -322,21 +323,21 @@ const ExplorationsPage = () => {
             docRef: api.getExplorationDoc(editingItem.id),
             data: payload,
           });
-          setSuccess('تم تحديث الاستكشاف.');
+          setSuccess(t('pages.ExplorationsPage.تم_تحديث_الاستكشاف', 'تم تحديث الاستكشاف.'));
         } else {
           const id = api.getNewId('explorations');
           await api.setData({
             docRef: api.getExplorationDoc(id),
             data: payload,
           });
-          setSuccess('تمت إضافة الاستكشاف بنجاح.');
+          setSuccess(t('pages.ExplorationsPage.تمت_إضافة_الاستكشاف_بنجاح', 'تمت إضافة الاستكشاف بنجاح.'));
         }
         setError('');
         closeModal();
         fetchAll();
       } catch (err) {
         console.error(err);
-        setError('تعذر حفظ الاستكشاف.');
+        setError(t('pages.ExplorationsPage.تعذر_حفظ_الاستكشاف', 'تعذر حفظ الاستكشاف.'));
       } finally {
         setSaving(false);
       }
@@ -365,21 +366,21 @@ const ExplorationsPage = () => {
           docRef: api.getExplorationDoc(editingItem.id),
           data: payload,
         });
-        setSuccess('تم تحديث الاستكشاف.');
+        setSuccess(t('pages.ExplorationsPage.تم_تحديث_الاستكشاف', 'تم تحديث الاستكشاف.'));
       } else {
         const id = api.getNewId('explorations');
         await api.setData({
           docRef: api.getExplorationDoc(id),
           data: payload,
         });
-        setSuccess('تمت إضافة الاستكشاف بنجاح.');
+        setSuccess(t('pages.ExplorationsPage.تمت_إضافة_الاستكشاف_بنجاح', 'تمت إضافة الاستكشاف بنجاح.'));
       }
       setError('');
       closeModal();
       fetchAll();
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ الاستكشاف.');
+      setError(t('pages.ExplorationsPage.تعذر_حفظ_الاستكشاف', 'تعذر حفظ الاستكشاف.'));
     } finally {
       setSaving(false);
     }
@@ -389,12 +390,12 @@ const ExplorationsPage = () => {
     try {
       const api = FirestoreApi.Api;
       await api.deleteData(api.getExplorationDoc(id));
-      setSuccess('تم حذف الاستكشاف.');
+      setSuccess(t('pages.ExplorationsPage.تم_حذف_الاستكشاف', 'تم حذف الاستكشاف.'));
       setError('');
       fetchAll();
     } catch (err) {
       console.error(err);
-      setError('تعذر حذف الاستكشاف.');
+      setError(t('pages.ExplorationsPage.تعذر_حذف_الاستكشاف', 'تعذر حذف الاستكشاف.'));
     }
   };
 
@@ -406,19 +407,19 @@ const ExplorationsPage = () => {
         return `بيانات مخصصة: ${first.from || '؟'} → ${first.to || '؟'}`;
       }
       if (first != null && String(first).trim()) return `بيانات مخصصة: ${String(first).slice(0, 40)}${String(first).length > 40 ? '…' : ''}`;
-      return 'نموذج مخصص';
+      return t('pages.ExplorationsPage.نموذج_مخصص', 'نموذج مخصص');
     }
     return `تاريخ الاستكشاف: ${item.explorationDate || '-'} - المشرف: ${item.explorationSupervisor || '-'}`;
   };
 
   return (
     <div className="explorations-page">
-      <PageHeader icon={Compass} title="قسم الاستكشاف">
+      <PageHeader icon={Compass} title={t('pages.ExplorationsPage.قسم_الاستكشاف', 'قسم الاستكشاف')}>
         {can(PERMISSION_PAGE_IDS.explorations, 'exploration_add') && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={openAddModal}>
             <Plus size={18} />
-            <span className="explorations-toolbar__long">إضافة استكشاف</span>
-            <span className="explorations-toolbar__short">إضافة</span>
+            <span className="explorations-toolbar__long">{t('config.permissionRegistry.إضافة_استكشاف', 'إضافة استكشاف')}</span>
+            <span className="explorations-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
         )}
       </PageHeader>
@@ -432,12 +433,12 @@ const ExplorationsPage = () => {
       {success && <div className="app-alert app-alert--success explorations-alert">{success}</div>}
 
       <div className="surface-card explorations-search-card">
-        <label className="app-label">بحث</label>
+        <label className="app-label">{t('utils.explorationDynamicFields.بحث', 'بحث')}</label>
         <div className="explorations-search-row">
           <Search size={16} color="var(--text-secondary)" aria-hidden />
           <input
             className="app-input"
-            placeholder="ابحث بالنوع أو المشرف أو الحقول أو القرية..."
+            placeholder={t('pages.ExplorationsPage.ابحث_بالنوع_أو_المشرف_أو_الحقول_أو_القرية', 'ابحث بالنوع أو المشرف أو الحقول أو القرية...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -468,7 +469,7 @@ const ExplorationsPage = () => {
 
       <FormModal
         open={isModalOpen}
-        title={editingItem ? 'تعديل الاستكشاف' : 'إضافة استكشاف جديد'}
+        title={editingItem ? t('pages.ExplorationsPage.تعديل_الاستكشاف', 'تعديل الاستكشاف') : t('pages.ExplorationsPage.إضافة_استكشاف_جديد', 'إضافة استكشاف جديد')}
         onClose={closeModal}
         size="xl"
         className="modal-card--exploration-flow"
@@ -690,10 +691,10 @@ const ExplorationsPage = () => {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        title="تأكيد حذف الاستكشاف"
+        title={t('pages.ExplorationsPage.تأكيد_حذف_الاستكشاف', 'تأكيد حذف الاستكشاف')}
         message={`سيتم حذف سجل الاستكشاف «${pendingDelete?.name || ''}» نهائياً.`}
         danger
-        confirmLabel="حذف نهائي"
+        confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {
           const item = pendingDelete;

@@ -19,18 +19,18 @@ import {
 } from '../utils/messengerFormat';
 
 const ROLE_LABELS = {
-  system_admin: 'مدير نظام',
-  admin: 'مدير',
-  supervisor_arab: 'مشرف عام',
-  supervisor_local: 'مشرف منطقة',
-  teacher: 'معلم',
-  student: 'طالب',
+  system_admin: t('components.MessengerPanel.مدير_نظام', 'مدير نظام'),
+  admin: t('components.MessengerPanel.مدير', 'مدير'),
+  supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
+  supervisor_local: t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة'),
+  teacher: t('components.MessengerPanel.معلم', 'معلم'),
+  student: t('components.MessengerPanel.طالب', 'طالب'),
 };
 
 function replySnippetLabel(m, actorId, actorDisplayName) {
-  if (m.replyToSenderId === actorId) return 'أنت';
-  if (m.replyToSenderName === 'أنت') return 'أنت';
-  if (!m.replyToSenderId && actorDisplayName && m.replyToSenderName === actorDisplayName) return 'أنت';
+  if (m.replyToSenderId === actorId) return t('components.MessengerPanel.أنت', 'أنت');
+  if (m.replyToSenderName === t('components.MessengerPanel.أنت', 'أنت')) return t('components.MessengerPanel.أنت', 'أنت');
+  if (!m.replyToSenderId && actorDisplayName && m.replyToSenderName === actorDisplayName) return t('components.MessengerPanel.أنت', 'أنت');
   return m.replyToSenderName || '';
 }
 
@@ -55,6 +55,7 @@ const MessengerPanel = ({
   onEditMessage,
   onNewChat,
 }) => {
+  const { t } = useAppTranslation();
   const bottomRef = useRef(null);
   const messagesRef = useRef(null);
   const composerRef = useRef(null);
@@ -111,11 +112,11 @@ const MessengerPanel = ({
   const partnerTitle = useCallback(
     (c) => {
       if (!c) return '';
-      if (c.isGroup) return c.title || 'مجموعة';
+      if (c.isGroup) return c.title || t('components.MessengerPanel.مجموعة', 'مجموعة');
       const names = (c.participants || [])
         .filter((id) => id !== actorId)
         .map((id) => getUser(id)?.displayName || id);
-      return names.join('، ') || 'محادثة';
+      return names.join(t('components.ExplorationDataModal.،', '، ')) || t('components.MessengerPanel.محادثة', 'محادثة');
     },
     [actorId, getUser]
   );
@@ -124,7 +125,7 @@ const MessengerPanel = ({
     (c) => {
       if (!c) return { letter: '?', src: null };
       if (c.isGroup) {
-        const t = c.title || 'مجموعة';
+        const t = c.title || t('components.MessengerPanel.مجموعة', 'مجموعة');
         return { letter: t.charAt(0), src: null };
       }
       const oid = (c.participants || []).find((id) => id !== actorId);
@@ -144,7 +145,7 @@ const MessengerPanel = ({
   const messageAvatarSrc = (m, mine) => {
     if (mine) {
       if (actorPhotoURL) return actorPhotoURL;
-      const n = encodeURIComponent(actorDisplayName || 'أنا');
+      const n = encodeURIComponent(actorDisplayName || t('components.MessengerPanel.أنا', 'أنا'));
       return `https://ui-avatars.com/api/?name=${n}&background=1e8e3e&color=fff`;
     }
     if (m.senderPhotoURL) return m.senderPhotoURL;
@@ -168,7 +169,7 @@ const MessengerPanel = ({
 
   const threadPreview = useCallback(
     (c) => {
-      const raw = c.lastMessage || 'ابدأ المحادثة…';
+      const raw = c.lastMessage || t('components.MessengerPanel.ابدأ_المحادثة', 'ابدأ المحادثة…');
       if (c.lastSenderId === actorId) return `أنت: ${raw}`;
       return raw;
     },
@@ -237,7 +238,7 @@ const MessengerPanel = ({
   };
 
   const replyStripWho =
-    replyTo && replyTo.senderId === actorId ? 'أنت' : replyTo?.senderName || 'رسالة';
+    replyTo && replyTo.senderId === actorId ? t('components.MessengerPanel.أنت', 'أنت') : replyTo?.senderName || t('components.MessengerPanel.رسالة', 'رسالة');
 
   const listSection = (
     <div className={`messenger-col messenger-col--list ${hideListColumnSm ? 'messenger-col--hidden-sm' : ''}`}>

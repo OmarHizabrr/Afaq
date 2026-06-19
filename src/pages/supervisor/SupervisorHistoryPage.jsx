@@ -7,6 +7,7 @@ import { hasValidGps, openGoogleMaps } from '../../utils/maps';
 import { formatVisitRatingLabel } from '../../utils/visitRating';
 
 const SupervisorHistoryPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +22,7 @@ const SupervisorHistoryPage = ({ user }) => {
       if (!supervisorId) {
         setReports([]);
         setLoading(false);
-        setError('تعذر تحديد هوية المشرف. أعد تسجيل الدخول.');
+        setError(t('pages.SupervisorHistoryPage.تعذر_تحديد_هوية_المشرف_أعد_تسجيل_الدخول', 'تعذر تحديد هوية المشرف. أعد تسجيل الدخول.'));
         return;
       }
       try {
@@ -33,7 +34,7 @@ const SupervisorHistoryPage = ({ user }) => {
         setReports(data);
       } catch (err) {
         console.error(err);
-        setError('حدث خطأ أثناء جلب سجل زياراتك');
+        setError(t('pages.SupervisorHistoryPage.حدث_خطأ_أثناء_جلب_سجل_زياراتك', 'حدث خطأ أثناء جلب سجل زياراتك'));
         setReports([]);
       } finally {
         setLoading(false);
@@ -50,8 +51,8 @@ const SupervisorHistoryPage = ({ user }) => {
       <PageHeader
         icon={History}
         iconColor="var(--md-primary)"
-        title="سجل زياراتي الميدانية"
-        subtitle="مراجعة التقارير والتقييمات التي قمت برفعها سابقاً"
+        title={t('pages.SupervisorHistoryPage.سجل_زياراتي_الميدانية', 'سجل زياراتي الميدانية')}
+        subtitle={t('pages.SupervisorHistoryPage.مراجعة_التقارير_والتقييمات_التي_قمت_برفعها_سابقاً', 'مراجعة التقارير والتقييمات التي قمت برفعها سابقاً')}
       />
 
       {error && <div className="app-alert app-alert--error portal-page-alert">{error}</div>}
@@ -104,7 +105,7 @@ const SupervisorHistoryPage = ({ user }) => {
                   className="google-btn portal-history-card__view-btn"
                   onClick={() => navigate(`/supervisor/reports/${rpt.id}`)}
                 >
-                  <Eye size={16} /> عرض التفاصيل
+                  <Eye size={16} /> {t('config.permissionRegistry.عرض_التفاصيل', 'عرض التفاصيل')}
                 </button>
               </div>
             </div>

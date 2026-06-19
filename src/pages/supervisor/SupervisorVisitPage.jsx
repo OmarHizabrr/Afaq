@@ -11,6 +11,7 @@ import SupervisorVisitStudentCard from '../../components/SupervisorVisitStudentC
 import { clampVisitRatingSave } from '../../utils/visitRating';
 
 const SupervisorVisitPage = ({ user }) => {
+  const { t } = useAppTranslation();
   const actorId = user?.uid || user?.id;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -42,7 +43,7 @@ const SupervisorVisitPage = ({ user }) => {
       try {
         const api = FirestoreApi.Api;
         if (!actorId) {
-          setError('تعذر تحديد معرف المستخدم الحالي.');
+          setError(t('pages.SupervisorVisitPage.تعذر_تحديد_معرف_المستخدم_الحالي', 'تعذر تحديد معرف المستخدم الحالي.'));
           setLoading(false);
           return;
         }
@@ -51,7 +52,7 @@ const SupervisorVisitPage = ({ user }) => {
         const assignedRegionSet = new Set(assignedRegionIds);
 
         if (assignedRegionSet.size === 0 && user.role !== 'admin' && user.role !== 'system_admin' && user.role !== 'supervisor_arab') {
-          setError('لا توجد لك مناطق إشرافية مسندة حالياً. راجع الإدارة.');
+          setError(t('pages.SupervisorVisitPage.لا_توجد_لك_مناطق_إشرافية_مسندة_حالياً_راجع_الإدارة', 'لا توجد لك مناطق إشرافية مسندة حالياً. راجع الإدارة.'));
           setLoading(false);
           return;
         }
@@ -99,7 +100,7 @@ const SupervisorVisitPage = ({ user }) => {
 
       } catch (err) {
         console.error(err);
-        setError('تعذر تحميل البيانات الأولية.');
+        setError(t('pages.SupervisorVisitPage.تعذر_تحميل_البيانات_الأولية', 'تعذر تحميل البيانات الأولية.'));
       } finally {
         setLoading(false);
       }
@@ -165,12 +166,12 @@ const SupervisorVisitPage = ({ user }) => {
       navigator.geolocation.getCurrentPosition(
         pos => {
           setGpsLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-          setSuccess('تم التقاط الموقع الجغرافي بنجاح.');
+          setSuccess(t('pages.SupervisorVisitPage.تم_التقاط_الموقع_الجغرافي_بنجاح', 'تم التقاط الموقع الجغرافي بنجاح.'));
           setError('');
           setLocating(false);
         },
         () => {
-          setError('يرجى تفعيل GPS ومنح صلاحية الموقع للمتصفح.');
+          setError(t('pages.SupervisorVisitPage.يرجى_تفعيل_GPS_ومنح_صلاحية_الموقع_للمتصفح', 'يرجى تفعيل GPS ومنح صلاحية الموقع للمتصفح.'));
           setSuccess('');
           setLocating(false);
         }
@@ -180,7 +181,7 @@ const SupervisorVisitPage = ({ user }) => {
 
   const handleSubmitReport = async () => {
     if (!selectedSchoolId || !selectedSubjectId || !selectedWeek) {
-      setError('يرجى ملء البيانات الأساسية (المدرسة، المادة، والدرس).');
+      setError(t('pages.SupervisorVisitPage.يرجى_ملء_البيانات_الأساسية_المدرسة،_المادة،_والدرس', 'يرجى ملء البيانات الأساسية (المدرسة، المادة، والدرس).'));
       return;
     }
 
@@ -236,7 +237,7 @@ const SupervisorVisitPage = ({ user }) => {
         data: payload
       });
 
-      setSuccess('تم رفع تقرير الزيارة الميدانية بنجاح!');
+      setSuccess(t('pages.SupervisorVisitPage.تم_رفع_تقرير_الزيارة_الميدانية_بنجاح', 'تم رفع تقرير الزيارة الميدانية بنجاح!'));
       // Reset
       setSelectedSchoolId('');
       setSelectedSubjectId('');
@@ -247,7 +248,7 @@ const SupervisorVisitPage = ({ user }) => {
       setVillageRating(5);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء رفع التقرير.');
+      setError(t('pages.SupervisorVisitPage.حدث_خطأ_أثناء_رفع_التقرير', 'حدث خطأ أثناء رفع التقرير.'));
     } finally {
       setSaving(false);
     }
@@ -260,8 +261,8 @@ const SupervisorVisitPage = ({ user }) => {
       <PageHeader
         icon={MapPin}
         iconColor="var(--md-primary)"
-        title="تسجيل زيارة ميدانية"
-        subtitle="توثيق تفصيلي لأداء المدارس مع الموقع الجغرافي"
+        title={t('pages.SupervisorVisitPage.تسجيل_زيارة_ميدانية', 'تسجيل زيارة ميدانية')}
+        subtitle={t('pages.SupervisorVisitPage.توثيق_تفصيلي_لأداء_المدارس_مع_الموقع_الجغرافي', 'توثيق تفصيلي لأداء المدارس مع الموقع الجغرافي')}
       />
 
       {error && <div className="app-alert app-alert--error portal-page-alert">{error}</div>}
@@ -277,7 +278,7 @@ const SupervisorVisitPage = ({ user }) => {
             </AppSelect>
           </div>
           <div className="app-field">
-            <label className="app-label">المادة</label>
+            <label className="app-label">{t('utils.reportDetailsHtml.المادة', 'المادة')}</label>
             <AppSelect value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="app-select">
               <option value="">-- اختر المادة --</option>
               {curriculumList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -346,7 +347,7 @@ const SupervisorVisitPage = ({ user }) => {
                             type="button"
                             onClick={() => handleTrackingChange(record.studentId, 'isPresent', !record.isPresent)}
                             className="visit-table__toggle-btn"
-                            title={record.isPresent ? 'تعديل لغائب' : 'حاضر'}
+                            title={record.isPresent ? t('components.SupervisorVisitStudentCard.تعديل_لغائب', 'تعديل لغائب') : t('components.SupervisorVisitStudentCard.حاضر', 'حاضر')}
                           >
                             {record.isPresent ? <CheckCircle size={24} color="var(--success-color)" /> : <XCircle size={24} color="var(--danger-color)" />}
                           </button>
@@ -361,13 +362,13 @@ const SupervisorVisitPage = ({ user }) => {
                             disabled={!record.isPresent}
                             className={`visit-test-chip${record.isTested ? ' visit-test-chip--active' : ''}${!record.isPresent ? ' visit-test-chip--disabled' : ''}`}
                           >
-                            {record.isTested ? 'اختُبر' : 'اختبار'}
+                            {record.isTested ? t('components.SupervisorVisitStudentCard.اختُبر', 'اختُبر') : t('components.SupervisorVisitStudentCard.اختبار', 'اختبار')}
                           </button>
                         </td>
                         <td className="visit-table__note-cell">
                           <input
                             type="text"
-                            placeholder="ملاحظات قراءته..."
+                            placeholder={t('components.SupervisorVisitStudentCard.ملاحظات_قراءته', 'ملاحظات قراءته...')}
                             value={record.note}
                             onChange={(e) => handleTrackingChange(record.studentId, 'note', e.target.value)}
                             disabled={!record.isPresent || !record.isTested}
@@ -406,14 +407,14 @@ const SupervisorVisitPage = ({ user }) => {
               </h3>
 
               <StarRatingInput
-                label="تقييم المدرّس (من 5 نجوم)"
+                label={t('pages.SupervisorVisitPage.تقييم_المدرّس_من_5_نجوم', 'تقييم المدرّس (من 5 نجوم)')}
                 value={teacherRating}
                 onChange={setTeacherRating}
                 className="visit-panel-card__field"
               />
 
               <StarRatingInput
-                label="التقييم العام للقرية (من 5 نجوم)"
+                label={t('pages.SupervisorVisitPage.التقييم_العام_للقرية_من_5_نجوم', 'التقييم العام للقرية (من 5 نجوم)')}
                 value={villageRating}
                 onChange={setVillageRating}
                 className="visit-panel-card__field"
@@ -423,7 +424,7 @@ const SupervisorVisitPage = ({ user }) => {
               <textarea
                 value={generalNotes}
                 onChange={(e) => setGeneralNotes(e.target.value)}
-                placeholder="اكتب رأيك العام عن الزيارة..."
+                placeholder={t('pages.SupervisorVisitPage.اكتب_رأيك_العام_عن_الزيارة', 'اكتب رأيك العام عن الزيارة...')}
                 className="app-input app-textarea visit-textarea"
               />
             </div>
@@ -439,7 +440,7 @@ const SupervisorVisitPage = ({ user }) => {
                     type="button"
                     onClick={() => openGoogleMaps(gpsLocation.lat, gpsLocation.lng)}
                     className="map-location-open map-location-open--clickable map-location-open--compact"
-                    title="فتح في خرائط Google"
+                    title={t('components.MapLocationOpen.فتح_في_خرائط_Google', 'فتح في خرائط Google')}
                   >
                     <span className="visit-gps-success">
                       <CheckCircle2 size={14} /> تم تحديد الموقع ({gpsLocation.lat.toFixed(4)}, {gpsLocation.lng.toFixed(4)})
@@ -483,7 +484,7 @@ const SupervisorVisitPage = ({ user }) => {
             busy={saving}
             disabled={!gpsLocation}
           >
-            {gpsLocation ? 'حفظ التقرير الميداني بشكل نهائي' : 'يرجى التقاط الموقع أولاً لرفع التقرير'}
+            {gpsLocation ? t('pages.SupervisorVisitPage.حفظ_التقرير_الميداني_بشكل_نهائي', 'حفظ التقرير الميداني بشكل نهائي') : t('pages.SupervisorVisitPage.يرجى_التقاط_الموقع_أولاً_لرفع_التقرير', 'يرجى التقاط الموقع أولاً لرفع التقرير')}
           </BusyButton>
         </>
       )}

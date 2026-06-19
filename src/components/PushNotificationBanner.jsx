@@ -3,6 +3,7 @@ import { Bell, X, Loader2 } from 'lucide-react';
 import usePushNotifications from '../hooks/usePushNotifications';
 
 const PushNotificationBanner = ({ user }) => {
+  const { t } = useAppTranslation();
   const { canPrompt, busy, enable, dismiss } = usePushNotifications(user);
 
   if (!canPrompt) return null;
@@ -12,7 +13,7 @@ const PushNotificationBanner = ({ user }) => {
   };
 
   return (
-    <div className="push-notification-banner" role="region" aria-label="تفعيل الإشعارات">
+    <div className="push-notification-banner" role="region" aria-label={t('components.PushNotificationBanner.تفعيل_الإشعارات', 'تفعيل الإشعارات')}>
       <div className="push-notification-banner__content">
         <div className="push-notification-banner__icon" aria-hidden>
           <Bell size={20} />
@@ -29,13 +30,13 @@ const PushNotificationBanner = ({ user }) => {
           onClick={handleEnable}
           disabled={busy}
         >
-          {busy ? <Loader2 className="busy-btn__spin" size={16} aria-hidden /> : 'تفعيل'}
+          {busy ? <Loader2 className="busy-btn__spin" size={16} aria-hidden /> : t('components.PushNotificationBanner.تفعيل', 'تفعيل')}
         </button>
         <button
           type="button"
           className="push-notification-banner__dismiss"
           onClick={dismiss}
-          aria-label="لاحقاً"
+          aria-label={t('components.PushNotificationBanner.لاحقاً', 'لاحقاً')}
         >
           <X size={18} />
         </button>

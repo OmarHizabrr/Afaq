@@ -1,3 +1,4 @@
+import translate from '../i18n/translate';
 import { safeHtml, REPORT_STYLES } from './schoolReportHtml';
 import { formatVisitRatingLabel } from './visitRating';
 import { prepPeriodLabel, formatDailyLogSubjects } from './reportLabels';
@@ -6,14 +7,22 @@ import { villageReportFromStored, villageReportHasContent } from './villageRepor
 
 export { REPORT_STYLES };
 
-const WEEKLY_ACTIVITY_LABELS = {
-  fridaySermon: 'خطبة الجمعة',
-  dawah: 'دعوة غير المسلمين',
-  adultEducation: 'تعليم الكبار',
-  mosqueLesson: 'دروس أسبوعية في المسجد',
-  marriageContract: 'عقود الزواج',
-  others: 'أعمال وأنشطة أخرى',
-};
+const lbl = (t, key, fallback) => t(`utils.reportDetailsHtml.${key}`, fallback);
+
+function weeklyActivityLabels(t) {
+  return {
+    fridaySermon: lbl(t, 'خطبة_الجمعة', 'خطبة الجمعة'),
+    dawah: lbl(t, 'دعوة_غير_المسلمين', 'دعوة غير المسلمين'),
+    adultEducation: lbl(t, 'تعليم_الكبار', 'تعليم الكبار'),
+    mosqueLesson: lbl(t, 'دروس_أسبوعية_في_المسجد', 'دروس أسبوعية في المسجد'),
+    marriageContract: lbl(t, 'عقود_الزواج', 'عقود الزواج'),
+    others: lbl(t, 'أعمال_وأنشطة_أخرى', 'أعمال وأنشطة أخرى'),
+  };
+}
+
+function isYesValue(val, t) {
+  return val === 'نعم' || val === lbl(t, 'نعم', 'نعم');
+}
 
 function metaItem(label, value) {
   return `<div class="item"><div class="label">${safeHtml(label)}</div><div class="value">${safeHtml(value || '—')}</div></div>`;
@@ -32,7 +41,7 @@ function notesSection(title, text) {
   </div>`;
 }
 
-function stringListRows(items, emptyLabel = 'لا يوجد') {
+function stringListRows(items, emptyLabel) {
   const list = (items || []).map((item) => String(item ?? '').trim()).filter(Boolean);
   if (!list.length) return `<tr><td colspan="2">${safeHtml(emptyLabel)}</td></tr>`;
   return list
@@ -40,11 +49,11 @@ function stringListRows(items, emptyLabel = 'لا يوجد') {
     .join('');
 }
 
-function stringListSection(title, items, emptyLabel) {
+function stringListSection(title, items, emptyLabel, t) {
   return `
   <div class="section">
     <h3>${safeHtml(title)}</h3>
-    <table><thead><tr><th>#</th><th>البيان</th></tr></thead><tbody>${stringListRows(items, emptyLabel)}</tbody></table>
+    <table><thead><tr><th>#</th><th>${safeHtml(lbl(t, 'البيان', 'البيان'))}</th></tr></thead><tbody>${stringListRows(items, emptyLabel ?? lbl(t, 'لا_يوجد', 'لا يوجد'))}</tbody></table>
   </div>`;
 }
 
@@ -58,37 +67,41 @@ function reportDateDisplay(report) {
   );
 }
 
-function villageReportHtml(report) {
+function villageReportHtml(report, t) {
   if (!villageReportHasContent(report)) return '';
   const v = villageReportFromStored(report);
-  const parts = ['<div class="section"><h3>تقرير القرية</h3>'];
+  const parts = [`<div class="section"><h3>${safeHtml(lbl(t, 'تقرير_القرية', 'تقرير القرية'))}</h3>`];
   if (Number(v.newConvertsCount) > 0) {
-    parts.push(metaGrid([['دخل الإسلام جديداً', String(v.newConvertsCount)]]));
+    parts.push(metaGrid([[lbl(t, 'دخل_الإسلام_جديداً', 'دخل الإسلام جديداً'), String(v.newConvertsCount)]]));
   }
   if (v.hasInstitutionProjects) {
-    parts.push(metaGrid([['مشاريع المؤسسة', v.hasInstitutionProjects]]));
-    if (v.hasInstitutionProjects === 'نعم' && v.institutionProjectsStatus) {
-      parts.push(notesSection('حالة المشاريع', v.institutionProjectsStatus));
+    parts.push(metaGrid([[lbl(t, 'مشاريع_المؤسسة', 'مشاريع المؤسسة'), v.hasInstitutionProjects]]));
+    if (isYesValue(v.hasInstitutionProjects, t) && v.institutionProjectsStatus) {
+      parts.push(notesSection(lbl(t, 'حالة_المشاريع', 'حالة المشاريع'), v.institutionProjectsStatus));
     }
   }
-  parts.push(stringListSection('أنشطة المعلم في القرية', v.teacherVillageActivities));
-  parts.push(stringListSection('أنشطة المؤسسة في القرية', v.institutionVillageActivities));
-  parts.push(stringListSection('خطب الجمعة في القرية', v.fridaySermons));
+  parts.push(stringListSection(lbl(t, 'أنشطة_المعلم_في_القرية', 'أنشطة المعلم في القرية'), v.teacherVillageActivities, null, t));
+  parts.push(stringListSection(lbl(t, 'أنشطة_المؤسسة_في_القرية', 'أنشطة المؤسسة في القرية'), v.institutionVillageActivities, null, t));
+  parts.push(stringListSection(lbl(t, 'خطب_الجمعة_في_القرية', 'خطب الجمعة في القرية'), v.fridaySermons, null, t));
   const extraNotes = report.notes || v.villageNotes;
-  if (extraNotes) parts.push(notesSection('ملاحظات إضافية', extraNotes));
+  if (extraNotes) parts.push(notesSection(lbl(t, 'ملاحظات_إضافية', 'ملاحظات إضافية'), extraNotes));
   parts.push('</div>');
   return parts.join('');
 }
 
-function studentsTrackingRows(students) {
-  if (!students?.length) return '<tr><td colspan="5">لا يوجد تتبع للطلاب</td></tr>';
+function studentsTrackingRows(students, t) {
+  if (!students?.length) {
+    return `<tr><td colspan="5">${safeHtml(lbl(t, 'لا_تتبع_للطلاب', 'لا يوجد تتبع للطلاب'))}</td></tr>`;
+  }
+  const presentLabel = lbl(t, 'حاضر', 'حاضر');
+  const absentLabel = lbl(t, 'غائب', 'غائب');
   return students
     .map(
       (st, idx) =>
         `<tr>
           <td>${idx + 1}</td>
           <td>${safeHtml(st.name || '—')}</td>
-          <td>${st.isPresent ? 'حاضر' : 'غائب'}</td>
+          <td>${st.isPresent ? presentLabel : absentLabel}</td>
           <td>${safeHtml(String(st.points ?? 0))}</td>
           <td>${safeHtml(st.note || '—')}</td>
         </tr>`
@@ -96,52 +109,54 @@ function studentsTrackingRows(students) {
     .join('');
 }
 
-export function buildVisitReportBodyHtml(report) {
+export function buildVisitReportBodyHtml(report, t = translate) {
   const date = reportDateDisplay(report);
   return `
   <div class="title">
-    <h1>تقرير زيارة ميدانية</h1>
+    <h1>${safeHtml(lbl(t, 'تقرير_زيارة_ميدانية', 'تقرير زيارة ميدانية'))}</h1>
     <p>${safeHtml(report.schoolName || '')}${report.villageName ? ` — ${safeHtml(report.villageName)}` : ''}</p>
   </div>
   ${metaGrid([
-    ['المشرف', report.supervisorName],
-    ['المدرسة', report.schoolName],
-    ['القرية', report.villageName],
-    ['التاريخ', date],
-    ['المادة', report.subjectName],
-    ['الأسبوع / الدرس', report.week],
+    [lbl(t, 'المشرف', 'المشرف'), report.supervisorName],
+    [lbl(t, 'المدرسة', 'المدرسة'), report.schoolName],
+    [lbl(t, 'القرية', 'القرية'), report.villageName],
+    [lbl(t, 'التاريخ', 'التاريخ'), date],
+    [lbl(t, 'المادة', 'المادة'), report.subjectName],
+    [lbl(t, 'الأسبوع_الدرس', 'الأسبوع / الدرس'), report.week],
   ])}
   ${metaGrid([
-    ['تقييم المعلم', formatVisitRatingLabel(report.teacherRating)],
-    ['تقييم القرية / الموقع', formatVisitRatingLabel(report.villageRating)],
+    [lbl(t, 'تقييم_المعلم', 'تقييم المعلم'), formatVisitRatingLabel(report.teacherRating)],
+    [lbl(t, 'تقييم_القرية_الموقع', 'تقييم القرية / الموقع'), formatVisitRatingLabel(report.villageRating)],
   ])}
-  ${notesSection('ملاحظات وتوجيهات عن الزيارة المدرسية', report.generalNotes || 'لا توجد ملاحظات عامة مسجلة لهذه الزيارة.')}
-  ${villageReportHtml(report)}
+  ${notesSection(
+    lbl(t, 'ملاحظات_عن_الزيارة', 'ملاحظات وتوجيهات عن الزيارة المدرسية'),
+    report.generalNotes || lbl(t, 'لا_ملاحظات_عامة', 'لا توجد ملاحظات عامة مسجلة لهذه الزيارة.')
+  )}
+  ${villageReportHtml(report, t)}
   <div class="section">
-    <h3>تتبع أداء الطلاب أثناء الزيارة</h3>
+    <h3>${safeHtml(lbl(t, 'تتبع_أداء_الطلاب', 'تتبع أداء الطلاب أثناء الزيارة'))}</h3>
     <table>
-      <thead><tr><th>#</th><th>اسم الطالب</th><th>الحالة</th><th>النقاط</th><th>ملاحظة</th></tr></thead>
-      <tbody>${studentsTrackingRows(report.studentsTracking)}</tbody>
+      <thead><tr><th>#</th><th>${safeHtml(lbl(t, 'اسم_الطالب', 'اسم الطالب'))}</th><th>${safeHtml(lbl(t, 'الحالة', 'الحالة'))}</th><th>${safeHtml(lbl(t, 'النقاط', 'النقاط'))}</th><th>${safeHtml(lbl(t, 'ملاحظة', 'ملاحظة'))}</th></tr></thead>
+      <tbody>${studentsTrackingRows(report.studentsTracking, t)}</tbody>
     </table>
   </div>
   ${
     report.gpsLocation?.lat != null && report.gpsLocation?.lng != null
-      ? notesSection(
-          'الموقع الجغرافي',
-          `${report.gpsLocation.lat}, ${report.gpsLocation.lng}`
-        )
+      ? notesSection(lbl(t, 'الموقع_الجغرافي', 'الموقع الجغرافي'), `${report.gpsLocation.lat}, ${report.gpsLocation.lng}`)
       : ''
   }`;
 }
 
-function dailyRecordsRows(records) {
-  if (!records?.length) return '<tr><td colspan="5">لا توجد سجلات طلاب</td></tr>';
+function dailyRecordsRows(records, t) {
+  if (!records?.length) {
+    return `<tr><td colspan="5">${safeHtml(lbl(t, 'لا_سجلات_طلاب', 'لا توجد سجلات طلاب'))}</td></tr>`;
+  }
   return records
     .map(
       (r) =>
         `<tr>
           <td>${safeHtml(r.name || '—')}</td>
-          <td>${safeHtml(attendanceStatusLabel(r))}</td>
+          <td>${safeHtml(attendanceStatusLabel(r, t))}</td>
           <td>${safeHtml(r.memorization || '—')}</td>
           <td>${safeHtml(r.review || '—')}</td>
           <td>${safeHtml(r.note || '—')}</td>
@@ -150,21 +165,21 @@ function dailyRecordsRows(records) {
     .join('');
 }
 
-function curriculumProgressHtml(summary) {
+function curriculumProgressHtml(summary, t) {
   if (!summary?.length) return '';
   const rows = summary
     .map((p) => `<tr><th>${safeHtml(p.subjectName || '—')}</th><td>${safeHtml(p.label || '—')}</td></tr>`)
     .join('');
   return `
   <div class="section">
-    <h3>متابعة المنهج</h3>
+    <h3>${safeHtml(lbl(t, 'متابعة_المنهج', 'متابعة المنهج'))}</h3>
     <table><tbody>${rows}</tbody></table>
   </div>`;
 }
 
-export function buildDailyPrepReportBodyHtml(report) {
+export function buildDailyPrepReportBodyHtml(report, t = translate) {
   const date = reportDateDisplay(report);
-  const subjects = formatDailyLogSubjects(report);
+  const subjects = formatDailyLogSubjects(report, t);
   const periodLine =
     report.periodStart && report.periodEnd && report.periodStart !== report.periodEnd
       ? `${report.periodStart} — ${report.periodEnd}`
@@ -172,81 +187,84 @@ export function buildDailyPrepReportBodyHtml(report) {
 
   return `
   <div class="title">
-    <h1>سجل التحضير (${safeHtml(prepPeriodLabel(report.prepPeriod))})</h1>
+    <h1>${safeHtml(lbl(t, 'سجل_التحضير', `سجل التحضير (${prepPeriodLabel(report.prepPeriod, t)})`))}</h1>
     <p>${safeHtml(report.schoolName || '')}</p>
   </div>
   ${metaGrid([
-    ['المعلم', report.teacherName],
-    ['المدرسة', report.schoolName],
-    ['التاريخ', date],
-    ['المواد', subjects],
-    ['الفترة', periodLine],
-    ['ملخص الحضور', report.attendanceSummary],
+    [lbl(t, 'المعلم', 'المعلم'), report.teacherName],
+    [lbl(t, 'المدرسة', 'المدرسة'), report.schoolName],
+    [lbl(t, 'التاريخ', 'التاريخ'), date],
+    [lbl(t, 'المواد', 'المواد'), subjects],
+    [lbl(t, 'الفترة', 'الفترة'), periodLine],
+    [lbl(t, 'ملخص_الحضور', 'ملخص الحضور'), report.attendanceSummary],
   ])}
-  ${report.prepNotes ? notesSection('ملاحظات التحضير', report.prepNotes) : ''}
-  ${curriculumProgressHtml(report.curriculumProgressSummary)}
+  ${report.prepNotes ? notesSection(lbl(t, 'ملاحظات_التحضير', 'ملاحظات التحضير'), report.prepNotes) : ''}
+  ${curriculumProgressHtml(report.curriculumProgressSummary, t)}
   <div class="section">
-    <h3>سجل الطلاب</h3>
+    <h3>${safeHtml(lbl(t, 'سجل_الطلاب', 'سجل الطلاب'))}</h3>
     <table>
-      <thead><tr><th>اسم الطالب</th><th>الحالة</th><th>الحفظ</th><th>المراجعة</th><th>ملاحظة</th></tr></thead>
-      <tbody>${dailyRecordsRows(report.records)}</tbody>
+      <thead><tr><th>${safeHtml(lbl(t, 'اسم_الطالب', 'اسم الطالب'))}</th><th>${safeHtml(lbl(t, 'الحالة', 'الحالة'))}</th><th>${safeHtml(lbl(t, 'الحفظ', 'الحفظ'))}</th><th>${safeHtml(lbl(t, 'المراجعة', 'المراجعة'))}</th><th>${safeHtml(lbl(t, 'ملاحظة', 'ملاحظة'))}</th></tr></thead>
+      <tbody>${dailyRecordsRows(report.records, t)}</tbody>
     </table>
   </div>`;
 }
 
-function weeklyStatusLabel(val) {
-  if (val === true || val === 'isActive') return 'نعم';
-  return 'لا';
+function weeklyStatusLabel(val, t) {
+  if (val === true || val === 'isActive') return lbl(t, 'نعم', 'نعم');
+  return lbl(t, 'لا', 'لا');
 }
 
-export function buildWeeklyReportBodyHtml(report) {
+export function buildWeeklyReportBodyHtml(report, t = translate) {
   const date = reportDateDisplay(report);
   const activities = report.reportData || {};
+  const labels = weeklyActivityLabels(t);
   const activityRows = Object.entries(activities)
     .map(([key, val]) => {
-      const title = WEEKLY_ACTIVITY_LABELS[key] || key;
+      const title = labels[key] || key;
       return `<tr>
         <th>${safeHtml(title)}</th>
-        <td>${safeHtml(weeklyStatusLabel(val?.isActive))}</td>
-        <td>${safeHtml(val?.details || 'لا توجد ملاحظات إضافية')}</td>
+        <td>${safeHtml(weeklyStatusLabel(val?.isActive, t))}</td>
+        <td>${safeHtml(val?.details || lbl(t, 'لا_ملاحظات_إضافية', 'لا توجد ملاحظات إضافية'))}</td>
       </tr>`;
     })
     .join('');
 
   return `
   <div class="title">
-    <h1>تقرير أسبوعي</h1>
+    <h1>${safeHtml(lbl(t, 'تقرير_أسبوعي', 'تقرير أسبوعي'))}</h1>
     <p>${safeHtml(report.schoolName || '')}</p>
   </div>
   ${metaGrid([
-    ['المعلم', report.teacherName],
-    ['المدرسة', report.schoolName],
-    ['تاريخ الإرسال', date],
-    ['الأسبوع', report.week],
+    [lbl(t, 'المعلم', 'المعلم'), report.teacherName],
+    [lbl(t, 'المدرسة', 'المدرسة'), report.schoolName],
+    [lbl(t, 'تاريخ_الإرسال', 'تاريخ الإرسال'), date],
+    [lbl(t, 'الأسبوع', 'الأسبوع'), report.week],
   ])}
   <div class="section">
-    <h3>أنشطة الأسبوع</h3>
+    <h3>${safeHtml(lbl(t, 'أنشطة_الأسبوع', 'أنشطة الأسبوع'))}</h3>
     <table>
-      <thead><tr><th>النشاط</th><th>مفعّل</th><th>التفاصيل</th></tr></thead>
-      <tbody>${activityRows || '<tr><td colspan="3">لا توجد أنشطة مسجلة</td></tr>'}</tbody>
+      <thead><tr><th>${safeHtml(lbl(t, 'النشاط', 'النشاط'))}</th><th>${safeHtml(lbl(t, 'مفعّل', 'مفعّل'))}</th><th>${safeHtml(lbl(t, 'التفاصيل', 'التفاصيل'))}</th></tr></thead>
+      <tbody>${activityRows || `<tr><td colspan="3">${safeHtml(lbl(t, 'لا_أنشطة', 'لا توجد أنشطة مسجلة'))}</td></tr>`}</tbody>
     </table>
   </div>`;
 }
 
-export function buildReportDetailsBodyHtml(report) {
+export function buildReportDetailsBodyHtml(report, t = translate) {
   if (!report) return '';
-  if (report.type === 'visit') return buildVisitReportBodyHtml(report);
-  if (report.type === 'daily') return buildDailyPrepReportBodyHtml(report);
-  if (report.type === 'weekly') return buildWeeklyReportBodyHtml(report);
+  if (report.type === 'visit') return buildVisitReportBodyHtml(report, t);
+  if (report.type === 'daily') return buildDailyPrepReportBodyHtml(report, t);
+  if (report.type === 'weekly') return buildWeeklyReportBodyHtml(report, t);
   return '';
 }
 
-export function reportDetailsPreviewTitle(report) {
-  if (!report) return 'معاينة التقرير';
-  if (report.type === 'visit') return 'معاينة الزيارة الميدانية';
-  if (report.type === 'daily') return `معاينة سجل التحضير (${prepPeriodLabel(report.prepPeriod)})`;
-  if (report.type === 'weekly') return 'معاينة التقرير الأسبوعي';
-  return 'معاينة التقرير';
+export function reportDetailsPreviewTitle(report, t = translate) {
+  if (!report) return lbl(t, 'معاينة_التقرير', 'معاينة التقرير');
+  if (report.type === 'visit') return lbl(t, 'معاينة_الزيارة', 'معاينة الزيارة الميدانية');
+  if (report.type === 'daily') {
+    return lbl(t, 'معاينة_سجل_التحضير', `معاينة سجل التحضير (${prepPeriodLabel(report.prepPeriod, t)})`);
+  }
+  if (report.type === 'weekly') return lbl(t, 'معاينة_التقرير_الأسبوعي', 'معاينة التقرير الأسبوعي');
+  return lbl(t, 'معاينة_التقرير', 'معاينة التقرير');
 }
 
 export function reportDetailsPdfFilename(report) {

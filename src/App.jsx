@@ -7,6 +7,7 @@ import AuthService from './services/authService';
 import { NotificationsBadgeProvider } from './context/NotificationsBadgeContext';
 import PermissionsProvider from './context/PermissionsProvider';
 import SiteContentProvider from './context/SiteContentProvider';
+import I18nDirectionSync from './components/I18nDirectionSync';
 import PageGuard from './routes/PageGuard';
 import DailyPrepGuard from './routes/DailyPrepGuard';
 import RolePortalGuard from './routes/RolePortalGuard';
@@ -116,6 +117,7 @@ function App() {
 
   return (
     <SiteContentProvider>
+    <I18nDirectionSync>
     <PermissionsProvider user={user}>
     <BrowserRouter>
       <NotificationsBadgeProvider user={user}>
@@ -303,6 +305,7 @@ function App() {
       </NotificationsBadgeProvider>
     </BrowserRouter>
     </PermissionsProvider>
+    </I18nDirectionSync>
     </SiteContentProvider>
   );
 }

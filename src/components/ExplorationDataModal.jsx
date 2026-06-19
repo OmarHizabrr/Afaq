@@ -30,6 +30,7 @@ const ExplorationDataModal = ({
   canEdit = true,
   fallbackName,
 }) => {
+  const { t } = useAppTranslation();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -78,14 +79,14 @@ const ExplorationDataModal = ({
       onClose?.();
     } catch (err) {
       console.error(err);
-      setError(err?.message || 'تعذر حفظ التعديلات.');
+      setError(err?.message || t('components.ExplorationDataModal.تعذر_حفظ_التعديلات', 'تعذر حفظ التعديلات.'));
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <FormModal open={open} onClose={onClose} size="lg" title={title || 'بيانات نموذج الاستكشاف'}>
+    <FormModal open={open} onClose={onClose} size="lg" title={title || t('components.ExplorationDataModal.بيانات_نموذج_الاستكشاف', 'بيانات نموذج الاستكشاف')}>
       {editing ? (
         <>
           {error && (
@@ -95,7 +96,7 @@ const ExplorationDataModal = ({
             controller={expForm}
             actorUser={actorUser}
             storageUserId={storageUserId}
-            heading="حقول نموذج الاستكشاف"
+            heading={t('components.ExplorationDataModal.حقول_نموذج_الاستكشاف', 'حقول نموذج الاستكشاف')}
             hideTypeSelect
           />
           <div className="exploration-modal-footer">

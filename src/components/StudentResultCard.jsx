@@ -1,7 +1,9 @@
 import React from 'react';
 import { School, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 
-const StudentResultCard = ({ row }) => (
+const StudentResultCard = ({ row }) => {
+  const { t } = useAppTranslation();
+  return (
   <article className={`student-result-card${row.isPresent ? '' : ' student-result-card--absent'}`}>
     <header className="student-result-card__head">
       <div className="student-result-card__lead">
@@ -20,20 +22,22 @@ const StudentResultCard = ({ row }) => (
     <div className="student-result-card__meta">
       {row.isPresent ? (
         <span className="status-text--success">
-          <CheckCircle2 size={14} aria-hidden /> حاضر
+          <CheckCircle2 size={14} aria-hidden /> {t('components.StudentResultCard.حاضر', 'حاضر')}
         </span>
       ) : (
         <span className="status-text--danger">
-          <XCircle size={14} aria-hidden /> غائب
+          <XCircle size={14} aria-hidden /> {t('components.StudentResultCard.غائب', 'غائب')}
         </span>
       )}
       <span className={`student-result-card__test${row.isTested ? ' student-result-card__test--done' : ''}`}>
-        {row.isTested ? 'تم الاختبار' : 'لم يتم'}
+        {row.isTested ? t('components.StudentResultCard.تم_الاختبار', 'تم الاختبار') : t('components.StudentResultCard.لم_يتم', 'لم يتم')}
       </span>
     </div>
 
     {row.note ? <p className="student-result-card__note">{row.note}</p> : null}
   </article>
 );
+
+};
 
 export default StudentResultCard;
