@@ -241,7 +241,7 @@ const DashboardPage = () => {
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.dashboard) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info dashboard-page-alert">
-          عرض محدود: الإحصائيات والنشاط الظاهران مرتبطان بمجموعاتك فقط.
+          {t('pages.DashboardPage.عرض_محدود_الإحصائيات_والنشاط', 'عرض محدود: الإحصائيات والنشاط الظاهران مرتبطان بمجموعاتك فقط.')}
         </div>
       )}
 
@@ -260,7 +260,7 @@ const DashboardPage = () => {
       <div className="surface-card surface-card--lg dashboard-activity-card">
         <div className="dashboard-activity-card__head">
             <Activity size={24} color="var(--accent-color)" />
-            <h2 className="dashboard-activity-card__title">أحدث النشاطات الميدانية</h2>
+            <h2 className="dashboard-activity-card__title">{t('pages.DashboardPage.أحدث_النشاطات_الميدانية', 'أحدث النشاطات الميدانية')}</h2>
             {canAccessPage(PERMISSION_PAGE_IDS.reports) && (
               <button type="button" className="google-btn dashboard-activity-card__all" onClick={() => navigate('/reports')}>
                 عرض كل التقارير
@@ -271,7 +271,7 @@ const DashboardPage = () => {
         {loading ? (
             <div className="loading-spinner page-loading" />
         ) : recentActivity.length === 0 ? (
-            <p className="dashboard-activity-empty">لا توجد نشاطات مسجلة مؤخراً.</p>
+            <p className="dashboard-activity-empty">{t('pages.DashboardPage.لا_توجد_نشاطات_مسجلة_مؤخراً', 'لا توجد نشاطات مسجلة مؤخراً.')}</p>
         ) : (
             <div className="dashboard-activity-grid">
                 {recentActivity.map((act) => {
@@ -311,7 +311,7 @@ const DashboardPage = () => {
                               <CalendarDays size={14} /> {act.date || act.periodLabel || act.timestamp?.split('T')[0]}
                            </p>
                            {clickable && (
-                             <span className="dashboard-activity-item__view" title="عرض التفاصيل">
+                             <span className="dashboard-activity-item__view" title={t('config.permissionRegistry.عرض_التفاصيل', 'عرض التفاصيل')}>
                                 <Eye size={16} color="var(--accent-color)" />
                              </span>
                            )}

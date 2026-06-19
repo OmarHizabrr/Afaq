@@ -298,7 +298,7 @@ const TeacherStudentsPage = ({ user }) => {
   if (!activeSchoolId) {
     return (
       <div className="surface-card portal-alert-card">
-        <h2 className="portal-alert-card__title">تنبيه إداري</h2>
+        <h2 className="portal-alert-card__title">{t('pages.TeacherStudentsPage.تنبيه_إداري', 'تنبيه إداري')}</h2>
         <p className="portal-alert-card__text">
           حساب المعلم الخاص بك غير مرتبط بأي مدرسة في النظام (لا في الملف ولا في
           مرآة Mygroup).
@@ -340,7 +340,7 @@ const TeacherStudentsPage = ({ user }) => {
               onClick={() => setIsExploringAdding(true)}
             >
               <Compass size={18} />
-              <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
+              <span className="portal-toolbar__long">{t('pages.CurriculumPage.إضافة_من_الاستكشاف', 'إضافة من الاستكشاف')}</span>
               <span className="portal-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
             </button>
           )}
@@ -382,7 +382,7 @@ const TeacherStudentsPage = ({ user }) => {
         onClose={() => setIsAdding(false)}
       >
         <form onSubmit={handleAdd}>
-          <label className="app-label">اسم الدارس</label>
+          <label className="app-label">{t('pages.TeacherStudentsPage.اسم_الدارس', 'اسم الدارس')}</label>
           <input
             type="text"
             placeholder={t('pages.TeacherStudentsPage.اسم_الدارس_الرباعي', 'اسم الدارس الرباعي')}
@@ -463,7 +463,7 @@ const TeacherStudentsPage = ({ user }) => {
                   <tr>
                     <th>{t('pages.VillageDetailsPage.الاسم', 'الاسم')}</th>
                     <th className="portal-table__col-narrow">{t('pages.TeacherStudentsPage.السن', 'السن')}</th>
-                    <th className="portal-table__col-actions">إجراءات</th>
+                    <th className="portal-table__col-actions">{t('pages.TeacherStudentsPage.إجراءات', 'إجراءات')}</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -4469,6 +4469,26 @@ button.village-details-schools-item:hover {
   margin-bottom: 2rem;
 }
 
+.settings-language-card {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.settings-language-card__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-language-card__hint {
+  margin: 0 0 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 .settings-theme-card__title {
   margin: 0 0 1.5rem;
   font-size: 1.2rem;

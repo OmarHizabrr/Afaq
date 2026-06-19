@@ -124,7 +124,7 @@ const CurriculumPage = () => {
     if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`${t('components.ExplorationDataModal.الحقول_التالية_مطلوبة_أو_غير_صالحة', 'الحقول التالية مطلوبة أو غير صالحة:')} ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const fallbackName = expForm.selectedType?.name ? `مادة - ${expForm.selectedType.name}` : '';
@@ -265,7 +265,7 @@ const CurriculumPage = () => {
             }}
           >
             <Compass size={18} />
-            <span className="curriculum-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="curriculum-toolbar__long">{t('pages.CurriculumPage.إضافة_من_الاستكشاف', 'إضافة من الاستكشاف')}</span>
             <span className="curriculum-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
@@ -291,7 +291,7 @@ const CurriculumPage = () => {
           />
           <div className="curriculum-modal-actions">
             <button type="button" className="google-btn curriculum-modal-actions__btn" onClick={() => setIsAdding(false)}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <button type="submit" className="google-btn google-btn--filled curriculum-modal-actions__btn">
               إنشاء الخطة
@@ -315,7 +315,7 @@ const CurriculumPage = () => {
           />
           <div className="curriculum-modal-actions curriculum-modal-actions--spaced">
             <button type="button" className="google-btn curriculum-modal-actions__btn" onClick={() => setIsExploringAdding(false)}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled curriculum-modal-actions__btn">
               إنشاء الخطة
@@ -404,7 +404,7 @@ const CurriculumPage = () => {
                 {isExpanded && editingSubject?.id === subject.id && (
                   <div className="curriculum-editor">
                     <label htmlFor={`subject-name-${subject.id}`} className="app-field app-field--grow curriculum-editor__subject-name">
-                      <span className="app-label">اسم المادة</span>
+                      <span className="app-label">{t('pages.CurriculumPage.اسم_المادة', 'اسم المادة')}</span>
                       <input
                         id={`subject-name-${subject.id}`}
                         type="text"
@@ -416,7 +416,7 @@ const CurriculumPage = () => {
                       />
                     </label>
                     <div className="curriculum-editor__head">
-                      <h4 className="curriculum-editor__subtitle">توزيع الدروس الأسبوعية</h4>
+                      <h4 className="curriculum-editor__subtitle">{t('pages.CurriculumPage.توزيع_الدروس_الأسبوعية', 'توزيع الدروس الأسبوعية')}</h4>
                       {can(PERMISSION_PAGE_IDS.curriculum, 'curriculum_save_subject') && (
                         <BusyButton
                           type="button"
@@ -479,7 +479,7 @@ const CurriculumPage = () => {
             busy={loading}
           >
             <Save size={18} aria-hidden />
-            حفظ
+            {t('components.MessengerPanel.حفظ', 'حفظ')}
           </BusyButton>
         </div>
       )}

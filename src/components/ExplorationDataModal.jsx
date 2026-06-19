@@ -62,7 +62,7 @@ const ExplorationDataModal = ({
     setError('');
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`${t('components.ExplorationDataModal.الحقول_التالية_مطلوبة_أو_غير_صالحة', 'الحقول التالية مطلوبة أو غير صالحة:')} ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     setSaving(true);
@@ -108,7 +108,7 @@ const ExplorationDataModal = ({
               disabled={saving}
             >
               <span className="exploration-modal-footer__btn-inner">
-                <X size={14} aria-hidden /> إلغاء
+                <X size={14} aria-hidden /> {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
               </span>
             </button>
             <BusyButton
@@ -118,7 +118,7 @@ const ExplorationDataModal = ({
               onClick={handleSave}
             >
               <span className="exploration-modal-footer__btn-inner">
-                <Save size={14} aria-hidden /> حفظ التعديلات
+                <Save size={14} aria-hidden /> {t('pages.SchoolReportPage.حفظ_التعديلات', 'حفظ التعديلات')}
               </span>
             </BusyButton>
           </div>
@@ -147,7 +147,7 @@ const ExplorationDataModal = ({
               className="google-btn exploration-modal-footer__btn"
               onClick={onClose}
             >
-              إغلاق
+              {t('components.InstallAppBanner.إغلاق', 'إغلاق')}
             </button>
           </div>
         </>

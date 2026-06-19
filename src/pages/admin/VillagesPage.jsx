@@ -400,7 +400,7 @@ const VillagesPage = () => {
     if (expSavingExploration) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`${t('components.ExplorationDataModal.الحقول_التالية_مطلوبة_أو_غير_صالحة', 'الحقول التالية مطلوبة أو غير صالحة:')} ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const regionId = expForm.getValueBySource('regions');
@@ -739,7 +739,7 @@ const VillagesPage = () => {
             }}
           >
             <Plus size={18} />
-            <span>إضافة قرية جديدة</span>
+            <span>{t('pages.VillagesPage.إضافة_قرية_جديدة', 'إضافة قرية جديدة')}</span>
           </button>
         )}
         {can(PERMISSION_PAGE_IDS.villages, 'village_add') &&
@@ -751,7 +751,7 @@ const VillagesPage = () => {
             title={t('pages.VillagesPage.فتح_نموذج_استكشاف_لإدخال_قرية_جديدة', 'فتح نموذج استكشاف لإدخال قرية جديدة')}
           >
             <Compass size={18} />
-            <span className="villages-toolbar__long">إضافة من نموذج الاستكشاف</span>
+            <span className="villages-toolbar__long">{t('pages.VillagesPage.إضافة_من_نموذج_الاستكشاف', 'إضافة من نموذج الاستكشاف')}</span>
             <span className="villages-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
@@ -759,7 +759,7 @@ const VillagesPage = () => {
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.villages) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info villages-alert">
-          عرض محدود: القرى والمناطق والمهتدين الظاهرون مرتبطون بمجموعاتك (عضوية مدرسة أو منطقة).
+          {t('pages.VillagesPage.عرض_محدود_القرى', 'عرض محدود: القرى والمناطق والمهتدين الظاهرون مرتبطون بمجموعاتك (عضوية مدرسة أو منطقة).')}
         </div>
       )}
       {error && (
@@ -787,46 +787,46 @@ const VillagesPage = () => {
         onClose={() => setIsAdding(false)}
       >
           <form onSubmit={handleAdd} className="villages-form">
-          <h3 className="villages-form__title">البيانات الأساسية</h3>
+          <h3 className="villages-form__title">{t('pages.VillagesPage.البيانات_الأساسية', 'البيانات الأساسية')}</h3>
           
           <div className="villages-form__grid">
             <div className="app-field app-field--grow">
-              <label className="app-label">المنطقة التابعة لها</label>
+              <label className="app-label">{t('pages.VillagesPage.المنطقة_التابعة_لها', 'المنطقة التابعة لها')}</label>
               <AppSelect searchable value={selectedRegId} onChange={(e) => setSelectedRegId(e.target.value)} required>
-                <option value="">-- اختر المنطقة --</option>
+                <option value="">{t('pages.VillagesPage.اختر_المنطقة', '-- اختر المنطقة --')}</option>
                 {regions.map(reg => (
                   <option key={reg.id} value={reg.id}>{reg.name} ({getRegionName(reg.id)})</option> // Simplified
                 ))}
               </AppSelect>
             </div>
             <div className="app-field app-field--grow">
-              <label className="app-label">اسم القرية</label>
+              <label className="app-label">{t('pages.ExplorationsPage.اسم_القرية', 'اسم القرية')}</label>
               <input name="villageName" type="text" value={formData.villageName} onChange={handleInputChange} className="app-input" required />
             </div>
             <div className="app-field app-field--grow">
-              <label className="app-label">اسم الجروب</label>
+              <label className="app-label">{t('pages.VillagesPage.اسم_الجروب', 'اسم الجروب')}</label>
               <input name="groupName" type="text" value={formData.groupName} onChange={handleInputChange} className="app-input" />
             </div>
             <div className="app-field app-field--grow">
-              <label className="app-label">اسم الـ LTI</label>
+              <label className="app-label">{t('pages.VillagesPage.اسم_الـ_LTI', 'اسم الـ LTI')}</label>
               <input name="ltiName" type="text" value={formData.ltiName} onChange={handleInputChange} className="app-input" />
             </div>
           </div>
 
           <hr className="villages-form__divider" />
 
-          <h3 className="villages-form__title">الإحصائيات السكانية</h3>
+          <h3 className="villages-form__title">{t('pages.VillagesPage.الإحصائيات_السكانية', 'الإحصائيات السكانية')}</h3>
           <div className="villages-form__grid villages-form__grid--stats">
             <div className="app-field app-field--grow">
               <label className="app-label">{t('pages.VillageDetailsPage.إجمالي_السكان', 'إجمالي السكان')}</label>
               <input name="populationCount" type="number" min="0" value={formData.populationCount} onChange={handleInputChange} className="app-input" />
             </div>
             <div className="app-field app-field--grow">
-              <label className="app-label">عدد المسلمين</label>
+              <label className="app-label">{t('pages.VillagesPage.عدد_المسلمين', 'عدد المسلمين')}</label>
               <input name="muslimsCount" type="number" min="0" value={formData.muslimsCount} onChange={handleInputChange} className="app-input" />
             </div>
             <div className="app-field app-field--grow">
-              <label className="app-label">عدد غير المسلمين</label>
+              <label className="app-label">{t('pages.VillagesPage.عدد_غير_المسلمين', 'عدد غير المسلمين')}</label>
               <input name="nonMuslimsCount" type="number" min="0" value={formData.nonMuslimsCount} onChange={handleInputChange} className="app-input" />
             </div>
           </div>
@@ -834,7 +834,7 @@ const VillagesPage = () => {
           <hr className="villages-form__divider" />
 
           <div className="villages-form__head-row">
-            <h3 className="villages-form__title villages-form__title--inline">سجل المهتدين والمسلمين القدامى (يُسجَّلون كطلاب في المدارس التي تختارها)</h3>
+            <h3 className="villages-form__title villages-form__title--inline">{t('pages.VillagesPage.سجل_المهتدين_والمسلمين_القدامى_يُسجَّلون_كطلاب_في_المد', 'سجل المهتدين والمسلمين القدامى (يُسجَّلون كطلاب في المدارس التي تختارها)')}</h3>
             <div className="villages-form__counter">
               الإجمالي: {newMuslims.length}
             </div>
@@ -842,7 +842,7 @@ const VillagesPage = () => {
 
           {isEditing && (schoolsByVillage[isEditing.id] || []).length > 0 && (
             <div className="app-field app-field--grow villages-form__school-pick">
-              <label className="app-label">مدارس القرية للتسجيل كطالب (قائمة الطلاب المسجلين في كل مدرسة)</label>
+              <label className="app-label">{t('pages.VillagesPage.مدارس_القرية_للتسجيل_كطالب_قائمة_الطلاب_المسجلين_في_كل', 'مدارس القرية للتسجيل كطالب (قائمة الطلاب المسجلين في كل مدرسة)')}</label>
               <VillageSchoolCheckboxGroup
                 schools={schoolsByVillage[isEditing.id] || []}
                 selectedIds={villageModalSchoolIds}
@@ -874,14 +874,14 @@ const VillagesPage = () => {
               </AppSelect>
             </div>
             <div className="app-field villages-form__new-muslim-type">
-              <label className="app-label">التصنيف</label>
+              <label className="app-label">{t('pages.VillagesPage.التصنيف', 'التصنيف')}</label>
               <AppSelect searchable value={muslimCategoryForm} onChange={(e) => setMuslimCategoryForm(normalizeMuslimCategory(e.target.value))}>
-                <option value="convert">مهتد جديد</option>
+                <option value="convert">{t('pages.VillagesPage.مهتد_جديد', 'مهتد جديد')}</option>
                 <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
               </AppSelect>
             </div>
             <button type="button" onClick={addNewMuslimToList} className="google-btn google-btn--toolbar villages-form__new-muslim-btn">
-              <UserPlus size={16} /> إضافة
+              <UserPlus size={16} /> {t('components.ReportTextList.إضافة', 'إضافة')}
             </button>
           </div>
 
@@ -909,7 +909,7 @@ const VillagesPage = () => {
 
           <div className="villages-form__actions">
             <button type="button" onClick={() => setIsAdding(false)} className="google-btn villages-form__action-btn">
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton
               type="submit"
@@ -980,13 +980,13 @@ const VillagesPage = () => {
               </AppSelect>
             </div>
             <div className="app-field villages-form__new-muslim-type">
-              <label className="app-label">التصنيف</label>
+              <label className="app-label">{t('pages.VillagesPage.التصنيف', 'التصنيف')}</label>
               <AppSelect
                 searchable
                 value={expMuslimCategoryForm}
                 onChange={(e) => setExpMuslimCategoryForm(normalizeMuslimCategory(e.target.value))}
               >
-                <option value="convert">مهتد جديد</option>
+                <option value="convert">{t('pages.VillagesPage.مهتد_جديد', 'مهتد جديد')}</option>
                 <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
               </AppSelect>
             </div>
@@ -995,7 +995,7 @@ const VillagesPage = () => {
               onClick={addExpNewMuslimToList}
               className="google-btn google-btn--toolbar villages-form__new-muslim-btn"
             >
-              <UserPlus size={16} /> إضافة
+              <UserPlus size={16} /> {t('components.ReportTextList.إضافة', 'إضافة')}
             </button>
           </div>
 
@@ -1030,14 +1030,14 @@ const VillagesPage = () => {
               onClick={() => setIsExploringAdding(false)}
               className="google-btn villages-form__action-btn"
             >
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton
               type="submit"
               busy={expSavingExploration}
               className="google-btn google-btn--filled villages-form__action-btn villages-form__action-btn--primary"
             >
-              حفظ القرية
+              {t('pages.VillagesPage.حفظ_القرية', 'حفظ القرية')}
             </BusyButton>
           </div>
         </form>
@@ -1151,13 +1151,13 @@ const VillagesPage = () => {
                   {nmQuickVillageId === vil.id ? (
                     <>
                       <ChevronUp size={16} aria-hidden />
-                      <span>طي السجل</span>
+                      <span>{t('pages.VillagesPage.طي_السجل', 'طي السجل')}</span>
                     </>
                   ) : (
                     <>
                       <ChevronDown size={16} aria-hidden />
-                      <span className="villages-toolbar__long">مهتدون ومسلمون قدامى من البطاقة</span>
-                      <span className="villages-toolbar__short">سجل المهتدين</span>
+                      <span className="villages-toolbar__long">{t('pages.VillagesPage.مهتدون_ومسلمون_قدامى_من_البطاقة', 'مهتدون ومسلمون قدامى من البطاقة')}</span>
+                      <span className="villages-toolbar__short">{t('pages.VillagesPage.سجل_المهتدين', 'سجل المهتدين')}</span>
                     </>
                   )}
                 </button>
@@ -1218,14 +1218,14 @@ const VillagesPage = () => {
                         disabled={nmSaving}
                         onClick={() => handleQuickAddNewMuslim(vil)}
                       >
-                        إضافة
+                        {t('components.ReportTextList.إضافة', 'إضافة')}
                       </button>
                     )}
                   </div>
                   <div className="villages-quick-panel__list">
                     {(newMuslimsDocsByVillage[vil.id] || []).length === 0 ? (
                       <p className="villages-quick-panel__empty">
-                        لا توجد سجلات بعد.
+                        {t('pages.VillageDetailsPage.لا_توجد_سجلات_بعد', 'لا توجد سجلات بعد.')}
                       </p>
                     ) : (
                       (newMuslimsDocsByVillage[vil.id] || []).map((m) => (

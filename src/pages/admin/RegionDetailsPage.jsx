@@ -144,7 +144,7 @@ const RegionDetailsPage = () => {
             });
 
             await fetchRegionDetails();
-            setAssignMsg(`تم تعيين ${userToAssign.displayName || 'المستخدم'} بنجاح. يمكنك تعيين مشرفين آخرين.`);
+            setAssignMsg(`${t('pages.RegionDetailsPage.تم_تعيين', 'تم تعيين')} ${userToAssign.displayName || t('pages.RegionDetailsPage.المستخدم', 'المستخدم')} ${t('pages.RegionDetailsPage.بنجاح_يمكن_تعيين_مشرفين', 'بنجاح. يمكنك تعيين مشرفين آخرين.')}`);
         } catch (err) {
             console.error(err);
             setError(t('pages.RegionDetailsPage.حدث_خطأ_أثناء_التعيين', 'حدث خطأ أثناء التعيين.'));
@@ -208,7 +208,7 @@ const RegionDetailsPage = () => {
     };
 
     if (loading) return <div className="loading-spinner page-loading-lg" />;
-    if (!region) return <div className="empty-state empty-state--centered">المنطقة غير موجودة</div>;
+    if (!region) return <div className="empty-state empty-state--centered">{t('pages.RegionDetailsPage.المنطقة_غير_موجودة', 'المنطقة غير موجودة')}</div>;
 
     const regionScope = pageDataScope(PERMISSION_PAGE_IDS.regions);
     if (
@@ -257,12 +257,12 @@ const RegionDetailsPage = () => {
               topRow={
                 <div className="region-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/regions')}>
-                    <ChevronRight size={20} aria-hidden /> إدارة المناطق
+                    <ChevronRight size={20} aria-hidden /> {t('pages.RegionsPage.إدارة_المناطق', 'إدارة المناطق')}
                   </button>
                   <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>منطقة: <span className="page-header-accent">{region.name}</span></>}
+              title={<>{t('pages.RegionDetailsPage.منطقة', 'منطقة:')} <span className="page-header-accent">{region.name}</span></>}
             />
 
             <div className="region-details-grid">
@@ -272,7 +272,7 @@ const RegionDetailsPage = () => {
                            <School size={18} color="var(--accent-color)" /> المدارس في هذه المنطقة
                         </h2>
                     </div>
-                    {schools.length === 0 ? <p className="region-details-panel__empty">لا توجد مدارس مضافة لهذه المنطقة.</p> : (
+                    {schools.length === 0 ? <p className="region-details-panel__empty">{t('pages.RegionDetailsPage.لا_توجد_مدارس_مضافة_لهذه_المنطقة', 'لا توجد مدارس مضافة لهذه المنطقة.')}</p> : (
                         <div className="region-details-list">
                            {schools.map(sch => (
                               can(PERMISSION_PAGE_IDS.regions, 'region_school_view') ? (
@@ -304,7 +304,7 @@ const RegionDetailsPage = () => {
                           <button type="button" className="icon-btn" title={t('pages.RegionDetailsPage.تعيين_مشرف', 'تعيين مشرف')} onClick={() => { setIsModalOpen(true); setAssignMsg(''); setSearchTerm(''); setAssignRoleFilter('all'); }}><UserPlus size={18} /></button>
                         )}
                     </div>
-                    {supervisors.length === 0 ? <p className="region-details-panel__empty">لا يوجد أعضاء مسجّلون لهذه المنطقة حالياً.</p> : (
+                    {supervisors.length === 0 ? <p className="region-details-panel__empty">{t('pages.RegionDetailsPage.لا_يوجد_أعضاء_مسجّلون_لهذه_المنطقة_حالياً', 'لا يوجد أعضاء مسجّلون لهذه المنطقة حالياً.')}</p> : (
                         <div className="region-details-list">
                            {supervisors.map(sup => (
                               <div key={sup.id} className="region-details-item">
@@ -391,7 +391,7 @@ const RegionDetailsPage = () => {
 
                         <div className="modal-scroll-box region-assign-scroll">
                             {filteredUsers.length === 0 ? (
-                              <p className="region-assign-empty">لا يوجد مستخدمون يطابقون البحث أو الجميع معيّنون لهذه المنطقة.</p>
+                              <p className="region-assign-empty">{t('pages.RegionDetailsPage.لا_يوجد_مستخدمون_يطابقون_البحث_أو_الجميع_معيّنون_لهذه_ا', 'لا يوجد مستخدمون يطابقون البحث أو الجميع معيّنون لهذه المنطقة.')}</p>
                             ) : (
                               filteredUsers.map(u => (
                                 <div key={u.id} className="region-assign-user-row">

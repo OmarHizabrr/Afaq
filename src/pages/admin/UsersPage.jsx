@@ -195,7 +195,7 @@ const UsersPage = () => {
   const handleExplorationCreateUser = async () => {
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`${t('components.ExplorationDataModal.الحقول_التالية_مطلوبة_أو_غير_صالحة', 'الحقول التالية مطلوبة أو غير صالحة:')} ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const displayName = expForm.deriveDisplayName('');
@@ -313,7 +313,7 @@ const UsersPage = () => {
               }}
             >
               <UserPlus size={18} />
-              <span className="portal-toolbar__long">إضافة مستخدم</span>
+              <span className="portal-toolbar__long">{t('pages.UsersPage.إضافة_مستخدم', 'إضافة مستخدم')}</span>
               <span className="portal-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
             </button>
             {explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
@@ -326,7 +326,7 @@ const UsersPage = () => {
                 }}
               >
                 <Compass size={18} />
-                <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
+                <span className="portal-toolbar__long">{t('pages.CurriculumPage.إضافة_من_الاستكشاف', 'إضافة من الاستكشاف')}</span>
                 <span className="portal-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
               </button>
             )}
@@ -336,7 +336,7 @@ const UsersPage = () => {
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.users) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info users-alert">
-          عرض محدود: تظهر حسابات الأعضاء في مجموعاتك معك فقط (بالإضافة إلى حسابك).
+          {t('pages.UsersPage.عرض_محدود_المستخدمين', 'عرض محدود: تظهر حسابات الأعضاء في مجموعاتك معك فقط (بالإضافة إلى حسابك).')}
         </div>
       )}
 
@@ -454,7 +454,7 @@ const UsersPage = () => {
             )}
             <div className="users-modal__field">
               <label className="app-label">
-                نوع الصلاحيات
+                {t('pages.UsersPage.نوع_الصلاحيات', 'نوع الصلاحيات')}
               </label>
               <AppSelect searchable
                 value={selectedPermissionProfileId}
@@ -465,7 +465,7 @@ const UsersPage = () => {
                   selectedRole === SYSTEM_ADMIN_ROLE
                 }
               >
-                <option value="">بدون نوع صلاحيات (يُحدَّد حسب الدور أعلاه)</option>
+                <option value="">{t('pages.UsersPage.بدون_نوع_صلاحيات_يُحدَّد_حسب_الدور_أعلاه', 'بدون نوع صلاحيات (يُحدَّد حسب الدور أعلاه)')}</option>
                 {permissionProfiles.map((p) => (
                   <option key={p.id} value={p.id}>{p.name || p.id}</option>
                 ))}
@@ -499,7 +499,7 @@ const UsersPage = () => {
         <div className="modal-overlay" onClick={() => setIsExploringAdding(false)}>
           <div className="modal-card modal-card--lg" onClick={(e) => e.stopPropagation()}>
             <div className="users-modal__head">
-              <h2 className="users-modal__title">إضافة مستخدم من نموذج الاستكشاف</h2>
+              <h2 className="users-modal__title">{t('pages.UsersPage.إضافة_مستخدم_من_نموذج_الاستكشاف', 'إضافة مستخدم من نموذج الاستكشاف')}</h2>
               <button type="button" className="icon-btn" onClick={() => setIsExploringAdding(false)}>
                 <X size={20} />
               </button>
@@ -534,7 +534,7 @@ const UsersPage = () => {
         <div className="modal-overlay" onClick={() => setIsAddUserOpen(false)}>
           <div className="modal-card modal-card--sm" onClick={(e) => e.stopPropagation()}>
             <div className="users-modal__head">
-              <h2 className="users-modal__title">إضافة مستخدم جديد</h2>
+              <h2 className="users-modal__title">{t('pages.UsersPage.إضافة_مستخدم_جديد', 'إضافة مستخدم جديد')}</h2>
               <button type="button" className="icon-btn" onClick={() => setIsAddUserOpen(false)}>
                 <X size={20} />
               </button>
@@ -551,7 +551,7 @@ const UsersPage = () => {
             </div>
 
             <div className="users-modal__field">
-              <label className="app-label">البريد الإلكتروني (اختياري)</label>
+              <label className="app-label">{t('pages.StudentManagementPage.البريد_الإلكتروني_اختياري', 'البريد الإلكتروني (اختياري)')}</label>
               <input
                 className="app-input"
                 type="email"
@@ -562,7 +562,7 @@ const UsersPage = () => {
             </div>
 
             <div className="users-modal__field">
-              <label className="app-label">رقم الهاتف (إجباري)</label>
+              <label className="app-label">{t('pages.UsersPage.رقم_الهاتف_إجباري', 'رقم الهاتف (إجباري)')}</label>
               <input
                 className="app-input"
                 value={newUserPhone}
@@ -574,7 +574,7 @@ const UsersPage = () => {
             </div>
 
             <div className="users-modal__field">
-              <label className="app-label">كلمة المرور (إجباري)</label>
+              <label className="app-label">{t('pages.UsersPage.كلمة_المرور_إجباري', 'كلمة المرور (إجباري)')}</label>
               <div className="md-field settings-profile-form__password-field">
                 <Lock size={18} color="var(--text-secondary)" aria-hidden />
                 <input
@@ -620,14 +620,14 @@ const UsersPage = () => {
               </AppSelect>
             </div>
             <div className="users-modal__field">
-              <label className="app-label">نوع الصلاحيات</label>
+              <label className="app-label">{t('pages.UsersPage.نوع_الصلاحيات', 'نوع الصلاحيات')}</label>
               <AppSelect searchable
                 value={newUserPermissionProfileId}
                 onChange={(e) => setNewUserPermissionProfileId(e.target.value)}
                 className="app-select"
                 disabled={newUserRole === SYSTEM_ADMIN_ROLE}
               >
-                <option value="">بدون نوع صلاحيات (تظهر له صفحة طلب الصلاحيات إن لم يكن مدير نظام)</option>
+                <option value="">{t('pages.UsersPage.بدون_نوع_صلاحيات_تظهر_له_صفحة_طلب_الصلاحيات_إن_لم_يكن_', 'بدون نوع صلاحيات (تظهر له صفحة طلب الصلاحيات إن لم يكن مدير نظام)')}</option>
                 {permissionProfiles.map((p) => (
                   <option key={p.id} value={p.id}>{p.name || p.id}</option>
                 ))}
@@ -643,7 +643,7 @@ const UsersPage = () => {
                   resetAddUserForm();
                 }}
               >
-                إلغاء
+                {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
               </button>
               <BusyButton
                 type="button"

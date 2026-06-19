@@ -183,7 +183,7 @@ const SchoolsPage = () => {
     if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`${t('components.ExplorationDataModal.الحقول_التالية_مطلوبة_أو_غير_صالحة', 'الحقول التالية مطلوبة أو غير صالحة:')} ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const villageId = expForm.getValueBySource('villages');
@@ -292,7 +292,7 @@ const SchoolsPage = () => {
             onClick={() => setIsExploringAdding(true)}
           >
             <Compass size={18} />
-            <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__long">{t('pages.CurriculumPage.إضافة_من_الاستكشاف', 'إضافة من الاستكشاف')}</span>
             <span className="geo-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
@@ -300,7 +300,7 @@ const SchoolsPage = () => {
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.schools) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info schools-alert geo-page-alert geo-page-alert--tight">
-          عرض محدود: تظهر المدارس والقرى والمناطق المرتبطة بمجموعاتك فقط (عضوية مدرسة أو منطقة).
+          {t('pages.SchoolsPage.عرض_محدود_المدارس', 'عرض محدود: تظهر المدارس والقرى والمناطق المرتبطة بمجموعاتك فقط (عضوية مدرسة أو منطقة).')}
         </div>
       )}
       {error && <div className="app-alert app-alert--error schools-alert">{error}</div>}
@@ -313,22 +313,22 @@ const SchoolsPage = () => {
         onClose={() => setIsAdding(false)}
       >
         <form onSubmit={handleAdd} className="schools-form">
-          <label className="app-label">تصفية حسب المنطقة</label>
+          <label className="app-label">{t('pages.SchoolsPage.تصفية_حسب_المنطقة', 'تصفية حسب المنطقة')}</label>
           <AppSelect searchable value={selectedRegId} onChange={(e) => { setSelectedRegId(e.target.value); setSelectedVilId(''); }} className="schools-form__field-gap">
-            <option value="">-- كل المناطق --</option>
+            <option value="">{t('pages.SchoolsPage.كل_المناطق', '-- كل المناطق --')}</option>
             {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
           </AppSelect>
 
-          <label className="app-label">القرية (مطلوب)</label>
+          <label className="app-label">{t('pages.SchoolsPage.القرية_مطلوب', 'القرية (مطلوب)')}</label>
           <AppSelect searchable value={selectedVilId} onChange={(e) => setSelectedVilId(e.target.value)} className="schools-form__field-gap" required>
-            <option value="">-- اختر القرية --</option>
+            <option value="">{t('pages.SchoolsPage.اختر_القرية', '-- اختر القرية --')}</option>
             {filteredVillages.map(v => <option key={v.id} value={v.id}>{v.villageName}</option>)}
           </AppSelect>
 
-          <label className="app-label">اسم المدرسة (مطلوب)</label>
+          <label className="app-label">{t('pages.SchoolsPage.اسم_المدرسة_مطلوب', 'اسم المدرسة (مطلوب)')}</label>
           <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="app-input schools-form__field-gap" required placeholder={t('pages.SchoolsPage.مثال_مدرسة_النور', 'مثال: مدرسة النور')} />
 
-          <label className="app-label">نوع المدرسة (مطلوب)</label>
+          <label className="app-label">{t('pages.SchoolsPage.نوع_المدرسة_مطلوب', 'نوع المدرسة (مطلوب)')}</label>
           <AppSelect searchable
             value={schoolLevel}
             onChange={(e) => setSchoolLevel(e.target.value)}
@@ -342,12 +342,12 @@ const SchoolsPage = () => {
             ))}
           </AppSelect>
 
-          <label className="app-label">اسم المتبرع (اختياري)</label>
+          <label className="app-label">{t('pages.SchoolsPage.اسم_المتبرع_اختياري', 'اسم المتبرع (اختياري)')}</label>
           <input type="text" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="app-input schools-form__field-gap-lg" placeholder={t('pages.SchoolsPage.فاعل_خير', 'فاعل خير')} />
 
           <div className="schools-form__actions">
             <button type="button" onClick={() => setIsAdding(false)} className="google-btn schools-form__action-btn">
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled schools-form__action-btn">
               حفظ المدرسة
@@ -375,7 +375,7 @@ const SchoolsPage = () => {
 
           <div className="schools-form__actions schools-form__actions--spaced">
             <button type="button" onClick={() => setIsExploringAdding(false)} className="google-btn schools-form__action-btn">
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled schools-form__action-btn">
               حفظ المدرسة

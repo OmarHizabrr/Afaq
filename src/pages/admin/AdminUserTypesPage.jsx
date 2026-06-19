@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Shield, Trash2 } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
-import { PERMISSION_PAGES } from '../../config/permissionRegistry';
+import { getPermissionPages } from '../../config/permissionRegistry';
 import FirestoreApi from '../../services/firestoreApi';
 import {
   subscribePermissionProfiles,
@@ -27,6 +27,7 @@ export default function AdminUserTypesPage({ user }) {
   }, []);
 
   const selected = useMemo(() => list.find((x) => x.id === selectedId) || null, [list, selectedId]);
+  const permissionPages = useMemo(() => getPermissionPages(t), [t]);
 
   useEffect(() => {
     if (!selected) {
@@ -159,11 +160,11 @@ export default function AdminUserTypesPage({ user }) {
 
         <section className="surface-card admin-user-types-content">
           {!selectedId ? (
-            <p className="admin-user-types-content__empty">اختر نوعاً من القائمة أو أنشئ نوعاً جديداً.</p>
+            <p className="admin-user-types-content__empty">{t('pages.AdminUserTypesPage.اختر_نوعاً_من_القائمة_أو_أنشئ_نوعاً_جديداً', 'اختر نوعاً من القائمة أو أنشئ نوعاً جديداً.')}</p>
           ) : (
             <>
               <label className="app-field app-field--grow admin-user-types-content__name-field">
-                <span className="app-label">اسم النوع</span>
+                <span className="app-label">{t('pages.AdminUserTypesPage.اسم_النوع', 'اسم النوع')}</span>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -182,7 +183,7 @@ export default function AdminUserTypesPage({ user }) {
               </div>
 
               <div className="admin-user-types-content__pages">
-                {PERMISSION_PAGES.map((pg) => {
+                {permissionPages.map((pg) => {
                   const pageAllowed = Boolean(pages[pg.id]);
                   return (
                     <div key={pg.id} className="admin-user-types-page-card">
@@ -211,7 +212,7 @@ export default function AdminUserTypesPage({ user }) {
                       {pageAllowed && pg.supportsDataScope && (
                         <div className="admin-user-types-page-card__scope">
                           <span className="app-label admin-user-types-page-card__scope-label">
-                            نطاق عرض البيانات في هذه الصفحة
+                            {t('utils.permissionDataScope.نطاق_عرض_البيانات_في_هذه_الصفحة', 'نطاق عرض البيانات في هذه الصفحة')}
                           </span>
                           <label className="admin-user-types-page-card__action-item admin-user-types-page-card__scope-item">
                             <input
@@ -220,7 +221,7 @@ export default function AdminUserTypesPage({ user }) {
                               checked={normalizeDataScope(pages?.[pg.id]?.dataScope) === DATA_SCOPE_ALL}
                               onChange={() => setPageDataScope(pg.id, DATA_SCOPE_ALL)}
                             />
-                            كل السجلات (عرض شامل)
+                            {t('utils.permissionDataScope.كل_السجلات_عرض_شامل', 'كل السجلات (عرض شامل)')}
                           </label>
                           <label className="admin-user-types-page-card__action-item admin-user-types-page-card__scope-item">
                             <input
@@ -229,7 +230,7 @@ export default function AdminUserTypesPage({ user }) {
                               checked={normalizeDataScope(pages?.[pg.id]?.dataScope) === DATA_SCOPE_MEMBERSHIP}
                               onChange={() => setPageDataScope(pg.id, DATA_SCOPE_MEMBERSHIP)}
                             />
-                            ما يرتبط بي فقط (مدارس/مناطق/مجموعات أنا عضو فيها)
+                            {t('utils.permissionDataScope.ما_يرتبط_بي_فقط', 'ما يرتبط بي فقط (مدارس/مناطق/مجموعات أنا عضو فيها)')}
                           </label>
                         </div>
                       )}

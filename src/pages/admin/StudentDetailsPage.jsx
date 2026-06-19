@@ -124,7 +124,7 @@ const StudentDetailsPage = () => {
   };
 
   if (loading) return <div className="loading-spinner page-loading-md" />;
-  if (!student) return <div className="empty-state">ملف الطالب غير موجود.</div>;
+  if (!student) return <div className="empty-state">{t('pages.StudentDetailsPage.ملف_الطالب_غير_موجود', 'ملف الطالب غير موجود.')}</div>;
 
   const stScope = pageDataScope(PERMISSION_PAGE_IDS.students_management);
   const scopeRow = { ...student, memberships };
@@ -143,11 +143,11 @@ const StudentDetailsPage = () => {
         topRow={(
           <div className="user-details-page__top-row student-details-page__top-row">
             <button type="button" className="page-nav-back" onClick={() => navigate('/students-management')}>
-              <ChevronRight size={20} aria-hidden /> الطلاب
+              <ChevronRight size={20} aria-hidden /> {t('config.appNavItems.الطلاب', 'الطلاب')}
             </button>
           </div>
         )}
-        title={<>ملف الطالب: <span className="page-header-accent">{student.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</span></>}
+        title={<>{t('pages.StudentDetailsPage.ملف_الطالب', 'ملف الطالب:')} <span className="page-header-accent">{student.displayName || t('components.StudentManagementStudentCard.بدون_اسم', 'بدون اسم')}</span></>}
         subtitle={t('pages.StudentDetailsPage.كل_بيانات_الطالب_وارتباطاته_بالمدارس_والمناطق', 'كل بيانات الطالب وارتباطاته بالمدارس والمناطق')}
       />
 
@@ -175,14 +175,14 @@ const StudentDetailsPage = () => {
                   <input className="app-input" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} />
                 </div>
                 <div className="app-field app-field--grow">
-                  <label className="app-label">البريد</label>
+                  <label className="app-label">{t('pages.StudentDetailsPage.البريد', 'البريد')}</label>
                   <input className="app-input" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
                 </div>
                 {!isMobile && (
                   <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSave} busy={saving}>
                     <span className="btn-inner">
                       <Save size={16} aria-hidden />
-                      حفظ التعديلات
+                      {t('pages.SchoolReportPage.حفظ_التعديلات', 'حفظ التعديلات')}
                     </span>
                   </BusyButton>
                 )}
@@ -200,10 +200,10 @@ const StudentDetailsPage = () => {
         <div className="surface-card surface-card--lg user-details-activity-card">
           <div className="user-details-activity-card__head">
             <School size={22} color="var(--accent-color)" />
-            <h2 className="user-details-activity-card__title">الارتباطات</h2>
+            <h2 className="user-details-activity-card__title">{t('pages.StudentDetailsPage.الارتباطات', 'الارتباطات')}</h2>
           </div>
           {memberships.length === 0 ? (
-            <p className="empty-state">لا توجد ارتباطات حالياً.</p>
+            <p className="empty-state">{t('pages.StudentDetailsPage.لا_توجد_ارتباطات_حالياً', 'لا توجد ارتباطات حالياً.')}</p>
           ) : (
             <div className="user-details-memberships-list">
               {memberships.map((m) => (
@@ -219,10 +219,10 @@ const StudentDetailsPage = () => {
 
           <div className="user-details-activity-card__head user-details-activity-card__head--spaced">
             <Activity size={22} color="var(--accent-color)" />
-            <h2 className="user-details-activity-card__title">سجل الطالب</h2>
+            <h2 className="user-details-activity-card__title">{t('pages.StudentDetailsPage.سجل_الطالب', 'سجل الطالب')}</h2>
           </div>
           {activity.length === 0 ? (
-            <p className="empty-state user-details-activity-card__empty">لا يوجد نشاط مسجل.</p>
+            <p className="empty-state user-details-activity-card__empty">{t('pages.StudentDetailsPage.لا_يوجد_نشاط_مسجل', 'لا يوجد نشاط مسجل.')}</p>
           ) : (
             <div className="user-details-activity-list">
               <div className="user-details-activity-desktop-only">
@@ -280,7 +280,7 @@ const StudentDetailsPage = () => {
           >
             <span className="btn-inner">
               <Save size={16} aria-hidden />
-              حفظ التعديلات
+              {t('pages.SchoolReportPage.حفظ_التعديلات', 'حفظ التعديلات')}
             </span>
           </BusyButton>
         </div>

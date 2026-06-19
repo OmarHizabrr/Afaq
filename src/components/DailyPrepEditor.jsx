@@ -100,7 +100,7 @@ export default function DailyPrepEditor({
         {teacherName && (
           <div className="daily-prep-setup__teacher">
             <span className="app-label">
-              <User size={14} /> المعلم
+              <User size={14} /> {t('pages.AdminReportsPage.المعلم', 'المعلم')}
             </span>
             <p className="daily-prep-setup__teacher-name">{teacherName}</p>
           </div>
@@ -111,7 +111,7 @@ export default function DailyPrepEditor({
             {broadSchoolPick ? t('components.DailyPrepEditor.اختر_المدرسة', 'اختر المدرسة') : t('components.DailyPrepEditor.المدرسة', 'المدرسة')}
           </label>
           {schoolOptions.length === 0 ? (
-            <p className="daily-prep-setup__hint">لا توجد مدارس متاحة.</p>
+            <p className="daily-prep-setup__hint">{t('components.DailyPrepEditor.لا_توجد_مدارس_متاحة', 'لا توجد مدارس متاحة.')}</p>
           ) : broadSchoolPick || schoolOptions.length > 5 ? (
             <AppSelect
               id="daily-prep-edit-school"
@@ -145,7 +145,7 @@ export default function DailyPrepEditor({
         </div>
 
         <div className="daily-prep-setup__period">
-          <span className="app-label">نوع الفترة</span>
+          <span className="app-label">{t('components.DailyPrepEditor.نوع_الفترة', 'نوع الفترة')}</span>
           <div className="prep-period-chips" role="group" aria-label={t('components.DailyPrepEditor.نوع_فترة_التحضير', 'نوع فترة التحضير')}>
             {PREP_PERIOD_OPTIONS.map((o) => {
               const Icon = o.Icon;
@@ -176,7 +176,7 @@ export default function DailyPrepEditor({
             />
           </div>
           <div>
-            <label className="app-label">الفترة المحسوبة</label>
+            <label className="app-label">{t('components.DailyPrepEditor.الفترة_المحسوبة', 'الفترة المحسوبة')}</label>
             <input className="app-input prep-period-card__range" value={periodRange.label} readOnly />
           </div>
         </div>
@@ -215,11 +215,11 @@ export default function DailyPrepEditor({
       )}
 
       {!schoolId ? (
-        <div className="empty-state">اختر مدرسة لعرض سجل الحضور.</div>
+        <div className="empty-state">{t('components.DailyPrepEditor.اختر_مدرسة_لعرض_سجل_الحضور', 'اختر مدرسة لعرض سجل الحضور.')}</div>
       ) : studentsLoading ? (
         <div className="loading-spinner page-loading" />
       ) : records.length === 0 ? (
-        <div className="empty-state">لا يوجد طلاب في هذه المدرسة.</div>
+        <div className="empty-state">{t('components.DailyPrepEditor.لا_يوجد_طلاب_في_هذه_المدرسة', 'لا يوجد طلاب في هذه المدرسة.')}</div>
       ) : (
         <section className="surface-card daily-prep-attendance">
           <div className="daily-prep-attendance__head">
@@ -247,11 +247,11 @@ export default function DailyPrepEditor({
             <table className="md-table daily-prep-table">
               <thead>
                 <tr>
-                  <th>حالة الحضور</th>
-                  <th>اسم الطالب</th>
-                  <th>مقدار الحفظ</th>
-                  <th>مقدار المراجعة</th>
-                  <th>ملاحظة</th>
+                  <th>{t('components.DailyPrepEditor.حالة_الحضور', 'حالة الحضور')}</th>
+                  <th>{t('components.DailyPrepEditor.اسم_الطالب', 'اسم الطالب')}</th>
+                  <th>{t('components.DailyPrepStudentCard.مقدار_الحفظ', 'مقدار الحفظ')}</th>
+                  <th>{t('components.DailyPrepStudentCard.مقدار_المراجعة', 'مقدار المراجعة')}</th>
+                  <th>{t('components.DailyPrepStudentCard.ملاحظة', 'ملاحظة')}</th>
                 </tr>
               </thead>
               <tbody>

@@ -397,7 +397,7 @@ const TeacherDailyLogPage = ({ user }) => {
         </div>
 
         <div className="daily-prep-setup__period">
-          <span className="app-label">نوع الفترة</span>
+          <span className="app-label">{t('components.DailyPrepEditor.نوع_الفترة', 'نوع الفترة')}</span>
           <div className="prep-period-chips" role="group" aria-label={t('components.DailyPrepEditor.نوع_فترة_التحضير', 'نوع فترة التحضير')}>
             {PREP_PERIOD_OPTIONS.map((o) => {
               const Icon = o.Icon;
@@ -430,7 +430,7 @@ const TeacherDailyLogPage = ({ user }) => {
             />
           </div>
           <div>
-            <label className="app-label">الفترة المحسوبة</label>
+            <label className="app-label">{t('components.DailyPrepEditor.الفترة_المحسوبة', 'الفترة المحسوبة')}</label>
             <input className="app-input prep-period-card__range" value={periodRange.label} readOnly />
           </div>
         </div>
@@ -473,7 +473,7 @@ const TeacherDailyLogPage = ({ user }) => {
 
       {/* الحضور */}
       {!activeSchoolId ? (
-        <div className="empty-state">اختر مدرسة لبدء تسجيل التحضير.</div>
+        <div className="empty-state">{t('pages.TeacherDailyLogPage.اختر_مدرسة_لبدء_تسجيل_التحضير', 'اختر مدرسة لبدء تسجيل التحضير.')}</div>
       ) : studentsLoading ? (
         <div className="loading-spinner page-loading" />
       ) : students.length === 0 ? (
@@ -507,11 +507,11 @@ const TeacherDailyLogPage = ({ user }) => {
             <table className="md-table daily-prep-table">
               <thead>
                 <tr>
-                  <th>حالة الحضور</th>
-                  <th>اسم الطالب</th>
-                  <th>مقدار الحفظ</th>
-                  <th>مقدار المراجعة</th>
-                  <th>ملاحظة</th>
+                  <th>{t('components.DailyPrepEditor.حالة_الحضور', 'حالة الحضور')}</th>
+                  <th>{t('components.DailyPrepEditor.اسم_الطالب', 'اسم الطالب')}</th>
+                  <th>{t('components.DailyPrepStudentCard.مقدار_الحفظ', 'مقدار الحفظ')}</th>
+                  <th>{t('components.DailyPrepStudentCard.مقدار_المراجعة', 'مقدار المراجعة')}</th>
+                  <th>{t('components.DailyPrepStudentCard.ملاحظة', 'ملاحظة')}</th>
                 </tr>
               </thead>
               <tbody>

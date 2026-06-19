@@ -173,7 +173,7 @@ const MessengerPanel = ({
   const threadPreview = useCallback(
     (c) => {
       const raw = c.lastMessage || t('components.MessengerPanel.ابدأ_المحادثة', 'ابدأ المحادثة…');
-      if (c.lastSenderId === actorId) return `أنت: ${raw}`;
+      if (c.lastSenderId === actorId) return `${t('components.MessengerPanel.أنت', 'أنت')}: ${raw}`;
       return raw;
     },
     [actorId]
@@ -247,9 +247,9 @@ const MessengerPanel = ({
     <div className={`messenger-col messenger-col--list ${hideListColumnSm ? 'messenger-col--hidden-sm' : ''}`}>
       <div className="messenger-col__head messenger-col__head--list">
         <div className="messenger-col__head-row">
-          <span className="messenger-col__head-title">المحادثات</span>
+          <span className="messenger-col__head-title">{t('components.MessengerPanel.المحادثات', 'المحادثات')}</span>
           {onNewChat && (
-            <button type="button" className="messenger-new-chat-btn" onClick={onNewChat} title="محادثة جديدة" aria-label="محادثة جديدة">
+            <button type="button" className="messenger-new-chat-btn" onClick={onNewChat} title={t('components.MessengerPanel.محادثة_جديدة', 'محادثة جديدة')} aria-label={t('components.MessengerPanel.محادثة_جديدة', 'محادثة جديدة')}>
               <Plus size={20} />
             </button>
           )}
@@ -259,7 +259,7 @@ const MessengerPanel = ({
           <input
             type="search"
             className="messenger-search__input"
-            placeholder="بحث في المحادثات…"
+            placeholder={t('components.MessengerPanel.بحث_في_المحادثات', 'بحث في المحادثات…')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             dir="auto"
@@ -273,11 +273,13 @@ const MessengerPanel = ({
               <MessageCircle size={32} />
             </div>
             <p className="messenger-empty__text">
-              {searchQuery.trim() ? 'لا توجد نتائج للبحث.' : 'لا توجد محادثات بعد. ابدأ محادثة جديدة.'}
+              {searchQuery.trim()
+                ? t('components.MessengerPanel.لا_توجد_نتائج_للبحث', 'لا توجد نتائج للبحث.')
+                : t('components.MessengerPanel.لا_توجد_محادثات_بعد', 'لا توجد محادثات بعد. ابدأ محادثة جديدة.')}
             </p>
             {!searchQuery.trim() && onNewChat && (
               <button type="button" className="btn-md btn-md--primary" onClick={onNewChat}>
-                <Plus size={16} /> محادثة جديدة
+                <Plus size={16} /> {t('components.MessengerPanel.محادثة_جديدة', 'محادثة جديدة')}
               </button>
             )}
           </div>
@@ -303,7 +305,7 @@ const MessengerPanel = ({
                   </div>
                   <div className="messenger-thread__preview">{threadPreview(c)}</div>
                 </div>
-                {unread && <span className="messenger-thread__badge" aria-label="رسالة جديدة">1</span>}
+                {unread && <span className="messenger-thread__badge" aria-label={t('components.MessengerPanel.رسالة_جديدة', 'رسالة جديدة')}>1</span>}
               </button>
             );
           })
@@ -319,13 +321,13 @@ const MessengerPanel = ({
           <div className="messenger-placeholder__icon" aria-hidden>
             <MessageCircle size={34} />
           </div>
-          <p className="messenger-placeholder__title">مرحباً بك في المحادثات</p>
-          <p className="messenger-placeholder__sub">اختر محادثة من القائمة أو ابدأ محادثة جديدة للتواصل مع الزملاء.</p>
+          <p className="messenger-placeholder__title">{t('components.MessengerPanel.مرحباً_بك_في_المحادثات', 'مرحباً بك في المحادثات')}</p>
+          <p className="messenger-placeholder__sub">{t('components.MessengerPanel.اختر_محادثة_من_القائمة_أو_ابدأ_محادثة_جديدة_للتواصل_مع_', 'اختر محادثة من القائمة أو ابدأ محادثة جديدة للتواصل مع الزملاء.')}</p>
         </div>
       ) : (
         <>
           <div className="messenger-col__head messenger-col__head--thread">
-            <button type="button" className="messenger-back-sm" onClick={onBackList} aria-label="العودة للقائمة">
+            <button type="button" className="messenger-back-sm" onClick={onBackList} aria-label={t('components.MessengerPanel.العودة_للقائمة', 'العودة للقائمة')}>
               <ChevronRight size={22} />
             </button>
             <div className="messenger-thread-head">
@@ -335,7 +337,9 @@ const MessengerPanel = ({
               <div className="messenger-thread-head__meta">
                 <div className="messenger-thread-head__title">{partnerTitle(selectedConversation)}</div>
                 <div className="messenger-thread-head__sub">
-                  {selectedConversation.isGroup ? `${(selectedConversation.participants || []).length} أعضاء` : 'متصل'}
+                  {selectedConversation.isGroup
+                    ? `${(selectedConversation.participants || []).length} ${t('components.MessengerPanel.أعضاء', 'أعضاء')}`
+                    : t('components.MessengerPanel.متصل', 'متصل')}
                 </div>
               </div>
             </div>
@@ -345,7 +349,7 @@ const MessengerPanel = ({
             <div className="messenger-messages" ref={messagesRef}>
               {messages.length === 0 ? (
                 <div className="messenger-empty">
-                  <p className="messenger-empty__text">لا توجد رسائل بعد. اكتب أول رسالة!</p>
+                  <p className="messenger-empty__text">{t('components.MessengerPanel.لا_توجد_رسائل_بعد_اكتب_أول_رسالة', 'لا توجد رسائل بعد. اكتب أول رسالة!')}</p>
                 </div>
               ) : (
                 timeline.map((item) => {
@@ -413,10 +417,10 @@ const MessengerPanel = ({
                                 onChange={(e) => setEditingText(e.target.value)}
                               />
                               <div className="messenger-msg__edit-actions">
-                                <button type="button" className="icon-btn" onClick={saveEdit} title="حفظ">
+                                <button type="button" className="icon-btn" onClick={saveEdit} title={t('components.MessengerPanel.حفظ', 'حفظ')}>
                                   <Check size={18} />
                                 </button>
-                                <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء">
+                                <button type="button" className="icon-btn" onClick={cancelEdit} title={t('components.ConfirmDialog.إلغاء', 'إلغاء')}>
                                   <X size={18} />
                                 </button>
                               </div>
@@ -428,12 +432,12 @@ const MessengerPanel = ({
                           {editingId !== m.id && (
                             <div className="messenger-bubble__foot">
                               <span>{formatMessageTime(m.createdAt)}</span>
-                              {m.editedAt && <span className="messenger-bubble__edited">تم التعديل</span>}
+                              {m.editedAt && <span className="messenger-bubble__edited">{t('components.MessengerPanel.تم_التعديل', 'تم التعديل')}</span>}
                               <div className="messenger-bubble__actions">
                                 <button
                                   type="button"
                                   className="messenger-bubble__icon-btn"
-                                  title="رد"
+                                  title={t('components.MessengerPanel.رد', 'رد')}
                                   onClick={() => pickReply(m)}
                                 >
                                   <Reply size={14} />
@@ -442,7 +446,7 @@ const MessengerPanel = ({
                                   <button
                                     type="button"
                                     className="messenger-bubble__icon-btn"
-                                    title="تعديل"
+                                    title={t('components.ExplorationListCard.تعديل', 'تعديل')}
                                     onClick={() => startEdit(m)}
                                   >
                                     <Pencil size={14} />
@@ -465,7 +469,7 @@ const MessengerPanel = ({
                 type="button"
                 className="messenger-scroll-down"
                 onClick={() => scrollToBottom()}
-                aria-label="الانتقال لآخر الرسائل"
+                aria-label={t('components.MessengerPanel.الانتقال_لآخر_الرسائل', 'الانتقال لآخر الرسائل')}
               >
                 <ChevronDown size={20} />
               </button>
@@ -481,7 +485,7 @@ const MessengerPanel = ({
                   <div className="messenger-reply-strip__txt">{replyTo.text}</div>
                 </div>
               </div>
-              <button type="button" className="icon-btn" onClick={() => setReplyTo(null)} aria-label="إلغاء الرد">
+              <button type="button" className="icon-btn" onClick={() => setReplyTo(null)} aria-label={t('components.MessengerPanel.إلغاء_الرد', 'إلغاء الرد')}>
                 <X size={18} />
               </button>
             </div>
@@ -492,7 +496,7 @@ const MessengerPanel = ({
               <textarea
                 ref={composerRef}
                 className="messenger-composer__textarea"
-                placeholder="اكتب رسالة…"
+                placeholder={t('components.MessengerPanel.اكتب_رسالة', 'اكتب رسالة…')}
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 onKeyDown={handleComposerKeyDown}
@@ -505,7 +509,7 @@ const MessengerPanel = ({
               className={`messenger-composer__send ${messageText.trim() ? 'messenger-composer__send--active' : ''}`}
               disabled={sendingMessage || !messageText.trim()}
               aria-busy={sendingMessage}
-              title={sendingMessage ? 'جاري الإرسال…' : 'إرسال'}
+              title={sendingMessage ? t('components.MessengerPanel.جاري_الإرسال', 'جاري الإرسال…') : t('components.MessengerPanel.إرسال', 'إرسال')}
             >
               {sendingMessage ? <Loader2 className="busy-btn__spin" size={20} aria-hidden /> : <Send size={20} />}
             </button>

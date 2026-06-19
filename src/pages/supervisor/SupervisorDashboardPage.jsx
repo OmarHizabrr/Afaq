@@ -92,7 +92,7 @@ const SupervisorDashboardPage = ({ user }) => {
   return (
     <div className="portal-page supervisor-dashboard-page">
       <PageHeader
-        title={<span className="page-header-accent--primary">لوحة المشرف الميداني</span>}
+        title={<span className="page-header-accent--primary">{t('pages.SupervisorDashboardPage.لوحة_المشرف_الميداني', 'لوحة المشرف الميداني')}</span>}
         subtitle={t('pages.SupervisorDashboardPage.إحصائيات_زياراتك_ونشاطاتك_في_المناطق_التابعة_لك', 'إحصائيات زياراتك ونشاطاتك في المناطق التابعة لك')}
       />
 
@@ -128,10 +128,10 @@ const SupervisorDashboardPage = ({ user }) => {
             <h3 className="portal-recent-card__title">
               <Activity size={18} color="#3b82f6" /> آخر الزيارات الميدانية المرفوعة
             </h3>
-            <button type="button" onClick={() => navigate('/supervisor/history')} className="portal-link-btn">عرض السجل الكامل</button>
+            <button type="button" onClick={() => navigate('/supervisor/history')} className="portal-link-btn">{t('pages.SupervisorDashboardPage.عرض_السجل_الكامل', 'عرض السجل الكامل')}</button>
           </div>
           {recentVisits.length === 0 ? (
-            <p className="portal-recent-empty">لا توجد زيارات مسجلة حديثاً.</p>
+            <p className="portal-recent-empty">{t('pages.SupervisorDashboardPage.لا_توجد_زيارات_مسجلة_حديثاً', 'لا توجد زيارات مسجلة حديثاً.')}</p>
           ) : (
             <div className="portal-recent-list">
               {recentVisits.map(visit => (

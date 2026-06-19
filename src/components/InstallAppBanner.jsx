@@ -22,14 +22,14 @@ const InstallAppBanner = () => {
           <Download size={20} />
         </div>
         <div className="install-app-banner__text">
-          <strong>ثبّت تطبيق آفاق</strong>
+          <strong>{t('components.InstallAppBanner.ثبّت_تطبيق_آفاق', 'ثبّت تطبيق آفاق')}</strong>
           {iosHint && !hasNativePrompt ? (
             <span>
               اضغط <Share size={14} className="install-app-banner__inline-icon" aria-hidden /> ثم
               «إضافة إلى الشاشة الرئيسية»
             </span>
           ) : (
-            <span>وصول أسرع من سطح المكتب أو الهاتف</span>
+            <span>{t('components.InstallAppBanner.وصول_أسرع_من_سطح_المكتب_أو_الهاتف', 'وصول أسرع من سطح المكتب أو الهاتف')}</span>
           )}
         </div>
       </div>

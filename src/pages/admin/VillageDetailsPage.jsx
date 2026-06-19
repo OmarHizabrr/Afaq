@@ -121,7 +121,7 @@ const VillageDetailsPage = () => {
     };
 
     if (loading) return <div className="loading-spinner page-loading-lg" />;
-    if (!village) return <div className="empty-state">القرية غير موجودة</div>;
+    if (!village) return <div className="empty-state">{t('pages.VillageDetailsPage.القرية_غير_موجودة', 'القرية غير موجودة')}</div>;
 
     const vilScope = pageDataScope(PERMISSION_PAGE_IDS.villages);
     const villageAllowed =
@@ -210,12 +210,12 @@ const VillageDetailsPage = () => {
         setNewMuslims(next);
         await syncVillageCounters(next);
         setNewName('');
-        setNewType('رجل');
+        setNewType(t('pages.VillageDetailsPage.رجل', 'رجل'));
         setNewMuslimCategory(normalizeMuslimCategory());
       } catch (err) {
         console.error(err);
         if (err.code === 'NO_SCHOOL_IN_VILLAGE') {
-          window.alert('لا توجد مدرسة في هذه القرية لتسجيل الطالب تلقائياً.');
+          window.alert(t('pages.VillageDetailsPage.لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_الطالب_تلقائياً', 'لا توجد مدرسة في هذه القرية لتسجيل الطالب تلقائياً.'));
         }
       } finally {
         setSaving(false);
@@ -225,14 +225,14 @@ const VillageDetailsPage = () => {
     const startEdit = (m) => {
       setEditingMuslimId(m.id);
       setEditingName(m.name || '');
-      setEditingType(m.type || 'رجل');
+      setEditingType(m.type || t('pages.VillageDetailsPage.رجل', 'رجل'));
       setEditingMuslimCategory(normalizeMuslimCategory(m.muslimCategory));
     };
 
     const cancelEdit = () => {
       setEditingMuslimId(null);
       setEditingName('');
-      setEditingType('رجل');
+      setEditingType(t('pages.VillageDetailsPage.رجل', 'رجل'));
       setEditingMuslimCategory(normalizeMuslimCategory());
     };
 
@@ -307,12 +307,12 @@ const VillageDetailsPage = () => {
               topRow={
                 <div className="village-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/villages')}>
-                    <ChevronRight size={20} aria-hidden /> إدارة القرى
+                    <ChevronRight size={20} aria-hidden /> {t('pages.VillagesPage.إدارة_القرى', 'إدارة القرى')}
                   </button>
                   <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>إحصائيات قرية: <span className="page-header-accent">{village.villageName}</span></>}
+              title={<>{t('pages.VillageDetailsPage.إحصائيات_قرية', 'إحصائيات قرية:')} <span className="page-header-accent">{village.villageName}</span></>}
             />
 
             <div className="village-details-layout">
@@ -321,28 +321,28 @@ const VillageDetailsPage = () => {
                     <div className="surface-card surface-card--lg village-details-card">
                         <div className="village-details-card__head">
                             <PieChart size={24} color="var(--accent-color)" />
-                            <h2 className="village-details-card__title">الإحصائيات السكانية والديموغرافية</h2>
+                            <h2 className="village-details-card__title">{t('pages.VillageDetailsPage.الإحصائيات_السكانية_والديموغرافية', 'الإحصائيات السكانية والديموغرافية')}</h2>
                         </div>
                         <div className="village-details-card__stats">
-                            <StatBox label="إجمالي السكان" value={village.populationCount} tone="text" />
-                            <StatBox label="المسلمون" value={village.muslimsCount} tone="success" />
-                            <StatBox label="غير المسلمين" value={village.nonMuslimsCount} tone="danger" />
+                            <StatBox label={t('pages.VillageDetailsPage.إجمالي_السكان', 'إجمالي السكان')} value={village.populationCount} tone="text" />
+                            <StatBox label={t('pages.VillageDetailsPage.المسلمون', 'المسلمون')} value={village.muslimsCount} tone="success" />
+                            <StatBox label={t('pages.VillageDetailsPage.غير_المسلمين', 'غير المسلمين')} value={village.nonMuslimsCount} tone="danger" />
                         </div>
                         
                         <div className="village-details-new-muslims">
-                            <h3 className="village-details-new-muslims__title">المهتدون والمسلمون القدامى (يُسجَّلون كطلاب)</h3>
+                            <h3 className="village-details-new-muslims__title">{t('pages.VillageDetailsPage.المهتدون_والمسلمون_القدامى_يُسجَّلون_كطلاب', 'المهتدون والمسلمون القدامى (يُسجَّلون كطلاب)')}</h3>
                             <div className="village-details-new-muslims__summary">
-                                <div><strong><User size={14} /> مهتدون — رجال:</strong> {menCount}</div>
-                                <div><strong><Users size={14} /> مهتدون — نساء:</strong> {womenCount}</div>
-                                <div><strong><Baby size={14} /> مهتدون — أطفال:</strong> {childrenCount}</div>
-                                <div className="village-details-new-muslims__summary-born"><strong>مسلمون قدامى — رجال:</strong> {bornMen}</div>
-                                <div><strong>مسلمون قدامى — نساء:</strong> {bornWomen}</div>
-                                <div><strong>مسلمون قدامى — أطفال:</strong> {bornChildren}</div>
+                                <div><strong><User size={14} /> {t('pages.VillageDetailsPage.مهتدون_رجال', 'مهتدون — رجال:')}</strong> {menCount}</div>
+                                <div><strong><Users size={14} /> {t('pages.VillageDetailsPage.مهتدون_نساء', 'مهتدون — نساء:')}</strong> {womenCount}</div>
+                                <div><strong><Baby size={14} /> {t('pages.VillageDetailsPage.مهتدون_أطفال', 'مهتدون — أطفال:')}</strong> {childrenCount}</div>
+                                <div className="village-details-new-muslims__summary-born"><strong>{t('pages.VillageDetailsPage.مسلمون_قدامى_رجال', 'مسلمون قدامى — رجال:')}</strong> {bornMen}</div>
+                                <div><strong>{t('pages.VillageDetailsPage.مسلمون_قدامى_نساء', 'مسلمون قدامى — نساء:')}</strong> {bornWomen}</div>
+                                <div><strong>{t('pages.VillageDetailsPage.مسلمون_قدامى_أطفال', 'مسلمون قدامى — أطفال:')}</strong> {bornChildren}</div>
                             </div>
                             <div className="village-details-new-muslims__body">
                               {schools.length > 0 && (
                                 <div className="village-details-new-muslims__schools">
-                                  <span className="village-details-new-muslims__schools-label">المدارس (قائمة الطلاب المسجلين):</span>
+                                  <span className="village-details-new-muslims__schools-label">{t('pages.VillageDetailsPage.المدارس_قائمة_الطلاب_المسجلين', 'المدارس (قائمة الطلاب المسجلين):')}</span>
                                   <VillageSchoolCheckboxGroup
                                     schools={schools}
                                     selectedIds={addMuslimSchoolIds}
@@ -356,7 +356,7 @@ const VillageDetailsPage = () => {
                                   type="text"
                                   value={newName}
                                   onChange={(e) => setNewName(e.target.value)}
-                                  placeholder="الاسم"
+                                  placeholder={t('pages.VillageDetailsPage.الاسم', 'الاسم')}
                                   className="app-input"
                                 />
                                 <AppSelect searchable
@@ -364,9 +364,9 @@ const VillageDetailsPage = () => {
                                   onChange={(e) => setNewType(e.target.value)}
                                   className=""
                                 >
-                                  <option value="رجل">{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
-                                  <option value="امرأة">{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
-                                  <option value="طفل">{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
+                                  <option value={t('pages.VillageDetailsPage.رجل', 'رجل')}>{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                                  <option value={t('pages.VillageDetailsPage.امرأة', 'امرأة')}>{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                                  <option value={t('pages.VillageDetailsPage.طفل', 'طفل')}>{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
                                 </AppSelect>
                                 <AppSelect searchable
                                   value={newMuslimCategory}
@@ -377,13 +377,13 @@ const VillageDetailsPage = () => {
                                   <option value="born">{t('pages.VillagesPage.مسلم_قديم', 'مسلم قديم')}</option>
                                 </AppSelect>
                                 {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_add') && (
-                                  <BusyButton type="button" className="icon-btn" onClick={handleAddNewMuslim} busy={saving} title="إضافة">
+                                  <BusyButton type="button" className="icon-btn" onClick={handleAddNewMuslim} busy={saving} title={t('components.ReportTextList.إضافة', 'إضافة')}>
                                     <Plus size={16} />
                                   </BusyButton>
                                 )}
                               </div>
                               {newMuslims.length === 0 ? (
-                                <p className="village-details-new-muslims__empty">لا توجد سجلات بعد.</p>
+                                <p className="village-details-new-muslims__empty">{t('pages.VillageDetailsPage.لا_توجد_سجلات_بعد', 'لا توجد سجلات بعد.')}</p>
                               ) : (
                                 <div className="village-details-new-muslims__list">
                                   {newMuslims.map((m) => (
@@ -402,9 +402,9 @@ const VillageDetailsPage = () => {
                                               onChange={(e) => setEditingType(e.target.value)}
                                               className=""
                                             >
-                                              <option value="رجل">{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
-                                              <option value="امرأة">{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
-                                              <option value="طفل">{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
+                                              <option value={t('pages.VillageDetailsPage.رجل', 'رجل')}>{t('pages.VillageDetailsPage.رجل', 'رجل')}</option>
+                                              <option value={t('pages.VillageDetailsPage.امرأة', 'امرأة')}>{t('pages.VillageDetailsPage.امرأة', 'امرأة')}</option>
+                                              <option value={t('pages.VillageDetailsPage.طفل', 'طفل')}>{t('pages.VillageDetailsPage.طفل', 'طفل')}</option>
                                             </AppSelect>
                                             <AppSelect searchable
                                               value={editingMuslimCategory}
@@ -417,11 +417,11 @@ const VillageDetailsPage = () => {
                                           </div>
                                           <div className="village-details-new-muslims__item-actions">
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
-                                              <BusyButton type="button" className="icon-btn" onClick={handleSaveEdit} busy={saving} title="حفظ">
+                                              <BusyButton type="button" className="icon-btn" onClick={handleSaveEdit} busy={saving} title={t('components.MessengerPanel.حفظ', 'حفظ')}>
                                                 <Save size={14} />
                                               </BusyButton>
                                             )}
-                                            <button type="button" className="icon-btn" onClick={cancelEdit} title="إلغاء"><X size={14} /></button>
+                                            <button type="button" className="icon-btn" onClick={cancelEdit} title={t('components.ConfirmDialog.إلغاء', 'إلغاء')}><X size={14} /></button>
                                           </div>
                                         </>
                                       ) : (
@@ -430,16 +430,16 @@ const VillageDetailsPage = () => {
                                           <div className="village-details-new-muslims__item-actions">
                                             <span className="village-details-new-muslims__item-type">
                                               {m.type}
-                                              {isBornRow(m) ? ' · مسلم قديم' : ' · مهتد'}
+                                              {isBornRow(m) ? t('pages.VillageDetailsPage.مسلم_قديم', ' · مسلم قديم') : t('pages.VillageDetailsPage.مهتد', ' · مهتد')}
                                               {(m.enrolledSchoolIds?.length || 0) > 0 && (
                                                 <span className="village-details-new-muslims__item-meta"> · {(m.enrolledSchoolIds?.length || 0)} مدرسة</span>
                                               )}
                                             </span>
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_edit') && (
-                                              <button type="button" className="icon-btn" onClick={() => startEdit(m)} title="تعديل"><Edit2 size={14} /></button>
+                                              <button type="button" className="icon-btn" onClick={() => startEdit(m)} title={t('components.ExplorationListCard.تعديل', 'تعديل')}><Edit2 size={14} /></button>
                                             )}
                                             {can(PERMISSION_PAGE_IDS.villages, 'village_new_muslim_delete') && (
-                                              <button type="button" className="icon-btn" onClick={() => setPendingDelete(m)} title="حذف"><Trash2 size={14} color="var(--danger-color)" /></button>
+                                              <button type="button" className="icon-btn" onClick={() => setPendingDelete(m)} title={t('components.ExplorationListCard.حذف', 'حذف')}><Trash2 size={14} color="var(--danger-color)" /></button>
                                             )}
                                           </div>
                                         </>
@@ -456,7 +456,7 @@ const VillageDetailsPage = () => {
                     <div className="surface-card surface-card--lg village-details-card">
                         <div className="village-details-card__head">
                             <School size={24} color="var(--accent-color)" />
-                            <h2 className="village-details-card__title">المدارس والمراكز التعليمية في القرية</h2>
+                            <h2 className="village-details-card__title">{t('pages.VillageDetailsPage.المدارس_والمراكز_التعليمية_في_القرية', 'المدارس والمراكز التعليمية في القرية')}</h2>
                         </div>
                         {!!(schools.find((s) => s.id === defaultSchoolId)?.name || schools[0]?.name) && (
                           <div
@@ -472,9 +472,9 @@ const VillageDetailsPage = () => {
                         <VillageDefaultSchoolPanel
                           schools={schools}
                           defaultSchoolId={defaultSchoolId}
-                          title="المدرسة الافتراضية للتقارير"
-                          hint="الافتراضي التلقائي: أول مدرسة تظهر أولاً، ويمكن تعديله وحفظه."
-                          emptyText="لا توجد مدارس في القرية حالياً."
+                          title={t('pages.VillageDetailsPage.المدرسة_الافتراضية_للتقارير', 'المدرسة الافتراضية للتقارير')}
+                          hint={t('pages.VillageDetailsPage.الافتراضي_التلقائي_أول_مدرسة_تظهر_أولاً،_ويمكن_تعديله_', 'الافتراضي التلقائي: أول مدرسة تظهر أولاً، ويمكن تعديله وحفظه.')}
+                          emptyText={t('pages.VillageDetailsPage.لا_توجد_مدارس_في_القرية_حالياً', 'لا توجد مدارس في القرية حالياً.')}
                           onDefaultSchoolChange={(e) => setDefaultSchoolId(e.target.value)}
                           onSaveDefault={handleSaveDefaultSchool}
                           onAddReport={() => navigate(`/schools/${defaultSchoolId}?composeReport=1`)}
@@ -482,7 +482,7 @@ const VillageDetailsPage = () => {
                           canSetDefault={can(PERMISSION_PAGE_IDS.villages, 'village_default_school_set')}
                           canAddReport={can(PERMISSION_PAGE_IDS.villages, 'village_report_quick_add')}
                         />
-                        {schools.length === 0 ? <p className="village-details-card__empty">لا توجد مدارس مسجلة في هذه القرية حالياً.</p> : (
+                        {schools.length === 0 ? <p className="village-details-card__empty">{t('pages.VillageDetailsPage.لا_توجد_مدارس_مسجلة_في_هذه_القرية_حالياً', 'لا توجد مدارس مسجلة في هذه القرية حالياً.')}</p> : (
                             <div className="village-details-schools-list">
                                 {schools.map(sch => (
                                     can(PERMISSION_PAGE_IDS.villages, 'village_school_view') ? (
@@ -515,18 +515,18 @@ const VillageDetailsPage = () => {
                 {/* Sidebar Info */}
                 <div className="village-details-side-col">
                     <div className="surface-card surface-card--lg village-details-side-card">
-                        <h3 className="village-details-side-card__title"><MapPin size={18} color="var(--accent-color)"/> التصنيف الميداني</h3>
+                        <h3 className="village-details-side-card__title"><MapPin size={18} color="var(--accent-color)"/> {t('pages.VillageDetailsPage.التصنيف_الميداني', 'التصنيف الميداني')}</h3>
                         <div className="village-details-side-card__rows">
                             <div className="village-details-side-card__row">
-                                <span className="village-details-side-card__label">اسم المجموعة:</span><br/>
-                                <strong>{village.groupName || 'غير محدد'}</strong>
+                                <span className="village-details-side-card__label">{t('pages.VillageDetailsPage.اسم_المجموعة', 'اسم المجموعة:')}</span><br/>
+                                <strong>{village.groupName || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد')}</strong>
                             </div>
                             <div className="village-details-side-card__row">
-                                <span className="village-details-side-card__label">تصنيف LTI:</span><br/>
-                                <strong>{village.ltiName || 'غير محدد'}</strong>
+                                <span className="village-details-side-card__label">{t('pages.VillageDetailsPage.تصنيف_LTI', 'تصنيف LTI:')}</span><br/>
+                                <strong>{village.ltiName || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد')}</strong>
                             </div>
                             <div className="village-details-side-card__row">
-                                <span className="village-details-side-card__label">معرف المنطقة:</span><br/>
+                                <span className="village-details-side-card__label">{t('pages.VillageDetailsPage.معرف_المنطقة', 'معرف المنطقة:')}</span><br/>
                                 <strong>{village.regionId}</strong>
                             </div>
                         </div>
@@ -536,9 +536,9 @@ const VillageDetailsPage = () => {
 
             <ConfirmDialog
               open={!!pendingDelete}
-              title="تأكيد حذف السجل"
+              title={t('pages.VillageDetailsPage.تأكيد_حذف_السجل', 'تأكيد حذف السجل')}
               message={`سيتم حذف «${pendingDelete?.name || ''}» من السجل وإزالة حساب الطالب وارتباطاته.`}
-              confirmLabel="حذف نهائي"
+              confirmLabel={t('pages.CurriculumPage.حذف_نهائي', 'حذف نهائي')}
               danger
               onCancel={() => setPendingDelete(null)}
               onConfirm={async () => {

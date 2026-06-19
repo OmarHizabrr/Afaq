@@ -736,4 +736,103 @@
     width: 100%;
     justify-content: center;
   }
+
+  /* i18n + RTL/LTR mobile polish */
+  .topbar__actions {
+    gap: 8px;
+  }
+
+  .topbar__actions--tight {
+    gap: 6px;
+  }
+
+  .language-menu__trigger {
+    min-width: 36px;
+    padding-inline: 4px;
+  }
+
+  .language-menu__panel {
+    position: fixed;
+    top: calc(var(--topbar-height, 56px) + max(4px, env(safe-area-inset-top, 0px)));
+    inset-inline-end: max(12px, env(safe-area-inset-end, 0px));
+    max-width: min(240px, calc(100vw - 24px));
+    z-index: 200;
+  }
+
+  .page-header-block__layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-header-block__title {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .page-header-block__text p {
+    overflow-wrap: anywhere;
+  }
+
+  .page-nav-back {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-alert,
+  .geo-page-alert,
+  .dashboard-page-alert,
+  .school-report-view-banner {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .exploration-types-page .exploration-types-toolbar__long {
+    display: none;
+  }
+
+  .exploration-types-page .exploration-types-toolbar__short {
+    display: inline;
+  }
+
+  .settings-language-card {
+    padding: 1.25rem;
+  }
+
+  .settings-language-card__hint {
+    overflow-wrap: anywhere;
+  }
+
+  html[dir='ltr'] .page-header-block__title,
+  html[dir='ltr'] .bottom-tab-bar__label,
+  html[dir='ltr'] .google-btn--toolbar {
+    font-family: var(--font-latin);
+  }
+}
+
+@media (max-width: 420px) {
+  .language-menu__code {
+    display: none;
+  }
+
+  .topbar__brand-title {
+    max-width: 42vw;
+  }
+
+  .school-report-page__toolbar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .school-report-page__toolbar .google-btn--toolbar {
+    font-size: 0.75rem;
+    padding-inline: 6px;
+  }
+
+  .admin-reports-list__summary {
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
+  }
 }

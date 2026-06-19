@@ -20,7 +20,7 @@ const ExplorationFormSection = ({
   actorUser,
   storageUserId,
   className,
-  heading = 'حقول النموذج',
+  heading = t('components.ExplorationFormSection.حقول_النموذج', 'حقول النموذج'),
   hideTypeSelect = false,
   currentPageId = null,
 }) => {
@@ -51,7 +51,7 @@ const ExplorationFormSection = ({
             </div>
           ) : visibleExplorationTypes.length === 0 ? (
             <div className="exploration-form-section__empty">
-              <p className="exploration-form-section__empty-title">لا توجد أنواع متاحة لهذه الصفحة</p>
+              <p className="exploration-form-section__empty-title">{t('components.ExplorationFormSection.لا_توجد_أنواع_متاحة_لهذه_الصفحة', 'لا توجد أنواع متاحة لهذه الصفحة')}</p>
               <p className="exploration-form-section__empty-text">
                 {pageHint
                   ? `لا يوجد نموذج استكشاف مخصّص لصفحة «${pageHint}». راجع «أنواع الاستكشاف» وحدّد الصفحات المسموحة للنموذج، أو أنشئ نوعاً جديداً.`
@@ -107,7 +107,7 @@ const ExplorationFormSection = ({
           {heading && <h3 className="exploration-form-section__heading">{heading}</h3>}
           {optionCachesLoading && (
             <p className="exploration-form-section__loading-hint">
-              جاري تحميل قوائم البيانات من المنصة…
+              {t('pages.ExplorationsPage.جاري_تحميل_قوائم_البيانات_من_المنصة', 'جاري تحميل قوائم البيانات من المنصة…')}
             </p>
           )}
           <div className="exploration-modal-flow">

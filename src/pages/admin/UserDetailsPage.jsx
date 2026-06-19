@@ -262,7 +262,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
     };
 
     if (loading) return <div className="loading-spinner page-loading-lg" />;
-    if (!profile) return <div className="empty-state user-details-empty">المستخدم غير موجود</div>;
+    if (!profile) return <div className="empty-state user-details-empty">{t('pages.UserDetailsPage.المستخدم_غير_موجود', 'المستخدم غير موجود')}</div>;
 
     const ROLE_LABELS = {
         system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
@@ -286,12 +286,12 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                   <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>عرض ملف: <span className="page-header-accent">{profile.displayName}</span></>}
+              title={<>{t('pages.UserDetailsPage.عرض_ملف', 'عرض ملف:')} <span className="page-header-accent">{profile.displayName}</span></>}
             >
               {canEditUserProfile && (
                 <button type="button" className="google-btn google-btn--toolbar" onClick={openEditUserModal}>
                   <Edit2 size={18} />
-                  <span className="portal-toolbar__long">تعديل بيانات المستخدم</span>
+                  <span className="portal-toolbar__long">{t('pages.UserDetailsPage.تعديل_بيانات_المستخدم', 'تعديل بيانات المستخدم')}</span>
                   <span className="portal-toolbar__short">{t('components.ExplorationListCard.تعديل', 'تعديل')}</span>
                 </button>
               )}
@@ -411,7 +411,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                           <BookOpen size={16} /> الارتباطات (Memberships)
                         </h3>
                         {memberships.length === 0 ? (
-                          <p className="user-details-memberships-card__empty">لا توجد ارتباطات مجموعات حالياً.</p>
+                          <p className="user-details-memberships-card__empty">{t('pages.UserDetailsPage.لا_توجد_ارتباطات_مجموعات_حالياً', 'لا توجد ارتباطات مجموعات حالياً.')}</p>
                         ) : (
                           <div className="user-details-memberships-list">
                             {memberships.map((m) => (
@@ -431,7 +431,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 <div className="surface-card surface-card--lg user-details-activity-card">
                     <div className="user-details-activity-card__head">
                         <Activity size={24} color="var(--accent-color)" />
-                        <h2 className="user-details-activity-card__title">السجل والنشاطات</h2>
+                        <h2 className="user-details-activity-card__title">{t('pages.UserDetailsPage.السجل_والنشاطات', 'السجل والنشاطات')}</h2>
                     </div>
 
                     {activity.length === 0 ? (
@@ -508,7 +508,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
           <div className="modal-overlay" onClick={() => !editBusy && setIsEditModalOpen(false)}>
             <div className="modal-card modal-card--sm" onClick={(e) => e.stopPropagation()}>
               <div className="users-modal__head">
-                <h2 className="users-modal__title">تعديل بيانات المستخدم</h2>
+                <h2 className="users-modal__title">{t('pages.UserDetailsPage.تعديل_بيانات_المستخدم', 'تعديل بيانات المستخدم')}</h2>
                 <button type="button" className="icon-btn" onClick={() => setIsEditModalOpen(false)} disabled={editBusy}>
                   <X size={20} />
                 </button>
@@ -519,7 +519,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
               )}
 
               <div className="users-modal__field">
-                <label className="app-label">الاسم الكامل (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.الاسم_الكامل_اختياري', 'الاسم الكامل (اختياري)')}</label>
                 <input
                   className="app-input"
                   value={editForm.displayName}
@@ -528,7 +528,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 />
               </div>
               <div className="users-modal__field">
-                <label className="app-label">البريد الإلكتروني (اختياري)</label>
+                <label className="app-label">{t('pages.StudentManagementPage.البريد_الإلكتروني_اختياري', 'البريد الإلكتروني (اختياري)')}</label>
                 <input
                   className="app-input"
                   type="email"
@@ -538,7 +538,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 />
               </div>
               <div className="users-modal__field">
-                <label className="app-label">رقم الهاتف (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.رقم_الهاتف_اختياري', 'رقم الهاتف (اختياري)')}</label>
                 <input
                   className="app-input"
                   inputMode="numeric"
@@ -549,7 +549,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 />
               </div>
               <div className="users-modal__field">
-                <label className="app-label">رابط الصورة (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.رابط_الصورة_اختياري', 'رابط الصورة (اختياري)')}</label>
                 <input
                   className="app-input"
                   value={editForm.photoURL}
@@ -558,7 +558,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 />
               </div>
               <div className="users-modal__field">
-                <label className="app-label">الجنس (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.الجنس_اختياري', 'الجنس (اختياري)')}</label>
                 <select
                   className="app-input"
                   value={editForm.gender}
@@ -570,7 +570,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 </select>
               </div>
               <div className="users-modal__field">
-                <label className="app-label">تاريخ الميلاد (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.تاريخ_الميلاد_اختياري', 'تاريخ الميلاد (اختياري)')}</label>
                 <input
                   className="app-input"
                   type="date"
@@ -579,7 +579,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 />
               </div>
               <div className="users-modal__field">
-                <label className="app-label">الدولة (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.الدولة_اختياري', 'الدولة (اختياري)')}</label>
                 <input
                   className="app-input"
                   value={editForm.country}
@@ -588,7 +588,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 />
               </div>
               <div className="users-modal__field">
-                <label className="app-label">العنوان (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.العنوان_اختياري', 'العنوان (اختياري)')}</label>
                 <input
                   className="app-input"
                   value={editForm.address}
@@ -597,7 +597,7 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
                 />
               </div>
               <div className="users-modal__field">
-                <label className="app-label">ملاحظات (اختياري)</label>
+                <label className="app-label">{t('pages.UserDetailsPage.ملاحظات_اختياري', 'ملاحظات (اختياري)')}</label>
                 <textarea
                   className="app-input users-modal__textarea"
                   value={editForm.notes}
@@ -608,11 +608,11 @@ const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
 
               <div className="users-modal__actions">
                 <button type="button" className="google-btn users-modal__action-btn" onClick={() => setIsEditModalOpen(false)} disabled={editBusy}>
-                  إلغاء
+                  {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
                 </button>
                 <BusyButton type="button" busy={editBusy} className="google-btn google-btn--filled users-modal__save-btn" onClick={handleSaveUserProfile}>
                   <span className="btn-inner btn-inner--sm">
-                    <Save size={14} aria-hidden /> حفظ التعديلات
+                    <Save size={14} aria-hidden /> {t('pages.SchoolReportPage.حفظ_التعديلات', 'حفظ التعديلات')}
                   </span>
                 </BusyButton>
               </div>

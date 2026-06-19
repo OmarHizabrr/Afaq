@@ -343,7 +343,7 @@ const SchoolDetailsPage = () => {
     };
 
     if (loading) return <div className="loading-spinner page-loading-lg" />;
-    if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
+    if (!school) return <div className="empty-state">{t('pages.SchoolComprehensiveReportPage.المدرسة_غير_موجودة', 'المدرسة غير موجودة')}</div>;
 
     const schoolScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
     if (
@@ -424,25 +424,25 @@ const SchoolDetailsPage = () => {
               topRow={
                 <div className="school-details-page__top-row">
                   <button type="button" className="page-nav-back" onClick={() => navigate('/schools')}>
-                    <ChevronRight size={20} aria-hidden /> إدارة المدارس
+                    <ChevronRight size={20} aria-hidden /> {t('pages.SchoolsPage.إدارة_المدارس', 'إدارة المدارس')}
                   </button>
                   <ChevronRight size={16} className="page-nav-separator" aria-hidden />
                 </div>
               }
-              title={<>مدرسة: <span className="page-header-accent">{school.name}</span></>}
+              title={<>{t('pages.SchoolDetailsPage.مدرسة', 'مدرسة:')} <span className="page-header-accent">{school.name}</span></>}
               subtitle={getSchoolLevelSubtitle(school.schoolLevel, t)}
             >
               {can(PERMISSION_PAGE_IDS.schools, 'school_report_create') && (
                 <>
                   <button type="button" className="google-btn google-btn--toolbar" onClick={() => navigate(`/schools/${id}/report`)}>
                     <Plus size={16} />
-                    <span className="school-details-toolbar__long">إضافة تقرير</span>
-                    <span className="school-details-toolbar__short">تقرير</span>
+                    <span className="school-details-toolbar__long">{t('pages.SchoolDetailsPage.إضافة_تقرير', 'إضافة تقرير')}</span>
+                    <span className="school-details-toolbar__short">{t('pages.SchoolDetailsPage.تقرير', 'تقرير')}</span>
                   </button>
                   <button type="button" className="google-btn google-btn--toolbar" onClick={() => navigate(`/schools/${id}/comprehensive-report`)}>
                     <BarChart3 size={16} />
-                    <span className="school-details-toolbar__long">تقرير شامل</span>
-                    <span className="school-details-toolbar__short">شامل</span>
+                    <span className="school-details-toolbar__long">{t('pages.SchoolDetailsPage.تقرير_شامل', 'تقرير شامل')}</span>
+                    <span className="school-details-toolbar__short">{t('pages.SchoolDetailsPage.شامل', 'شامل')}</span>
                   </button>
                 </>
               )}
@@ -501,7 +501,7 @@ const SchoolDetailsPage = () => {
                         </button>
                       </div>
                     )}
-                    {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 ? <p className="school-details-panel__empty">لا يوجد نتائج للبحث.</p> : (
+                    {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 ? <p className="school-details-panel__empty">{t('pages.SchoolDetailsPage.لا_يوجد_نتائج_للبحث', 'لا يوجد نتائج للبحث.')}</p> : (
                         <div className="school-details-members-list">
                            {staff.filter(t => t.displayName?.toLowerCase().includes(staffSearch.toLowerCase())).map(t => (
                               <div key={t.id} className="school-details-member-item">
@@ -512,10 +512,10 @@ const SchoolDetailsPage = () => {
                                  </div>
                                  <div className="school-details-member-item__actions">
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
-                                   <button type="button" onClick={() => navigate(`/users/${t.id}`)} className="icon-btn" title="عرض الملف"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/users/${t.id}`)} className="icon-btn" title={t('pages.RegionDetailsPage.عرض_الملف', 'عرض الملف')}><Info size={16}/></button>
                                  )}
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                                  <BusyButton type="button" onClick={() => removeMemberFromSchool(t)} className="icon-btn" title="إزالة من المدرسة" busy={assigning}>
+                                  <BusyButton type="button" onClick={() => removeMemberFromSchool(t)} className="icon-btn" title={t('pages.SchoolDetailsPage.إزالة_من_المدرسة', 'إزالة من المدرسة')} busy={assigning}>
                                      <Trash2 size={16} color="var(--danger-color)" />
                                   </BusyButton>
                                  )}
@@ -548,21 +548,21 @@ const SchoolDetailsPage = () => {
                             )}
                         </div>
                     </div>
-                    {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 ? <p className="school-details-panel__empty">لا يوجد نتائج للبحث.</p> : (
+                    {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 ? <p className="school-details-panel__empty">{t('pages.SchoolDetailsPage.لا_يوجد_نتائج_للبحث', 'لا يوجد نتائج للبحث.')}</p> : (
                         <div className="school-details-members-list">
                            {students.filter(s => s.displayName?.toLowerCase().includes(studentSearch.toLowerCase())).map(s => (
                               <div key={s.id} className="school-details-member-item">
                                  <img src={s.photoURL || `https://ui-avatars.com/api/?name=${s.displayName}`} className="school-details-member-item__avatar" />
                                  <div className="school-details-member-item__body">
                                     <h4 className="school-details-member-item__name">{s.displayName}</h4>
-                                    <p className="school-details-member-item__sub">{s.phoneNumber || 'لا يوجد هاتف'}</p>
+                                    <p className="school-details-member-item__sub">{s.phoneNumber || t('pages.SchoolDetailsPage.لا_يوجد_هاتف', 'لا يوجد هاتف')}</p>
                                  </div>
                                  <div className="school-details-member-item__actions">
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_view_profile') && (
-                                   <button type="button" onClick={() => navigate(`/students/${s.id}`)} className="icon-btn" title="عرض ملف الطالب"><Info size={16}/></button>
+                                   <button type="button" onClick={() => navigate(`/students/${s.id}`)} className="icon-btn" title={t('config.permissionRegistry.عرض_ملف_الطالب', 'عرض ملف الطالب')}><Info size={16}/></button>
                                  )}
                                  {can(PERMISSION_PAGE_IDS.schools, 'school_member_assign') && (
-                                  <BusyButton type="button" onClick={() => removeMemberFromSchool(s)} className="icon-btn" title="إزالة من المدرسة" busy={assigning}>
+                                  <BusyButton type="button" onClick={() => removeMemberFromSchool(s)} className="icon-btn" title={t('pages.SchoolDetailsPage.إزالة_من_المدرسة', 'إزالة من المدرسة')} busy={assigning}>
                                      <Trash2 size={16} color="var(--danger-color)" />
                                   </BusyButton>
                                  )}
@@ -614,24 +614,24 @@ const SchoolDetailsPage = () => {
                   {filteredReports.map((rep) => (
                     <div key={rep.id} className="school-details-member-item">
                       <div className="school-details-member-item__body">
-                        <h4 className="school-details-member-item__name">{rep.reportTitle || 'تقرير إشراف مدرسة'}</h4>
+                        <h4 className="school-details-member-item__name">{rep.reportTitle || t('pages.SchoolDetailsPage.تقرير_إشراف_مدرسة', 'تقرير إشراف مدرسة')}</h4>
                         <p className="school-details-member-item__sub">
                           {rep.date || rep.timestamp?.split('T')[0] || '-'} • المشرف: {rep.supervisorName || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد')} • {schoolReportSummaryLine(rep)}
                         </p>
                       </div>
                       <div className="school-details-member-item__actions">
                         {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
-                          <button type="button" className="icon-btn" title="عرض التقرير" onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}&view=1`)}>
+                          <button type="button" className="icon-btn" title={t('pages.SchoolDetailsPage.عرض_التقرير', 'عرض التقرير')} onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}&view=1`)}>
                             <Info size={16} />
                           </button>
                         )}
                         {can(PERMISSION_PAGE_IDS.reports, 'report_edit') && (
-                          <button type="button" className="icon-btn" title="تعديل التقرير" onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}`)}>
+                          <button type="button" className="icon-btn" title={t('pages.SchoolDetailsPage.تعديل_التقرير', 'تعديل التقرير')} onClick={() => navigate(`/schools/${id}/report/${rep.id}?ownerId=${rep.ownerId || rep.supervisorId || ''}`)}>
                             <Edit2 size={16} />
                           </button>
                         )}
                         {can(PERMISSION_PAGE_IDS.reports, 'report_view') && (
-                          <button type="button" className="icon-btn" title="معاينة وطباعة التقرير" onClick={() => handlePrintSchoolReport(rep)}>
+                          <button type="button" className="icon-btn" title={t('pages.SchoolDetailsPage.معاينة_وطباعة_التقرير', 'معاينة وطباعة التقرير')} onClick={() => handlePrintSchoolReport(rep)}>
                             <Printer size={16} />
                           </button>
                         )}
@@ -639,7 +639,7 @@ const SchoolDetailsPage = () => {
                           <BusyButton
                             type="button"
                             className="icon-btn"
-                            title="حذف التقرير"
+                            title={t('pages.AdminReportsPage.حذف_التقرير', 'حذف التقرير')}
                             busy={reportWorkingId === rep.id}
                             onClick={() => handleDeleteSchoolReport(rep)}
                           >
@@ -658,7 +658,7 @@ const SchoolDetailsPage = () => {
                 <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                     <div className="surface-card surface-card--lg school-details-assign-modal" onClick={e => e.stopPropagation()}>
                         <div className="school-details-assign-modal__head">
-                            <h3 className="school-details-assign-modal__title">تعيين عضو للمدرسة</h3>
+                            <h3 className="school-details-assign-modal__title">{t('pages.SchoolDetailsPage.تعيين_عضو_للمدرسة', 'تعيين عضو للمدرسة')}</h3>
                             <button onClick={() => setIsModalOpen(false)} className="icon-btn"><X size={20}/></button>
                         </div>
 
@@ -715,7 +715,7 @@ const SchoolDetailsPage = () => {
                         </div>
 
                         <div className="school-details-assign-modal__list">
-                            {filteredUsers.length === 0 ? <p className="school-details-assign-modal__empty">لا يوجد مستخدمين متاحين للتعيين.</p> : filteredUsers.map(u => (
+                            {filteredUsers.length === 0 ? <p className="school-details-assign-modal__empty">{t('pages.SchoolDetailsPage.لا_يوجد_مستخدمين_متاحين_للتعيين', 'لا يوجد مستخدمين متاحين للتعيين.')}</p> : filteredUsers.map(u => (
                                 <div key={u.id} className="school-details-assign-modal__item">
                                     <div className="school-details-assign-modal__item-main">
                                         <input

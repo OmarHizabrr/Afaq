@@ -397,7 +397,7 @@ const NotificationsPage = ({ user }) => {
             className={`btn-md ${activeTab === 'chats' ? 'btn-md--primary' : 'btn-md--outline'}`}
             onClick={() => setActiveTab('chats')}
           >
-            <MessageCircle size={16} /> المحادثات
+            <MessageCircle size={16} /> {t('components.MessengerPanel.المحادثات', 'المحادثات')}
           </button>
         </div>
         <div className="notifications-page__toolbar">
@@ -422,8 +422,8 @@ const NotificationsPage = ({ user }) => {
       {needsPushEnable && (
         <div className="notifications-push-prompt" role="region" aria-label={t('components.PushNotificationBanner.تفعيل_الإشعارات', 'تفعيل الإشعارات')}>
           <div className="notifications-push-prompt__text">
-            <strong>فعّل إشعارات الجهاز</strong>
-            <span>لتصلك المحادثات والتنبيهات فوراً حتى عند إغلاق التطبيق</span>
+            <strong>{t('pages.NotificationsPage.فعّل_إشعارات_الجهاز', 'فعّل إشعارات الجهاز')}</strong>
+            <span>{t('pages.NotificationsPage.لتصلك_المحادثات_والتنبيهات_فوراً_حتى_عند_إغلاق_التطبيق', 'لتصلك المحادثات والتنبيهات فوراً حتى عند إغلاق التطبيق')}</span>
           </div>
           <button
             type="button"
@@ -441,7 +441,7 @@ const NotificationsPage = ({ user }) => {
           {notifications.length === 0 ? (
             <div className="surface-card surface-card--lg notifications-page__empty">
               <Bell size={48} className="notifications-page__empty-icon" aria-hidden />
-              <p className="notifications-page__empty-text">لا توجد إشعارات جديدة بانتظارك.</p>
+              <p className="notifications-page__empty-text">{t('pages.NotificationsPage.لا_توجد_إشعارات_جديدة_بانتظارك', 'لا توجد إشعارات جديدة بانتظارك.')}</p>
             </div>
           ) : (
             notifications.map((n) => (
@@ -542,7 +542,7 @@ const NotificationsPage = ({ user }) => {
 
       <FormModal open={isComposeOpen} title={t('pages.NotificationsPage.إرسال_إشعار_جديد', 'إرسال إشعار جديد')} onClose={() => setIsComposeOpen(false)}>
         <form onSubmit={handleSend} className="notifications-modal-form">
-          <label className="app-label">المستلمون</label>
+          <label className="app-label">{t('pages.NotificationsPage.المستلمون', 'المستلمون')}</label>
           <div className="notifications-modal__pick-toolbar">
             <button
               type="button"
@@ -588,15 +588,15 @@ const NotificationsPage = ({ user }) => {
               />
             ))}
           </div>
-          <label className="app-label">نوع الرسالة</label>
+          <label className="app-label">{t('pages.NotificationsPage.نوع_الرسالة', 'نوع الرسالة')}</label>
           <AppSelect className="app-select notifications-modal__field" value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="info">معلومة</option>
-            <option value="success">نجاح</option>
-            <option value="warning">تنبيه</option>
+            <option value="info">{t('pages.NotificationsPage.معلومة', 'معلومة')}</option>
+            <option value="success">{t('pages.NotificationsPage.نجاح', 'نجاح')}</option>
+            <option value="warning">{t('pages.NotificationsPage.تنبيه', 'تنبيه')}</option>
           </AppSelect>
           <label className="app-label">{t('utils.schoolReportExport.العنوان', 'العنوان')}</label>
           <input className="app-input notifications-modal__field" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <label className="app-label">المحتوى</label>
+          <label className="app-label">{t('pages.NotificationsPage.المحتوى', 'المحتوى')}</label>
           <textarea className="app-textarea notifications-modal__field notifications-modal__field--last" value={body} onChange={(e) => setBody(e.target.value)} />
           <div className="modal-footer-actions">
             <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsComposeOpen(false)}>
@@ -615,9 +615,9 @@ const NotificationsPage = ({ user }) => {
 
       <FormModal open={isNewChatOpen} title={t('pages.NotificationsPage.إنشاء_محادثة', 'إنشاء محادثة')} onClose={() => setIsNewChatOpen(false)}>
         <form onSubmit={createConversation} className="notifications-modal-form">
-          <label className="app-label">العنوان (اختياري للجروب)</label>
+          <label className="app-label">{t('pages.NotificationsPage.العنوان_اختياري_للجروب', 'العنوان (اختياري للجروب)')}</label>
           <input className="app-input notifications-modal__field" value={newChatTitle} onChange={(e) => setNewChatTitle(e.target.value)} />
-          <label className="app-label">الأعضاء</label>
+          <label className="app-label">{t('pages.NotificationsPage.الأعضاء', 'الأعضاء')}</label>
           <div className="notifications-modal__pick-toolbar">
             <button
               type="button"

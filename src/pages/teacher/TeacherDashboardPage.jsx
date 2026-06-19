@@ -89,7 +89,7 @@ const TeacherDashboardPage = ({ user }) => {
   return (
     <div className="portal-page teacher-dashboard-page">
       <PageHeader
-        title={<span className="page-header-accent--success">لوحة شرف المعلم</span>}
+        title={<span className="page-header-accent--success">{t('pages.TeacherDashboardPage.لوحة_شرف_المعلم', 'لوحة شرف المعلم')}</span>}
         subtitle={t('pages.TeacherDashboardPage.نظرة_عامة_على_نشاطاتك_في_مدرستك_الحالية', 'نظرة عامة على نشاطاتك في مدرستك الحالية')}
       />
 
@@ -141,10 +141,10 @@ const TeacherDashboardPage = ({ user }) => {
             <h3 className="portal-recent-card__title">
               <Activity size={18} color="var(--success-color)" /> آخر النشاطات (التحضير اليومي)
             </h3>
-            <button type="button" onClick={() => navigate('/teacher/daily-log')} className="portal-link-btn">عرض الكل</button>
+            <button type="button" onClick={() => navigate('/teacher/daily-log')} className="portal-link-btn">{t('pages.TeacherDashboardPage.عرض_الكل', 'عرض الكل')}</button>
           </div>
           {recentLogs.length === 0 ? (
-            <p className="portal-recent-empty">لا توجد سجلات حديثة.</p>
+            <p className="portal-recent-empty">{t('pages.TeacherDashboardPage.لا_توجد_سجلات_حديثة', 'لا توجد سجلات حديثة.')}</p>
           ) : (
             <div className="portal-recent-list">
               {recentLogs.map(log => (

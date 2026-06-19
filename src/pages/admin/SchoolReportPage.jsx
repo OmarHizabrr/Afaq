@@ -62,8 +62,8 @@ import {
   teacherEvaluationLabelFromRatings,
   studentLevelSummaryFromStars,
 } from '../../utils/schoolReportStars';
-import useAppTranslation from '../../hooks/useAppTranslation';
 import translate from '../../i18n/translate';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const getDayOptions = (t) => [
   t('pages.SchoolReportPage.الأحد', 'الأحد'),
@@ -343,7 +343,7 @@ const SchoolReportPage = () => {
       }
     } catch (err) {
       console.error(err);
-      setError('تعذر تحميل بيانات التقرير.');
+      setError(t('pages.SchoolReportPage.تعذر_تحميل_بيانات_التقرير', 'تعذر تحميل بيانات التقرير.'));
     } finally {
       setLoading(false);
     }
@@ -408,7 +408,7 @@ const SchoolReportPage = () => {
         setLocating(false);
       },
       () => {
-        setError('يرجى تفعيل GPS ومنح صلاحية الموقع.');
+        setError(t('pages.SchoolReportPage.يرجى_تفعيل_GPS', 'يرجى تفعيل GPS ومنح صلاحية الموقع.'));
         setLocating(false);
       }
     );
@@ -520,12 +520,12 @@ const SchoolReportPage = () => {
   const handleSave = async () => {
     if (saving || uploading) return;
     if (!form.teacherIds.length) {
-      setError('يرجى اختيار معلم واحد على الأقل.');
+      setError(t('pages.SchoolReportPage.يرجى_اختيار_معلم_واحد', 'يرجى اختيار معلم واحد على الأقل.'));
       return;
     }
     const unratedTeacher = form.teacherIds.find((id) => !form.teacherRatings[id] || Number(form.teacherRatings[id]) < 1);
     if (unratedTeacher) {
-      setError('يرجى تقييم كل معلم محدد بالنجوم (من 1 إلى 5).');
+      setError(t('pages.SchoolReportPage.يرجى_تقييم_كل_معلم', 'يرجى تقييم كل معلم محدد بالنجوم (من 1 إلى 5).'));
       return;
     }
     setSaving(true);
@@ -534,11 +534,11 @@ const SchoolReportPage = () => {
       const api = FirestoreApi.Api;
       const { docRef, payload } = await buildPayload();
       await api.setData({ docRef, data: payload, userData: actorUser || {} });
-      setSuccess(isEditing ? 'تم تحديث التقرير بنجاح.' : 'تم حفظ تقرير المدرسة بنجاح.');
+      setSuccess(isEditing ? t('pages.SchoolReportPage.تم_تحديث_التقرير', 'تم تحديث التقرير بنجاح.') : t('pages.SchoolReportPage.تم_حفظ_تقرير_المدرسة', 'تم حفظ تقرير المدرسة بنجاح.'));
       setTimeout(() => navigate(`/schools/${schoolId}`), 1200);
     } catch (err) {
       console.error(err);
-      setError('تعذر حفظ التقرير.');
+      setError(t('pages.SchoolReportPage.تعذر_حفظ_التقرير', 'تعذر حفظ التقرير.'));
     } finally {
       setSaving(false);
       setUploading(false);
@@ -587,7 +587,7 @@ const SchoolReportPage = () => {
   });
 
   if (loading) return <div className="loading-spinner page-loading-lg" />;
-  if (!school) return <div className="empty-state">المدرسة غير موجودة</div>;
+  if (!school) return <div className="empty-state">{t('pages.SchoolComprehensiveReportPage.المدرسة_غير_موجودة', 'المدرسة غير موجودة')}</div>;
 
   const schoolScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
   const canCreate = can(PERMISSION_PAGE_IDS.schools, 'school_report_create');
@@ -612,15 +612,15 @@ const SchoolReportPage = () => {
       <PageHeader
         topRow={
           <button type="button" className="page-nav-back" onClick={() => navigate(`/schools/${schoolId}`)}>
-            <ChevronRight size={20} aria-hidden /> العودة لتفاصيل المدرسة
+            <ChevronRight size={20} aria-hidden /> {t('pages.SchoolReportPage.العودة_لتفاصيل_المدرسة', 'العودة لتفاصيل المدرسة')}
           </button>
         }
         title={
           readOnly
-            ? 'عرض التقرير الشهري عن المدرسة'
+            ? t('pages.SchoolReportPage.عرض_التقرير_الشهري', 'عرض التقرير الشهري عن المدرسة')
             : isEditing
-              ? 'تعديل التقرير الشهري عن المدرسة'
-              : 'إضافة التقرير الشهري عن المدرسة'
+              ? t('pages.SchoolReportPage.تعديل_التقرير_الشهري', 'تعديل التقرير الشهري عن المدرسة')
+              : t('pages.SchoolReportPage.إضافة_التقرير_الشهري', 'إضافة التقرير الشهري عن المدرسة')
         }
         subtitle={school.name}
       >
@@ -631,13 +631,14 @@ const SchoolReportPage = () => {
               className="google-btn google-btn--filled google-btn--toolbar"
               onClick={() => navigate(`/schools/${schoolId}/report/${reportId}${editQuery}`)}
             >
-              تعديل التقرير
+              <span className="portal-toolbar__long">{t('pages.SchoolReportPage.تعديل_التقرير', 'تعديل التقرير')}</span>
+              <span className="portal-toolbar__short">{t('components.ExplorationListCard.تعديل', 'تعديل')}</span>
             </button>
           )}
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => setPreviewOpen(true)}>
             <Printer size={16} />
-            <span className="portal-toolbar__long">معاينة</span>
-            <span className="portal-toolbar__short">معاينة</span>
+            <span className="portal-toolbar__long">{t('pages.ReportDetailsPage.معاينة', 'معاينة')}</span>
+            <span className="portal-toolbar__short">{t('pages.ReportDetailsPage.معاينة', 'معاينة')}</span>
           </button>
           <BusyButton
             type="button"
@@ -673,7 +674,7 @@ const SchoolReportPage = () => {
             onClick={handleSave}
           >
             <Save size={16} />
-            <span className="portal-toolbar__long">{isEditing ? 'حفظ التعديلات' : 'حفظ التقرير'}</span>
+            <span className="portal-toolbar__long">{isEditing ? t('pages.SchoolReportPage.حفظ_التعديلات', 'حفظ التعديلات') : t('pages.SchoolReportPage.حفظ_التقرير', 'حفظ التقرير')}</span>
             <span className="portal-toolbar__short">{t('components.MessengerPanel.حفظ', 'حفظ')}</span>
           </BusyButton>
           )}
@@ -684,7 +685,8 @@ const SchoolReportPage = () => {
       {success && <div className="app-alert app-alert--success">{success}</div>}
       {readOnly && (
         <div className="app-alert app-alert--info school-report-view-banner">
-          وضع العرض فقط — يمكنك معاينة التقرير أو تصديره. {canCreate && isEditing ? 'اضغط «تعديل التقرير» للتعديل.' : ''}
+          {t('pages.SchoolReportPage.وضع_العرض_فقط', 'وضع العرض فقط — يمكنك معاينة التقرير أو تصديره.')}{' '}
+          {canCreate && isEditing ? t('pages.SchoolReportPage.اضغط_تعديل_التقرير_للتعديل', 'اضغط «تعديل التقرير» للتعديل.') : ''}
         </div>
       )}
 
@@ -692,12 +694,12 @@ const SchoolReportPage = () => {
         <div className="school-report-page__main">
           {/* القسم 1: معلومات أساسية */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title">معلومات التقرير</h3>
+            <h3 className="school-report-section__title">{t('pages.SchoolReportPage.معلومات_التقرير', 'معلومات التقرير')}</h3>
             <div className="report-field-grid report-field-grid--2">
-              <ReportField label="عنوان التقرير">
+              <ReportField label={t('pages.SchoolReportPage.عنوان_التقرير', 'عنوان التقرير')}>
                 <input className="app-input" value={form.reportTitle} onChange={(e) => setForm((p) => ({ ...p, reportTitle: e.target.value }))} />
               </ReportField>
-              <ReportField label="نوع التقرير">
+              <ReportField label={t('pages.SchoolReportPage.نوع_التقرير', 'نوع التقرير')}>
                 <AppSelect
                   value={form.reportPeriod}
                   onChange={(e) => {
@@ -717,23 +719,23 @@ const SchoolReportPage = () => {
                   ))}
                 </AppSelect>
               </ReportField>
-              <ReportField label="اسم المدرسة/الجروب">
+              <ReportField label={t('pages.SchoolReportPage.اسم_المدرسة_الجروب', 'اسم المدرسة/الجروب')}>
                 <input className="app-input" value={form.groupName} onChange={(e) => setForm((p) => ({ ...p, groupName: e.target.value }))} />
               </ReportField>
-              <ReportField label="اليوم">
+              <ReportField label={t('utils.messengerFormat.اليوم', 'اليوم')}>
                 <AppSelect searchable value={form.day} onChange={(e) => setForm((p) => ({ ...p, day: e.target.value }))}>
                   {dayOptions.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </AppSelect>
               </ReportField>
-              <ReportField label="التاريخ">
+              <ReportField label={t('pages.SchoolReportPage.التاريخ', 'التاريخ')}>
                 <input className="app-input" type="date" value={form.date} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))} />
               </ReportField>
-              <ReportField label="وقت الحضور">
+              <ReportField label={t('pages.SchoolReportPage.وقت_الحضور', 'وقت الحضور')}>
                 <input className="app-input" type="time" value={form.arrivalTime} onChange={(e) => setForm((p) => ({ ...p, arrivalTime: e.target.value }))} />
               </ReportField>
-              <ReportField label="وقت المغادرة">
+              <ReportField label={t('pages.SchoolReportPage.وقت_المغادرة', 'وقت المغادرة')}>
                 <input className="app-input" type="time" value={form.departureTime} onChange={(e) => setForm((p) => ({ ...p, departureTime: e.target.value }))} />
               </ReportField>
             </div>
@@ -743,10 +745,10 @@ const SchoolReportPage = () => {
           <section className="surface-card school-report-section">
             <h3 className="school-report-section__title"><MapPin size={18} /> {t('components.MapLocationOpen.الموقع_الجغرافي', 'الموقع الجغرافي')}</h3>
             <div className="report-field-grid report-field-grid--2">
-              <ReportField label="القرية"><input className="app-input" value={form.village} readOnly /></ReportField>
-              <ReportField label="المنطقة"><input className="app-input" value={geoDefaults.regionName} readOnly /></ReportField>
-              <ReportField label="المحافظة"><input className="app-input" value={form.governorate} readOnly /></ReportField>
-              <ReportField label="الدولة"><input className="app-input" value={form.country} readOnly /></ReportField>
+              <ReportField label={t('pages.SchoolReportPage.القرية', 'القرية')}><input className="app-input" value={form.village} readOnly /></ReportField>
+              <ReportField label={t('pages.SchoolReportPage.المنطقة', 'المنطقة')}><input className="app-input" value={geoDefaults.regionName} readOnly /></ReportField>
+              <ReportField label={t('pages.SchoolReportPage.المحافظة', 'المحافظة')}><input className="app-input" value={form.governorate} readOnly /></ReportField>
+              <ReportField label={t('pages.SchoolReportPage.الدولة', 'الدولة')}><input className="app-input" value={form.country} readOnly /></ReportField>
             </div>
             <div className="school-report-location">
               <BusyButton type="button" className="google-btn" busy={locating} onClick={handleGetLocation}>
@@ -766,9 +768,9 @@ const SchoolReportPage = () => {
 
           {/* القسم 3: المعلمون */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title">المعلمون وتقييمهم بالنجوم</h3>
+            <h3 className="school-report-section__title">{t('pages.SchoolReportPage.المعلمون_وتقييمهم_بالنجوم', 'المعلمون وتقييمهم بالنجوم')}</h3>
             {teachers.length === 0 ? (
-              <p className="school-report-section__empty">لا يوجد معلمون مسجلون في هذه المدرسة.</p>
+              <p className="school-report-section__empty">{t('pages.SchoolReportPage.لا_يوجد_معلمون_مسجلون_في_هذه_المدرسة', 'لا يوجد معلمون مسجلون في هذه المدرسة.')}</p>
             ) : (
               <div className="school-report-teachers">
                 {teachers.map((t) => {
@@ -781,7 +783,7 @@ const SchoolReportPage = () => {
                     </label>
                     <input
                       className="app-input"
-                      placeholder="رقم الهاتف"
+                      placeholder={t('pages.SchoolReportPage.رقم_الهاتف', 'رقم الهاتف')}
                       value={form.teacherPhoneMap[t.id] || ''}
                       readOnly={readOnly}
                       disabled={readOnly}
@@ -796,12 +798,12 @@ const SchoolReportPage = () => {
                       <StarRatingInput
                         compact
                         readOnly={readOnly}
-                        label="تقييم المعلم"
+                        label={t('pages.SchoolReportPage.تقييم_المعلم', 'تقييم المعلم')}
                         value={form.teacherRatings[t.id] || 0}
                         onChange={(stars) => setTeacherRating(t.id, stars)}
                       />
                     ) : (
-                      <span className="school-report-teacher-row__hint">حدّد المعلم لتقييمه</span>
+                      <span className="school-report-teacher-row__hint">{t('pages.SchoolReportPage.حدّد_المعلم_لتقييمه', 'حدّد المعلم لتقييمه')}</span>
                     )}
                   </div>
                   );
@@ -812,12 +814,12 @@ const SchoolReportPage = () => {
 
           {/* تقييم الطلاب بالنجوم */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title">تقييم الطلاب بالنجوم</h3>
+            <h3 className="school-report-section__title">{t('pages.SchoolReportPage.تقييم_الطلاب_بالنجوم', 'تقييم الطلاب بالنجوم')}</h3>
             {!readOnly && (
-              <p className="school-report-section__sub">قيّم كل طالب من 1 إلى 5 نجوم (اختياري — يُحفظ من حصل على نجمة واحدة فأكثر).</p>
+              <p className="school-report-section__sub">{t('pages.SchoolReportPage.قيّم_كل_طالب_من_1_إلى_5_نجوم_اختياري_يُحفظ_من_حصل_عل', 'قيّم كل طالب من 1 إلى 5 نجوم (اختياري — يُحفظ من حصل على نجمة واحدة فأكثر).')}</p>
             )}
             {form.starAwards.length === 0 ? (
-              <p className="school-report-section__empty">لا يوجد طلاب مسجلون في هذه المدرسة.</p>
+              <p className="school-report-section__empty">{t('pages.SchoolReportPage.لا_يوجد_طلاب_مسجلون_في_هذه_المدرسة', 'لا يوجد طلاب مسجلون في هذه المدرسة.')}</p>
             ) : (
               <div className="school-report-student-stars">
                 {form.starAwards.map((row) => (
@@ -839,15 +841,15 @@ const SchoolReportPage = () => {
           <section className="surface-card school-report-section">
             <h3 className="school-report-section__title">{t('utils.schoolReportExport.الطلاب_المتفوقون', 'الطلاب المتفوقون')}</h3>
             {!readOnly && (
-              <p className="school-report-section__sub">أضف أسماء الطلاب المتفوقين — يمكنك الكتابة أو الاختيار من قائمة الطلاب.</p>
+              <p className="school-report-section__sub">{t('pages.SchoolReportPage.أضف_أسماء_الطلاب_المتفوقين_يمكنك_الكتابة_أو_الاختيار_', 'أضف أسماء الطلاب المتفوقين — يمكنك الكتابة أو الاختيار من قائمة الطلاب.')}</p>
             )}
             <ReportTextList
               readOnly={readOnly}
               items={form.outstandingStudents}
               onChange={(outstandingStudents) => setForm((p) => ({ ...p, outstandingStudents }))}
-              placeholder="اسم الطالب المتفوق..."
-              addLabel="إضافة طالب"
-              emptyHint="لم تُضف أسماء بعد."
+              placeholder={t('pages.SchoolReportPage.اسم_الطالب_المتفوق', 'اسم الطالب المتفوق...')}
+              addLabel={t('config.permissionRegistry.إضافة_طالب', 'إضافة طالب')}
+              emptyHint={t('pages.SchoolReportPage.لم_تُضف_أسماء_بعد', 'لم تُضف أسماء بعد.')}
               suggestions={readOnly ? [] : students.map((s) => s.displayName).filter(Boolean)}
             />
           </section>
@@ -858,7 +860,7 @@ const SchoolReportPage = () => {
               readOnly={readOnly}
               showTitle
               showAdditionalNotes={false}
-              sectionTitle="القرية والنشاطات"
+              sectionTitle={t('pages.SchoolReportPage.القرية_والنشاطات', 'القرية والنشاطات')}
               villageName={form.village}
               value={{
                 teacherVillageActivities: form.teacherVillageActivities,
@@ -870,12 +872,12 @@ const SchoolReportPage = () => {
               }}
               onChange={(patch) => setForm((p) => ({ ...p, ...patch }))}
             />
-            <ReportField label="ملاحظات إضافية" span={2}>
+            <ReportField label={t('pages.SchoolReportPage.ملاحظات_إضافية', 'ملاحظات إضافية')} span={2}>
               <textarea
                 className="app-input app-textarea"
                 value={form.notes}
                 onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
-                placeholder="أي ملاحظات إضافية..."
+                placeholder={t('pages.SchoolReportPage.أي_ملاحظات_إضافية', 'أي ملاحظات إضافية...')}
                 readOnly={readOnly}
                 disabled={readOnly}
               />
@@ -884,9 +886,9 @@ const SchoolReportPage = () => {
 
           {/* الحضور والغياب */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title">الحضور والغياب</h3>
+            <h3 className="school-report-section__title">{t('pages.SchoolReportPage.الحضور_والغياب', 'الحضور والغياب')}</h3>
             <div className="report-field-grid report-field-grid--2">
-              <ReportField label="عدد الطلاب المسجلين">
+              <ReportField label={t('pages.SchoolReportPage.عدد_الطلاب_المسجلين', 'عدد الطلاب المسجلين')}>
                 <input
                   className="app-input"
                   type="number"
@@ -900,13 +902,13 @@ const SchoolReportPage = () => {
                   }}
                 />
               </ReportField>
-              <ReportField label="عدد الحضور (تلقائي)">
+              <ReportField label={t('pages.SchoolReportPage.عدد_الحضور_تلقائي', 'عدد الحضور (تلقائي)')}>
                 <input className="app-input" type="number" value={form.presentCount} readOnly />
               </ReportField>
             </div>
             {!readOnly && (
               <YesNoRadio
-                label="مراجعة الغياب"
+                label={t('pages.SchoolReportPage.مراجعة_الغياب', 'مراجعة الغياب')}
                 name="absenceReview"
                 value={form.absenceReview}
                 onChange={(val) => setForm((p) => ({ ...p, absenceReview: val }))}
@@ -947,7 +949,7 @@ const SchoolReportPage = () => {
 
           {/* القسم 7: التقييمات */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title">التقييمات والملاحظات</h3>
+            <h3 className="school-report-section__title">{t('pages.SchoolReportPage.التقييمات_والملاحظات', 'التقييمات والملاحظات')}</h3>
             <div className="report-field-grid report-field-grid--2">
               {SCHOOL_EVAL_FIELDS.map(({ key, label }) => (
                 <ReportField key={key} label={label}>
@@ -960,23 +962,23 @@ const SchoolReportPage = () => {
                   />
                 </ReportField>
               ))}
-              <ReportField label="تعمل السوق؟">
+              <ReportField label={t('pages.SchoolReportPage.تعمل_السوق؟', 'تعمل السوق؟')}>
                 <EvalSelectWithOther
                   value={form.marketDone}
                   otherValue={form.marketDoneOther}
                   onChange={(val) => setForm((p) => ({ ...p, marketDone: val }))}
                   onOtherChange={(val) => setForm((p) => ({ ...p, marketDoneOther: val }))}
                   options={EVAL_YES_NO_OPTIONS}
-                  placeholder="اكتب وصفاً عن السوق..."
+                  placeholder={t('pages.SchoolReportPage.اكتب_وصفاً_عن_السوق', 'اكتب وصفاً عن السوق...')}
                 />
               </ReportField>
-              <ReportField label="عدد الوجبات">
+              <ReportField label={t('pages.SchoolReportPage.عدد_الوجبات', 'عدد الوجبات')}>
                 <input className="app-input" type="number" min="0" value={form.mealsCount} onChange={(e) => setForm((p) => ({ ...p, mealsCount: e.target.value }))} />
               </ReportField>
-              <ReportField label="المشرف">
+              <ReportField label={t('pages.AdminReportsPage.المشرف', 'المشرف')}>
                 <input className="app-input" value={form.supervisorName} onChange={(e) => setForm((p) => ({ ...p, supervisorName: e.target.value }))} />
               </ReportField>
-              <ReportField label="مسؤول المشاريع">
+              <ReportField label={t('pages.SchoolReportPage.مسؤول_المشاريع', 'مسؤول المشاريع')}>
                 <input className="app-input" value={form.projectsOfficerName} onChange={(e) => setForm((p) => ({ ...p, projectsOfficerName: e.target.value }))} />
               </ReportField>
             </div>
@@ -984,7 +986,7 @@ const SchoolReportPage = () => {
 
           {/* القسم 8: الوسائط */}
           <section className="surface-card school-report-section">
-            <h3 className="school-report-section__title"><ImageIcon size={18} /> صور وفيديوهات</h3>
+            <h3 className="school-report-section__title"><ImageIcon size={18} /> {t('pages.SchoolReportPage.صور_وفيديوهات', 'صور وفيديوهات')}</h3>
             <div className="school-report-media">
               <label className="google-btn school-report-media__pick">
                 <ImageIcon size={16} /> إرفاق صور/فيديو
@@ -1000,7 +1002,7 @@ const SchoolReportPage = () => {
               {form.mediaUrls.map((m, i) => (
                 <div key={`saved-${i}`} className="school-report-media__item school-report-media__item--saved">
                   {m.type?.startsWith('video') ? <Video size={16} /> : <ImageIcon size={16} />}
-                  <a href={m.url} target="_blank" rel="noreferrer">{m.name || 'مرفق'}</a>
+                  <a href={m.url} target="_blank" rel="noreferrer">{m.name || t('pages.SchoolReportPage.مرفق', 'مرفق')}</a>
                   <button type="button" className="icon-btn" onClick={() => removeSavedMedia(i)}><X size={14} /></button>
                 </div>
               ))}
@@ -1011,10 +1013,10 @@ const SchoolReportPage = () => {
         {/* الشريط الجانبي: سجل الزيارات */}
         <aside className="school-report-page__aside">
           <div className="surface-card school-report-visits">
-            <h3 className="school-report-visits__title"><Eye size={18} /> سجل الزيارات والتقارير السابقة</h3>
-            <p className="school-report-visits__sub">بيانات الزيارات الميدانية المسجلة لهذه المدرسة</p>
+            <h3 className="school-report-visits__title"><Eye size={18} /> {t('pages.SchoolReportPage.سجل_الزيارات_والتقارير_السابقة', 'سجل الزيارات والتقارير السابقة')}</h3>
+            <p className="school-report-visits__sub">{t('pages.SchoolReportPage.بيانات_الزيارات_الميدانية_المسجلة_لهذه_المدرسة', 'بيانات الزيارات الميدانية المسجلة لهذه المدرسة')}</p>
             {visitReports.length === 0 ? (
-              <p className="school-report-visits__empty">لا توجد زيارات مسجلة بعد.</p>
+              <p className="school-report-visits__empty">{t('pages.SchoolReportPage.لا_توجد_زيارات_مسجلة_بعد', 'لا توجد زيارات مسجلة بعد.')}</p>
             ) : (
               <div className="school-report-visits__list">
                 {visitReports.slice(0, 12).map((v) => (

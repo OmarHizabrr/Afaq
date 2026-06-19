@@ -44,6 +44,18 @@ for (const file of walk(SRC)) {
       }
     }
   }
+  const labelKeyRe = /labelKey:\s*'([^']+)'\s*,\s*labelFallback:\s*'((?:\\'|[^'])*)'/g;
+  let lm;
+  while ((lm = labelKeyRe.exec(content)) !== null) {
+    setNested(lm[1].split('.'), unescapeJs(lm[2]));
+  }
+  const translateRe = /translate\(\s*'([^']+)'\s*,\s*'((?:\\'|[^'])*)'\s*\)/g;
+  while ((lm = translateRe.exec(content)) !== null) {
+    const fallback = unescapeJs(lm[2]);
+    if (/[\u0600-\u06FF]/.test(fallback)) {
+      setNested(lm[1].split('.'), fallback);
+    }
+  }
 }
 
 // Settings keys used by LanguageSwitcher

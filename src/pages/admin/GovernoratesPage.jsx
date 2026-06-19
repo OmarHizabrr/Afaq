@@ -167,7 +167,7 @@ const GovernoratesPage = () => {
     if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`${t('components.ExplorationDataModal.الحقول_التالية_مطلوبة_أو_غير_صالحة', 'الحقول التالية مطلوبة أو غير صالحة:')} ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const fallbackName = expForm.selectedType?.name ? `محافظة - ${expForm.selectedType.name}` : '';
@@ -232,7 +232,7 @@ const GovernoratesPage = () => {
           explorationBridgeAllowed(EXPLORATION_BRIDGE_ACTION_IDS.add) && (
           <button type="button" className="google-btn google-btn--toolbar" onClick={openExplorationModal}>
             <Compass size={18} />
-            <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__long">{t('pages.CurriculumPage.إضافة_من_الاستكشاف', 'إضافة من الاستكشاف')}</span>
             <span className="geo-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
@@ -240,7 +240,7 @@ const GovernoratesPage = () => {
 
       {showScopeNotice && ready && pageDataScope(PERMISSION_PAGE_IDS.governorates) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info app-alert--dismissible geo-page-alert">
-          <span>عرض محدود: المحافظات الظاهرة مرتبطة بمناطق مجموعاتك (عضوية منطقة أو ما يترتب عليها).</span>
+          <span>{t('pages.GovernoratesPage.عرض_محدود_المحافظات_الظاهرة_مرتبطة_بمناطق_مجموعاتك_عض', 'عرض محدود: المحافظات الظاهرة مرتبطة بمناطق مجموعاتك (عضوية منطقة أو ما يترتب عليها).')}</span>
           <button type="button" className="icon-btn app-alert__dismiss" title={t('components.InstallAppBanner.إغلاق', 'إغلاق')} onClick={() => setShowScopeNotice(false)}>
             <X size={14} />
           </button>
@@ -288,7 +288,7 @@ const GovernoratesPage = () => {
           <div className="modal-footer-actions">
             <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => { setIsAdding(false); setIsEditing(null); setGovName(''); setGovCountry(''); }}>
               <span className="modal-footer-actions__btn-inner">
-                <X size={14} aria-hidden /> إلغاء
+                <X size={14} aria-hidden /> {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
               </span>
             </button>
             <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled modal-footer-actions__btn">
@@ -315,7 +315,7 @@ const GovernoratesPage = () => {
           />
           <div className="modal-footer-actions modal-footer-actions--spaced">
             <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsExploringAdding(false)}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled modal-footer-actions__btn">
               حفظ المحافظة

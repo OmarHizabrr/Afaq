@@ -93,7 +93,7 @@ const ExplorationTypePreviewModal = ({
       open={open}
       onClose={onClose}
       size="lg"
-      title={`معاينة — ${type.name || 'نوع استكشاف'}`}
+      title={`${t('components.ExplorationTypePreviewModal.معاينة', 'معاينة')} — ${type.name || t('components.ExplorationTypePreviewModal.نوع_استكشاف', 'نوع استكشاف')}`}
       className="exploration-type-preview-modal"
     >
       {type.description && (
@@ -103,7 +103,7 @@ const ExplorationTypePreviewModal = ({
       <div className="exploration-type-preview__meta-row">
         <span className="exploration-type-preview__meta-pill">{pagesSummary}</span>
         <span className="exploration-type-preview__meta-pill exploration-type-preview__meta-pill--muted">
-          {usesDefaultForm ? t('components.ExplorationTypePreviewModal.النموذج_الافتراضي_الكامل', 'النموذج الافتراضي الكامل') : `${schemaFields.length} حقل`}
+          {usesDefaultForm ? t('components.ExplorationTypePreviewModal.النموذج_الافتراضي_الكامل', 'النموذج الافتراضي الكامل') : `${schemaFields.length} ${t('components.ExplorationTypePreviewModal.حقل', 'حقل')}`}
         </span>
       </div>
 
@@ -137,10 +137,10 @@ const ExplorationTypePreviewModal = ({
                   <div className="exploration-type-preview__schema-item-head">
                     <span className="exploration-type-preview__schema-label">{f.label}</span>
                     {f.required && (
-                      <span className="exploration-type-preview__required-badge">مطلوب</span>
+                      <span className="exploration-type-preview__required-badge">{t('components.ExplorationTypePreviewModal.مطلوب', 'مطلوب')}</span>
                     )}
                     {f.fieldType === 'hidden' && (
-                      <span className="exploration-type-preview__hidden-badge">مخفي</span>
+                      <span className="exploration-type-preview__hidden-badge">{t('components.ExplorationTypePreviewModal.مخفي', 'مخفي')}</span>
                     )}
                   </div>
                   <div className="exploration-type-preview__schema-meta">
@@ -180,7 +180,7 @@ const ExplorationTypePreviewModal = ({
 
       <div className="exploration-type-preview__footer">
         <button type="button" className="google-btn google-btn--inline" onClick={onClose}>
-          إغلاق
+          {t('components.InstallAppBanner.إغلاق', 'إغلاق')}
         </button>
         <div className="exploration-type-preview__footer-actions">
           {canEdit && onEdit && (

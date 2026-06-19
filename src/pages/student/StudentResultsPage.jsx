@@ -62,9 +62,9 @@ const StudentResultsPage = ({ user }) => {
       <PageHeader icon={FileText} title={t('pages.StudentResultsPage.نتائجي_واختباراتي', 'نتائجي واختباراتي')} subtitle={t('pages.StudentResultsPage.عرض_جميع_نتائج_الزيارات_والتقييمات_الخاصة_بك', 'عرض جميع نتائج الزيارات والتقييمات الخاصة بك')} />
 
       <div className="surface-card portal-filter-card">
-        <label className="app-label">تصفية حسب المدرسة</label>
+        <label className="app-label">{t('pages.StudentResultsPage.تصفية_حسب_المدرسة', 'تصفية حسب المدرسة')}</label>
         <AppSelect className="app-select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
-          <option value="">كل المدارس</option>
+          <option value="">{t('pages.StudentManagementPage.كل_المدارس', 'كل المدارس')}</option>
           {schools.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
@@ -72,7 +72,7 @@ const StudentResultsPage = ({ user }) => {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="empty-state">لا توجد نتائج مسجلة لك حتى الآن.</div>
+        <div className="empty-state">{t('pages.StudentResultsPage.لا_توجد_نتائج_مسجلة_لك_حتى_الآن', 'لا توجد نتائج مسجلة لك حتى الآن.')}</div>
       ) : (
         <>
           <div className="surface-card portal-table-wrap student-results-desktop-only">
@@ -84,8 +84,8 @@ const StudentResultsPage = ({ user }) => {
                     <th>{t('utils.reportDetailsHtml.المادة', 'المادة')}</th>
                     <th>{t('pages.SchoolReportPage.التاريخ', 'التاريخ')}</th>
                     <th>{t('utils.schoolReportExport.الحضور', 'الحضور')}</th>
-                    <th>الاختبار</th>
-                    <th>ملاحظة</th>
+                    <th>{t('pages.StudentResultsPage.الاختبار', 'الاختبار')}</th>
+                    <th>{t('components.DailyPrepStudentCard.ملاحظة', 'ملاحظة')}</th>
                   </tr>
                 </thead>
                 <tbody>

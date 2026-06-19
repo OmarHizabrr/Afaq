@@ -57,7 +57,7 @@ const ExplorationDataView = ({
         </div>
       )}
       {loading && !type && (
-        <div className="exploration-data-view__loading">جاري تحميل بنية النموذج…</div>
+        <div className="exploration-data-view__loading">{t('components.ExplorationDataView.جاري_تحميل_بنية_النموذج', 'جاري تحميل بنية النموذج…')}</div>
       )}
       <dl className="exploration-data-view__list">
         {schemaFields.length > 0

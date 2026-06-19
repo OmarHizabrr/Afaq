@@ -272,23 +272,23 @@ const SupervisorVisitPage = ({ user }) => {
       <div className="surface-card visit-setup-card">
         <div className="visit-setup-grid">
           <div className="app-field">
-            <label className="app-label">المدرسة المُزارة</label>
+            <label className="app-label">{t('pages.SupervisorVisitPage.المدرسة_المُزارة', 'المدرسة المُزارة')}</label>
             <AppSelect value={selectedSchoolId} onChange={(e) => setSelectedSchoolId(e.target.value)} className="app-select">
-              <option value="">-- اختر المدرسة --</option>
+              <option value="">{t('pages.SupervisorVisitPage.اختر_المدرسة', '-- اختر المدرسة --')}</option>
               {assignedSchools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </AppSelect>
           </div>
           <div className="app-field">
             <label className="app-label">{t('utils.reportDetailsHtml.المادة', 'المادة')}</label>
             <AppSelect value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="app-select">
-              <option value="">-- اختر المادة --</option>
+              <option value="">{t('pages.SupervisorVisitPage.اختر_المادة', '-- اختر المادة --')}</option>
               {curriculumList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </AppSelect>
           </div>
           <div className="app-field">
-            <label className="app-label">الدرس المدرج بالخطة</label>
+            <label className="app-label">{t('pages.SupervisorVisitPage.الدرس_المدرج_بالخطة', 'الدرس المدرج بالخطة')}</label>
             <AppSelect value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} className="app-select" disabled={!selectedSubjectId}>
-              <option value="">-- اختر الدرس --</option>
+              <option value="">{t('pages.SupervisorVisitPage.اختر_الدرس', '-- اختر الدرس --')}</option>
               {availableWeeks.map(w => <option key={w.week} value={w.week}>أسبوع {w.week}: {w.lesson || '-'}</option>)}
             </AppSelect>
           </div>
@@ -300,7 +300,7 @@ const SupervisorVisitPage = ({ user }) => {
           {/* Students Cross-Check */}
           <div className="surface-card visit-students-card">
             <div className="md-table-panel__head visit-students-card__head">
-              <h3 className="visit-students-card__title">سجل الطلاب والتقييم الفردي</h3>
+              <h3 className="visit-students-card__title">{t('pages.SupervisorVisitPage.سجل_الطلاب_والتقييم_الفردي', 'سجل الطلاب والتقييم الفردي')}</h3>
               <div className="visit-students-card__bulk">
                 <button
                   type="button"
@@ -329,10 +329,10 @@ const SupervisorVisitPage = ({ user }) => {
                 <table className="md-table">
                   <thead>
                     <tr>
-                      <th>تعديل الحالة</th>
-                      <th>اسم الطالب</th>
-                      <th className="visit-table__col-center">اختبار الطالب</th>
-                      <th>ملاحظة التقييم (اختياري)</th>
+                      <th>{t('pages.SupervisorVisitPage.تعديل_الحالة', 'تعديل الحالة')}</th>
+                      <th>{t('components.DailyPrepEditor.اسم_الطالب', 'اسم الطالب')}</th>
+                      <th className="visit-table__col-center">{t('pages.SupervisorVisitPage.اختبار_الطالب', 'اختبار الطالب')}</th>
+                      <th>{t('pages.SupervisorVisitPage.ملاحظة_التقييم_اختياري', 'ملاحظة التقييم (اختياري)')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -421,7 +421,7 @@ const SupervisorVisitPage = ({ user }) => {
                 className="visit-panel-card__field"
               />
 
-              <label className="app-label">الملاحظات والتوجيهات</label>
+              <label className="app-label">{t('pages.SupervisorVisitPage.الملاحظات_والتوجيهات', 'الملاحظات والتوجيهات')}</label>
               <textarea
                 value={generalNotes}
                 onChange={(e) => setGeneralNotes(e.target.value)}
@@ -452,7 +452,7 @@ const SupervisorVisitPage = ({ user }) => {
                   </button>
                 ) : (
                   <div>
-                    <p className="visit-gps-empty">لم يتم جلب موقع الجوال بعد.</p>
+                    <p className="visit-gps-empty">{t('pages.SupervisorVisitPage.لم_يتم_جلب_موقع_الجوال_بعد', 'لم يتم جلب موقع الجوال بعد.')}</p>
                     <BusyButton type="button" onClick={handleGetLocation} busy={locating} className="icon-btn visit-gps-capture-btn">
                       التقاط الـ GPS الآن
                     </BusyButton>
@@ -467,7 +467,7 @@ const SupervisorVisitPage = ({ user }) => {
                 <label className="visit-media-drop">
                   <input type="file" multiple accept="image/*,video/*" onChange={handleMediaPick} className="visit-media-drop__input" />
                   <Camera size={24} color="var(--text-secondary)" className="visit-media-drop__icon" />
-                  <p className="visit-media-drop__text">اضغط لالتقاط أو اختيار صور وفيديو</p>
+                  <p className="visit-media-drop__text">{t('pages.SupervisorVisitPage.اضغط_لالتقاط_أو_اختيار_صور_وفيديو', 'اضغط لالتقاط أو اختيار صور وفيديو')}</p>
                 </label>
                 {mediaFiles.length > 0 && (
                   <ul className="visit-media-list">

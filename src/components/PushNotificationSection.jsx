@@ -100,10 +100,7 @@ const PushNotificationSection = ({ user }) => {
       <section className="surface-card settings-push-card">
         <h2 className="settings-push-card__title">{title}</h2>
         <p className="settings-push-card__hint">
-          {t(
-            'components.PushNotificationSection.الإشعارات_محظورة',
-            'الإشعارات محظورة من إعدادات المتصفح. افتح إعدادات الموقع واسمح بالإشعارات ثم أعد تحميل الصفحة.'
-          )}
+          {t('components.PushNotificationSection.الإشعارات_محظورة', 'الإشعارات محظورة من إعدادات المتصفح. افتح إعدادات الموقع واسمح بالإشعارات ثم أعد تحميل الصفحة.')}
         </p>
       </section>
     );
@@ -113,10 +110,7 @@ const PushNotificationSection = ({ user }) => {
     <section className="surface-card settings-push-card">
       <h2 className="settings-push-card__title">{title}</h2>
       <p className="settings-push-card__hint">
-        {t(
-          'components.PushNotificationSection.اسمح_بالإشعارات',
-          'اسمح بالإشعارات لتصلك رسائل المحادثات والتنبيهات فوراً.'
-        )}
+        {t('components.PushNotificationSection.اسمح_بالإشعارات', 'اسمح بالإشعارات لتصلك رسائل المحادثات والتنبيهات فوراً.')}
       </p>
       <button
         type="button"

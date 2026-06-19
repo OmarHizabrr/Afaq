@@ -130,7 +130,7 @@ export default function CurriculumPrintPage() {
             <th scope="col" className="print-table__col-week">
               {t('utils.reportDetailsHtml.الأسبوع', 'الأسبوع')}
             </th>
-            <th scope="col">الدرس / الهدف التعليمي</th>
+            <th scope="col">{t('pages.CurriculumPrintPage.الدرس_الهدف_التعليمي', 'الدرس / الهدف التعليمي')}</th>
           </tr>
         </thead>
         <tbody>

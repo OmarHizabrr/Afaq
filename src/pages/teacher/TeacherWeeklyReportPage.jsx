@@ -158,7 +158,7 @@ const TeacherWeeklyReportPage = ({ user }) => {
 
       {schoolOptions.length > 1 && activeSchoolId && (
         <div className="surface-card teacher-weekly-school-card">
-          <label className="app-label">المدرسة المرتبطة بالتقرير</label>
+          <label className="app-label">{t('pages.TeacherWeeklyReportPage.المدرسة_المرتبطة_بالتقرير', 'المدرسة المرتبطة بالتقرير')}</label>
           <AppSelect
             className="app-select"
             value={activeSchoolId}

@@ -215,7 +215,7 @@ const AdminReportsPage = () => {
   };
 
   const handleDeleteReportRow = async (rpt) => {
-    if (!window.confirm('حذف هذا التقرير نهائياً؟ لا يمكن التراجع.')) return;
+    if (!window.confirm(t('pages.AdminReportsPage.حذف_هذا_التقرير_نهائياً', 'حذف هذا التقرير نهائياً؟ لا يمكن التراجع.'))) return;
     const docRef = deleteReportDocRef(rpt);
     if (!docRef) {
       setError(t('pages.AdminReportsPage.تعذر_تحديد_مسار_المستند_للحذف', 'تعذر تحديد مسار المستند للحذف.'));
@@ -244,7 +244,7 @@ const AdminReportsPage = () => {
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.reports) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info geo-page-alert no-print">
-          عرض محدود: التقارير الظاهرة مرتبطة بمدارسك/مناطقك أو بأنشطتك كمعلم أو مشرف.
+          {t('pages.AdminReportsPage.عرض_محدود_التقارير', 'عرض محدود: التقارير الظاهرة مرتبطة بمدارسك/مناطقك أو بأنشطتك كمعلم أو مشرف.')}
         </div>
       )}
 
@@ -261,28 +261,28 @@ const AdminReportsPage = () => {
           onClick={() => setActiveTab('daily')}
           className={`admin-reports-tabs__btn ${activeTab === 'daily' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <Calendar size={18} className="admin-reports-tabs__btn-icon" /> التحضير
+          <Calendar size={18} className="admin-reports-tabs__btn-icon" /> {t('config.appNavItems.التحضير', t('config.appNavItems.التحضير', 'التحضير'))}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('school')}
           className={`admin-reports-tabs__btn ${activeTab === 'school' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <FileText size={18} className="admin-reports-tabs__btn-icon" /> تقارير المدارس
+          <FileText size={18} className="admin-reports-tabs__btn-icon" /> {t('pages.AdminReportsPage.تقارير_المدارس', 'تقارير المدارس')}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('weekly')}
           className={`admin-reports-tabs__btn ${activeTab === 'weekly' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <ClipboardList size={18} className="admin-reports-tabs__btn-icon" /> التقارير الأسبوعية
+          <ClipboardList size={18} className="admin-reports-tabs__btn-icon" /> {t('pages.AdminReportsPage.التقارير_الأسبوعية', 'التقارير الأسبوعية')}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('visits')}
           className={`admin-reports-tabs__btn ${activeTab === 'visits' ? 'admin-reports-tabs__btn--active' : ''}`}
         >
-          <MapPin size={18} className="admin-reports-tabs__btn-icon" /> زيارات المشرفين
+          <MapPin size={18} className="admin-reports-tabs__btn-icon" /> {t('pages.AdminReportsPage.زيارات_المشرفين', 'زيارات المشرفين')}
         </button>
       </div>
 
@@ -312,7 +312,7 @@ const AdminReportsPage = () => {
       <div className="surface-card admin-reports-filters admin-reports-filters--dates no-print">
         <div className="admin-reports-filters__row--dates">
           <div className="admin-reports-preset-chips">
-            <span className="admin-reports-preset-chips__label">فترة جاهزة:</span>
+            <span className="admin-reports-preset-chips__label">{t('pages.AdminReportsPage.فترة_جاهزة', 'فترة جاهزة:')}</span>
             {PRESET_KEYS.map(({ key, label }) => (
               <button
                 key={key}
@@ -325,7 +325,7 @@ const AdminReportsPage = () => {
             ))}
           </div>
           <div className="admin-reports-filters__date-field">
-            <span className="app-label">من تاريخ</span>
+            <span className="app-label">{t('pages.AdminReportsPage.من_تاريخ', 'من تاريخ')}</span>
             <input
               type="date"
               className="app-input"
@@ -338,7 +338,7 @@ const AdminReportsPage = () => {
             />
           </div>
           <div className="admin-reports-filters__date-field">
-            <span className="app-label">إلى تاريخ</span>
+            <span className="app-label">{t('pages.AdminReportsPage.إلى_تاريخ', 'إلى تاريخ')}</span>
             <input
               type="date"
               className="app-input"
@@ -365,9 +365,9 @@ const AdminReportsPage = () => {
       ) : error ? (
         <div className="app-alert app-alert--error admin-reports-error">{error}</div>
       ) : reports.length === 0 ? (
-        <div className="empty-state empty-state--lg">لا توجد تقارير في هذا القسم بعد.</div>
+        <div className="empty-state empty-state--lg">{t('pages.AdminReportsPage.لا_توجد_تقارير_في_هذا_القسم_بعد', 'لا توجد تقارير في هذا القسم بعد.')}</div>
       ) : filteredReports.length === 0 ? (
-        <div className="empty-state empty-state--lg">لا توجد تقارير مطابقة للفترة أو الفلاتر الحالية.</div>
+        <div className="empty-state empty-state--lg">{t('pages.AdminReportsPage.لا_توجد_تقارير_مطابقة_للفترة_أو_الفلاتر_الحالية', 'لا توجد تقارير مطابقة للفترة أو الفلاتر الحالية.')}</div>
       ) : (
         <div className="admin-reports-list">
           {filteredReports.map((rpt) => {
@@ -432,15 +432,15 @@ const AdminReportsPage = () => {
                   </div>
                 )}
                 <div className="admin-reports-list__meta-block">
-                  <p className="admin-reports-list__meta-label">ملخص النشاط</p>
+                  <p className="admin-reports-list__meta-label">{t('pages.AdminReportsPage.ملخص_النشاط', 'ملخص النشاط')}</p>
                   <p className="admin-reports-list__summary">
                     {activeTab === 'daily'
-                      ? `${prepPeriodLabel(rpt.prepPeriod)} • ${rpt.attendanceSummary || `حضور ${rpt.totalPresent ?? '—'}/${rpt.totalStudents ?? '—'}`}${formatDailyLogSubjects(rpt) ? ` • ${formatDailyLogSubjects(rpt)}` : rpt.lessonName ? ` • ${rpt.lessonName}` : ''}${rpt.prepNotes ? ' • ملاحظات' : ''}`
+                      ? `${prepPeriodLabel(rpt.prepPeriod)} • ${rpt.attendanceSummary || `${t('pages.AdminReportsPage.حضور', 'حضور')} ${rpt.totalPresent ?? '—'}/${rpt.totalStudents ?? '—'}`}${formatDailyLogSubjects(rpt) ? ` • ${formatDailyLogSubjects(rpt)}` : rpt.lessonName ? ` • ${rpt.lessonName}` : ''}${rpt.prepNotes ? ` • ${t('pages.AdminReportsPage.ملاحظات', 'ملاحظات')}` : ''}`
                       : activeTab === 'weekly'
                         ? t('pages.AdminReportsPage.تقرير_أعمال_أسبوعي', 'تقرير أعمال أسبوعي')
                         : activeTab === 'school'
-                          ? `${rpt.reportTitle || 'تقرير المدرسة'} • ${schoolReportSummaryLine(rpt)}`
-                          : `تقييم الأداء: ${formatVisitRatingLabel(rpt.teacherRating)}`}
+                          ? `${rpt.reportTitle || t('pages.AdminReportsPage.تقرير_المدرسة', 'تقرير المدرسة')} • ${schoolReportSummaryLine(rpt)}`
+                          : `${t('pages.AdminReportsPage.تقييم_الأداء', 'تقييم الأداء:')} ${formatVisitRatingLabel(rpt.teacherRating)}`}
                   </p>
                 </div>
               </div>
@@ -454,7 +454,7 @@ const AdminReportsPage = () => {
                       if (schoolPath) navigate(schoolPath);
                       else navigate(`/reports/${rpt.id}`);
                     }}
-                    title="عرض التفاصيل الكاملة"
+                    title={t('pages.AdminReportsPage.عرض_التفاصيل_الكاملة', 'عرض التفاصيل الكاملة')}
                     className="icon-btn admin-reports-list__view-btn"
                   >
                     <Eye size={22} />
@@ -468,7 +468,7 @@ const AdminReportsPage = () => {
                       e.stopPropagation();
                       handleDeleteReportRow(rpt);
                     }}
-                    title="حذف التقرير"
+                    title={t('pages.AdminReportsPage.حذف_التقرير', 'حذف التقرير')}
                   >
                     <Trash2 size={20} />
                   </button>

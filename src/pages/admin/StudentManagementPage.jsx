@@ -356,7 +356,7 @@ const StudentManagementPage = () => {
   const handleExplorationSaveStudent = async () => {
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const displayName = expForm.deriveDisplayName('');
@@ -473,7 +473,7 @@ const StudentManagementPage = () => {
             onClick={() => setIsExploringAdding(true)}
           >
             <Compass size={16} />
-            <span className="portal-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="portal-toolbar__long">{t('pages.CurriculumPage.إضافة_من_الاستكشاف', 'إضافة من الاستكشاف')}</span>
             <span className="portal-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
@@ -481,7 +481,7 @@ const StudentManagementPage = () => {
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.students_management) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info student-management-alert">
-          عرض محدود: الطلاب والمدارس والمناطق الظاهرة مرتبطة بمجموعاتك فقط.
+          {t('pages.StudentManagementPage.عرض_محدود_الطلاب', 'عرض محدود: الطلاب والمدارس والمناطق الظاهرة مرتبطة بمجموعاتك فقط.')}
         </div>
       )}
       {error && <div className="app-alert app-alert--error student-management-alert">{error}</div>}
@@ -499,11 +499,11 @@ const StudentManagementPage = () => {
             />
           </div>
           <AppSelect searchable className="student-management-filters__select" value={schoolFilter} onChange={(e) => setSchoolFilter(e.target.value)}>
-            <option value="">كل المدارس</option>
+            <option value="">{t('pages.StudentManagementPage.كل_المدارس', 'كل المدارس')}</option>
             {schoolOptions.map((s) => <option key={s} value={s}>{s}</option>)}
           </AppSelect>
           <AppSelect searchable className="student-management-filters__select" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)}>
-            <option value="">كل المناطق</option>
+            <option value="">{t('pages.StudentManagementPage.كل_المناطق', 'كل المناطق')}</option>
             {regionOptions.map((r) => <option key={r} value={r}>{r}</option>)}
           </AppSelect>
         </div>
@@ -512,7 +512,7 @@ const StudentManagementPage = () => {
       {loading ? (
         <div className="loading-spinner page-loading"></div>
       ) : filtered.length === 0 ? (
-        <div className="empty-state">لا يوجد طلاب مطابقون للفلاتر الحالية.</div>
+        <div className="empty-state">{t('pages.StudentManagementPage.لا_يوجد_طلاب_مطابقون_للفلاتر_الحالية', 'لا يوجد طلاب مطابقون للفلاتر الحالية.')}</div>
       ) : (
         <>
         <div className="surface-card student-management-table-wrap student-management-desktop-only">
@@ -521,10 +521,10 @@ const StudentManagementPage = () => {
               <thead>
                 <tr>
                   <th>{t('utils.schoolReportExport.الطالب', 'الطالب')}</th>
-                  <th>الارتباطات</th>
-                  <th>عدد التحركات</th>
-                  <th>آخر حركة</th>
-                  <th className="student-management-table__col-center">تفاصيل</th>
+                  <th>{t('pages.StudentDetailsPage.الارتباطات', 'الارتباطات')}</th>
+                  <th>{t('pages.StudentManagementPage.عدد_التحركات', 'عدد التحركات')}</th>
+                  <th>{t('pages.StudentManagementPage.آخر_حركة', 'آخر حركة')}</th>
+                  <th className="student-management-table__col-center">{t('pages.StudentManagementPage.تفاصيل', 'تفاصيل')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -610,7 +610,7 @@ const StudentManagementPage = () => {
             <input className="app-input" value={formName} onChange={(e) => setFormName(e.target.value)} />
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">البريد الإلكتروني (اختياري)</label>
+            <label className="app-label">{t('pages.StudentManagementPage.البريد_الإلكتروني_اختياري', 'البريد الإلكتروني (اختياري)')}</label>
             <input
               className="app-input"
               type="email"
@@ -656,7 +656,7 @@ const StudentManagementPage = () => {
             </div>
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">رابط صورة شخصية (اختياري)</label>
+            <label className="app-label">{t('pages.StudentManagementPage.رابط_صورة_شخصية_اختياري', 'رابط صورة شخصية (اختياري)')}</label>
             <input
               className="app-input"
               type="url"
@@ -672,11 +672,11 @@ const StudentManagementPage = () => {
                 checked={formAccountDisabled}
                 onChange={(e) => setFormAccountDisabled(e.target.checked)}
               />
-              <span>حساب معطّل (لا يستطيع تسجيل الدخول)</span>
+              <span>{t('pages.StudentManagementPage.حساب_معطّل_لا_يستطيع_تسجيل_الدخول', 'حساب معطّل (لا يستطيع تسجيل الدخول)')}</span>
             </label>
           </div>
           <div className="app-field app-field--grow">
-            <label className="app-label">المدارس (قائمة الطلاب المسجلين — يمكن أكثر من مدرسة)</label>
+            <label className="app-label">{t('pages.StudentManagementPage.المدارس_قائمة_الطلاب_المسجلين_يمكن_أكثر_من_مدرسة', 'المدارس (قائمة الطلاب المسجلين — يمكن أكثر من مدرسة)')}</label>
             <p className="app-form-hint">
               الافتراضي عند التعديل: مدارس الارتباط الحالية. يجب إبقاء مدرسة واحدة على الأقل إن وُجدت مدارس محددة.
             </p>
@@ -696,7 +696,7 @@ const StudentManagementPage = () => {
           <div className="modal-footer-actions modal-footer-actions--spaced">
             <button type="button" className="google-btn" onClick={() => { setIsAddOpen(false); resetForm(); }}>{t('components.ConfirmDialog.إلغاء', 'إلغاء')}</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleSaveStudent} busy={saving}>
-              حفظ
+              {t('components.MessengerPanel.حفظ', 'حفظ')}
             </BusyButton>
           </div>
         </div>
@@ -723,7 +723,7 @@ const StudentManagementPage = () => {
           <div className="modal-footer-actions modal-footer-actions--spaced">
             <button type="button" className="google-btn" onClick={() => setIsExploringAdding(false)}>{t('components.ConfirmDialog.إلغاء', 'إلغاء')}</button>
             <BusyButton type="button" className="google-btn google-btn--filled" onClick={handleExplorationSaveStudent} busy={expSaving}>
-              حفظ
+              {t('components.MessengerPanel.حفظ', 'حفظ')}
             </BusyButton>
           </div>
         </div>

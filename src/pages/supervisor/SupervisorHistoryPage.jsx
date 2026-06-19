@@ -93,7 +93,7 @@ const SupervisorHistoryPage = ({ user }) => {
                   }}
                 >
                   <MapPin size={16} />
-                  <span>موقع الزيارة على الخريطة</span>
+                  <span>{t('pages.SupervisorHistoryPage.موقع_الزيارة_على_الخريطة', 'موقع الزيارة على الخريطة')}</span>
                 </button>
               )}
 

@@ -81,7 +81,7 @@ const CurriculumLessonPicker = ({ curriculumList = [], entries = [], onChange, r
               }}
               className="curriculum-picker__add-select"
             >
-              <option value="">+ إضافة مادة من المنهج</option>
+              <option value="">{t('components.CurriculumLessonPicker.إضافة_مادة_من_المنهج', '+ إضافة مادة من المنهج')}</option>
               {availableSubjects.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -120,7 +120,7 @@ const CurriculumLessonPicker = ({ curriculumList = [], entries = [], onChange, r
       )}
 
       {entries.length === 0 ? (
-        <p className="curriculum-picker__empty">اختر مادة واحدة أو أكثر من المناهج لتحديد الدروس الأسبوعية.</p>
+        <p className="curriculum-picker__empty">{t('components.CurriculumLessonPicker.اختر_مادة_واحدة_أو_أكثر_من_المناهج_لتحديد_الدروس_الأسبو', 'اختر مادة واحدة أو أكثر من المناهج لتحديد الدروس الأسبوعية.')}</p>
       ) : (
         entries.map((entry) => {
           const subj = curriculumList.find((c) => c.id === entry.subjectId);

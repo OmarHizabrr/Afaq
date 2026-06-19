@@ -54,7 +54,7 @@ const VillageReportDisplay = ({ report, villageName = '' }) => {
           </div>
         )}
       </div>
-      {(v.hasInstitutionProjects === yesLabel || v.hasInstitutionProjects === 'نعم') && v.institutionProjectsStatus && (
+      {(v.hasInstitutionProjects === yesLabel || v.hasInstitutionProjects === t('components.ExplorationDynamicFieldBlock.نعم', 'نعم')) && v.institutionProjectsStatus && (
         <div className="village-report-display__notes">
           <h4 className="village-report-display__label">{t('utils.reportDetailsHtml.حالة_المشاريع', 'حالة المشاريع')}</h4>
           <p>{v.institutionProjectsStatus}</p>

@@ -172,7 +172,7 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
       </div>
       {String(value || '').startsWith('http') && (
         <p className="exploration-signature-saved">
-          رابط محفوظ: <a href={value} target="_blank" rel="noreferrer">فتح</a>
+          رابط محفوظ: <a href={value} target="_blank" rel="noreferrer">{t('components.ExplorationDynamicFieldBlock.فتح', 'فتح')}</a>
         </p>
       )}
     </div>
@@ -363,7 +363,7 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
             <>
               {commonLabel}
               <AppSelect searchable className={variant === 'sheet' ? 'exploration-field-sheet__select' : ''} value={v ?? ''} onChange={(e) => onChange(f.id, e.target.value)}>
-                <option value="">-- اختر --</option>
+                <option value="">{t('components.ExplorationDynamicFieldBlock.اختر', '-- اختر --')}</option>
                 {pairs.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -499,10 +499,10 @@ export default function ExplorationDynamicFieldBlock({ fields, values, onChange,
                 }}
               />
               {!storageUserId && (
-                <p className="exploration-field-hint exploration-field-hint--danger">تسجيل الدخول مطلوب لرفع الملفات.</p>
+                <p className="exploration-field-hint exploration-field-hint--danger">{t('components.ExplorationDynamicFieldBlock.تسجيل_الدخول_مطلوب_لرفع_الملفات', 'تسجيل الدخول مطلوب لرفع الملفات.')}</p>
               )}
               {uploadingFieldId === f.id && (
-                <p className="exploration-field-hint exploration-field-hint--upload">جاري الرفع إلى Firebase Storage…</p>
+                <p className="exploration-field-hint exploration-field-hint--upload">{t('components.ExplorationDynamicFieldBlock.جاري_الرفع_إلى_Firebase_Storage', 'جاري الرفع إلى Firebase Storage…')}</p>
               )}
               {isHttp && (
                 <div className={`exploration-field-media ${variant === 'sheet' ? 'exploration-field-sheet__media' : 'exploration-form-grid__full'}`}>

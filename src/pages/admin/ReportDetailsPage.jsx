@@ -203,7 +203,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         });
       } catch (err) {
         console.error(err);
-        if (!cancelled) setAdminError('تعذر تحميل بيانات تعديل الزيارة.');
+        if (!cancelled) setAdminError(t('pages.ReportDetailsPage.تعذر_تحميل_بيانات_تعديل_الزيارة', 'تعذر تحميل بيانات تعديل الزيارة.'));
       } finally {
         if (!cancelled) setVisitEditBootLoading(false);
       }
@@ -258,7 +258,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         editSchoolInitRef.current = schoolId;
       } catch (err) {
         console.error(err);
-        if (!cancelled) setAdminError('تعذر تحميل بيانات التعديل.');
+        if (!cancelled) setAdminError(t('pages.ReportDetailsPage.تعذر_تحميل_بيانات_التعديل', 'تعذر تحميل بيانات التعديل.'));
       } finally {
         if (!cancelled) setEditBootLoading(false);
       }
@@ -515,8 +515,8 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               onClick={() => setPreviewOpen(true)}
             >
               <Printer size={16} aria-hidden />
-              <span className="portal-toolbar__long">معاينة</span>
-              <span className="portal-toolbar__short">معاينة</span>
+              <span className="portal-toolbar__long">{t('pages.ReportDetailsPage.معاينة', 'معاينة')}</span>
+              <span className="portal-toolbar__short">{t('pages.ReportDetailsPage.معاينة', 'معاينة')}</span>
             </button>
             <BusyButton
               type="button"
@@ -549,7 +549,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                   <BusyButton type="button" className="google-btn google-btn--toolbar" busy={saving} onClick={beginEdit}>
                     <span className="btn-inner btn-inner--sm">
                       <Pencil size={18} aria-hidden />
-                      تعديل
+                      {t('components.ExplorationListCard.تعديل', 'تعديل')}
                     </span>
                   </BusyButton>
                 )}
@@ -562,7 +562,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                   >
                     <span className="btn-inner btn-inner--sm">
                       <Trash2 size={18} aria-hidden />
-                      حذف
+                      {t('components.ExplorationListCard.حذف', 'حذف')}
                     </span>
                   </BusyButton>
                 )}
@@ -577,13 +577,13 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 >
                   <span className="btn-inner btn-inner--sm">
                     <Save size={18} aria-hidden />
-                    حفظ
+                    {t('components.MessengerPanel.حفظ', 'حفظ')}
                   </span>
                 </BusyButton>
                 <BusyButton type="button" className="google-btn google-btn--toolbar" busy={saving} onClick={cancelEdit}>
                   <span className="btn-inner btn-inner--sm">
                     <X size={18} aria-hidden />
-                    إلغاء
+                    {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
                   </span>
                 </BusyButton>
               </>
@@ -608,7 +608,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               <div className="report-summary-field__row">
                 <User size={18} color="var(--accent-color)" aria-hidden />
                 <strong className="report-summary-field__value">
-                  {report.supervisorName || report.teacherName || 'غير محدد'}
+                  {report.supervisorName || report.teacherName || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد')}
                 </strong>
               </div>
             </div>
@@ -639,7 +639,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             </div>
             <div className="report-summary-field">
               <p className="report-summary-field__label">
-                نوع التقرير
+                {t('pages.SchoolReportPage.نوع_التقرير', 'نوع التقرير')}
               </p>
               <div className="report-summary-field__row report-summary-field__row--accent">
                 <Info size={18} aria-hidden />
@@ -651,7 +651,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
         {editMode && isAdmin && report.type === 'visit' && (
           <div className="report-visit-edit">
-            <h3 className="report-daily-edit__title">تعديل الزيارة الميدانية</h3>
+            <h3 className="report-daily-edit__title">{t('pages.ReportDetailsPage.تعديل_الزيارة_الميدانية', 'تعديل الزيارة الميدانية')}</h3>
             {visitEditBootLoading || !visitEdit ? (
               <div className="loading-spinner report-edit-loading" />
             ) : (
@@ -668,7 +668,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
         {editMode && isAdmin && report.type === 'daily' && (
           <div className="report-daily-edit">
-            <h3 className="report-daily-edit__title">تعديل سجل التحضير</h3>
+            <h3 className="report-daily-edit__title">{t('pages.ReportDetailsPage.تعديل_سجل_التحضير', 'تعديل سجل التحضير')}</h3>
             {editBootLoading || !dailyEdit ? (
               <div className="loading-spinner report-edit-loading" />
             ) : (
@@ -698,7 +698,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
               />
             </label>
             <label className="app-field app-field--grow">
-              <span className="app-label">الأسبوع / الوصف</span>
+              <span className="app-label">{t('pages.ReportDetailsPage.الأسبوع_الوصف', 'الأسبوع / الوصف')}</span>
               <input
                 type="text"
                 value={weeklyEdit.week}
@@ -747,7 +747,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 <FileText size={20} color="var(--accent-color)" aria-hidden /> ملاحظات وتوجيهات عن الزيارة المدرسية
               </h3>
               <div className="report-notes-box">
-                {report.generalNotes || 'لا توجد ملاحظات عامة مسجلة لهذه الزيارة.'}
+                {report.generalNotes || t('pages.ReportDetailsPage.لا_توجد_ملاحظات_عامة_مسجلة_لهذه_الزيارة', 'لا توجد ملاحظات عامة مسجلة لهذه الزيارة.')}
               </div>
             </div>
 
@@ -757,7 +757,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
             {report.studentsTracking && (
               <div>
-                <h3 className="report-section-title">تتبع أداء الطلاب أثناء الزيارة</h3>
+                <h3 className="report-section-title">{t('pages.ReportDetailsPage.تتبع_أداء_الطلاب_أثناء_الزيارة', 'تتبع أداء الطلاب أثناء الزيارة')}</h3>
                 <div className="report-visit-students-grid">
                   {report.studentsTracking.map((st, i) => (
                     <div
@@ -765,9 +765,9 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                       className="activity-list-item activity-list-item--split report-visit-student-card"
                     >
                       <div>
-                        <h4 className="activity-list-item__title">{st.name || 'طالب مجهول'}</h4>
+                        <h4 className="activity-list-item__title">{st.name || t('pages.ReportDetailsPage.طالب_مجهول', 'طالب مجهول')}</h4>
                         <p className="activity-list-item__meta">
-                          {st.note || 'لا توجد ملاحظات'}
+                          {st.note || t('pages.ReportDetailsPage.لا_توجد_ملاحظات', 'لا توجد ملاحظات')}
                         </p>
                       </div>
                       <div className="report-visit-student-card__stats">
@@ -796,10 +796,10 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             {(formatDailyLogSubjects(report) || report.periodStart) && (
               <p className="report-section-lead">
                 {formatDailyLogSubjects(report) && (
-                  <>المواد: <strong>{formatDailyLogSubjects(report)}</strong></>
+                  <>{t('pages.ReportDetailsPage.المواد', 'المواد:')} <strong>{formatDailyLogSubjects(report)}</strong></>
                 )}
                 {report.periodStart && report.periodEnd && report.periodStart !== report.periodEnd && (
-                  <> • الفترة: <strong>{report.periodStart} — {report.periodEnd}</strong></>
+                  <> {t('pages.ReportDetailsPage.الفترة', '• الفترة:')} <strong>{report.periodStart} — {report.periodEnd}</strong></>
                 )}
               </p>
             )}
@@ -810,7 +810,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             )}
             {report.prepNotes && (
               <div className="app-alert app-alert--info report-daily-prep-alert">
-                <strong>ملاحظات التحضير:</strong> {report.prepNotes}
+                <strong>{t('pages.ReportDetailsPage.ملاحظات_التحضير', 'ملاحظات التحضير:')}</strong> {report.prepNotes}
               </div>
             )}
             {Array.isArray(report.curriculumProgressSummary) && report.curriculumProgressSummary.length > 0 && (
@@ -827,11 +827,11 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                 <table className="md-table">
                   <thead>
                     <tr>
-                      <th>اسم الطالب</th>
+                      <th>{t('components.DailyPrepEditor.اسم_الطالب', 'اسم الطالب')}</th>
                       <th>{t('utils.schoolReportExport.الحالة', 'الحالة')}</th>
-                      <th>الحفظ</th>
-                      <th>المراجعة</th>
-                      <th>ملاحظة</th>
+                      <th>{t('pages.ReportDetailsPage.الحفظ', 'الحفظ')}</th>
+                      <th>{t('pages.ReportDetailsPage.المراجعة', 'المراجعة')}</th>
+                      <th>{t('components.DailyPrepStudentCard.ملاحظة', 'ملاحظة')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -874,7 +874,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
 
         {report.type === 'weekly' && !editMode && (
           <div>
-            <h3 className="report-section-title">أنشطة الأسبوع</h3>
+            <h3 className="report-section-title">{t('pages.ReportDetailsPage.أنشطة_الأسبوع', 'أنشطة الأسبوع')}</h3>
             {report.reportData &&
               Object.entries(report.reportData).map(([key, val]) => (
                 <div key={key} className="report-weekly-activity-card">
@@ -883,7 +883,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
                     {renderWeeklyStatus(val?.isActive)}
                   </div>
                   <p className="report-weekly-activity-card__body">
-                    {val?.details || 'لا توجد ملاحظات إضافية'}
+                    {val?.details || t('pages.ReportDetailsPage.لا_توجد_ملاحظات_إضافية', 'لا توجد ملاحظات إضافية')}
                   </p>
                 </div>
               ))}
@@ -901,7 +901,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
         <div className="report-details-mobile-save-bar">
           <BusyButton type="button" className="google-btn report-details-mobile-save-bar__btn" busy={saving} onClick={cancelEdit}>
             <X size={18} aria-hidden />
-            إلغاء
+            {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
           </BusyButton>
           <BusyButton
             type="button"
@@ -910,7 +910,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
             onClick={handleAdminSave}
           >
             <Save size={18} aria-hidden />
-            حفظ
+            {t('components.MessengerPanel.حفظ', 'حفظ')}
           </BusyButton>
         </div>
       ) : null}

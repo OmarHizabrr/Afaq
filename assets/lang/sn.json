@@ -1,19 +1,37 @@
 {
   "components": {
+    "AppSelect": {
+      "ابحث": "Tsvaga...",
+      "لا_توجد_نتائج": "Hapana mhinduro"
+    },
     "BottomTabBar": {
       "التنقل_السريع": "Kutenderera Nokukurumidza",
       "المزيد_من_القوائم": "Mamwe Menyu",
       "المزيد": "Zvimwe"
     },
+    "ConfirmDialog": {
+      "تأكيد_الإجراء": "Simbisa chiito",
+      "تأكيد": "Simbisa",
+      "إلغاء": "Rambidza"
+    },
     "CurriculumLessonPicker": {
+      "إضافة_مادة_من_المنهج": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "لم_يُحدد": "Haisina kusarudzwa",
+      "اختر_مادة_واحدة_أو_أكثر_من_المناهج_لتحديد_الدروس_الأسبو": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إزالة_المادة": "Bvisa Chidzidzo"
     },
     "DailyPrepEditor": {
       "اختر_المدرسة": "Sarudza Chikoro",
       "المدرسة": "Chikoro",
+      "لا_توجد_مدارس_متاحة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اختيار_المدرسة": "Sarudza Chikoro",
+      "نوع_الفترة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "نوع_فترة_التحضير": "Mhando yenguva yekugadzirira",
+      "الفترة_المحسوبة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_مدرسة_لعرض_سجل_الحضور": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_يوجد_طلاب_في_هذه_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حالة_الحضور": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_الطالب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مثال_صفحة_10": "Muenzaniso: Peji 10",
       "مثال_جزء_عم": "Muenzaniso: Juz' Amma",
       "ملاحظة_على_الطالب": "Zvinyorwa pamusoro pemudzidzi...",
@@ -24,23 +42,43 @@
       "مقدار_المراجعة": "Huwandu hwekuongorora",
       "ملاحظة": "Zvinyorwa"
     },
+    "EvalSelectWithOther": {
+      "اكتب_التقييم_أو_الملاحظة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر": "— Sarudza —"
+    },
     "ExplorationBadge": {
       "نموذج_الاستكشاف": "Fomu yekutsvagisisa",
       "عرض_حقول_نموذج_الاستكشاف": "Ona minda yefomu yekutsvagisisa"
     },
     "ExplorationDataModal": {
+      "الحقول_التالية_مطلوبة_أو_غير_صالحة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "،": ", ",
       "تعذر_حفظ_التعديلات": "Kuchanganisa zvisarudzwa kwakundikana.",
       "بيانات_نموذج_الاستكشاف": "Dhata yefomu yekutsvagisisa",
-      "حقول_نموذج_الاستكشاف": "Minda yefomu yekutsvagisisa",
-      "،": ", "
+      "حقول_نموذج_الاستكشاف": "Minda yefomu yekutsvagisisa"
+    },
+    "InstallAppBanner": {
+      "إغلاق": "Vhara",
+      "تثبيت_التطبيق": "Isa Chirongwa",
+      "ثبّت_تطبيق_آفاق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "وصول_أسرع_من_سطح_المكتب_أو_الهاتف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "ExplorationDataView": {
+      "جاري_تحميل_بنية_النموذج": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "ExplorationDynamicFieldBlock": {
       "غير_محدد": "Haisina kutsanangurwa",
       "نعم": "Hongu",
       "لا": "Kwete",
+      "فتح": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تسجيل_الدخول_مطلوب_لرفع_الملفات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "جاري_الرفع_إلى_Firebase_Storage": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "وسم1،_وسم2": "chiziviso1, chiziviso2"
     },
     "ExplorationFormSection": {
+      "حقول_النموذج": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_أنواع_متاحة_لهذه_الصفحة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "لا_توجد_أنواع_استكشاف_معرَّفة_أضف_نوعاً_من_أنواع_الاستكشاف_ق": "Hapana mhando dzekutsvagisisa dzakasimudzwa. Wedzera mhando kubva ku'Mhando dzekutsvagisisa' usati washandisa fomu iyi.",
       "نوع_الاستكشاف": "Mhando yekutsvagisisa"
     },
@@ -56,16 +94,32 @@
       "إلغاء_التحديد_جميع_الصفحات": "Bvisa Kusarudzwa — Mapeji Ese"
     },
     "ExplorationTypePreviewModal": {
-      "النموذج_الافتراضي_الكامل": "Fomu Yese Yemuzvinhu"
+      "معاينة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نوع_استكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "النموذج_الافتراضي_الكامل": "Fomu Yese Yemuzvinhu",
+      "حقل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مطلوب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مخفي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
-    "InstallAppBanner": {
-      "تثبيت_التطبيق": "Isa Chirongwa",
-      "إغلاق": "Vhara"
+    "InstallAppSection": {
+      "التطبيق_مثبّت": "App yaiswa",
+      "تستخدم_آفاق_كتطبيق_مستقل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تثبيت_التطبيق": "Isa app",
+      "ثبّت_آفاق_على_جهازك": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "على_iPhone_iPad": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اضغط_زر_المشاركة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_إضافة_إلى_الشاشة_الرئيسية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اضغط_إضافة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تثبيت_التطبيق_الآن": "Isa app izvozvi",
+      "افتح_الموقع_من_Chrome": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "LazyReportPrintPreviewModal": {
+      "جاري_تحميل_المعاينة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "MapLocationOpen": {
+      "الموقع_الجغرافي": "Nzvimbo yepasirose",
       "لم_يتم_تسجيل_إحداثيات_GPS": "Nzvimbo yeGPS haina kunyorwa",
-      "فتح_في_خرائط_Google": "Vhura muGoogle Maps",
-      "الموقع_الجغرافي": "Nzvimbo yepasirose"
+      "فتح_في_خرائط_Google": "Vhura muGoogle Maps"
     },
     "MessengerPanel": {
       "مدير_نظام": "Mutariri weSisitimu",
@@ -80,40 +134,58 @@
       "أنا": "Ini",
       "ابدأ_المحادثة": "Tanga hurukuro…",
       "رسالة": "Meseji",
-      "حفظ": "Chengetedza",
+      "المحادثات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "محادثة_جديدة": "Hurukuro Itsva",
+      "بحث_في_المحادثات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_نتائج_للبحث": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_محادثات_بعد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رسالة_جديدة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مرحباً_بك_في_المحادثات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_محادثة_من_القائمة_أو_ابدأ_محادثة_جديدة_للتواصل_مع_": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "العودة_للقائمة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أعضاء": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "متصل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_رسائل_بعد_اكتب_أول_رسالة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حفظ": "Chengetedza",
+      "تم_التعديل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "رد": "Pindura",
+      "الانتقال_لآخر_الرسائل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إلغاء_الرد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اكتب_رسالة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "جاري_الإرسال": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إرسال": "Tumira"
     },
     "PortalQuickActions": {
       "اختصارات_سريعة": "Nzira Dzokukurumidza"
     },
     "PrintDocumentShell": {
+      "رجوع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "طباعة_حفظ_pdf": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "معاينة_قبل_الطباعة": "Tarisa Usati Waprinda",
-      "رجوع": "رجوع",
-      "طباعة_حفظ_pdf": "طباعة / حفظ PDF",
-      "بعد_إغلاق_الطباعة": "بعد إغلاق نافذة الطباعة تبقى هذه الصفحة للمراجعة. يمكنك الطباعة مجدداً عبر الزر أعلاه أو اختصار",
-      "أو": "(أو",
-      "على_ماك": "على ماك).",
-      "منصة_آفاق_التعليمية": "منصة آفاق التعليمية",
-      "آفاق_وثيقة_رسمية": "آفاق — وثيقة رسمية"
+      "بعد_إغلاق_الطباعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أو": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "على_ماك": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "منصة_آفاق_التعليمية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "آفاق_وثيقة_رسمية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "PushNotificationBanner": {
       "تفعيل_الإشعارات": "Bvumidza Zvirevo",
+      "فعّل_الإشعارات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لتصلك_رسائل_المحادثات_والتنبيهات_فوراً_حتى_عند_إغلاق_ال": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تفعيل": "Bvumidza",
       "لاحقاً": "Gare gare"
     },
     "PushNotificationSection": {
+      "إشعارات_الجهاز": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المتصفح_لا_يدعم_الإشعارات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "الإشعارات_مفعّلة_ومتصلة_بالخادم": "Zvirevo zvabvumidzwa uye zvakabatana neseva",
       "الإشعارات_مسموحة_جاري_الربط": "Zvirevo zvabvumidzwa — kuri kubatana…",
       "إشعارات_المتصفح_مفعّلة": "Zvirevo zvebhurauzha zvabvumidzwa",
+      "لإشعارات_الخلفية_أضف_vapid": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إعادة_ربط_الجهاز": "Batanidza Mudziyo Zvakare",
-      "إشعارات_الجهاز": "إشعارات الجهاز",
-      "المتصفح_لا_يدعم_الإشعارات": "المتصفح الحالي لا يدعم إشعارات النظام.",
-      "لإشعارات_الخلفية_أضف_vapid": "لإشعارات الخلفية (عند إغلاق التطبيق) أضف مفتاح VAPID في إعدادات الخادم.",
-      "الإشعارات_محظورة": "الإشعارات محظورة من إعدادات المتصفح. افتح إعدادات الموقع واسمح بالإشعارات ثم أعد تحميل الصفحة.",
-      "اسمح_بالإشعارات": "اسمح بالإشعارات لتصلك رسائل المحادثات والتنبيهات فوراً.",
-      "تفعيل_الإشعارات": "تفعيل الإشعارات"
+      "الإشعارات_محظورة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسمح_بالإشعارات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تفعيل_الإشعارات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "RecipientUserCard": {
       "تحديد": "Sarudza",
@@ -121,24 +193,41 @@
       "عرض_الملف_الشخصي": "Ona Chinyorwa Chako",
       "غير_متاح": "Haikuwanikwa"
     },
+    "ReportDailyRecordCard": {
+      "الحفظ": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المراجعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملاحظة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "ReportPrintPreviewModal": {
+      "معاينة_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تحميل_pdf": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تحميل_excel": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "طباعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "ReportTextList": {
+      "اكتب_النص_هنا": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة": "Wedzera",
+      "لم_تُضف_عناصر_بعد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حذف": "Delete"
+    },
     "StarRatingInput": {
       "تقييم_بالنجوم": "Kuyera neNyeredzi"
     },
     "StudentManagementStudentCard": {
       "بدون_اسم": "Pasina Zita",
       "بدون_بريد": "Pasina Imero",
+      "الارتباطات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "غير_مرتبط_بأي_مجموعة": "Haina kubatana neboka ripi zvaro",
+      "التحركات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "آخر_حركة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "لا_يوجد": "Hapana",
-      "الارتباطات": "الارتباطات",
-      "التحركات": "التحركات",
-      "آخر_حركة": "آخر حركة",
       "الملف": "Profile"
     },
     "StudentResultCard": {
-      "تم_الاختبار": "Akaedzwa",
-      "لم_يتم": "Kusati kwaitwa",
       "حاضر": "Aripo",
-      "غائب": "Asipo"
+      "غائب": "Asipo",
+      "تم_الاختبار": "Akaedzwa",
+      "لم_يتم": "Kusati kwaitwa"
     },
     "SupervisorVisitStudentCard": {
       "تعديل_لغائب": "Gadzirisa wekusipo",
@@ -147,32 +236,37 @@
       "غائب_اضغط_للحضور": "Kusipo — baya kuzivisa kuvapo",
       "اختُبر": "Akaedzwa",
       "اختبار": "Bvunzo",
-      "ملاحظات_قراءته": "Zvinyorwa zvekuverenga kwake...",
-      "ملاحظة_التقييم": "ملاحظة التقييم"
+      "ملاحظة_التقييم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملاحظات_قراءته": "Zvinyorwa zvekuverenga kwake..."
+    },
+    "TeacherStudentCard": {
+      "السن": "Zera",
+      "الملف": "Profile"
     },
     "UserMenuDropdown": {
       "حسابي": "Akaunzi Yangu",
-      "الإشعارات_والمحادثات": "الإشعارات والمحادثات",
-      "تفعيل_تنبيهات_المتصفح": "تفعيل تنبيهات المتصفح"
+      "الإشعارات_والمحادثات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تفعيل_تنبيهات_المتصفح": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "VillageDefaultSchoolPanel": {
+      "المدرسة_الافتراضية_للتقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الافتراضي_التلقائي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_مدارس_مرتبطة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة_تقرير_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حفظ_الافتراضي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "لا_توجد_مدرسة_افتراضية": "Hapana chikoro chehutungamiri",
-      "إضافة_تقرير_المدرسة_الافتراضية": "Wedzera Ripoti yeChikoro cheHutungamiri",
-      "المدرسة_الافتراضية_للتقرير": "المدرسة الافتراضية للتقرير",
-      "الافتراضي_التلقائي": "الافتراضي التلقائي هو أول مدرسة في القائمة، ويمكن تغييره يدويًا.",
-      "لا_مدارس_مرتبطة": "لا توجد مدارس مرتبطة بهذه القرية.",
-      "إضافة_تقرير_المدرسة": "إضافة تقرير المدرسة الافتراضية",
-      "حفظ_الافتراضي": "حفظ الافتراضي",
-      "تقرير_افتراضي": "تقرير افتراضي",
-      "المدرسة_الافتراضية_الحالية": "المدرسة الافتراضية الحالية:"
+      "تقرير_افتراضي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المدرسة_الافتراضية_الحالية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة_تقرير_المدرسة_الافتراضية": "Wedzera Ripoti yeChikoro cheHutungamiri"
     },
     "VillageReportDisplay": {
+      "تقرير_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "أنشطة_المعلم_في_القرية": "Mabasa eMudzidzisi muKamusha",
       "أنشطة_المؤسسة_في_القرية": "Mabasa eMuungano muKamusha",
-      "خطب_الجمعة_في_القرية": "Mapreach eChishanu muKamusha",
-      "تقرير_القرية": "تقرير القرية"
+      "خطب_الجمعة_في_القرية": "Mapreach eChishanu muKamusha"
     },
     "VillageReportFields": {
+      "القرية_والنشاطات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "الأنشطة_التي_تمت_في_القرية_من_قبل_المعلم": "Mabasa akaitwa mukamusha nemudzidzisi",
       "وصف_النشاط": "Tsananguro yebasa...",
       "إضافة_نشاط": "Wedzera Basa",
@@ -181,192 +275,33 @@
       "موضوع_أو_ملخص_الخطبة": "Musoro kana pfupiso yepreach...",
       "إضافة_خطبة": "Wedzera Preach",
       "لم_تُضف_خطباً_بعد_اضغط_إضافة_خطبة_لإضافة_خطبة_جديدة": "Hapana mapreach akawedzerwa. Baya 'Wedzera Preach' kuwedzera preach itsva.",
+      "عدد_من_دخل_الإسلام": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "هل_يوجد_مشاريع_للمؤسسة_بالقرية؟": "Kune mabasa emuungano mukamusha here?",
+      "ما_حالة_المشاريع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اكتب_حالة_المشاريع_وتفاصيلها": "Nyora mamiriro emabasa nezvimwe zvawo...",
-      "أي_ملاحظات_إضافية_عن_القرية": "Zvimwe zvinyorwa pamusoro pekamusha...",
-      "القرية_والنشاطات": "القرية والنشاطات",
-      "عدد_من_دخل_الإسلام": "عدد من دخل الإسلام جديداً في القرية",
-      "ما_حالة_المشاريع": "ما حالة المشاريع؟",
-      "ملاحظات_إضافية_القرية": "ملاحظات إضافية (القرية)"
+      "ملاحظات_إضافية_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أي_ملاحظات_إضافية_عن_القرية": "Zvimwe zvinyorwa pamusoro pekamusha..."
     },
     "VillageSchoolCheckboxGroup": {
       "اختيار_المدارس": "Sarudza Zvikoro"
     },
     "VisitReportEditor": {
+      "بيانات_الزيارة_الميدانية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_المادة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الدرس_الأسبوع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_الدرس": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "التقييم_والملاحظات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تقييم_المعلم_من_5_نجوم": "Kuyera Mudzidzisi (kubva kunyeredzi 5)",
       "تقييم_القرية_من_5_نجوم": "Kuyera Kamusha (kubva kunyeredzi 5)",
-      "ملاحظات_وتوجيهات_عن_الزيارة": "Zvinyorwa nemirayiridzo pamusoro pekushanyira...",
-      "بيانات_الزيارة_الميدانية": "بيانات الزيارة الميدانية",
-      "اختر_المدرسة": "— اختر المدرسة —",
-      "اختر_القرية": "— اختر القرية —",
-      "اختر_المادة": "— اختر المادة —",
-      "الدرس_الأسبوع": "الدرس / الأسبوع",
-      "اختر_الدرس": "— اختر الدرس —",
-      "التقييم_والملاحظات": "التقييم والملاحظات",
-      "ملاحظات_المشرف": "ملاحظات المشرف"
-    },
-    "ConfirmDialog": {
-      "تأكيد": "Simbisa",
-      "إلغاء": "Rambidza",
-      "تأكيد_الإجراء": "Simbisa chiito"
-    },
-    "ReportTextList": {
-      "إضافة": "Wedzera",
-      "اكتب_النص_هنا": "اكتب النص هنا...",
-      "لم_تُضف_عناصر_بعد": "لم تُضف عناصر بعد. اضغط «إضافة» لإضافة عنصر جديد.",
-      "حذف": "Delete"
-    },
-    "AppSelect": {
-      "ابحث": "Tsvaga...",
-      "لا_توجد_نتائج": "Hapana mhinduro"
-    },
-    "EvalSelectWithOther": {
-      "اكتب_التقييم_أو_الملاحظة": "اكتب التقييم أو الملاحظة...",
-      "اختر": "— Sarudza —"
-    },
-    "InstallAppSection": {
-      "التطبيق_مثبّت": "App yaiswa",
-      "تستخدم_آفاق_كتطبيق_مستقل": "تستخدم آفاق كتطبيق مستقل على جهازك — وصول سريع من الشاشة الرئيسية أو سطح المكتب.",
-      "تثبيت_التطبيق": "Isa app",
-      "ثبّت_آفاق_على_جهازك": "ثبّت آفاق على هاتفك أو حاسوبك للوصول السريع دون فتح المتصفح في كل مرة.",
-      "على_iPhone_iPad": "على iPhone / iPad:",
-      "اضغط_زر_المشاركة": "اضغط زر المشاركة",
-      "اختر_إضافة_إلى_الشاشة_الرئيسية": "اختر «إضافة إلى الشاشة الرئيسية»",
-      "اضغط_إضافة": "اضغط «إضافة»",
-      "تثبيت_التطبيق_الآن": "Isa app izvozvi",
-      "افتح_الموقع_من_Chrome": "افتح الموقع من Chrome أو Edge على سطح المكتب أو أندرويد ليظهر خيار التثبيت."
-    },
-    "TeacherStudentCard": {
-      "السن": "Zera",
-      "الملف": "Profile"
-    },
-    "LazyReportPrintPreviewModal": {
-      "جاري_تحميل_المعاينة": "جاري تحميل المعاينة…"
-    },
-    "ReportDailyRecordCard": {
-      "الحفظ": "الحفظ",
-      "المراجعة": "المراجعة",
-      "ملاحظة": "ملاحظة"
-    },
-    "ReportPrintPreviewModal": {
-      "معاينة_التقرير": "معاينة التقرير",
-      "تحميل_pdf": "تحميل PDF",
-      "تحميل_excel": "تحميل Excel",
-      "طباعة": "طباعة"
-    }
-  },
-  "utils": {
-    "schoolReportExport": {
-      "النوع": "Mhando",
-      "الحالة": "Mamiriro",
-      "تقارير_الإشراف": "Mapoti ekutarira",
-      "الطلاب_المتفوقون": "Vadzidzi Vanobwinya",
-      "الهاتف": "Runhare",
-      "الطالب": "Mudzidzi",
-      "العنوان": "Kero",
-      "الحضور": "Kuvapo"
-    },
-    "explorationTargetPages": {
-      "جميع_الصفحات": "Mapeji Ese",
-      "استكشاف": "Kutsvagisisa"
-    },
-    "reportDetailsHtml": {
-      "دخل_الإسلام_جديداً": "Wapinda muchiIslam mutsva",
-      "مشاريع_المؤسسة": "Mabasa eMuungano",
-      "حالة_المشاريع": "Mamiriro eMabasa",
-      "المادة": "Chidzidzo",
-      "تاريخ_الإرسال": "Zuva rekutumira",
-      "الأسبوع": "Svondo"
-    },
-    "explorationDynamicFields": {
-      "بريد_إلكتروني": "Imero",
-      "بحث": "Tsvaga"
-    },
-    "chatNotifications": {
-      "مجموعة": "Boka",
-      "محادثة": "Hurukuro"
-    },
-    "curriculumProgress": {
-      "لم_يُحدد_بعد": "Kusati kwasarudzwa",
-      "حسب_الخطة": "Zvinoenderana nehurongwa"
-    },
-    "dailyPrepForm": {
-      "الأسبوعي": "Yesvondo",
-      "الشهري": "Yemwedzi",
-      "اليومي": "Yezuva",
-      "تاريخ_اليوم": "Zuva reNhasi",
-      "مرجع_الأسبوع": "Referensi yesvondo",
-      "مرجع_الشهر": "Referensi yemwedzi",
-      "مواد_الأسبوع_من_المناهج": "Zvidzidzo zvezvondo kubva muchirongwa",
-      "مواد_الشهر": "Zvidzidzo zvemwedzi",
-      "مواد_اليوم": "Zvidzidzo zvenhasi",
-      "طالب": "Mudzidzi"
-    },
-    "messengerFormat": {
-      "أمس": "Nezuro",
-      "اليوم": "Nhasi"
-    },
-    "permissionDataScope": {
-      "نطاق_عرض_البيانات_في_هذه_الصفحة": "Nzvimbo yekuratidzwa kwedhata papeji ino",
-      "كل_السجلات_عرض_شامل": "Manyoreso ese (kuona kwakakwana)",
-      "ما_يرتبط_بي_فقط": "Zvinobatana neni chete (zvikoro/dunhu/maboka andiri nhengo)"
-    },
-    "reportEvalOptions": {
-      "السير_على_المنهج": "Kufamba Zvinoenderana neChirongwa",
-      "تقييم_المدرسة": "Kuyera Chikoro",
-      "التقرير_الشهري_عن_المدرسة": "Ripoti yemwedzi pamusoro pechikoro"
-    },
-    "reportLabels": {
-      "شهري": "Yemwedzi",
-      "أسبوعي": "Yesvondo",
-      "زيارة_ميدانية": "Kushanyira kuNzvimbo",
-      "يومي": "Yezuva",
-      "تقرير_مدرسة": "Ripoti yeChikoro"
+      "ملاحظات_المشرف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملاحظات_وتوجيهات_عن_الزيارة": "Zvinyorwa nemirayiridzo pamusoro pekushanyira..."
     }
   },
   "pages": {
-    "RegionDetailsPage": {
-      "الكل": "Zvese",
-      "مدير_نظام_وصول_كامل": "Mutariri weSisitimu (Pakupinda Kwakakwana)",
-      "مدير_النظام": "Mutariri weSisitimu",
-      "مشرف_عام_عربي": "Mutariri Mukuru (Arabic)",
-      "مشرف_منطقة_محلي": "Mutariri weDunhu (Wepanzvimbo)",
-      "معلم_مدرسة": "Mudzidzisi weChikoro",
-      "طالب_دارس": "Mudzidzi / Mudzidzi Mukuru",
-      "صلاحية_معلقة": "Mvumo Irikumirira",
-      "حدث_خطأ_أثناء_التعيين": "Kwakaitika kukanganisa pakugadza.",
-      "تعذر_إزالة_المشرف_من_المنطقة": "Kukundikana kubvisa mutariri kubva mudunhu.",
-      "تعيين_مشرف": "Gadza Mutariri",
-      "عرض_الملف": "Ona Faira",
-      "إزالة_من_المنطقة": "Bvisa kubva muDunhu",
-      "بحث_بالاسم_أو_البريد": "Tsvaga nezita kana imero..."
-    },
-    "SchoolReportPage": {
-      "ملاحظات_إضافية": "Zvinyorwa Zvimwe",
-      "القرية": "Kamusha",
-      "التاريخ": "Zuva",
-      "تقييم_المعلم": "Kuyera Mudzidzisi",
-      "الأحد": "Svondo",
-      "الإثنين": "Muvhuro",
-      "الثلاثاء": "Chipiri",
-      "الأربعاء": "Chitatu",
-      "الخميس": "China",
-      "الجمعة": "Chishanu",
-      "السبت": "Mugovera",
-      "حفظ_التعديلات": "Chengetedza Zvigadziriswa",
-      "حفظ_التقرير": "Chengetedza Ripoti",
-      "رقم_الهاتف": "Nhamba yeRunhare"
-    },
-    "AdminBrandingPage": {
-      "تم_حفظ_هوية_الموقع_بنجاح": "Chimiro chewebhusaiti chakachengetedzwa zvakabvumirwa.",
-      "تعذر_حفظ_الهوية_حالياً،_حاول_مرة_أخرى": "Kukundikana kuchengetedza chimiro. Edza zvakare.",
-      "تعديل_اسم_المنصة_والعنوان_والنص_الظاهر_في_رأس_لوحة_التحكم": "Gadzirisa zita redhangwe, musoro, uye nyaya inoratidzwa pamusoro pepuranga yekutarira.",
-      "إضافة_وسيلة_تواصل": "Wedzera Nzira yekutaurirana",
-      "مثال_يرجى_التواصل_مع_الإدارة_عبر_الوسائل_التالية_لتفعيل_الصل": "Muenzaniso: Ndokumbira utaurire nemasangano nenzira dzinotevera kuti ugadze mvumo.",
-      "المسمى_مثال_مدير_المنصة": "Zita (Muenzaniso: Mutariri wedhangwe)",
-      "رقم_أو_رابط_الحساب": "Nhamba kana sungano yeakaunzi"
-    },
     "AdminReportsPage": {
+      "المعلم": "Mudzidzisi",
       "التقارير_الأسبوعية": "Mapoti esvondo",
       "زيارات_المشرفين": "Kushanyira kwevataridzi",
       "تقارير_المدارس": "Mapoti eZvikoro",
@@ -377,17 +312,181 @@
       "سنة": "Gore",
       "كل_الفترات": "Nguva Dzese",
       "حدث_خطأ_أثناء_جلب_التقارير": "Kukanganisa pakutora mapoti",
+      "حذف_هذا_التقرير_نهائياً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تعذر_تحديد_مسار_المستند_للحذف": "Kukundikana kutsanangura nzira yedokumendi yekudzimwa.",
       "فشل_حذف_التقرير": "Kukundikana kudzima ripoti.",
       "مراجعة_التقارير_الميدانية": "Ongorora Mapoti eNzvimbo",
       "متابعة_أداء_المعلمين_والمشرفين_من_لوحة_واحدة": "Teverera mabasa evadzidzisi nevataridzi kubva pabhodi rimwe",
+      "عرض_محدود_التقارير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "البحث_باسم_المعلم_أو_المشرف": "Tsvaga nezita remudzidzisi kana mutariri...",
       "فلترة_حسب_المدرسة": "Sarudza nechikoro...",
+      "فترة_جاهزة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 06 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "من_تاريخ": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 06 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إلى_تاريخ": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_تقارير_في_هذا_القسم_بعد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_تقارير_مطابقة_للفترة_أو_الفلاتر_الحالية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "المشرف": "Mutariri",
-      "المعلم": "Mudzidzisi",
+      "ملخص_النشاط": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حضور": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  13 HOURS 59 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملاحظات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  13 HOURS 59 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تقرير_أعمال_أسبوعي": "Ripoti yeMabasa yesvondo",
+      "تقرير_المدرسة": "Ripoti yeChikoro",
+      "تقييم_الأداء": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  13 HOURS 59 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "عرض_التفاصيل_الكاملة": "Ona Zvimwe Zvese",
-      "تقرير_المدرسة": "Ripoti yeChikoro"
+      "حذف_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "SchoolReportPage": {
+      "حفظ_التعديلات": "Chengetedza Zvigadziriswa",
+      "ملاحظات_إضافية": "Zvinyorwa Zvimwe",
+      "القرية": "Kamusha",
+      "التاريخ": "Zuva",
+      "نوع_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تقييم_المعلم": "Kuyera Mudzidzisi",
+      "الأحد": "Svondo",
+      "الإثنين": "Muvhuro",
+      "الثلاثاء": "Chipiri",
+      "الأربعاء": "Chitatu",
+      "الخميس": "China",
+      "الجمعة": "Chishanu",
+      "السبت": "Mugovera",
+      "تعذر_تحميل_بيانات_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "يرجى_تفعيل_GPS": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "يرجى_اختيار_معلم_واحد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "يرجى_تقييم_كل_معلم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تم_تحديث_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تم_حفظ_تقرير_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعذر_حفظ_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "العودة_لتفاصيل_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عرض_التقرير_الشهري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_التقرير_الشهري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة_التقرير_الشهري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حفظ_التقرير": "Chengetedza Ripoti",
+      "وضع_العرض_فقط": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اضغط_تعديل_التقرير_للتعديل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "معلومات_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عنوان_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_المدرسة_الجروب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "وقت_الحضور": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "وقت_المغادرة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المنطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المحافظة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الدولة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المعلمون_وتقييمهم_بالنجوم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_يوجد_معلمون_مسجلون_في_هذه_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رقم_الهاتف": "Nhamba yeRunhare",
+      "حدّد_المعلم_لتقييمه": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تقييم_الطلاب_بالنجوم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "قيّم_كل_طالب_من_1_إلى_5_نجوم_اختياري_يُحفظ_من_حصل_عل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_يوجد_طلاب_مسجلون_في_هذه_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أضف_أسماء_الطلاب_المتفوقين_يمكنك_الكتابة_أو_الاختيار_": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_الطالب_المتفوق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لم_تُضف_أسماء_بعد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "القرية_والنشاطات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أي_ملاحظات_إضافية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الحضور_والغياب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_الطلاب_المسجلين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_الحضور_تلقائي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مراجعة_الغياب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "التقييمات_والملاحظات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعمل_السوق؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اكتب_وصفاً_عن_السوق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_الوجبات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مسؤول_المشاريع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "صور_وفيديوهات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مرفق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "سجل_الزيارات_والتقارير_السابقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "بيانات_الزيارات_الميدانية_المسجلة_لهذه_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_زيارات_مسجلة_بعد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "ExplorationsPage": {
+      "جاري_تحميل_قوائم_البيانات_من_المنصة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعذر_تحميل_بيانات_الاستكشاف": "Kukundikana kuisa dhata yekutsvagisisa.",
+      "يرجى_اختيار_نوع_الاستكشاف": "Ndokumbira usarudze mhando yekutsvagisisa.",
+      "يرجى_تعبئة_الحقول_المطلوبة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تم_تحديث_الاستكشاف": "Kutsvagisisa kwagadziridzwa.",
+      "تمت_إضافة_الاستكشاف_بنجاح": "Kutsvagisisa kwakawedzerwa zvakabvumirwa.",
+      "تعذر_حفظ_الاستكشاف": "Kukundikana kuchengetedza kutsvagisisa.",
+      "تم_حذف_الاستكشاف": "Kutsvagisisa kwakadzimiwa.",
+      "تعذر_حذف_الاستكشاف": "Kukundikana kudzima kutsvagisisa.",
+      "نموذج_مخصص": "Fomu Yakagadzirwa",
+      "قسم_الاستكشاف": "Nzvimbo yekutsvagisisa",
+      "عرض_محدود_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ابحث_بالنوع_أو_المشرف_أو_الحقول_أو_القرية": "Tsvaga nemhando, mutariri, minda, kana kamusha...",
+      "لا_توجد_استكشافات_مضافة_حتى_الآن": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_الاستكشاف": "Gadzirisa Kutsvagisisa",
+      "إضافة_استكشاف_جديد": "Wedzera Kutsvagisisa Kutsva",
+      "نوع_الاستكشاف_مطلوب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_أنواع_لهذه_الصفحة_راجع_أنواع_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نموذج_مخصص_2": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "النموذج_التقليدي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_اللواء_District": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_المجموعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_الملك_الإنجيلي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_الأسر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_الأسر_المسلمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_الأسر_غير_المسلمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "هل_يوجد_مسجد؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المسافة_لأقرب_مسجد_كم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "هل_يوجد_بئر؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المسافة_لأقرب_بئر_كم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "هل_دخل_الإسلام_للقرية؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "هل_يوجد_مدرسة_قرآنية؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "هل_يوجد_مدرسة؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "كم_سيكلف_استخدام_البئر؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "هل_لدى_القرية_كهرباء؟": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أقرب_قريتين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تاريخ_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_المشرف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "احتياج_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تأكيد_حذف_الاستكشاف": "Simbisa Kudzimwa kwekutsvagisisa"
+    },
+    "RegionDetailsPage": {
+      "الكل": "Zvese",
+      "مدير_نظام_وصول_كامل": "Mutariri weSisitimu (Pakupinda Kwakakwana)",
+      "مدير_النظام": "Mutariri weSisitimu",
+      "مشرف_عام_عربي": "Mutariri Mukuru (Arabic)",
+      "مشرف_منطقة_محلي": "Mutariri weDunhu (Wepanzvimbo)",
+      "معلم_مدرسة": "Mudzidzisi weChikoro",
+      "طالب_دارس": "Mudzidzi / Mudzidzi Mukuru",
+      "صلاحية_معلقة": "Mvumo Irikumirira",
+      "تم_تعيين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المستخدم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "بنجاح_يمكن_تعيين_مشرفين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حدث_خطأ_أثناء_التعيين": "Kwakaitika kukanganisa pakugadza.",
+      "تعذر_إزالة_المشرف_من_المنطقة": "Kukundikana kubvisa mutariri kubva mudunhu.",
+      "المنطقة_غير_موجودة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "منطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_مدارس_مضافة_لهذه_المنطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعيين_مشرف": "Gadza Mutariri",
+      "لا_يوجد_أعضاء_مسجّلون_لهذه_المنطقة_حالياً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عرض_الملف": "Ona Faira",
+      "إزالة_من_المنطقة": "Bvisa kubva muDunhu",
+      "بحث_بالاسم_أو_البريد": "Tsvaga nezita kana imero...",
+      "لا_يوجد_مستخدمون_يطابقون_البحث_أو_الجميع_معيّنون_لهذه_ا": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "AdminBrandingPage": {
+      "تم_حفظ_هوية_الموقع_بنجاح": "Chimiro chewebhusaiti chakachengetedzwa zvakabvumirwa.",
+      "تعذر_حفظ_الهوية_حالياً،_حاول_مرة_أخرى": "Kukundikana kuchengetedza chimiro. Edza zvakare.",
+      "تعديل_اسم_المنصة_والعنوان_والنص_الظاهر_في_رأس_لوحة_التحكم": "Gadzirisa zita redhangwe, musoro, uye nyaya inoratidzwa pamusoro pepuranga yekutarira.",
+      "اسم_المنصة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عنوان_الصفحات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نص_الشعار_المختصر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "النص_الفرعي_في_الشريط_الجانبي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "وسائل_تواصل_الإدارة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة_وسيلة_تواصل": "Wedzera Nzira yekutaurirana",
+      "رسالة_توضيحية_للمستخدم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مثال_يرجى_التواصل_مع_الإدارة_عبر_الوسائل_التالية_لتفعيل_الصل": "Muenzaniso: Ndokumbira utaurire nemasangano nenzira dzinotevera kuti ugadze mvumo.",
+      "المسمى_مثال_مدير_المنصة": "Zita (Muenzaniso: Mutariri wedhangwe)",
+      "واتساب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تلجرام": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اتصال_هاتفي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "انستغرام": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "فيسبوك": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "X_تويتر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رقم_أو_رابط_الحساب": "Nhamba kana sungano yeakaunzi",
+      "لا_توجد_وسائل_تواصل_بعد_أضف_وسيلة_من_زر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "AdminSiteCopyPage": {
       "عنوان_الرئيسية": "Musoro: Kumba",
@@ -406,6 +505,8 @@
       "تم_حذف_نوع_المستخدم": "Mhando yemushandisi yakadzimiwa.",
       "تعذر_حذف_نوع_المستخدم": "Kukundikana kudzima mhando yemushandisi.",
       "أنشئ_نوعاً،_ثم_فعّل_الصفحات_والإجراءات_التي_تظهر_له": "Gadzira mhando, wobvumidza mapeji nemabasa anoratidzwa kwaari.",
+      "اختر_نوعاً_من_القائمة_أو_أنشئ_نوعاً_جديداً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_النوع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "حذف_النوع": "Dzima Mhando"
     },
     "CurriculumPage": {
@@ -426,13 +527,16 @@
       "إدارة_المناهج_الأساسية": "Tarisira Zvirongwa Zvikuru",
       "توزيع_خطة_الأسابيع_٥٠_أسبوعاً": "Kugovera kwehurongwa hwesvondo (Masvondo 50)",
       "إضافة_مادة_جديدة": "Wedzera Chidzidzo Chitsva",
+      "إضافة_من_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اسم_المادة_مثال_العقيدة": "Zita rechidzidzo (muenzaniso: Aqeedah)",
       "إضافة_مادة_من_نموذج_الاستكشاف": "Wedzera Chidzidzo kubva kuFomu yekutsvagisisa",
       "طباعة_الخطة_أو_حفظ_PDF_صفحة_منفصلة": "Prinda hurongwa kana kuchengetedza sePDF (peji rakaparadzana)",
       "تأكيد_حذف_المادة": "Simbisa Kudzimwa kweChidzidzo",
       "حذف_نهائي": "Kudzima Zvachose",
       "حذف_المادة_نهائياً": "Dzima Chidzidzo Zvachose",
+      "اسم_المادة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مثال_العقيدة": "Muenzaniso: Aqeedah",
+      "توزيع_الدروس_الأسبوعية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "حدد_الدرس_أو_الهدف": "Tsanangura chidzidzo kana chinangwa...",
       "بيانات_النموذج": "Dhata yeFormu",
       "تم_تحديث_بيانات_نموذج_المادة": "Dhata yefomu yechidzidzo yakagadziridzwa."
@@ -440,6 +544,7 @@
     "DashboardPage": {
       "لوحة_التحكم_الرئيسية": "Puranga Huru yekutarira",
       "نظرة_عامة_على_الإحصائيات_الحيوية_للمنصة": "Tarisa zvakajeka zvemaonero edhangwe",
+      "عرض_محدود_الإحصائيات_والنشاط": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "المشرفين": "Vataridzi",
       "عرض_المستخدمين": "Ona Vashandisi",
       "عرض_القرى": "Ona Misha",
@@ -449,23 +554,10 @@
       "إجمالي_الطلاب": "Vadzidzi Vese",
       "المهتدون_الجدد": "Vatsva VakapinaIslam",
       "عرض_سجل_المهتدين_في_القرى": "Ona Rekodhi yevapinaIslam mumisha",
+      "أحدث_النشاطات_الميدانية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_نشاطات_مسجلة_مؤخراً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مدرسة_غير_محددة": "Chikoro Chisina Kutsanangurwa",
       "عضو_غير_معروف": "Nhengo Isingazivikanwi"
-    },
-    "ExplorationsPage": {
-      "تعذر_تحميل_بيانات_الاستكشاف": "Kukundikana kuisa dhata yekutsvagisisa.",
-      "يرجى_اختيار_نوع_الاستكشاف": "Ndokumbira usarudze mhando yekutsvagisisa.",
-      "تم_تحديث_الاستكشاف": "Kutsvagisisa kwagadziridzwa.",
-      "تمت_إضافة_الاستكشاف_بنجاح": "Kutsvagisisa kwakawedzerwa zvakabvumirwa.",
-      "تعذر_حفظ_الاستكشاف": "Kukundikana kuchengetedza kutsvagisisa.",
-      "تم_حذف_الاستكشاف": "Kutsvagisisa kwakadzimiwa.",
-      "تعذر_حذف_الاستكشاف": "Kukundikana kudzima kutsvagisisa.",
-      "نموذج_مخصص": "Fomu Yakagadzirwa",
-      "قسم_الاستكشاف": "Nzvimbo yekutsvagisisa",
-      "ابحث_بالنوع_أو_المشرف_أو_الحقول_أو_القرية": "Tsvaga nemhando, mutariri, minda, kana kamusha...",
-      "تعديل_الاستكشاف": "Gadzirisa Kutsvagisisa",
-      "إضافة_استكشاف_جديد": "Wedzera Kutsvagisisa Kutsva",
-      "تأكيد_حذف_الاستكشاف": "Simbisa Kudzimwa kwekutsvagisisa"
     },
     "ExplorationTypesPage": {
       "تعذر_جلب_أنواع_الاستكشاف": "Kukundikana kutora mhando dzekutsvagisisa.",
@@ -476,18 +568,46 @@
       "تم_حذف_نوع_الاستكشاف": "Mhando yekutsvagisisa yakadzimiwa.",
       "تعذر_حذف_نوع_الاستكشاف": "Kukundikana kudzima mhando yekutsvagisisa.",
       "إدارة_أنواع_الاستكشاف": "Tarisira Mhando dzekutsvagisisa",
+      "إضافة_نوع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تعديل_نوع_الاستكشاف": "Gadzirisa Mhando yekutsvagisisa",
+      "الاسم_مطلوب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مثال_استكشاف_بئر": "Muenzaniso: Kuongorora Tsime",
+      "وصف_مختصر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تفاصيل_إضافية_عن_النوع_اختياري": "Zvimwe zvakawedzerwa pamusoro pemhando (zvisarudzwa)",
+      "حقول_النموذج_لهذا_النوع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة_حقل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عنوان_الحقل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مثال_عدد_الأسر": "Muenzaniso: Nhamba yemhuri",
+      "نوع_الإدخال": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "أعلى": "Kumusoro",
       "أسفل": "Pasi",
       "حذف_الحقل": "Dzima Nzvimbo",
+      "نص_توضيحي_placeholder": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حد_أدنى": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 06 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حد_أقصى": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مصدر_الخيارات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "يعتمد_على_حقل_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مستقل_عرض_الكل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تصفية_المستخدمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الخيارات_سطر_لكل_خيار": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "قيمة_من_المستخدم_الحالي_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "القيمة_المحفوظة_لا_تظهر_في_نموذج_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مثال_draft_أو_معرف_داخلي": "Muenzaniso: draft kana ID yemukati",
+      "لا_توجد_أنواع_استكشاف_مضافة_حتى_الآن": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "بدون_وصف": "Pasina tsananguro",
       "يستخدم_النموذج_الافتراضي_الكامل": "Inoshandisa fomu yese yemuzvinhu",
       "معاينة_الحقول": "Tarisa Minda",
       "تأكيد_حذف_نوع_الاستكشاف": "Simbisa Kudzimwa kweMhando yekutsvagisisa"
+    },
+    "GovernorateDetailsPage": {
+      "المحافظة_غير_موجودة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إدارة_المحافظات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "محافظة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "غير_محددة": "Haisina kutsanangurwa",
+      "المناطق_التابعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_مناطق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "القرى_التابعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_قرى": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "GovernoratesPage": {
       "حدث_خطأ_أثناء_جلب_البيانات": "Kukanganisa pakutora dhata",
@@ -499,6 +619,7 @@
       "تمت_إضافة_المحافظة_من_نموذج_الاستكشاف_بنجاح": "Dunhu guru rakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
       "تم_حذف_المحافظة_بنجاح": "Dunhu guru rakadzimiwa zvakabvumirwa.",
       "إدارة_المحافظات": "Tarisira Madunhu Makuru",
+      "عرض_محدود_المحافظات_الظاهرة_مرتبطة_بمناطق_مجموعاتك_عض": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تعديل_المحافظة": "Gadzirisa Dunhu Guru",
       "اسم_المحافظة_مثال_صنعاء": "Zita redunhu guru (muenzaniso: Sanaa)",
       "الدولة_مثال_MALAWI": "Nyika (muenzaniso: MALAWI)",
@@ -507,17 +628,8 @@
       "تم_تحديث_بيانات_نموذج_المحافظة": "Dhata yefomu yedunhu guru yakagadziridzwa.",
       "تأكيد_حذف_المحافظة": "Simbisa Kudzimwa kweDunhu Guru"
     },
-    "GovernorateDetailsPage": {
-      "غير_محددة": "Haisina kutsanangurwa",
-      "المحافظة_غير_موجودة": "المحافظة غير موجودة",
-      "إدارة_المحافظات": "إدارة المحافظات",
-      "محافظة": "محافظة:",
-      "المناطق_التابعة": "المناطق التابعة",
-      "لا_مناطق": "لا توجد مناطق مضافة لهذه المحافظة.",
-      "القرى_التابعة": "القرى التابعة",
-      "لا_قرى": "لا توجد قرى مضافة في هذه المحافظة."
-    },
     "RegionsPage": {
+      "إدارة_المناطق": "Tarisira Nzvimbo",
       "يرجى_إدخال_اسم_المنطقة_واختيار_المحافظة": "Ndokumbira upinde zita renzvimbo usarudze dunhu guru",
       "تمت_إضافة_المنطقة_بنجاح": "Nzvimbo yakawedzerwa zvakabvumirwa.",
       "تم_تحديث_المنطقة_بنجاح": "Nzvimbo yakagadziridzwa zvakabvumirwa.",
@@ -526,8 +638,9 @@
       "لا_يمكن_استخراج_اسم_المنطقة_من_حقول_النموذج_أضف_حقلاً_نصياً_": "Zita renzvimbo hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
       "تمت_إضافة_المنطقة_من_نموذج_الاستكشاف_بنجاح": "Nzvimbo yakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
       "غير_معروف": "Isingazivikanwi",
-      "إدارة_المناطق": "Tarisira Nzvimbo",
+      "عرض_محدود_المناطق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تعديل_المنطقة": "Gadzirisa Nzvimbo",
+      "اختر_المحافظة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اسم_المنطقة_مثال_أزال": "Zita renzvimbo (muenzaniso: Azal)",
       "إضافة_منطقة_من_نموذج_الاستكشاف": "Wedzera Nzvimbo kubva kuFomu yekutsvagisisa",
       "تم_تحديث_بيانات_نموذج_المنطقة": "Dhata yefomu yenzvimbo yakagadziridzwa.",
@@ -537,6 +650,8 @@
       "زيارة_ميدانية": "Kushanyira kuNzvimbo",
       "تحضير_يومي": "Kugadzirira Kwezuva",
       "تقرير_أسبوعي": "Ripoti yesvondo",
+      "تعذر_تحميل_بيانات_تعديل_الزيارة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعذر_تحميل_بيانات_التعديل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تعذر_جلب_طلاب_المدرسة": "Kukundikana kutora vadzidzi vechikoro.",
       "تعذر_تحديد_مسار_المستند": "Kukundikana kutsanangura nzira yedokumendi.",
       "بيانات_تعديل_الزيارة_غير_جاهزة_بعد": "Dhata yekugadzirisa kushanyira haina kubatana.",
@@ -551,6 +666,21 @@
       "فشل_الحفظ_تحقق_من_قواعد_Firestore": "Kuchengetedza kwakundikana. Tarisa mitemo yeFirestore.",
       "حذف_هذا_التقرير_نهائياً؟_لا_يمكن_التراجع_عن_العملية": "Dzima ripoti iyi zvachose? Chiito ichi hachigoni kudzoswa.",
       "تعذر_حذف_التقرير": "Kukundikana kudzima ripoti.",
+      "معاينة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_الزيارة_الميدانية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_سجل_التحضير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الأسبوع_الوصف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_ملاحظات_عامة_مسجلة_لهذه_الزيارة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تتبع_أداء_الطلاب_أثناء_الزيارة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "طالب_مجهول": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_ملاحظات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المواد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الفترة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملاحظات_التحضير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الحفظ": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المراجعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أنشطة_الأسبوع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_ملاحظات_إضافية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "الموقع_الجغرافي_للزيارة": "Nzvimbo yepasirose yekushanyira",
       "لم_يتم_تسجيل_إحداثيات_GPS_لهذا_التقرير": "Nzvimbo yeGPS haina kunyorwa kweripoti iyi"
     },
@@ -560,13 +690,30 @@
       "بدون_مدرسة": "Pasina Chikoro",
       "تعذر_تحميل_ملف_الطالب": "Kukundikana kuisa faira remudzidzi.",
       "تعذر_حفظ_بيانات_الطالب": "Kukundikana kuchengetedza dhata yemudzidzi.",
+      "ملف_الطالب_غير_موجود": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملف_الطالب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "كل_بيانات_الطالب_وارتباطاته_بالمدارس_والمناطق": "Dhata yese yemudzidzi nezvakabatana nezvikoro nenzvimbo",
+      "البريد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "لا_يوجد_رقم": "Hapana nhamba yerunhare",
-      "لا_يوجد_بريد": "Hapana imero"
+      "لا_يوجد_بريد": "Hapana imero",
+      "الارتباطات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_ارتباطات_حالياً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "سجل_الطالب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_يوجد_نشاط_مسجل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "SchoolComprehensiveReportPage": {
+      "المدرسة_غير_موجودة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تقرير_شامل_عن_المدرسة": "Ripoti Yakakwana yeChikoro",
+      "إضافة_تقرير_جديد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تقرير_جديد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الزيارات_الميدانية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "سجلات_التحضير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المهتدون_الجدد_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تقارير_إشراف_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_تقارير_إشراف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تقرير_إشراف": "Ripoti yekutarira",
+      "لا_توجد_زيارات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_سجلات_تحضير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تحضير": "Kugadzirira",
       "أسبوعي": "Yesvondo",
       "شهري": "Yemwedzi",
@@ -582,19 +729,34 @@
       "حدث_خطأ_أثناء_التعيين_الجماعي": "Kukanganisa pakugadza kwemaboka.",
       "تعذر_إزالة_العضو_من_المدرسة": "Kukundikana kubvisa nhengo kubva kuchikoro.",
       "تم_حذف_التقرير_بنجاح": "Ripoti yakadzimiwa zvakabvumirwa.",
+      "مدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة_تقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تقرير_شامل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "شامل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "الكادر_التعليمي": "Vashandi vekudzidzisa",
       "التقارير_الميدانية": "Mapoti eNzvimbo",
       "بحث_في_الكادر": "Tsvaga vashandi...",
       "إضافة_عضو_للمدرسة": "Wedzera Nhengo kuChikoro",
+      "لا_يوجد_نتائج_للبحث": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إزالة_من_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "بحث_في_الطلاب": "Tsvaga vadzidzi...",
+      "لا_يوجد_هاتف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "بحث_بالعنوان_المشرف_التاريخ": "Tsvaga nemusoro/mutariri/zuva...",
       "لا_توجد_تقارير_محفوظة_لهذه_المدرسة_حتى_الآن": "Hapana mapoti akachengetedzwa echikoro ichi kusvika zvino.",
       "لا_توجد_نتائج_مطابقة_للفلاتر_الحالية": "Hapana mhedzisiro inoenderana nezvipiro zvino.",
+      "تقرير_إشراف_مدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عرض_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 53 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "معاينة_وطباعة_التقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعيين_عضو_للمدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "بحث_عن_مستخدم_الاسم_أو_البريد": "Tsvaga mushandisi (zita kana imero)...",
+      "لا_يوجد_مستخدمين_متاحين_للتعيين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مرتبط_بمدرسة_أخرى": "(yakabatana nechikoro chimwe)",
       "معاينة_تقرير_المدرسة": "Tarisa Ripoti yeChikoro"
     },
     "SchoolsPage": {
+      "إدارة_المدارس": "Tarisira Zvikoro",
       "كبار": "Vakuru",
       "صغار": "Vadiki",
       "يرجى_إدخال_اسم_المدرسة_واختيار_القرية_ونوع_المدرسة_كبار_صغار": "Ndokumbira upinde zita rechikoro usarudze kamusha nemhando yechikoro (Vakuru / Vadiki)",
@@ -606,9 +768,16 @@
       "لا_يمكن_استخراج_اسم_المدرسة_من_حقول_النموذج_أضف_حقلاً_نصياً_": "Zita rechikoro hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine \"zita\".",
       "تمت_إضافة_المدرسة_من_نموذج_الاستكشاف_بنجاح": "Chikoro chakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
       "تم_حذف_المدرسة_بنجاح": "Chikoro chakadzimiwa zvakabvumirwa.",
-      "إدارة_المدارس": "Tarisira Zvikoro",
+      "عرض_محدود_المدارس": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تعديل_المدرسة": "Gadzirisa Chikoro",
+      "تصفية_حسب_المنطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "كل_المناطق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "القرية_مطلوب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_المدرسة_مطلوب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مثال_مدرسة_النور": "Muenzaniso: Chikoro cheAl-Noor",
+      "نوع_المدرسة_مطلوب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_المتبرع_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "فاعل_خير": "Mubatsiri",
       "إضافة_مدرسة_من_نموذج_الاستكشاف": "Wedzera Chikoro kubva kuFomu yekutsvagisisa",
       "تعذر_تحديد_مسار_المدرسة_في_القاعدة": "Kukundikana kutsanangura nzira yechikoro mudhadhabhesi.",
@@ -618,13 +787,37 @@
     "VillageDetailsPage": {
       "الاسم": "Zita",
       "رجل": "Murume",
+      "القرية_غير_موجودة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "امرأة": "Mukadzi",
       "طفل": "Mwana",
       "اختر_مدرسة_واحدة_على_الأقل_للتسجيل": "Sarudza chikoro chimwe kana zvakawanda pakunyoresa.",
       "لا_توجد_مدرسة_في_هذه_القرية_لتسجيل_الطالب_تلقائياً": "Hapana chikoro mukamusha uku kunyoresa mudzidzi otomatikirwa.",
+      "إحصائيات_قرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الإحصائيات_السكانية_والديموغرافية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إجمالي_السكان": "Vanhu Vese",
+      "المسلمون": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "غير_المسلمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المهتدون_والمسلمون_القدامى_يُسجَّلون_كطلاب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مهتدون_رجال": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مهتدون_نساء": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مهتدون_أطفال": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مسلمون_قدامى_رجال": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مسلمون_قدامى_نساء": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مسلمون_قدامى_أطفال": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المدارس_قائمة_الطلاب_المسجلين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_سجلات_بعد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مسلم_قديم": " · MuMuslim wekare",
-      "مهتد": " · Akapinda muchiIslam"
+      "مهتد": " · Akapinda muchiIslam",
+      "المدارس_والمراكز_التعليمية_في_القرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المدرسة_الافتراضية_للتقارير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الافتراضي_التلقائي_أول_مدرسة_تظهر_أولاً،_ويمكن_تعديله_": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_مدارس_في_القرية_حالياً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_مدارس_مسجلة_في_هذه_القرية_حالياً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "التصنيف_الميداني": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_المجموعة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تصنيف_LTI": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "معرف_المنطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تأكيد_حذف_السجل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "StudentManagementPage": {
       "تعذر_تحميل_بيانات_إدارة_الطلاب": "Kukundikana kuisa dhata yekutarisira vadzidzi.",
@@ -635,8 +828,16 @@
       "يحتاج_النموذج_إلى_حقل_من_نوع_كلمة_مرور_لإنشاء_حساب_الطالب": "Fomu inoda nzvimbo yemhando 'psiwedhi' kugadzira akaunzi yemudzidzi.",
       "تعذر_حفظ_الطالب_من_نموذج_الاستكشاف": "Kukundikana kuchengetedza mudzidzi kubva kufomu yekutsvagisisa.",
       "عرض_الارتباطات_والتحركات_لكل_طالب_بنمط_عضويات_المجموعات": "Ona zvakakonganiswa nemafambiro emudzidzi wese nenzira yenhengo dzeboka",
+      "عرض_محدود_الطلاب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "بحث_بالاسم_أو_البريد_أو_الارتباط": "Tsvaga nezita, imero, kana kukonganiswa...",
+      "كل_المدارس": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "كل_المناطق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_يوجد_طلاب_مطابقون_للفلاتر_الحالية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_التحركات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "آخر_حركة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 54 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تفاصيل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إضافة_طالب_جديد": "Wedzera Mudzidzi Mutsva",
+      "البريد_الإلكتروني_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إجباري": "(Inodikanwa)",
       "اتركها_فارغة_للإبقاء_على_الحالية": "(Siya isina chinhu kuchengetedza iri zvino)",
       "كلمة_مرور_الطالب": "Psiwedhi yemudzidzi",
@@ -644,6 +845,9 @@
       "إظهار": "Ratidza",
       "إخفاء_كلمة_المرور": "Viga Psiwedhi",
       "إظهار_كلمة_المرور": "Ratidza Psiwedhi",
+      "رابط_صورة_شخصية_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حساب_معطّل_لا_يستطيع_تسجيل_الدخول": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المدارس_قائمة_الطلاب_المسجلين_يمكن_أكثر_من_مدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إضافة_طالب_من_نموذج_الاستكشاف": "Wedzera Mudzidzi kubva kuFomu yekutsvagisisa"
     },
     "UsersPage": {
@@ -657,13 +861,22 @@
       "حدث_خطأ_أثناء_تحديث_الصلاحية": "Kukanganisa pakugadzirisa mvumo",
       "إدارة_المستخدمين_والصلاحيات": "Kutarisira Vashandisi neMvumo",
       "عرض_جميع_الحسابات_بما_فيها_الطلاب_ومدير_النظام_تعديل_نوع_الص": "Ona akaunzi dzese kusanganisira vadzidzi nemutariri wesisitimu. Gadzirisa mhando yemvumo pano; batanidza nezvikoro nenzvimbo kubva kumapeji emaguta.",
+      "إضافة_مستخدم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عرض_محدود_المستخدمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "الدور_في_النظام": "Basa muSisitimu",
       "نوع_صلاحيات_مخصص": "Mhando Yakagadzirwa yeMvumo",
       "بدون_نوع_صلاحيات": "Pasina Mhando yeMvumo",
       "تعديل_الصلاحيات": "Gadzirisa Mvumo",
+      "نوع_الصلاحيات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "بدون_نوع_صلاحيات_يُحدَّد_حسب_الدور_أعلاه": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مدير_النظام_وصول_كامل_يرى_كل_الصفحات_وكل_الإجراءات_دون_ربط_ب": "Mutariri weSisitimu (pakupinda kwakakwana) anoona mapeji ese nemabasa ese asina kubatana nemhando yemvumo.",
       "إذا_تُرك_نوع_الصلاحيات_فارغاً_وليس_المستخدم_مدير_نظام،_فلن_ت": "Kana mhando yemvumo ikasiiwa isina chinhu uye mushandisi asiri mutariri wesisitimu, mapeji haazoratidzwa kusvika mhando yemvumo igadzwe.",
-      "ادخل_كلمة_مرور_المستخدم": "Pinda psiwedhi yemushandisi"
+      "إضافة_مستخدم_من_نموذج_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إضافة_مستخدم_جديد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رقم_الهاتف_إجباري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "كلمة_المرور_إجباري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ادخل_كلمة_مرور_المستخدم": "Pinda psiwedhi yemushandisi",
+      "بدون_نوع_صلاحيات_تظهر_له_صفحة_طلب_الصلاحيات_إن_لم_يكن_": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "UserDetailsPage": {
       "تعذر_تحديث_حالة_التعطيل_تحقق_من_صلاحيات_Firestore": "Kukundikana kugadzirisa mamiriro ekudzimwa. Tarisa mvumo yeFirestore.",
@@ -672,17 +885,31 @@
       "هذا_البريد_الإلكتروني_مستخدم_مسبقاً": "Imero iyi ishandiswa kare.",
       "تم_تحديث_بيانات_المستخدم_بنجاح": "Dhata yemushandisi yakagadziridzwa zvakabvumirwa.",
       "تعذر_حفظ_البيانات_تحقق_من_الصلاحيات": "Kukundikana kuchengetedza dhata. Tarisa mvumo.",
+      "المستخدم_غير_موجود": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "صلاحية_معلقه": "Mvumo Irikumirira",
+      "عرض_ملف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_بيانات_المستخدم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تفعيل_الحساب_والسماح_بالدخول": "Bvumidza akaunzi uye neumvumo yekupinda",
       "تعطيل_الحساب_ومنع_فتح_الموقع": "Dzima akaunzi uye urambe kupinda kwewebhusaiti",
+      "لا_توجد_ارتباطات_مجموعات_حالياً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "السجل_والنشاطات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الاسم_الكامل_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اسم_المستخدم": "Zita reMushandisi",
+      "رقم_الهاتف_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 06 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رابط_الصورة_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 06 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الجنس_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "ذكر": "Murume",
       "أنثى": "Mukadzi",
+      "تاريخ_الميلاد_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الدولة_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مثال_MALAWI": "Muenzaniso: MALAWI",
+      "العنوان_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "العنوان_أو_المنطقة": "Kero kana Nzvimbo",
+      "ملاحظات_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "أي_ملاحظات_إضافية": "Zvimwe zvinyorwa"
     },
     "VillagesPage": {
+      "إدارة_القرى": "Tarisira Misha",
       "مهتد": "Akapinda muchiIslam",
       "مسلم_قديم": "MuMuslim wekare",
       "يرجى_إدخال_اسم_القرية_واختيار_المنطقة": "Ndokumbira upinde zita rekamusha usarudze nzvimbo",
@@ -702,20 +929,39 @@
       "تعذر_حفظ_التعديل": "Kukundikana kuchengetedza zvigadziriswa.",
       "تم_حذف_السجل": "Rekodhi yakadzimiwa.",
       "تعذر_الحذف": "Kudzima kwakundikana.",
-      "إدارة_القرى": "Tarisira Misha",
       "البيانات_الديموغرافية_والمجموعات": "Dhata yeVanhu neMaboka",
+      "إضافة_قرية_جديدة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "فتح_نموذج_استكشاف_لإدخال_قرية_جديدة": "Vhura fomu yekutsvagisisa kupinda kamusha itsva",
+      "إضافة_من_نموذج_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عرض_محدود_القرى": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "البيانات_الأساسية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المنطقة_التابعة_لها": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_المنطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_الجروب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 52 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اسم_الـ_LTI": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الإحصائيات_السكانية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_المسلمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عدد_غير_المسلمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "سجل_المهتدين_والمسلمين_القدامى_يُسجَّلون_كطلاب_في_المد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مدارس_القرية_للتسجيل_كطالب_قائمة_الطلاب_المسجلين_في_كل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "التصنيف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مهتد_جديد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تحديث_القرية": "Gadzirisa Kamusha",
       "حفظ_القرية": "Chengetedza Kamusha",
       "إضافة_قرية_من_نموذج_الاستكشاف": "Wedzera Kamusha kubva kuFomu yekutsvagisisa",
       "تعديل_القرية": "Gadzirisa Kamusha",
       "حذف_القرية": "Dzima Kamusha",
+      "طي_السجل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مهتدون_ومسلمون_قدامى_من_البطاقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "سجل_المهتدين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تم_تحديث_بيانات_نموذج_القرية": "Dhata yefomu yekamusha yakagadziridzwa.",
       "تأكيد_حذف_القرية": "Simbisa Kudzimwa kweKamusha",
       "حذف_السجل": "Dzima Rekodhi"
     },
     "NoPermissionsPage": {
       "السلام_عليكم،_أحتاج_تفعيل_الصلاحيات_لحسابي": "Mhoro, ndinoda mvumo yangu yeakaunzi ibvumidzwe.",
+      "مرحباً_بك": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "التواصل_مع_الإدارة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تواصل": "Taura"
     },
     "NotificationsPage": {
@@ -723,12 +969,23 @@
       "مجموعة_جديدة": "Boka Itsva",
       "مركز_الإشعارات_والتنبيهات": "Nzvimbo yeZvirevo neZviziviso",
       "تحديث_فوري_للإشعارات_والمحادثات": "Kugadziridzwa panguva imwe yezvirevo nehurukuro",
+      "فعّل_إشعارات_الجهاز": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لتصلك_المحادثات_والتنبيهات_فوراً_حتى_عند_إغلاق_التطبيق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "جاري_التفعيل": "Kuri kubvumidzwa…",
       "تفعيل_الآن": "Bvumidza Zvino",
+      "لا_توجد_إشعارات_جديدة_بانتظارك": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "مرسل_غير_معروف": "Mutumiri Asingazivikanwi",
       "بدون_دور": "Pasina Basa",
       "إرسال_إشعار_جديد": "Tumira Chirevo Chitsva",
-      "إنشاء_محادثة": "Gadzira Hurukuro"
+      "المستلمون": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 52 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نوع_الرسالة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "معلومة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 51 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نجاح": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تنبيه": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 50 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "المحتوى": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "إنشاء_محادثة": "Gadzira Hurukuro",
+      "العنوان_اختياري_للجروب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 49 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الأعضاء": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "SettingsPage": {
       "تم_تحديث_إعدادات_الملف_الشخصي_بنجاح": "Zvigadzirwa zvechinyorwa chako zvakagadziridzwa zvakabvumirwa!",
@@ -768,7 +1025,8 @@
       "المادة_غير_موجودة": "Chidzidzo chisina kuwanikwa",
       "تعذر_تحميل_المنهج": "Kukundikana kuisa chirongwa",
       "لا_توجد_بيانات": "Hapana dhata",
-      "خطة_التوزيع_الأسبوعي_خمسون_أسبوعاً": "Hurongwa hwekugoverana kwesvondo — Masvondo mashanu"
+      "خطة_التوزيع_الأسبوعي_خمسون_أسبوعاً": "Hurongwa hwekugoverana kwesvondo — Masvondo mashanu",
+      "الدرس_الهدف_التعليمي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 48 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "StudentDashboardPage": {
       "نسبة_الحضور": "Mwero wekuvapo",
@@ -780,7 +1038,12 @@
       "الحالة_الأكاديمية": "Mamiriro eKudzidza",
       "منتظم": "Akarongeka",
       "آفاق_2026": "Afaq 2026",
-      "تم_الاختبار_بنجاح": "Bvunzo yakapedzwa zvakabvumirwa"
+      "أحدث_تقييمات_المشرفين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تم_الاختبار_بنجاح": "Bvunzo yakapedzwa zvakabvumirwa",
+      "نصيحة_اليوم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 47 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الاستمرار_في_الحضور_اليومي_والمراجعة_المستمرة_هو_سر_الت": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "شعارنا_نتفكر_في_الآفاق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 46 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الخطة_الحالية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "StudentProfilePage": {
       "ملفي_الشخصي": "Chinyorwa changu",
@@ -788,9 +1051,13 @@
     },
     "StudentResultsPage": {
       "نتائجي_واختباراتي": "Mhedzisiro yangu neBvunzo dzangu",
-      "عرض_جميع_نتائج_الزيارات_والتقييمات_الخاصة_بك": "Ona mhedzisiro dzese dzekushanyira nekuyera kwako"
+      "عرض_جميع_نتائج_الزيارات_والتقييمات_الخاصة_بك": "Ona mhedzisiro dzese dzekushanyira nekuyera kwako",
+      "تصفية_حسب_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 45 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_نتائج_مسجلة_لك_حتى_الآن": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 44 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الاختبار": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "SupervisorDashboardPage": {
+      "لوحة_المشرف_الميداني": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 43 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إحصائيات_زياراتك_ونشاطاتك_في_المناطق_التابعة_لك": "Nhamba dzekushanyira kwako nemabasa munzvimbo dzakarongedzwa",
       "زيارة_ميدانية_جديدة": "Kushanyira Itsva kuNzvimbo",
       "سجّل_زيارتك_وارفع_تقريرك_الميداني_بسرعة": "Nyora kushanyira kwako utumirei ripoti yenzvimbo nokukurumidza",
@@ -799,13 +1066,16 @@
       "المناطق_المسندة": "Nzvimbo Dzakarongedzwa",
       "الزيارات_هذا_الشهر": "Kushanyira (mwedzi uno)",
       "إجمالي_الزيارات_الميدانية": "Kushanyira Kwese kuNzvimbo",
-      "المدارس_النشطة": "Zvikoro Zvinoshanda"
+      "المدارس_النشطة": "Zvikoro Zvinoshanda",
+      "عرض_السجل_الكامل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_زيارات_مسجلة_حديثاً": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 42 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "SupervisorHistoryPage": {
       "تعذر_تحديد_هوية_المشرف_أعد_تسجيل_الدخول": "Kukundikana kutsanangura mutariri. Ndokumbira upinde zvakare.",
       "حدث_خطأ_أثناء_جلب_سجل_زياراتك": "Kukanganisa pakutora rekodhi yekushanyira kwako",
       "سجل_زياراتي_الميدانية": "Rekodhi yangu yekushanyira kuNzvimbo",
-      "مراجعة_التقارير_والتقييمات_التي_قمت_برفعها_سابقاً": "Ongorora mapoti nekuyera zvakatumiwa pashure"
+      "مراجعة_التقارير_والتقييمات_التي_قمت_برفعها_سابقاً": "Ongorora mapoti nekuyera zvakatumiwa pashure",
+      "موقع_الزيارة_على_الخريطة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "SupervisorVisitPage": {
       "تعذر_تحديد_معرف_المستخدم_الحالي": "Kukundikana kutsanangura ID yemushandisi wariwo.",
@@ -818,9 +1088,21 @@
       "حدث_خطأ_أثناء_رفع_التقرير": "Kukanganisa pakutumira ripoti.",
       "تسجيل_زيارة_ميدانية": "Nyora Kushanyira kuNzvimbo",
       "توثيق_تفصيلي_لأداء_المدارس_مع_الموقع_الجغرافي": "Kunyora nekujekesa mabasa ezvikoro nenzvimbo yepasirose",
+      "المدرسة_المُزارة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 41 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_المدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_المادة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 40 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الدرس_المدرج_بالخطة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختر_الدرس": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 39 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "سجل_الطلاب_والتقييم_الفردي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_الحالة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 38 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختبار_الطالب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملاحظة_التقييم_اختياري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 37 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تقييم_المدرّس_من_5_نجوم": "Kuyera Mudzidzisi (kubva kunyeredzi 5)",
       "التقييم_العام_للقرية_من_5_نجوم": "Kuyera Kunoteverera Kwese kweKamusha (kubva kunyeredzi 5)",
+      "الملاحظات_والتوجيهات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اكتب_رأيك_العام_عن_الزيارة": "Nyora maonero ako akajairika pamusoro pekushanyira...",
+      "لم_يتم_جلب_موقع_الجوال_بعد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 36 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اضغط_لالتقاط_أو_اختيار_صور_وفيديو": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "حفظ_التقرير_الميداني_بشكل_نهائي": "Chengetedza ripoti yenzvimbo kupedzisira",
       "يرجى_التقاط_الموقع_أولاً_لرفع_التقرير": "Ndokumbira utore nzvimbo kutanga kutumira ripoti"
     },
@@ -845,12 +1127,14 @@
       "مواد_الأسبوع_من_المناهج": "Zvidzidzo zvezvondo kubva muchirongwa",
       "مواد_الشهر": "Zvidzidzo zvemwedzi",
       "مواد_اليوم": "Zvidzidzo zvenhasi",
+      "اختر_مدرسة_لبدء_تسجيل_التحضير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 35 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اختر_المنهج": " • Sarudza Chirongwa"
     },
     "TeacherDashboardPage": {
       "جاري_التحميل": "Kuri kuisa...",
       "حساب_غير_معروف": "Akaunzi Isingazivikanwi",
       "مدرسة_غير_معروفة": "Chikoro Chisingazivikanwi",
+      "لوحة_شرف_المعلم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "نظرة_عامة_على_نشاطاتك_في_مدرستك_الحالية": "Tarisa mabasa ako muchikoro chako chino",
       "سجّل_حضور_وغياب_طلابك_اليوم": "Nyora kuvapo nekusipo kwevadzidzi vako nhasi",
       "ارفع_تقريرك_الأسبوعي_للمدرسة": "Tumira ripoti yako yesvondo yechikoro",
@@ -858,11 +1142,16 @@
       "التحضير_اليومي_المرفوع": "Kugadzirira Kwezuva kwakaTumiwa",
       "نسبة_الإنجاز": "Mwero wekupedza",
       "نشط": "Anoshanda",
-      "بانتظار_التحضير": "Kumirira Kugadzirira"
+      "بانتظار_التحضير": "Kumirira Kugadzirira",
+      "عرض_الكل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 34 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "لا_توجد_سجلات_حديثة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 33 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     },
     "TeacherStudentDetailPage": {
       "تعذر_تحميل_بيانات_الدارس": "Kukundikana kuisa dhata yemudzidzi.",
       "تعذر_حذف_الدارس": "Kukundikana kudzima mudzidzi.",
+      "ملف_الدارس": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تعديل_البيانات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 32 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "دارس": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تأكيد_حذف_الدارس": "Simbisa Kudzimwa kwemudzidzi"
     },
     "TeacherStudentsPage": {
@@ -874,13 +1163,16 @@
       "لا_يمكن_استخراج_اسم_الدارس_من_حقول_النموذج_أضف_حقلاً_نصياً_ي": "Zita remudzidzi hariwanikwi mufomu. Wedzera nzvimbo yenyaya ine zita.",
       "تمت_إضافة_الدارس_من_نموذج_الاستكشاف_بنجاح": "Mudzidzi wakawedzerwa kubva kufomu yekutsvagisisa zvakabvumirwa.",
       "تم_حذف_الدارس_بنجاح": "Mudzidzi wakadzimiwa zvakabvumirwa.",
+      "تنبيه_إداري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 31 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "إدارة_الحلقات_والدارسين": "Tarisira Maboka neVadzidzi",
       "قائمة_الدارسين_المسجلين_لديك": "Rondedzero yevadzidzi vakanyoreswa newe",
       "إضافة_دارس_جديد": "Wedzera Mudzidzi Mutsva",
       "تعديل_بيانات_الدارس": "Gadzirisa Dhata yemudzidzi",
+      "اسم_الدارس": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "اسم_الدارس_الرباعي": "Zita Rechizere remudzidzi (mazita mana)",
       "السن": "Makore",
       "إضافة_دارس_من_نموذج_الاستكشاف": "Wedzera Mudzidzi kubva kuFomu yekutsvagisisa",
+      "إجراءات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 30 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "تم_تحديث_بيانات_نموذج_الدارس": "Dhata yefomu yemudzidzi yakagadziridzwa."
     },
     "TeacherWeeklyReportPage": {
@@ -889,6 +1181,7 @@
       "حدث_خطأ_أثناء_حفظ_التقرير_الأسبوعي": "Kukanganisa pakuchengetedza ripoti yesvondo",
       "التقرير_الأسبوعي_للأعمال": "Ripoti yeMabasa yesvondo",
       "توثيق_النشاطات_الدعوية_والمجتمعية": "Kunyora mabasa ekuparidza nesangano",
+      "المدرسة_المرتبطة_بالتقرير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
       "خطبة_الجمعة": "Preach yeChishanu",
       "دعوة_غير_المسلمين": "Kuparidza kuvasingarambi Islam",
       "تعليم_الكبار": "Kudzidzisa Vakuru",
@@ -897,10 +1190,132 @@
       "أعمال_وأنشطة_أخرى": "Mamwe Mabasa neMabasa"
     }
   },
+  "utils": {
+    "schoolReportExport": {
+      "النوع": "Mhando",
+      "الحالة": "Mamiriro",
+      "تقارير_الإشراف": "Mapoti ekutarira",
+      "الطلاب_المتفوقون": "Vadzidzi Vanobwinya",
+      "الهاتف": "Runhare",
+      "الطالب": "Mudzidzi",
+      "العنوان": "Kero",
+      "الحضور": "Kuvapo"
+    },
+    "explorationTargetPages": {
+      "جميع_الصفحات": "Mapeji Ese",
+      "استكشاف": "Kutsvagisisa",
+      "دارسون_المعلّم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 29 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "reportDetailsHtml": {
+      "دخل_الإسلام_جديداً": "Wapinda muchiIslam mutsva",
+      "مشاريع_المؤسسة": "Mabasa eMuungano",
+      "حالة_المشاريع": "Mamiriro eMabasa",
+      "المادة": "Chidzidzo",
+      "تاريخ_الإرسال": "Zuva rekutumira",
+      "الأسبوع": "Svondo"
+    },
+    "explorationDynamicFields": {
+      "بريد_إلكتروني": "Imero",
+      "بحث": "Tsvaga",
+      "نص_قصير": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 28 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نص_طويل": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "كلمة_مرور": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 27 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رابط_إلكتروني": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رقم_هاتف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 26 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رقم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "عملة_رقم_عشري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 25 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نسبة_مئوية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "منزلق_Range": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 24 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تاريخ": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 23 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تاريخ_من_إلى": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "وقت": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 22 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تاريخ_ووقت": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "شهر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 21 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أسبوع": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "قائمة_منسدلة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 20 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "اختيار_متعدد": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نعم_لا": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 19 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مربع_اختيار": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "زر_اختيار_Radio": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 18 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مفتاح_تبديل_Switch": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رفع_ملف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 17 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رفع_صورة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رفع_فيديو": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 16 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رفع_ملف_صوتي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "منتقي_الألوان": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 15 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "موقع_جغرافي_إحداثيات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "توقيع_إلكتروني": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 14 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "تقييم_Stars": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "نص_منسق_Editor": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 13 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "وسوم_Tags": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "حقل_مخفي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 12 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الحقول_النصية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الرقمية_والمالية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 11 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "التاريخ_والوقت": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الاختيار_والقوائم": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 10 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "الوسائط_والملفات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "متخصصة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 09 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "بدون_إدخال_يدوي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "من_المستخدم_الحالي_المعرف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 08 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "من_المستخدم_الحالي_الاسم_المعروض": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "permissionDataScope": {
+      "نطاق_عرض_البيانات_في_هذه_الصفحة": "Nzvimbo yekuratidzwa kwedhata papeji ino",
+      "كل_السجلات_عرض_شامل": "Manyoreso ese (kuona kwakakwana)",
+      "ما_يرتبط_بي_فقط": "Zvinobatana neni chete (zvikoro/dunhu/maboka andiri nhengo)"
+    },
+    "messengerFormat": {
+      "اليوم": "Nhasi",
+      "أمس": "Nezuro"
+    },
+    "attendanceStatus": {
+      "حاضر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 07 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "متأخر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 06 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مستأذن": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 06 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "غائب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مريض": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 05 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مسافر": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "chatNotifications": {
+      "مجموعة": "Boka",
+      "محادثة": "Hurukuro"
+    },
+    "curriculumProgress": {
+      "لم_يُحدد_بعد": "Kusati kwasarudzwa",
+      "حسب_الخطة": "Zvinoenderana nehurongwa"
+    },
+    "dailyPrepForm": {
+      "الأسبوعي": "Yesvondo",
+      "الشهري": "Yemwedzi",
+      "اليومي": "Yezuva",
+      "تاريخ_اليوم": "Zuva reNhasi",
+      "مرجع_الأسبوع": "Referensi yesvondo",
+      "مرجع_الشهر": "Referensi yemwedzi",
+      "مواد_الأسبوع_من_المناهج": "Zvidzidzo zvezvondo kubva muchirongwa",
+      "مواد_الشهر": "Zvidzidzo zvemwedzi",
+      "مواد_اليوم": "Zvidzidzo zvenhasi",
+      "طالب": "Mudzidzi",
+      "أسبوعي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 04 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "يومي": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "شهري": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 03 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "reportEvalOptions": {
+      "السير_على_المنهج": "Kufamba Zvinoenderana neChirongwa",
+      "تقييم_المدرسة": "Kuyera Chikoro",
+      "التقرير_الشهري_عن_المدرسة": "Ripoti yemwedzi pamusoro pechikoro"
+    },
+    "reportLabels": {
+      "شهري": "Yemwedzi",
+      "أسبوعي": "Yesvondo",
+      "زيارة_ميدانية": "Kushanyira kuNzvimbo",
+      "يومي": "Yezuva",
+      "تقرير_مدرسة": "Ripoti yeChikoro"
+    }
+  },
   "settings": {
     "language_title": "Mutauro weInterface",
-    "language_hint": "Sarudza mutauro weratidziro yedhangwe — Chirabhu, Chirungu, kana ChiShona.",
-    "language_label": "Mutauro"
+    "language_label": "Mutauro",
+    "language_hint": "Sarudza mutauro weratidziro yedhangwe — Chirabhu, Chirungu, kana ChiShona."
   },
   "config": {
     "appNavItems": {
@@ -929,15 +1344,15 @@
     },
     "permissionRegistry": {
       "أنواع_المستخدمين_والصلاحيات": "Mhando dzeVashandisi neMvumo",
+      "عرض_التفاصيل": "Ona Zvimwe",
       "إضافة_استكشاف": "Wedzera Kutsvagisisa",
       "إضافة_نوع_استكشاف": "Wedzera Mhando yekutsvagisisa",
       "إضافة_محافظة": "Wedzera Dunhu Guru",
-      "عرض_التفاصيل": "Ona Zvimwe",
       "تعيين_مشرف_للمنطقة": "Gadza Mutariri kuNzvimbo",
       "إضافة_منطقة": "Wedzera Nzvimbo",
-      "إضافة_مدرسة": "Wedzera Chikoro",
-      "إضافة_طالب": "Wedzera Mudzidzi",
       "عرض_ملف_الطالب": "Ona Chinyorwa chemudzidzi",
+      "إضافة_طالب": "Wedzera Mudzidzi",
+      "إضافة_مدرسة": "Wedzera Chikoro",
       "تعديل_بيانات_الطالب": "Gadzirisa Dhata yemudzidzi"
     }
   },
@@ -980,7 +1395,32 @@
   },
   "services": {
     "authService": {
-      "تم_تعطيل_هذا_الحساب_ولا_يمكنه_استخدام_المنصة_تواصل_مع_الإدار": "Akaunzi iyi yakadzimiwa uye haigoni kushandisa dhangwe. Taura nemasangano."
+      "تم_تعطيل_هذا_الحساب_ولا_يمكنه_استخدام_المنصة_تواصل_مع_الإدار": "Akaunzi iyi yakadzimiwa uye haigoni kushandisa dhangwe. Taura nemasangano.",
+      "خطأ_في_تسجيل_الدخول": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "رقم_الهاتف_أو_كلمة_المرور_غير_صحيحة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 02 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "خطأ_في_تسجيل_الدخول_برقم_الهاتف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "explorationFieldOptions": {
+      "يدوي_سطر_لكل_خيار": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 01 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "محافظات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مناطق_اختياري_ربط_بحقل_محافظة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 51 MINUTES 00 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "قرى_اختياري_ربط_بحقل_منطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مدارس_اختياري_ربط_بحقل_قرية_أو_منطقة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 59 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "طلاب_المدرسة_سجل_المدرسة_اختياري_ربط_بحقل_مدرسة": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مواد_المنهج": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 58 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "أنواع_الاستكشاف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مهتدون_ومسلمون_قدامى_اختياري_ربط_بحقل_قرية": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 57 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "ملفات_الصلاحيات": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مستخدمون_حسب_الدور": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 56 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "جميع_المستخدمين": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "معلمون": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 55 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "طلاب": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مدراء": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مدراء_نظام": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 54 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE",
+      "مشرفون_أي_نوع_مشرف": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
+    },
+    "pushMessaging": {
+      "آفاق": "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. NEXT AVAILABLE IN  14 HOURS 50 MINUTES 53 SECONDS VISIT HTTPS://MYMEMORY.TRANSLATED.NET/DOC/USAGELIMITS.PHP TO TRANSLATE MORE"
     }
   }
 }

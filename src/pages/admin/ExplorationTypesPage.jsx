@@ -284,7 +284,7 @@ const ExplorationTypesPage = () => {
             }}
           >
             <Plus size={18} />
-            <span className="exploration-types-toolbar__long">إضافة نوع</span>
+            <span className="exploration-types-toolbar__long">{t('pages.ExplorationTypesPage.إضافة_نوع', 'إضافة نوع')}</span>
             <span className="exploration-types-toolbar__short">{t('components.ReportTextList.إضافة', 'إضافة')}</span>
           </button>
         )}
@@ -301,7 +301,7 @@ const ExplorationTypesPage = () => {
         className="exploration-type-modal"
       >
         <form className="exploration-type-form" onSubmit={onSave}>
-          <label className="app-label">الاسم (مطلوب)</label>
+          <label className="app-label">{t('pages.ExplorationTypesPage.الاسم_مطلوب', 'الاسم (مطلوب)')}</label>
           <input
             className="app-input"
             value={typeName}
@@ -309,7 +309,7 @@ const ExplorationTypesPage = () => {
             placeholder={t('pages.ExplorationTypesPage.مثال_استكشاف_بئر', 'مثال: استكشاف بئر')}
             required
           />
-          <label className="app-label">وصف مختصر</label>
+          <label className="app-label">{t('pages.ExplorationTypesPage.وصف_مختصر', 'وصف مختصر')}</label>
           <textarea
             className="app-input exploration-type-form__textarea"
             value={description}
@@ -322,7 +322,7 @@ const ExplorationTypesPage = () => {
           <div className="exploration-type-editor__schema-panel">
             <div className="exploration-type-editor__schema-head">
               <div className="exploration-type-editor__schema-title-wrap">
-                <h4 className="exploration-type-editor__schema-title">حقول النموذج لهذا النوع</h4>
+                <h4 className="exploration-type-editor__schema-title">{t('pages.ExplorationTypesPage.حقول_النموذج_لهذا_النوع', 'حقول النموذج لهذا النوع')}</h4>
                 <p className="exploration-type-editor__schema-lead">
                   إذا لم تُضف حقول، يُستخدم النموذج الافتراضي الكامل عند إدخال استكشاف من هذا النوع. عند وجود حقول، يظهر
                   للمستخدم موقع القرية ثم هذه الحقول.
@@ -332,7 +332,7 @@ const ExplorationTypesPage = () => {
                 can(PERMISSION_PAGE_IDS.exploration_types, 'exploration_type_edit')) && (
                 <button type="button" className="google-btn google-btn--toolbar" onClick={addSchemaRow}>
                   <Plus size={16} />
-                  <span>إضافة حقل</span>
+                  <span>{t('pages.ExplorationTypesPage.إضافة_حقل', 'إضافة حقل')}</span>
                 </button>
               )}
             </div>
@@ -347,7 +347,7 @@ const ExplorationTypesPage = () => {
                   <div className="exploration-type-editor__field-row">
                     <GripVertical size={18} className="exploration-type-editor__grip" aria-hidden />
                     <div className="exploration-type-editor__field-grow">
-                      <label className="app-label">عنوان الحقل</label>
+                      <label className="app-label">{t('pages.ExplorationTypesPage.عنوان_الحقل', 'عنوان الحقل')}</label>
                       <input
                         className="app-input"
                         value={row.label}
@@ -356,7 +356,7 @@ const ExplorationTypesPage = () => {
                       />
                     </div>
                     <div className="exploration-type-editor__field-type">
-                      <label className="app-label">نوع الإدخال</label>
+                      <label className="app-label">{t('pages.ExplorationTypesPage.نوع_الإدخال', 'نوع الإدخال')}</label>
                       <select
                         className="app-input"
                         value={row.fieldType}
@@ -379,7 +379,7 @@ const ExplorationTypesPage = () => {
                         checked={row.required}
                         onChange={(e) => updateSchemaRow(index, { required: e.target.checked })}
                       />
-                      مطلوب
+                      {t('components.ExplorationTypePreviewModal.مطلوب', 'مطلوب')}
                     </label>
                     <div className="exploration-type-editor__row-actions">
                       <button type="button" className="icon-btn" title={t('pages.ExplorationTypesPage.أعلى', 'أعلى')} onClick={() => moveSchemaRow(index, -1)}>
@@ -396,7 +396,7 @@ const ExplorationTypesPage = () => {
                   <div className="exploration-type-editor__grid-2">
                     {row.fieldType !== 'hidden' && (
                       <div>
-                        <label className="app-label">نص توضيحي (placeholder)</label>
+                        <label className="app-label">{t('pages.ExplorationTypesPage.نص_توضيحي_placeholder', 'نص توضيحي (placeholder)')}</label>
                         <input
                           className="app-input"
                           value={row.placeholder}
@@ -411,7 +411,7 @@ const ExplorationTypesPage = () => {
                       row.fieldType === 'rating') && (
                       <>
                         <div>
-                          <label className="app-label">حد أدنى</label>
+                          <label className="app-label">{t('pages.ExplorationTypesPage.حد_أدنى', 'حد أدنى')}</label>
                           <input
                             className="app-input"
                             inputMode="decimal"
@@ -420,7 +420,7 @@ const ExplorationTypesPage = () => {
                           />
                         </div>
                         <div>
-                          <label className="app-label">حد أقصى</label>
+                          <label className="app-label">{t('pages.ExplorationTypesPage.حد_أقصى', 'حد أقصى')}</label>
                           <input
                             className="app-input"
                             inputMode="decimal"
@@ -434,7 +434,7 @@ const ExplorationTypesPage = () => {
                   {FIELD_TYPES_WITH_OPTIONS.has(row.fieldType) && (
                     <div className="exploration-type-editor__options-block">
                       <div>
-                        <label className="app-label">مصدر الخيارات</label>
+                        <label className="app-label">{t('pages.ExplorationTypesPage.مصدر_الخيارات', 'مصدر الخيارات')}</label>
                         <select
                           className="app-input"
                           value={row.optionSource || 'manual'}
@@ -449,13 +449,13 @@ const ExplorationTypesPage = () => {
                       </div>
                       {EXPLORATION_OPTION_SOURCE_SUPPORTS_DEPENDS.has(row.optionSource) && (
                         <div>
-                          <label className="app-label">يعتمد على حقل (اختياري)</label>
+                          <label className="app-label">{t('pages.ExplorationTypesPage.يعتمد_على_حقل_اختياري', 'يعتمد على حقل (اختياري)')}</label>
                           <select
                             className="app-input"
                             value={row.dependsOnFieldId || ''}
                             onChange={(e) => updateSchemaRow(index, { dependsOnFieldId: e.target.value })}
                           >
-                            <option value="">— مستقل (عرض الكل) —</option>
+                            <option value="">{t('pages.ExplorationTypesPage.مستقل_عرض_الكل', '— مستقل (عرض الكل) —')}</option>
                             {schemaFields
                               .filter((_, i) => i !== index)
                               .map((r) => (
@@ -472,7 +472,7 @@ const ExplorationTypesPage = () => {
                       )}
                       {row.optionSource === 'users' && (
                         <div>
-                          <label className="app-label">تصفية المستخدمين</label>
+                          <label className="app-label">{t('pages.ExplorationTypesPage.تصفية_المستخدمين', 'تصفية المستخدمين')}</label>
                           <select
                             className="app-input"
                             value={row.userRoleFilter || 'all'}
@@ -488,7 +488,7 @@ const ExplorationTypesPage = () => {
                       )}
                       {(row.optionSource || 'manual') === 'manual' && (
                         <div className="exploration-type-editor__options-span">
-                          <label className="app-label">الخيارات (سطر لكل خيار)</label>
+                          <label className="app-label">{t('pages.ExplorationTypesPage.الخيارات_سطر_لكل_خيار', 'الخيارات (سطر لكل خيار)')}</label>
                           <textarea
                             className="app-input exploration-type-editor__options-textarea"
                             value={row.optionsText}
@@ -507,7 +507,7 @@ const ExplorationTypesPage = () => {
                   )}
                   {(row.fieldType === 'text' || row.fieldType === 'email' || row.fieldType === 'tel') && (
                     <div className="exploration-type-editor__section-divider">
-                      <label className="app-label">قيمة من المستخدم الحالي (اختياري)</label>
+                      <label className="app-label">{t('pages.ExplorationTypesPage.قيمة_من_المستخدم_الحالي_اختياري', 'قيمة من المستخدم الحالي (اختياري)')}</label>
                       <select
                         className="app-input"
                         value={row.valueSource || ''}
@@ -523,7 +523,7 @@ const ExplorationTypesPage = () => {
                   )}
                   {row.fieldType === 'hidden' && (
                     <div className="exploration-type-editor__section-divider">
-                      <label className="app-label">القيمة المحفوظة (لا تظهر في نموذج الاستكشاف)</label>
+                      <label className="app-label">{t('pages.ExplorationTypesPage.القيمة_المحفوظة_لا_تظهر_في_نموذج_الاستكشاف', 'القيمة المحفوظة (لا تظهر في نموذج الاستكشاف)')}</label>
                       <input
                         className="app-input"
                         value={row.defaultValue}
@@ -594,12 +594,12 @@ const ExplorationTypesPage = () => {
           <div className="exploration-type-editor__actions">
             <button type="button" className="google-btn exploration-type-editor__action-btn" onClick={clearForm}>
               <span className="exploration-type-editor__btn-inner">
-                <X size={14} aria-hidden /> إلغاء
+                <X size={14} aria-hidden /> {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
               </span>
             </button>
             <BusyButton type="submit" busy={saving} className="google-btn google-btn--filled exploration-type-editor__action-btn">
               <span className="exploration-type-editor__btn-inner">
-                <Save size={14} aria-hidden /> حفظ
+                <Save size={14} aria-hidden /> {t('components.MessengerPanel.حفظ', 'حفظ')}
               </span>
             </BusyButton>
           </div>
@@ -609,7 +609,7 @@ const ExplorationTypesPage = () => {
       {loading ? (
         <div className="loading-spinner page-loading" />
       ) : types.length === 0 ? (
-        <div className="empty-state">لا توجد أنواع استكشاف مضافة حتى الآن.</div>
+        <div className="empty-state">{t('pages.ExplorationTypesPage.لا_توجد_أنواع_استكشاف_مضافة_حتى_الآن', 'لا توجد أنواع استكشاف مضافة حتى الآن.')}</div>
       ) : (
         <div className="entity-grid entity-grid--md exploration-types-grid">
           {types.map((item) => {

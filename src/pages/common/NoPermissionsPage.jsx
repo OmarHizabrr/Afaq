@@ -30,7 +30,7 @@ export default function NoPermissionsPage() {
         <div className="no-permissions-card__icon">
           <ShieldAlert size={28} />
         </div>
-        <h1 className="no-permissions-card__title">مرحباً بك</h1>
+        <h1 className="no-permissions-card__title">{t('pages.NoPermissionsPage.مرحباً_بك', 'مرحباً بك')}</h1>
         <p className="no-permissions-card__text">
           لا توجد لديك أي صلاحية مفعّلة حالياً. يرجى طلب تحديد نوع الصلاحيات من الإدارة.
         </p>
@@ -38,7 +38,7 @@ export default function NoPermissionsPage() {
 
         {list.length > 0 && (
           <div className="no-permissions-card__contacts">
-            <h3>التواصل مع الإدارة</h3>
+            <h3>{t('pages.NoPermissionsPage.التواصل_مع_الإدارة', 'التواصل مع الإدارة')}</h3>
             <div className="no-permissions-card__contacts-list">
               {list.map((item, idx) => {
                 const href = normalizeContactUrl(item, contactsMessage);

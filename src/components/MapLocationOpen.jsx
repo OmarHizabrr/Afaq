@@ -6,7 +6,7 @@ import useAppTranslation from '../hooks/useAppTranslation';
 /**
  * عرض الإحداثيات مع إمكانية النقر لفتح خرائط Google (مثل تيليجرام/واتساب).
  */
-const MapLocationOpen = ({ gpsLocation, label = 'الموقع الجغرافي', subtitle }) => {
+const MapLocationOpen = ({ gpsLocation, label = t('components.MapLocationOpen.الموقع_الجغرافي', 'الموقع الجغرافي'), subtitle }) => {
   const { t } = useAppTranslation();
   if (!hasValidGps(gpsLocation)) {
     return (

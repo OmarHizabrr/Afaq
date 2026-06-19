@@ -67,25 +67,25 @@ export default function AdminBrandingPage({ user }) {
         )}
 
         <label className="app-field app-field--grow">
-          <span className="app-label">اسم المنصة</span>
+          <span className="app-label">{t('pages.AdminBrandingPage.اسم_المنصة', 'اسم المنصة')}</span>
           <input value={siteName} onChange={(e) => setSiteName(e.target.value)} className="app-input" />
         </label>
         <label className="app-field app-field--grow">
-          <span className="app-label">عنوان الصفحات</span>
+          <span className="app-label">{t('pages.AdminBrandingPage.عنوان_الصفحات', 'عنوان الصفحات')}</span>
           <input value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} className="app-input" />
         </label>
         <label className="app-field app-field--grow">
-          <span className="app-label">نص الشعار المختصر</span>
+          <span className="app-label">{t('pages.AdminBrandingPage.نص_الشعار_المختصر', 'نص الشعار المختصر')}</span>
           <input value={logoText} onChange={(e) => setLogoText(e.target.value)} className="app-input" />
         </label>
         <label className="app-field app-field--grow">
-          <span className="app-label">النص الفرعي في الشريط الجانبي</span>
+          <span className="app-label">{t('pages.AdminBrandingPage.النص_الفرعي_في_الشريط_الجانبي', 'النص الفرعي في الشريط الجانبي')}</span>
           <input value={adminSubtitle} onChange={(e) => setAdminSubtitle(e.target.value)} className="app-input" />
         </label>
 
         <div className="admin-branding-contacts">
           <div className="admin-branding-contacts__head">
-            <strong>وسائل تواصل الإدارة</strong>
+            <strong>{t('pages.AdminBrandingPage.وسائل_تواصل_الإدارة', 'وسائل تواصل الإدارة')}</strong>
             <BusyButton
               type="button"
               className="icon-btn"
@@ -103,7 +103,7 @@ export default function AdminBrandingPage({ user }) {
           </div>
           <div className="admin-branding-contacts__list">
             <label className="app-field app-field--grow">
-              <span className="app-label">رسالة توضيحية للمستخدم</span>
+              <span className="app-label">{t('pages.AdminBrandingPage.رسالة_توضيحية_للمستخدم', 'رسالة توضيحية للمستخدم')}</span>
               <textarea
                 className="app-textarea"
                 rows={3}
@@ -133,13 +133,13 @@ export default function AdminBrandingPage({ user }) {
                     )
                   }
                 >
-                  <option value="whatsapp">واتساب</option>
-                  <option value="telegram">تلجرام</option>
-                  <option value="phone">اتصال هاتفي</option>
+                  <option value="whatsapp">{t('pages.AdminBrandingPage.واتساب', 'واتساب')}</option>
+                  <option value="telegram">{t('pages.AdminBrandingPage.تلجرام', 'تلجرام')}</option>
+                  <option value="phone">{t('pages.AdminBrandingPage.اتصال_هاتفي', 'اتصال هاتفي')}</option>
                   <option value="email">{t('utils.explorationDynamicFields.بريد_إلكتروني', 'بريد إلكتروني')}</option>
-                  <option value="instagram">انستغرام</option>
-                  <option value="facebook">فيسبوك</option>
-                  <option value="x">X / تويتر</option>
+                  <option value="instagram">{t('pages.AdminBrandingPage.انستغرام', 'انستغرام')}</option>
+                  <option value="facebook">{t('pages.AdminBrandingPage.فيسبوك', 'فيسبوك')}</option>
+                  <option value="x">{t('pages.AdminBrandingPage.X_تويتر', 'X / تويتر')}</option>
                   <option value="other">{t('components.ExplorationTargetPagesPicker.أخرى', 'أخرى')}</option>
                 </AppSelect>
                 <input
@@ -164,7 +164,7 @@ export default function AdminBrandingPage({ user }) {
               </div>
             ))}
             {contactsDraft.length === 0 && (
-              <p className="admin-branding-contacts__empty">لا توجد وسائل تواصل بعد. أضف وسيلة من زر +.</p>
+              <p className="admin-branding-contacts__empty">{t('pages.AdminBrandingPage.لا_توجد_وسائل_تواصل_بعد_أضف_وسيلة_من_زر', 'لا توجد وسائل تواصل بعد. أضف وسيلة من زر +.')}</p>
             )}
           </div>
         </div>

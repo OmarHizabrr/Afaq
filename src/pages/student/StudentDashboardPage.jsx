@@ -140,7 +140,7 @@ const StudentDashboardPage = ({ user }) => {
         <div className="surface-card surface-card--lg student-results-card">
           <div className="student-results-card__head">
             <Activity size={24} color="var(--accent-color)" />
-            <h2 className="student-results-card__title">أحدث تقييمات المشرفين</h2>
+            <h2 className="student-results-card__title">{t('pages.StudentDashboardPage.أحدث_تقييمات_المشرفين', 'أحدث تقييمات المشرفين')}</h2>
           </div>
 
           {stats.recentResults.length === 0 ? (
@@ -188,15 +188,15 @@ const StudentDashboardPage = ({ user }) => {
 
         <div className="student-sidebar-stack">
           <div className="student-tip-card">
-            <h3 className="student-tip-card__title"><Lightbulb size={18} /> نصيحة اليوم</h3>
-            <p className="student-tip-card__body">الاستمرار في الحضور اليومي والمراجعة المستمرة هو سر التفوق في حلقات آفاق التعليمية.</p>
+            <h3 className="student-tip-card__title"><Lightbulb size={18} /> {t('pages.StudentDashboardPage.نصيحة_اليوم', 'نصيحة اليوم')}</h3>
+            <p className="student-tip-card__body">{t('pages.StudentDashboardPage.الاستمرار_في_الحضور_اليومي_والمراجعة_المستمرة_هو_سر_الت', 'الاستمرار في الحضور اليومي والمراجعة المستمرة هو سر التفوق في حلقات آفاق التعليمية.')}</p>
             <div className="student-tip-card__footer">
-              <span className="btn-inner btn-inner--sm"><Rocket size={14} /> شعارنا: نتفكر في الآفاق</span>
+              <span className="btn-inner btn-inner--sm"><Rocket size={14} /> {t('pages.StudentDashboardPage.شعارنا_نتفكر_في_الآفاق', 'شعارنا: نتفكر في الآفاق')}</span>
             </div>
           </div>
 
           <div className="surface-card surface-card--lg student-plan-card">
-            <h3 className="student-plan-card__title">الخطة الحالية</h3>
+            <h3 className="student-plan-card__title">{t('pages.StudentDashboardPage.الخطة_الحالية', 'الخطة الحالية')}</h3>
             <div className="student-plan-card__list">
               <div className="student-plan-card__item">
                 <CheckCircle size={16} color="var(--success-color)" /> مراجعة الجزء الثلاثون

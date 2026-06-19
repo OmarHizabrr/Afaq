@@ -96,7 +96,7 @@ const TeacherStudentDetailPage = ({ user }) => {
             </button>
           </div>
         )}
-        title={<>ملف الدارس: <span className="page-header-accent--success">{student.studentName}</span></>}
+        title={<>{t('pages.TeacherStudentDetailPage.ملف_الدارس', 'ملف الدارس:')} <span className="page-header-accent--success">{student.studentName}</span></>}
         subtitle={schoolName ? `المدرسة: ${schoolName}` : undefined}
       >
         <button
@@ -105,7 +105,7 @@ const TeacherStudentDetailPage = ({ user }) => {
           onClick={() => navigate('/teacher/students', { state: { editStudent: student } })}
         >
           <Edit2 size={18} />
-          <span className="portal-toolbar__long">تعديل البيانات</span>
+          <span className="portal-toolbar__long">{t('pages.TeacherStudentDetailPage.تعديل_البيانات', 'تعديل البيانات')}</span>
           <span className="portal-toolbar__short">{t('components.ExplorationListCard.تعديل', 'تعديل')}</span>
         </button>
       </PageHeader>
@@ -117,7 +117,7 @@ const TeacherStudentDetailPage = ({ user }) => {
           {(student.studentName || '?').charAt(0)}
         </div>
         <h2 className="user-details-profile-card__name">{student.studentName}</h2>
-        <span className="user-details-profile-card__role">دارس</span>
+        <span className="user-details-profile-card__role">{t('pages.TeacherStudentDetailPage.دارس', 'دارس')}</span>
 
         <div className="user-details-profile-card__meta">
           <div className="user-details-profile-card__meta-row">

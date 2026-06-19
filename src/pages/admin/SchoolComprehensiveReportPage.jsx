@@ -86,7 +86,7 @@ const SchoolComprehensiveReportPage = () => {
   }, [load]);
 
   if (loading) return <div className="loading-spinner page-loading-lg" />;
-  if (!data) return <div className="empty-state">المدرسة غير موجودة</div>;
+  if (!data) return <div className="empty-state">{t('pages.SchoolComprehensiveReportPage.المدرسة_غير_موجودة', 'المدرسة غير موجودة')}</div>;
 
   const schoolScope = pageDataScope(PERMISSION_PAGE_IDS.schools);
   if (ready && !membershipLoading && schoolScope === DATA_SCOPE_MEMBERSHIP && schoolId && !membershipGroupIds.has(schoolId)) {
@@ -116,8 +116,8 @@ const SchoolComprehensiveReportPage = () => {
         <div className="school-report-page__toolbar">
           <button type="button" className="google-btn google-btn--toolbar" onClick={() => setPreviewOpen(true)}>
             <Printer size={16} />
-            <span className="portal-toolbar__long">معاينة</span>
-            <span className="portal-toolbar__short">معاينة</span>
+            <span className="portal-toolbar__long">{t('pages.ReportDetailsPage.معاينة', 'معاينة')}</span>
+            <span className="portal-toolbar__short">{t('pages.ReportDetailsPage.معاينة', 'معاينة')}</span>
           </button>
           <BusyButton
             type="button"
@@ -147,8 +147,8 @@ const SchoolComprehensiveReportPage = () => {
           </button>
           {can(PERMISSION_PAGE_IDS.schools, 'school_report_create') && (
             <button type="button" className="google-btn google-btn--filled google-btn--toolbar" onClick={() => navigate(`/schools/${schoolId}/report`)}>
-              <span className="portal-toolbar__long">إضافة تقرير جديد</span>
-              <span className="portal-toolbar__short">تقرير جديد</span>
+              <span className="portal-toolbar__long">{t('pages.SchoolComprehensiveReportPage.إضافة_تقرير_جديد', 'إضافة تقرير جديد')}</span>
+              <span className="portal-toolbar__short">{t('pages.SchoolComprehensiveReportPage.تقرير_جديد', 'تقرير جديد')}</span>
             </button>
           )}
         </div>
@@ -165,21 +165,21 @@ const SchoolComprehensiveReportPage = () => {
         <div className="comprehensive-report-stat">
           <MapPin size={22} color="#f59e0b" />
           <div>
-            <p>الزيارات الميدانية</p>
+            <p>{t('pages.SchoolComprehensiveReportPage.الزيارات_الميدانية', 'الزيارات الميدانية')}</p>
             <h3>{data.fieldVisits.length}</h3>
           </div>
         </div>
         <div className="comprehensive-report-stat">
           <BookOpen size={22} color="var(--success-color)" />
           <div>
-            <p>سجلات التحضير</p>
+            <p>{t('pages.SchoolComprehensiveReportPage.سجلات_التحضير', 'سجلات التحضير')}</p>
             <h3>{data.dailyLogs.length}</h3>
           </div>
         </div>
         <div className="comprehensive-report-stat">
           <Users size={22} color="#ec4899" />
           <div>
-            <p>المهتدون الجدد (القرية)</p>
+            <p>{t('pages.SchoolComprehensiveReportPage.المهتدون_الجدد_القرية', 'المهتدون الجدد (القرية)')}</p>
             <h3>{data.newConvertsCount}</h3>
           </div>
         </div>
@@ -187,9 +187,9 @@ const SchoolComprehensiveReportPage = () => {
 
       <div className="comprehensive-report-grid">
         <section className="surface-card comprehensive-report-section">
-          <h3><School size={18} /> تقارير إشراف المدرسة</h3>
+          <h3><School size={18} /> {t('pages.SchoolComprehensiveReportPage.تقارير_إشراف_المدرسة', 'تقارير إشراف المدرسة')}</h3>
           {data.schoolReports.length === 0 ? (
-            <p className="comprehensive-report-empty">لا توجد تقارير إشراف.</p>
+            <p className="comprehensive-report-empty">{t('pages.SchoolComprehensiveReportPage.لا_توجد_تقارير_إشراف', 'لا توجد تقارير إشراف.')}</p>
           ) : (
             <div className="comprehensive-report-list">
               {data.schoolReports.map((r) => (
@@ -209,9 +209,9 @@ const SchoolComprehensiveReportPage = () => {
         </section>
 
         <section className="surface-card comprehensive-report-section">
-          <h3><MapPin size={18} /> الزيارات الميدانية</h3>
+          <h3><MapPin size={18} /> {t('pages.SchoolComprehensiveReportPage.الزيارات_الميدانية', 'الزيارات الميدانية')}</h3>
           {data.fieldVisits.length === 0 ? (
-            <p className="comprehensive-report-empty">لا توجد زيارات.</p>
+            <p className="comprehensive-report-empty">{t('pages.SchoolComprehensiveReportPage.لا_توجد_زيارات', 'لا توجد زيارات.')}</p>
           ) : (
             <div className="comprehensive-report-list">
               {data.fieldVisits.map((v) => (
@@ -228,9 +228,9 @@ const SchoolComprehensiveReportPage = () => {
         </section>
 
         <section className="surface-card comprehensive-report-section">
-          <h3><BookOpen size={18} /> سجلات التحضير</h3>
+          <h3><BookOpen size={18} /> {t('pages.SchoolComprehensiveReportPage.سجلات_التحضير', 'سجلات التحضير')}</h3>
           {data.dailyLogs.length === 0 ? (
-            <p className="comprehensive-report-empty">لا توجد سجلات تحضير.</p>
+            <p className="comprehensive-report-empty">{t('pages.SchoolComprehensiveReportPage.لا_توجد_سجلات_تحضير', 'لا توجد سجلات تحضير.')}</p>
           ) : (
             <div className="comprehensive-report-list">
               {data.dailyLogs.map((l) => (

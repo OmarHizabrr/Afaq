@@ -170,7 +170,7 @@ const RegionsPage = () => {
     if (expSaving) return;
     const missing = expForm.validate();
     if (missing.length > 0) {
-      setError(`الحقول التالية مطلوبة أو غير صالحة: ${missing.join('، ')}`);
+      setError(`${t('components.ExplorationDataModal.الحقول_التالية_مطلوبة_أو_غير_صالحة', 'الحقول التالية مطلوبة أو غير صالحة:')} ${missing.join(t('components.ExplorationDataModal.،', '، '))}`);
       return;
     }
     const govId = expForm.getValueBySource('governorates');
@@ -235,7 +235,7 @@ const RegionsPage = () => {
             onClick={() => setIsExploringAdding(true)}
           >
             <Compass size={18} />
-            <span className="geo-toolbar__long">إضافة من الاستكشاف</span>
+            <span className="geo-toolbar__long">{t('pages.CurriculumPage.إضافة_من_الاستكشاف', 'إضافة من الاستكشاف')}</span>
             <span className="geo-toolbar__short">{t('utils.explorationTargetPages.استكشاف', 'استكشاف')}</span>
           </button>
         )}
@@ -243,7 +243,7 @@ const RegionsPage = () => {
 
       {ready && pageDataScope(PERMISSION_PAGE_IDS.regions) === DATA_SCOPE_MEMBERSHIP && (
         <div className="app-alert app-alert--info geo-page-alert">
-          عرض محدود: المناطق والمحافظات الظاهرة مرتبطة بمجموعاتك (عضوية منطقة أو ما يترتب عليها).
+          {t('pages.RegionsPage.عرض_محدود_المناطق', 'عرض محدود: المناطق والمحافظات الظاهرة مرتبطة بمجموعاتك (عضوية منطقة أو ما يترتب عليها).')}
         </div>
       )}
       {error && <div className="app-alert app-alert--error geo-page-alert">{error}</div>}
@@ -261,7 +261,7 @@ const RegionsPage = () => {
             onChange={(e) => setSelectedGovId(e.target.value)}
             className="app-select geo-form__field geo-form__field--sm"
           >
-            <option value="">-- اختر المحافظة --</option>
+            <option value="">{t('pages.RegionsPage.اختر_المحافظة', '-- اختر المحافظة --')}</option>
             {governorates.map(gov => (
               <option key={gov.id} value={gov.id}>{gov.name}</option>
             ))}
@@ -276,7 +276,7 @@ const RegionsPage = () => {
           />
           <div className="modal-footer-actions">
             <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => { setIsAdding(false); setIsEditing(null); setRegionName(''); setSelectedGovId(''); }}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton type="submit" busy={loading} className="google-btn google-btn--filled modal-footer-actions__btn">
               {isEditing ? t('pages.GovernoratesPage.تحديث', 'تحديث') : t('components.MessengerPanel.حفظ', 'حفظ')}
@@ -303,7 +303,7 @@ const RegionsPage = () => {
           />
           <div className="modal-footer-actions modal-footer-actions--spaced">
             <button type="button" className="google-btn modal-footer-actions__btn" onClick={() => setIsExploringAdding(false)}>
-              إلغاء
+              {t('components.ConfirmDialog.إلغاء', 'إلغاء')}
             </button>
             <BusyButton type="submit" busy={expSaving} className="google-btn google-btn--filled modal-footer-actions__btn">
               حفظ المنطقة
