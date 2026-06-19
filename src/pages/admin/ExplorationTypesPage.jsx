@@ -29,6 +29,7 @@ import {
   normalizeAllowedPageIds,
 } from '../../utils/explorationTargetPages';
 import './ExplorationTypesPage.css';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const emptySchemaRow = (api) => ({
   id: api.getNewId('expl_field'),

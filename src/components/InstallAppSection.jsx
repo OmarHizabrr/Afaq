@@ -3,6 +3,7 @@ import { Download, Share, Smartphone, CheckCircle2 } from 'lucide-react';
 import useInstallPrompt from '../hooks/useInstallPrompt';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const InstallAppSection = () => {
   const { t } = useAppTranslation();
   const { installed, iosHint, hasNativePrompt, promptInstall, canPrompt } = useInstallPrompt();

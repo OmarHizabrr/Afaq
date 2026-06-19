@@ -4,6 +4,7 @@ import ReportTextList from './ReportTextList';
 import YesNoRadio from './YesNoRadio';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const VillageReportFields = ({
   value,
   onChange,

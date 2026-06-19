@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const PortalQuickActions = ({ actions }) => {
   const { t } = useAppTranslation();

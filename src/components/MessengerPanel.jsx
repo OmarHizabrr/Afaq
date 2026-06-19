@@ -17,20 +17,22 @@ import {
   formatMessageTime,
   formatThreadTime,
 } from '../utils/messengerFormat';
+import useAppTranslation from '../hooks/useAppTranslation';
 
-const ROLE_LABELS = {
+const getRoleLabels = (t) => ({
   system_admin: t('components.MessengerPanel.مدير_نظام', 'مدير نظام'),
   admin: t('components.MessengerPanel.مدير', 'مدير'),
   supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
   supervisor_local: t('components.MessengerPanel.مشرف_منطقة', 'مشرف منطقة'),
   teacher: t('components.MessengerPanel.معلم', 'معلم'),
   student: t('components.MessengerPanel.طالب', 'طالب'),
-};
+});
 
-function replySnippetLabel(m, actorId, actorDisplayName) {
-  if (m.replyToSenderId === actorId) return t('components.MessengerPanel.أنت', 'أنت');
-  if (m.replyToSenderName === t('components.MessengerPanel.أنت', 'أنت')) return t('components.MessengerPanel.أنت', 'أنت');
-  if (!m.replyToSenderId && actorDisplayName && m.replyToSenderName === actorDisplayName) return t('components.MessengerPanel.أنت', 'أنت');
+function replySnippetLabel(m, actorId, actorDisplayName, t) {
+  const youLabel = t('components.MessengerPanel.أنت', 'أنت');
+  if (m.replyToSenderId === actorId) return youLabel;
+  if (m.replyToSenderName === youLabel) return youLabel;
+  if (!m.replyToSenderId && actorDisplayName && m.replyToSenderName === actorDisplayName) return youLabel;
   return m.replyToSenderName || '';
 }
 
@@ -56,6 +58,7 @@ const MessengerPanel = ({
   onNewChat,
 }) => {
   const { t } = useAppTranslation();
+  const roleLabels = useMemo(() => getRoleLabels(t), [t]);
   const bottomRef = useRef(null);
   const messagesRef = useRef(null);
   const composerRef = useRef(null);
@@ -356,7 +359,7 @@ const MessengerPanel = ({
 
                   const m = item.message;
                   const mine = m.senderId === actorId;
-                  const refLbl = replySnippetLabel(m, actorId, actorDisplayName);
+                  const refLbl = replySnippetLabel(m, actorId, actorDisplayName, t);
                   const showAvatar = !mine && item.isLastInGroup;
                   const showSenderName =
                     !mine && selectedConversation.isGroup && item.isFirstInGroup;
@@ -383,7 +386,7 @@ const MessengerPanel = ({
                           <div className="messenger-msg__sender">
                             {m.senderName}
                             {m.senderRole && (
-                              <span className="messenger-msg__role"> · {ROLE_LABELS[m.senderRole] || m.senderRole}</span>
+                              <span className="messenger-msg__role"> · {roleLabels[m.senderRole] || m.senderRole}</span>
                             )}
                           </div>
                         )}

@@ -20,6 +20,7 @@ import {
   syncVillageListingPersonStudentFields,
   deleteVillageListedPersonFully,
 } from '../../services/villageStudentEnrollment';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const VillageDetailsPage = () => {
   const { t } = useAppTranslation();

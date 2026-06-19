@@ -14,6 +14,7 @@ import {
 } from '../utils/explorationTargetPages';
 import { useExplorationOptionCaches } from '../hooks/useExplorationOptionCaches';
 import './ExplorationTypePreviewModal.css';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * معاينة نوع استكشاف: بنية الحقول + نموذج تفاعلي + اختصار للتعديل/الحذف.

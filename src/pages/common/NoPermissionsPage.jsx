@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldAlert } from 'lucide-react';
 import useSiteContent from '../../context/useSiteContent';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 function normalizeContactUrl(item, messageText = '') {
   const channel = String(item?.channel || '').toLowerCase();

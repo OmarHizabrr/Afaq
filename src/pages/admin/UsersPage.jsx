@@ -18,6 +18,7 @@ import {
   loadPeerUserIdsForGroups,
 } from '../../utils/permissionDataScope';
 import { SYSTEM_ADMIN_ROLE } from '../../utils/systemRoles';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const USER_ROLE_LABELS = {
   [SYSTEM_ADMIN_ROLE]: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),

@@ -13,6 +13,7 @@ import ExplorationBadge from '../../components/ExplorationBadge';
 import ExplorationDataModal from '../../components/ExplorationDataModal';
 import { useExplorationForm } from '../../hooks/useExplorationForm';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const CurriculumPage = () => {
   const { t } = useAppTranslation();

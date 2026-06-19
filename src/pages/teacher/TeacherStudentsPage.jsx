@@ -14,6 +14,7 @@ import TeacherStudentCard from "../../components/TeacherStudentCard";
 import { useExplorationForm } from "../../hooks/useExplorationForm";
 import usePermissions from "../../context/usePermissions";
 import { EXPLORATION_BRIDGE_ACTION_IDS } from "../../config/permissionRegistry";
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : "");
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const VillageSchoolCheckboxGroup = ({ schools = [], selectedIds = [], onToggle, disabled = false }) => {
   const { t } = useAppTranslation();

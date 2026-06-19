@@ -3,6 +3,7 @@ import { Eye, Edit2, Trash2 } from 'lucide-react';
 import ExplorationBadge from './ExplorationBadge';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const TeacherStudentCard = ({
   student,
   showExplorationBadge,

@@ -21,6 +21,7 @@ import { getMobileNavTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const AdminLayout = ({ user }) => {
   const { t } = useAppTranslation();
   const navigate = useNavigate();

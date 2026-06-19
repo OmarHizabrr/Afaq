@@ -18,6 +18,7 @@ import {
   filterGovernoratesByScope,
   filterRegionsByScope,
 } from '../../utils/permissionDataScope';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const RegionsPage = () => {
   const { t } = useAppTranslation();

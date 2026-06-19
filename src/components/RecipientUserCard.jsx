@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Eye } from 'lucide-react';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 function avatarSrc(u) {
   if (u?.photoURL) return u.photoURL;

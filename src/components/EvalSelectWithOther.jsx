@@ -3,6 +3,7 @@ import AppSelect from './AppSelect';
 import { EVAL_OTHER_VALUE } from '../utils/reportEvalOptions';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 /**
  * قائمة تقييم مع خيار «أخرى» يفتح حقل نص حر.
  */

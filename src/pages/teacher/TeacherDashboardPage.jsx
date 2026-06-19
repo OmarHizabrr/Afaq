@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import PortalFeaturedAction from '../../components/PortalFeaturedAction';
 import PortalQuickActions from '../../components/PortalQuickActions';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StatCard = ({ title, value, icon: Icon, tone, loading }) => (
   <div className="surface-card portal-stat-card">

@@ -19,6 +19,7 @@ import {
   isSchoolSupervisionReport,
   schoolReportViewPath,
 } from '../../utils/reportLabels';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StatCard = ({ title, value, icon, tone, loading, onClick, hint }) => {
   const { t } = useAppTranslation();

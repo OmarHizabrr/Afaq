@@ -4,6 +4,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import StudentResultCard from '../../components/StudentResultCard';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StudentResultsPage = ({ user }) => {
   const { t } = useAppTranslation();

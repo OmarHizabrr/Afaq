@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import FirestoreApi from '../../services/firestoreApi';
 import PrintDocumentShell from '../../components/PrintDocumentShell';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 function normalizeWeeks(raw) {
   if (!Array.isArray(raw) || raw.length === 0) {

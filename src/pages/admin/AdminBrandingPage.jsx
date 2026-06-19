@@ -5,6 +5,7 @@ import AppSelect from '../../components/AppSelect';
 import useSiteContent from '../../context/useSiteContent';
 import { saveBranding, saveContacts } from '../../services/siteConfigService';
 import BusyButton from '../../components/BusyButton';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 export default function AdminBrandingPage({ user }) {
   const { t } = useAppTranslation();

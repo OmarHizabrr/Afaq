@@ -20,6 +20,7 @@ import {
   reportMatchesScope,
   studentRowMatchesScope,
 } from '../../utils/permissionDataScope';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StudentManagementPage = () => {
   const { t } = useAppTranslation();

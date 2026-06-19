@@ -6,6 +6,7 @@ import { PERMISSION_PAGE_IDS } from '../config/permissionRegistry';
 import { isMoreTabActive, isNavPathActive } from '../utils/mobileNavTabs';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const BottomTabBar = ({ tabs, onMoreClick }) => {
   const { t } = useAppTranslation();
   const location = useLocation();

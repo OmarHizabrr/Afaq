@@ -24,6 +24,7 @@ import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 function getTeacherNavItems(t) {
   return [
     { name: t('config.appNavItems.الرئيسية', 'الرئيسية'), shortName: t('config.appNavItems.الرئيسية', 'الرئيسية'), icon: Home, path: '/teacher', end: true },

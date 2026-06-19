@@ -23,6 +23,7 @@ import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 function getSupervisorNavItems(t) {
   return [
     { name: t('config.appNavItems.الرئيسية', 'الرئيسية'), shortName: t('config.appNavItems.الرئيسية', 'الرئيسية'), icon: Home, path: '/supervisor', end: true },

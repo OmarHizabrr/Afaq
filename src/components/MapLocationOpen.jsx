@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin, ExternalLink } from 'lucide-react';
 import { hasValidGps, openGoogleMaps } from '../utils/maps';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * عرض الإحداثيات مع إمكانية النقر لفتح خرائط Google (مثل تيليجرام/واتساب).

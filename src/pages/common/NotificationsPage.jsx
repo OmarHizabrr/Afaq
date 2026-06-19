@@ -12,6 +12,7 @@ import UnifiedMessageCard from '../../components/UnifiedMessageCard';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
 import usePushNotifications from '../../hooks/usePushNotifications';
 import { getUserProfilePath } from '../../utils/profileLinks';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const ROLE_LABELS = {
   system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),

@@ -5,6 +5,7 @@ import BusyButton from './BusyButton';
 import ExplorationDataView from './ExplorationDataView';
 import ExplorationFormSection from './ExplorationFormSection';
 import { useExplorationForm } from '../hooks/useExplorationForm';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * مودال موحَّد لعرض/تعديل بيانات نموذج الاستكشاف لسجل.

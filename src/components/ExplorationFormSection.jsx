@@ -4,6 +4,7 @@ import AppSelect from './AppSelect';
 import ExplorationDynamicFieldBlock from './ExplorationDynamicFieldBlock';
 import { getTargetPageLabel } from '../utils/explorationTargetPages';
 import './ExplorationFormSection.css';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const TYPE_CARD_THRESHOLD = 8;
 

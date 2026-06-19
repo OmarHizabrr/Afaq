@@ -5,6 +5,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import { hasValidGps, openGoogleMaps } from '../../utils/maps';
 import { formatVisitRatingLabel } from '../../utils/visitRating';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const SupervisorHistoryPage = ({ user }) => {
   const { t } = useAppTranslation();

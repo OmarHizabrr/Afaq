@@ -19,16 +19,20 @@ import {
   filterSchoolsByScope,
   filterVillagesByScope,
 } from '../../utils/permissionDataScope';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
-const SCHOOL_LEVEL_OPTIONS = [
+const getSchoolLevelOptions = (t) => [
   { value: 'adults', label: t('pages.SchoolsPage.كبار', 'كبار') },
   { value: 'children', label: t('pages.SchoolsPage.صغار', 'صغار') },
 ];
 
-const schoolLevelLabel = (v) => SCHOOL_LEVEL_OPTIONS.find((o) => o.value === v)?.label || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد');
+const schoolLevelLabel = (v, t) =>
+  getSchoolLevelOptions(t).find((o) => o.value === v)?.label
+  || t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد');
 
 const SchoolsPage = () => {
   const { t } = useAppTranslation();
+  const schoolLevelOptions = getSchoolLevelOptions(t);
   const navigate = useNavigate();
   const perm = usePermissions();
   const { can, ready, pageDataScope, membershipGroupIds, membershipMirrorGroupIds, membershipLoading, actorUser, explorationBridgeAllowed } = perm;
@@ -331,7 +335,7 @@ const SchoolsPage = () => {
             className="schools-form__field-gap"
             required
           >
-            {SCHOOL_LEVEL_OPTIONS.map((o) => (
+            {schoolLevelOptions.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>
@@ -395,7 +399,7 @@ const SchoolsPage = () => {
                 <h3 className="schools-card__title">{sch.name}</h3>
                 <div className="schools-card__meta">
                   <span><MapPin size={14} /> القرية: {getVillageName(sch.pathVillageId || sch.villageId)}</span>
-                  <span>النوع: {schoolLevelLabel(sch.schoolLevel)}</span>
+                  <span>النوع: {schoolLevelLabel(sch.schoolLevel, t)}</span>
                   {sch.donorName && <span className="schools-card__donor"><Handshake size={14} /> المتبرع: {sch.donorName}</span>}
                 </div>
                 <div className="geo-entity-card__badge">

@@ -62,8 +62,18 @@ import {
   teacherEvaluationLabelFromRatings,
   studentLevelSummaryFromStars,
 } from '../../utils/schoolReportStars';
+import useAppTranslation from '../../hooks/useAppTranslation';
+import translate from '../../i18n/translate';
 
-const DAY_OPTIONS = [t('pages.SchoolReportPage.الأحد', 'الأحد'), t('pages.SchoolReportPage.الإثنين', 'الإثنين'), t('pages.SchoolReportPage.الثلاثاء', 'الثلاثاء'), t('pages.SchoolReportPage.الأربعاء', 'الأربعاء'), t('pages.SchoolReportPage.الخميس', 'الخميس'), t('pages.SchoolReportPage.الجمعة', 'الجمعة'), t('pages.SchoolReportPage.السبت', 'السبت')];
+const getDayOptions = (t) => [
+  t('pages.SchoolReportPage.الأحد', 'الأحد'),
+  t('pages.SchoolReportPage.الإثنين', 'الإثنين'),
+  t('pages.SchoolReportPage.الثلاثاء', 'الثلاثاء'),
+  t('pages.SchoolReportPage.الأربعاء', 'الأربعاء'),
+  t('pages.SchoolReportPage.الخميس', 'الخميس'),
+  t('pages.SchoolReportPage.الجمعة', 'الجمعة'),
+  t('pages.SchoolReportPage.السبت', 'السبت'),
+];
 
 const emptyEvalOthers = () => ({
   curriculumProgressOther: '',
@@ -93,6 +103,7 @@ const ReportField = ({ label, children, span = 1 }) => (
 
 const SchoolReportPage = () => {
   const { t } = useAppTranslation();
+  const dayOptions = getDayOptions(t);
   const { id: schoolId, reportId } = useParams();
   const [searchParams] = useSearchParams();
   const ownerIdParam = searchParams.get('ownerId') || '';
@@ -127,7 +138,7 @@ const SchoolReportPage = () => {
     teacherRatings: {},
     village: '',
     groupName: '',
-    day: DAY_OPTIONS[new Date().getDay()],
+    day: getDayOptions(translate)[new Date().getDay()],
     date: formatDateInput(),
     governorate: '',
     country: '',
@@ -246,7 +257,7 @@ const SchoolReportPage = () => {
             teacherRatings,
             village: rep.villageName || geo.villageName,
             groupName: rep.groupName || rep.schoolName || schoolData.name,
-            day: rep.dayName || DAY_OPTIONS[new Date().getDay()],
+            day: rep.dayName || dayOptions[new Date().getDay()],
             date: rep.date || formatDateInput(),
             governorate: rep.governorate || geo.governorateName,
             country: rep.country || geo.country,
@@ -297,7 +308,7 @@ const SchoolReportPage = () => {
           teacherRatings,
           village: geo.villageName,
           groupName: schoolData.name || '',
-          day: DAY_OPTIONS[now.getDay()],
+          day: dayOptions[now.getDay()],
           date: formatDateInput(now),
           governorate: geo.governorateName,
           country: geo.country,
@@ -711,7 +722,7 @@ const SchoolReportPage = () => {
               </ReportField>
               <ReportField label="اليوم">
                 <AppSelect searchable value={form.day} onChange={(e) => setForm((p) => ({ ...p, day: e.target.value }))}>
-                  {DAY_OPTIONS.map((d) => (
+                  {dayOptions.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </AppSelect>

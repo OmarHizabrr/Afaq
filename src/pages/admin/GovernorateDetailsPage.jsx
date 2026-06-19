@@ -8,6 +8,7 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
 import useAppTranslation from '../../hooks/useAppTranslation';
 
+
 const GovernorateDetailsPage = () => {
     const { t } = useAppTranslation();
     const { id } = useParams();

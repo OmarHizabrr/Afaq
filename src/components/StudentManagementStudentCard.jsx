@@ -2,6 +2,7 @@ import React from 'react';
 import { Activity, Eye, Edit2 } from 'lucide-react';
 import ExplorationBadge from './ExplorationBadge';
 import { EXPLORATION_BRIDGE_ACTION_IDS } from '../config/permissionRegistry';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const StudentManagementStudentCard = ({
   student,

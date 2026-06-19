@@ -1,4 +1,5 @@
 import React from 'react';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const YesNoRadio = ({ label, name, value, onChange, required = false }) => {
   const { t } = useAppTranslation();

@@ -9,6 +9,7 @@ import StarRatingInput from '../../components/StarRatingInput';
 import BusyButton from '../../components/BusyButton';
 import SupervisorVisitStudentCard from '../../components/SupervisorVisitStudentCard';
 import { clampVisitRatingSave } from '../../utils/visitRating';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const SupervisorVisitPage = ({ user }) => {
   const { t } = useAppTranslation();

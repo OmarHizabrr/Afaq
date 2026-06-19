@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import AuthService from '../services/authService';
 import { useNotificationBadge } from '../context/NotificationsBadgeContext';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 function resolvePaths(user) {
   const uid = user?.uid || user?.id;

@@ -9,6 +9,7 @@ import PushNotificationSection from '../../components/PushNotificationSection';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import useAppTranslation from '../../hooks/useAppTranslation';
 
+
 const SettingsPage = () => {
   const { t } = useAppTranslation();
   const [user, setUser] = useState(null);

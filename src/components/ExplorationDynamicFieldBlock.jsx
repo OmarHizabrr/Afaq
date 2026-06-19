@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import AppSelect from './AppSelect';
 import { uploadExplorationFieldFile } from '../services/storageApi';
+import useAppTranslation from '../hooks/useAppTranslation';
 
-const yesNo = [
+const getYesNoOptions = (t) => [
   { value: '', label: t('components.ExplorationDynamicFieldBlock.غير_محدد', 'غير محدد') },
   { value: 'yes', label: t('components.ExplorationDynamicFieldBlock.نعم', 'نعم') },
   { value: 'no', label: t('components.ExplorationDynamicFieldBlock.لا', 'لا') },
@@ -180,6 +181,7 @@ function SignatureCanvas({ value, onChange, disabled = false, storageUserId, fie
 
 export default function ExplorationDynamicFieldBlock({ fields, values, onChange, storageUserId, variant = 'default', actorUser = null }) {
   const { t } = useAppTranslation();
+  const yesNo = getYesNoOptions(t);
   const [uploadingFieldId, setUploadingFieldId] = useState(null);
 
   useEffect(() => {

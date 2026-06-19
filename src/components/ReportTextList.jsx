@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const ReportTextList = ({
   label,
   items = [],

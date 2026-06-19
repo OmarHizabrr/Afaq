@@ -1,6 +1,7 @@
 import React from 'react';
 import { Compass } from 'lucide-react';
 import { useExplorationTypesCache } from '../hooks/useExplorationTypesCache';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * شريحة صغيرة تُظهر أن السجل أُنشئ من نموذج استكشاف، مع اسم النوع وأيقونة

@@ -19,6 +19,7 @@ import { DATA_SCOPE_MEMBERSHIP, reportMatchesScope } from '../../utils/permissio
 import { formatVisitRatingLabel } from '../../utils/visitRating';
 import { isSchoolSupervisionReport, prepPeriodLabel, schoolReportViewPath, formatDailyLogSubjects, schoolReportSummaryLine } from '../../utils/reportLabels';
 import { enrichDailyPrepReportsBatch } from '../../utils/enrichDailyPrepReport';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const TAB_LABELS = {
   daily: t('config.appNavItems.التحضير', 'التحضير'),

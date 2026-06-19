@@ -9,6 +9,7 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, studentRowMatchesScope } from '../../utils/permissionDataScope';
 import BusyButton from '../../components/BusyButton';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StudentDetailsPage = () => {
   const { t } = useAppTranslation();

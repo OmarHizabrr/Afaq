@@ -4,6 +4,7 @@ import AppSelect from './AppSelect';
 import BusyButton from './BusyButton';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const VillageDefaultSchoolPanel = ({
   schools = [],
   defaultSchoolId,

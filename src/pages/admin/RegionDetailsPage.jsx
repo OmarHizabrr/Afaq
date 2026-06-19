@@ -7,16 +7,17 @@ import BusyButton from '../../components/BusyButton';
 import usePermissions from '../../context/usePermissions';
 import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP } from '../../utils/permissionDataScope';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
-const ROLE_LABELS = {
+const getRoleLabels = (t) => ({
     system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
     admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
     supervisor_arab: t('pages.RegionDetailsPage.مشرف_عام_عربي', 'مشرف عام (عربي)'),
     supervisor_local: t('pages.RegionDetailsPage.مشرف_منطقة_محلي', 'مشرف منطقة (محلي)'),
     teacher: t('pages.RegionDetailsPage.معلم_مدرسة', 'معلم مدرسة'),
     student: t('pages.RegionDetailsPage.طالب_دارس', 'طالب / دارس'),
-    unassigned: t('pages.RegionDetailsPage.صلاحية_معلقة', 'صلاحية معلقة')
-};
+    unassigned: t('pages.RegionDetailsPage.صلاحية_معلقة', 'صلاحية معلقة'),
+});
 const ASSIGN_ROLE_FILTER_ORDER = [
     'teacher',
     'supervisor_local',
@@ -30,6 +31,7 @@ const ASSIGN_ROLE_FILTER_ORDER = [
 
 const RegionDetailsPage = () => {
   const { t } = useAppTranslation();
+  const roleLabels = getRoleLabels(t);
     const { id } = useParams();
     const navigate = useNavigate();
     const [region, setRegion] = useState(null);
@@ -382,7 +384,7 @@ const RegionDetailsPage = () => {
                               className={`role-filter-btn ${assignRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                               onClick={() => setAssignRoleFilter(rid)}
                             >
-                              {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : ROLE_LABELS[rid] || rid)} ({assignRoleCounts[rid] || 0})
+                              {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : roleLabels[rid] || rid)} ({assignRoleCounts[rid] || 0})
                             </button>
                           ))}
                         </div>
@@ -397,7 +399,7 @@ const RegionDetailsPage = () => {
                                         <img src={u.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.displayName || '')}`} alt="" className="member-avatar-sm" />
                                         <div className="region-assign-user-row__body">
                                             <div className="region-assign-user-row__name">{u.displayName || u.email}</div>
-                                            <div className="region-assign-user-row__role">{ROLE_LABELS[u.role] || u.role || '—'}</div>
+                                            <div className="region-assign-user-row__role">{roleLabels[u.role] || u.role || '—'}</div>
                                         </div>
                                     </div>
                                     <BusyButton

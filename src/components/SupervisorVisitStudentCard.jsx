@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const SupervisorVisitStudentCard = ({ record, onTrackingChange }) => {
   const { t } = useAppTranslation();

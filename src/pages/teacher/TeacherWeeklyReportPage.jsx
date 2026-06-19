@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader';
 import AppSelect from '../../components/AppSelect';
 import BusyButton from '../../components/BusyButton';
 import useMediaQuery, { MOBILE_QUERY } from '../../hooks/useMediaQuery';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 

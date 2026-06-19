@@ -4,6 +4,7 @@ import BusyButton from './BusyButton';
 import { REPORT_STYLES } from '../utils/schoolReportHtml';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 /**
  * معاينة تقرير HTML (RTL) قبل الطباعة أو التحميل.
  */

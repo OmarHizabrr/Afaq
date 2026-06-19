@@ -13,6 +13,7 @@ import { buildComprehensiveReportBodyHtml } from '../../utils/schoolReportHtml';
 import LazyReportPrintPreviewModal from '../../components/LazyReportPrintPreviewModal';
 import { formatDailyLogSubjects, schoolReportSummaryLine } from '../../utils/reportLabels';
 import { normalizeSchoolReportForDisplay } from '../../utils/schoolReportStars';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const SchoolComprehensiveReportPage = () => {
   const { t } = useAppTranslation();

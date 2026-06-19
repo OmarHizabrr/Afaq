@@ -1,6 +1,7 @@
 import React from 'react';
 import { Download, Share, X } from 'lucide-react';
 import useInstallPrompt from '../hooks/useInstallPrompt';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const InstallAppBanner = () => {
   const { t } = useAppTranslation();

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell, X, Loader2 } from 'lucide-react';
 import usePushNotifications from '../hooks/usePushNotifications';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const PushNotificationBanner = ({ user }) => {
   const { t } = useAppTranslation();

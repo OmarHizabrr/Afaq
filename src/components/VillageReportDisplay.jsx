@@ -3,6 +3,7 @@ import { Home } from 'lucide-react';
 import { villageReportFromStored } from '../utils/villageReportFields';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const ListBlock = ({ title, items }) => {
   if (!items?.length) return null;
   return (

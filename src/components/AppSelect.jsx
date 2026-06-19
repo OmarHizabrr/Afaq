@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const AppSelect = ({ className = '', children, searchable = false, placeholder, ...props }) => {
   const { t } = useAppTranslation();
   const searchPlaceholder = placeholder ?? t('components.AppSelect.ابحث', 'ابحث...');

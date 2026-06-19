@@ -4,6 +4,7 @@ import AppSelect from './AppSelect';
 import StarRatingInput from './StarRatingInput';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 export default function VisitReportEditor({
   schoolOptions = [],
   villageOptions = [],

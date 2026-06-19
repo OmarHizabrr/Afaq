@@ -1,5 +1,6 @@
 import React from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const ExplorationListCard = ({ item, subtitle, canEdit, canDelete, onEdit, onDelete }) => {
   const { t } = useAppTranslation();

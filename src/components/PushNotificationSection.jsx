@@ -4,6 +4,7 @@ import usePushNotifications from '../hooks/usePushNotifications';
 import FirestoreApi from '../services/firestoreApi';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 const PushNotificationSection = ({ user }) => {
   const { t } = useAppTranslation();
   const { permission, registered, busy, enable, supported, configured, fcmSupported } =

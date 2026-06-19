@@ -12,11 +12,16 @@ import { normalizeSchoolReportForDisplay } from '../../utils/schoolReportStars';
 import { schoolReportSummaryLine } from '../../utils/reportLabels';
 import { loadSchoolReportExport } from '../../utils/loadSchoolReportExport';
 import LazyReportPrintPreviewModal from '../../components/LazyReportPrintPreviewModal';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
-const schoolLevelSubtitle = (sl) =>
-  sl === 'adults' ? t('pages.SchoolDetailsPage.نوع_الحلقة_كبار', 'نوع الحلقة: كبار') : sl === 'children' ? t('pages.SchoolDetailsPage.نوع_الحلقة_صغار', 'نوع الحلقة: صغار') : t('pages.SchoolDetailsPage.نوع_الحلقة_غير_محدد', 'نوع الحلقة: غير محدد');
+const getSchoolLevelSubtitle = (sl, t) =>
+  sl === 'adults'
+    ? t('pages.SchoolDetailsPage.نوع_الحلقة_كبار', 'نوع الحلقة: كبار')
+    : sl === 'children'
+      ? t('pages.SchoolDetailsPage.نوع_الحلقة_صغار', 'نوع الحلقة: صغار')
+      : t('pages.SchoolDetailsPage.نوع_الحلقة_غير_محدد', 'نوع الحلقة: غير محدد');
 
-const USER_ROLE_LABELS = {
+const getUserRoleLabels = (t) => ({
   system_admin: t('pages.RegionDetailsPage.مدير_نظام_وصول_كامل', 'مدير نظام (وصول كامل)'),
   admin: t('pages.RegionDetailsPage.مدير_النظام', 'مدير النظام'),
   supervisor_arab: t('components.MessengerPanel.مشرف_عام', 'مشرف عام'),
@@ -24,7 +29,7 @@ const USER_ROLE_LABELS = {
   teacher: t('components.MessengerPanel.معلم', 'معلم'),
   student: t('components.MessengerPanel.طالب', 'طالب'),
   unassigned: t('pages.SchoolDetailsPage.غير_معيّن', 'غير معيّن'),
-};
+});
 const ASSIGN_ROLE_FILTER_ORDER = [
   'teacher',
   'supervisor_local',
@@ -36,10 +41,12 @@ const ASSIGN_ROLE_FILTER_ORDER = [
   'all',
 ];
 
-const userRoleLabel = (role) => USER_ROLE_LABELS[role] || role || t('pages.SchoolDetailsPage.مستخدم', 'مستخدم');
+const userRoleLabel = (role, userRoleLabels, t) =>
+  userRoleLabels[role] || role || t('pages.SchoolDetailsPage.مستخدم', 'مستخدم');
 
 const SchoolDetailsPage = () => {
   const { t } = useAppTranslation();
+  const userRoleLabels = getUserRoleLabels(t);
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -423,7 +430,7 @@ const SchoolDetailsPage = () => {
                 </div>
               }
               title={<>مدرسة: <span className="page-header-accent">{school.name}</span></>}
-              subtitle={schoolLevelSubtitle(school.schoolLevel)}
+              subtitle={getSchoolLevelSubtitle(school.schoolLevel, t)}
             >
               {can(PERMISSION_PAGE_IDS.schools, 'school_report_create') && (
                 <>
@@ -673,7 +680,7 @@ const SchoolDetailsPage = () => {
                               className={`role-filter-btn ${assignRoleFilter === rid ? 'role-filter-btn--active' : ''}`}
                               onClick={() => setAssignRoleFilter(rid)}
                             >
-                              {(rid === 'all' ? 'الكل' : userRoleLabel(rid))} ({assignRoleCounts[rid] || 0})
+                              {(rid === 'all' ? t('pages.RegionDetailsPage.الكل', 'الكل') : userRoleLabel(rid, userRoleLabels, t))} ({assignRoleCounts[rid] || 0})
                             </button>
                           ))}
                         </div>
@@ -724,7 +731,7 @@ const SchoolDetailsPage = () => {
                                         <div>
                                             <div className="school-details-assign-modal__item-name">{u.displayName}</div>
                                             <div className="school-details-assign-modal__item-sub">
-                                              {userRoleLabel(u.role)} {u.schoolId && u.schoolId !== id ? t('pages.SchoolDetailsPage.مرتبط_بمدرسة_أخرى', '(مرتبط بمدرسة أخرى)') : ''}
+                                              {userRoleLabel(u.role, userRoleLabels, t)} {u.schoolId && u.schoolId !== id ? t('pages.SchoolDetailsPage.مرتبط_بمدرسة_أخرى', '(مرتبط بمدرسة أخرى)') : ''}
                                             </div>
                                         </div>
                                     </div>

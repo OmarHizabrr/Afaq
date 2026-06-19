@@ -1,4 +1,4 @@
-import useAppTranslation from '../../hooks/useAppTranslation';
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Calendar, Save, Users, School, BookOpen, CalendarDays, CalendarRange, StickyNote, ChevronDown, ChevronUp } from 'lucide-react';
 import FirestoreApi from '../../services/firestoreApi';
@@ -31,6 +31,7 @@ import {
   periodSaveLabel,
   getPeriodRange,
 } from '../../utils/dailyPrepForm';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 

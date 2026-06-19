@@ -4,6 +4,7 @@ import {
   EXPLORATION_TARGET_PAGES,
   normalizeAllowedPageIds,
 } from '../utils/explorationTargetPages';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * منتقي صفحات ظهور نوع الاستكشاف.

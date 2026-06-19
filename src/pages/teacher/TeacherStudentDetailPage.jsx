@@ -8,6 +8,7 @@ import ExplorationBadge from '../../components/ExplorationBadge';
 import ExplorationDataModal from '../../components/ExplorationDataModal';
 import usePermissions from '../../context/usePermissions';
 import { EXPLORATION_BRIDGE_ACTION_IDS } from '../../config/permissionRegistry';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const teacherSchoolStorageKey = (uid) => (uid ? `afaq_teacher_school_${uid}` : '');
 

@@ -19,6 +19,7 @@ import ExplorationDynamicFieldBlock from '../../components/ExplorationDynamicFie
 import ExplorationListCard from '../../components/ExplorationListCard';
 import { useExplorationOptionCaches } from '../../hooks/useExplorationOptionCaches';
 import { filterExplorationTypesForPage } from '../../utils/explorationTargetPages';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const defaultForm = () => ({
   explorationTypeId: '',

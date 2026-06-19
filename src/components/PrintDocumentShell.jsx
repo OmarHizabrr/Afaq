@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Printer, ArrowRight } from 'lucide-react';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 /**
  * قالب طباعة موحّد للمشروع: إطار، شعار، ترويسة، وتذييل.
  * شريط الأدوات يُخفى تلقائياً عند الطباعة (انظر index.css).

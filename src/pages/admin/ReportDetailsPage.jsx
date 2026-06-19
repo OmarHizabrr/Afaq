@@ -59,6 +59,7 @@ import {
   reportDetailsPreviewTitle,
 } from '../../utils/reportDetailsHtml';
 import { exportReportDetailsPdf } from '../../utils/reportDetailsExport';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 function resolveReportDocRef(api, type, ownerId, reportId) {
   if (!ownerId || !reportId) return null;
@@ -68,14 +69,15 @@ function resolveReportDocRef(api, type, ownerId, reportId) {
   return null;
 }
 
-const TYPE_LABELS = {
+const getTypeLabels = (t) => ({
   visit: t('pages.ReportDetailsPage.زيارة_ميدانية', 'زيارة ميدانية'),
   daily: t('pages.ReportDetailsPage.تحضير_يومي', 'تحضير يومي'),
-  weekly: t('pages.ReportDetailsPage.تقرير_أسبوعي', 'تقرير أسبوعي')
-};
+  weekly: t('pages.ReportDetailsPage.تقرير_أسبوعي', 'تقرير أسبوعي'),
+});
 
 const ReportDetailsPage = ({ viewerUser = null }) => {
   const { t } = useAppTranslation();
+  const typeLabels = getTypeLabels(t);
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
@@ -482,7 +484,7 @@ const ReportDetailsPage = ({ viewerUser = null }) => {
   const typeLabel =
     report.type === 'daily'
       ? `تحضير ${prepPeriodLabel(report.prepPeriod)}`
-      : TYPE_LABELS[report.type] || report.type;
+      : typeLabels[report.type] || report.type;
 
   const reportBodyHtml = buildReportDetailsBodyHtml(report, t);
   const previewTitle = reportDetailsPreviewTitle(report, t);

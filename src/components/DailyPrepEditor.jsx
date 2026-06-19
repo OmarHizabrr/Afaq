@@ -17,6 +17,7 @@ import {
   countByAttendanceStatus,
   isAttendancePresent,
 } from '../utils/attendanceStatus';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * واجهة التحضير الموحّدة — نفس شكل صفحة رفع التحضير.

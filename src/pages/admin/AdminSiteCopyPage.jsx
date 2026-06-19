@@ -4,6 +4,7 @@ import PageHeader from '../../components/PageHeader';
 import useSiteContent from '../../context/useSiteContent';
 import { saveStrings } from '../../services/siteConfigService';
 import BusyButton from '../../components/BusyButton';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const COPY_KEYS = [
   { key: 'layout.nav_dashboard', label: t('pages.AdminSiteCopyPage.عنوان_الرئيسية', 'عنوان: الرئيسية') },

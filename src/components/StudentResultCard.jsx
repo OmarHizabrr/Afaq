@@ -1,5 +1,6 @@
 import React from 'react';
 import { School, Calendar, CheckCircle2, XCircle } from 'lucide-react';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const StudentResultCard = ({ row }) => {
   const { t } = useAppTranslation();

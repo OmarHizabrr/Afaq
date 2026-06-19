@@ -8,6 +8,7 @@ import { PERMISSION_PAGE_IDS } from '../../config/permissionRegistry';
 import { DATA_SCOPE_MEMBERSHIP, loadPeerUserIdsForGroups } from '../../utils/permissionDataScope';
 import BusyButton from '../../components/BusyButton';
 import StudentResultCard from '../../components/StudentResultCard';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const UserDetailsPage = ({ selfUser = null, viewerUser = null }) => {
   const { t } = useAppTranslation();

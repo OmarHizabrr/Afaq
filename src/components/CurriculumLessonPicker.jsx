@@ -7,6 +7,7 @@ import {
   getExpectedWeekForDate,
   summarizeCurriculumProgress,
 } from '../utils/curriculumProgress';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 const statusIcon = (status) => {
   if (status === 'ahead') return <TrendingUp size={14} color="var(--success-color)" />;

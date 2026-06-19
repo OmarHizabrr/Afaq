@@ -4,6 +4,7 @@ import {
   formatFieldValueForDisplay,
 } from '../utils/explorationDynamicFields';
 import { useExplorationTypesCache } from '../hooks/useExplorationTypesCache';
+import useAppTranslation from '../hooks/useAppTranslation';
 
 /**
  * عرض قراءة فقط لقيم حقول نموذج الاستكشاف لسجل تم إنشاؤه عبر نموذج استكشاف.

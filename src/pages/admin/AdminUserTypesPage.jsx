@@ -10,6 +10,7 @@ import {
 } from '../../services/permissionProfilesService';
 import { DATA_SCOPE_ALL, DATA_SCOPE_MEMBERSHIP, normalizeDataScope } from '../../utils/permissionDataScope';
 import BusyButton from '../../components/BusyButton';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 export default function AdminUserTypesPage({ user }) {
   const { t } = useAppTranslation();

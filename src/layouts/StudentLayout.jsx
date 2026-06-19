@@ -23,6 +23,7 @@ import { getPortalMobileTabs } from '../utils/mobileNavTabs';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery';
 import useAppTranslation from '../hooks/useAppTranslation';
 
+
 function getStudentMenuItems(t) {
   return [
     { icon: Home, label: t('config.appNavItems.الرئيسية', 'الرئيسية'), shortName: t('config.appNavItems.الرئيسية', 'الرئيسية'), path: '/student', end: true },

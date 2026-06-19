@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, Phone, Mail, School } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StudentProfilePage = ({ user }) => {
   const { t } = useAppTranslation();

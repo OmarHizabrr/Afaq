@@ -16,6 +16,7 @@ import FirestoreApi from '../../services/firestoreApi';
 import PageHeader from '../../components/PageHeader';
 import PortalQuickActions from '../../components/PortalQuickActions';
 import StudentResultCard from '../../components/StudentResultCard';
+import useAppTranslation from '../../hooks/useAppTranslation';
 
 const StatCard = ({ title, value, icon, tone, subtext }) => {
   const { t } = useAppTranslation();
